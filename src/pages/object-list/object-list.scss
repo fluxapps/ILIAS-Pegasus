@@ -1,0 +1,25 @@
+.object-list {
+  .invisiblePlaceholder {
+    visibility: hidden;
+  }
+
+  .invisibleBackGround {
+    background-color: transparent;
+  }
+
+  .scroll-content {
+    padding: 3px 0 16px 0;
+  }
+
+  .footer {
+    .button-inner {
+      display: block;
+    }
+  }
+
+  div.input-wrapper {
+    min-height: 75px;
+  }
+}
+
+

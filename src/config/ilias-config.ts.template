@@ -1,0 +1,39 @@
+import {Injectable} from '@angular/core';
+
+@Injectable()
+export class ILIASConfig {
+
+    protected data:any = {
+        "installations": [
+            {"id": 1, "title" : "Title for Selection", "url": "https://www.domain.ch", "apiKey": "ilias_app", "apiSecret": "xxxx.xxxx-xx", "accessTokenTTL": 3600000},
+        ]
+    };
+
+    constructor() {
+    }
+
+    /**
+     * Get a config value, returns a Promise resolving the value
+     * @param key
+     */
+    get(key:string):Promise<any> {
+        if (Object.keys(this.data).length) {
+            return Promise.resolve(this.getByKey(key));
+        } else {
+            return Promise.reject("No such config.");
+        }
+    }
+
+    /**
+     * @param key
+     * @returns any
+     */
+    protected getByKey(key:string) {
+        if (!this.data.hasOwnProperty(key)) {
+            return null;
+        }
+
+        return this.data[key];
+    }
+
+}

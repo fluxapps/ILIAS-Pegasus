@@ -1,0 +1,37 @@
+ion-content.settings {
+  .list > .item-block:first-child {
+    border: none;
+  }
+
+  .general {
+    padding-top: 5px;
+  }
+
+  .item-toggle {
+    color: #999;
+  }
+
+
+  .item-md.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
+    border-bottom: 1px solid #dedede;
+    box-shadow: none;
+  }
+
+  //ion-label.postfix {
+  //  position: absolute;
+  //  right: 10px;
+  //  margin: 0;
+    //top: 1px;
+  //}
+
+  //ion-input.with-postfix {
+  //  input {
+  //    text-align: right;
+  //  }
+  //  padding-right: 20px;
+  //}
+
+  ion-label.activeUser {
+    font-weight: bold;
+  }
+}

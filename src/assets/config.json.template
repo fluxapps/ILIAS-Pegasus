@@ -1,0 +1,12 @@
+{
+  "installations": [
+    {
+      "id": 1,
+      "title": "Your ILIAS",
+      "url": "https://ilias.domain.ch",
+      "apiKey": "ilias_app",
+      "apiSecret": "xxxx.xxxx-xx",
+      "accessTokenTTL": 3600000
+    }
+  ]
+}

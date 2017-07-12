@@ -1,0 +1,142 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Info</ion-title>
+    <ion-buttons end>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding class="info">
+  <ion-segment [(ngModel)]="tab">
+    <ion-segment-button value="info">
+      {{'info.title' | translate:{value: null} }}
+    </ion-segment-button>
+    <ion-segment-button value="guide">
+      {{'info.guide' | translate:{value: null} }}
+    </ion-segment-button>
+  </ion-segment>
+  <div [ngSwitch]="tab">
+    <div *ngSwitchCase="'info'">
+      <!--KARTE BUGS-->
+      <ion-card no-margin>
+        <ion-card-header>Anregungen und Hinweise zu Fehlern</ion-card-header>
+        <ion-card-content>
+          <p>Hast du einen Fehler gefunden? Bitte helfe uns die App zu verbessern. Melde dich bei:
+            <a href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</a></p>
+        </ion-card-content>
+      </ion-card>
+      <!--KARTE INHALT-->
+      <ion-card no-margin>
+        <ion-card-header>Inhaltshinweis</ion-card-header>
+        <ion-card-content>
+          <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich. Für die Optimierung der App werden Nutzungsdaten anonymisiert protokolliert und ausgewertet.</p>
+        </ion-card-content>
+      </ion-card>
+      <!--KARTE STURA-->
+      <ion-card>
+        <ion-item text-wrap>
+          <ion-avatar item-left>
+            <img src="assets/img/stura.jpg">
+          </ion-avatar>
+          <h2>Studierendenrat der Universität Freiburg</h2>
+          <p>Finanzierung</p>
+        </ion-item>
+        <ion-card-content>
+          <p>Die Spezifikation und die Entwicklung der App wurden finanziert durch das Studierendenvorschlagsbudget des Studierendenrates der Universität Freiburg.</p>
+        </ion-card-content>
+        <div>
+          <button ion-button color="primary" clear small (click)="browse('https://www.stura.uni-freiburg.de')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.stura.uni-freiburg.de
+          </button>
+        </div>
+      </ion-card>
+      <!-- KARTE UNIFR -->
+      <ion-card no-margin>
+        <ion-item text-wrap>
+          <ion-avatar item-left>
+            <img src="assets/img/unifrei.png">
+          </ion-avatar>
+          <h2>Rechenzentrum Albert-Ludwigs-Universität Freiburg</h2>
+          <p>Projektleitung</p>
+        </ion-item>
+        <ion-card-content>
+          <p>Das Rechenzentrum der Universität Freiburg hat die Spezifikations- und Umsetzungsphase der App geleitet.</p>
+        </ion-card-content>
+        <div>
+          <button ion-button color="primary" clear small (click)="browse('https://www.rz.uni-freiburg.de')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.rz.uni-freiburg.de
+          </button>
+        </div>
+      </ion-card>
+      <!-- KARTE UNIMAR -->
+      <ion-card no-margin>
+        <ion-item text-wrap>
+          <ion-avatar item-left>
+            <img src="assets/img/unimar.png">
+          </ion-avatar>
+          <h2>Hochschulrechenzentrum Philipps-Universität Marburg</h2>
+          <p>Verantwortlich für das ILIAS RESTPlugin</p>
+        </ion-item>
+        <ion-card-content>
+          <p>Das Hochschulrechenzentrum der Philipps-Universität Marburg ermöglicht mit dem ILIAS RESTPlugin die Schnittstelle zu ILIAS.</p>
+        </ion-card-content>
+        <div>
+          <button ion-button color="primary" clear small (click)="browse('https://www.uni-marburg.de/hrz')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.uni-marburg.de/hrz
+          </button>
+        </div>
+      </ion-card>
+      <!-- KARTE SIG MOBILE -->
+      <ion-card no-margin>
+        <ion-item text-wrap>
+          <h2>ILIAS SIG Mobile</h2>
+          <p>Community und Koordination Weiterentwicklung</p>
+        </ion-item>
+        <ion-card-content>
+          <p>Die Special Interest Group (SIG) ILIAS Mobile ist verantwortlich für die Koordination der Weiterentwicklung der App und bietet einen Raum für Diskussionen rund um die App.</p>
+        </ion-card-content>
+        <div>
+          <button ion-button color="primary" clear small (click)="browse('https://www.ilias.de/docu/goto_docu_grp_5182.html')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.ilias.de/docu/goto_docu_grp_5182.html
+          </button>
+        </div>
+      </ion-card>
+      <!--KARTE studer raimann ag-->
+      <ion-card>
+        <ion-item text-wrap>
+          <ion-avatar item-left>
+            <img src="assets/img/sturai.png">
+          </ion-avatar>
+          <h2>studer + raimann ag</h2>
+          <p>App-Entwicklung & Wartung</p>
+        </ion-item>
+        <ion-card-content>
+          <p>Die App wurde umgesetzt und wird gewartet durch die studer + raimann ag, IT- and Learning-Solutions.</p>
+        </ion-card-content>
+        <div>
+          <button ion-button color="primary" clear small (click)="browse('https://www.studer-raimann.ch')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.studer-raimann.ch
+          </button>
+        </div>
+      </ion-card>
+    </div>
+    <ion-list *ngSwitchCase="'guide'">
+      <ion-card>
+        <ion-card-content>
+          <p>{{ 'info.instructions1' | translate:[]}}</p>
+          <!--<p>-->
+          <div>
+            <div class="centered">
+              <ion-icon name="cloud-download" color="lightish"></ion-icon> &rarr;
+              <ion-icon name="cloud-download" color="primary"></ion-icon>
+            </div>
+          </div>
+          <!--</p>-->
+          <p>{{ 'info.instructions2' | translate:[]}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </div>
+</ion-content>

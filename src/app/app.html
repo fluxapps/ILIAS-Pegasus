@@ -1,0 +1,37 @@
+<ion-menu side="right" persistent="true" [content]="content">
+
+    <ion-header>
+        <ion-toolbar color="primary">
+                <ion-title>{{ 'menu' | translate:[] }}</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+        <ion-list>
+            <button *ngIf="!loggedIn" ion-item (click)="openPage(loginPage)">
+                {{ 'login.title' | translate:[]}}
+            </button>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(objectListPage)">
+                {{ 'object-list.title' | translate:[]}}
+            </button>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(favoritesPage)">
+                {{ 'favorites.title' | translate:[]}}
+            </button>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(newObjectsPage)">
+                {{ 'new-objects.title' | translate:[]}}
+            </button>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(settingsPage)">
+                {{ 'settings.title' | translate:[]}}
+            </button>
+            <button ion-item (click)="openPage(infoPage)">
+                {{ 'info.title' | translate:[]}}
+            </button>
+            <button *ngIf="loggedIn" ion-item (click)="logout()">
+                {{ 'logout.title' | translate:[]}} {{ user.iliasLogin }}
+            </button>
+        </ion-list>
+    </ion-content>
+
+</ion-menu>
+
+<ion-nav id="nav" [root]="rootPage" #content swipe-back-enabled="false"></ion-nav>

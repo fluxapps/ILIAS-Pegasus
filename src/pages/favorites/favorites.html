@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-navbar color="primary">
+        <ion-title>Favorites</ion-title>
+        <ion-buttons end>
+            <button ion-button menuToggle>
+                <ion-icon name="menu"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="favorites object-list">
+
+    <ion-list text-wrap *ngIf="favorites && favorites.length == 0 && footerToolbar.isLoading == false">
+        <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
+    </ion-list>
+
+    <ion-list class="ilias-object-list">
+        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)">
+            <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
+            <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
+            {{ object.presenter.title() }}
+            <p>
+                <!-- Sadly the line below does not work... -->
+                <!--{{ (object.rootParent | async)?.title }}-->
+                {{ rootParents[object.id] | async }}
+            </p>
+            <p class="object-flags">
+                <ion-badge color="light" *ngIf="object.isFavorite">
+                    <ion-icon color="primary" name="star"></ion-icon>
+                </ion-badge>
+
+                <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+                    <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
+                </ion-badge>
+
+                <ion-badge *ngIf="object.isNew" color="light">
+                    <ion-icon color="primary">
+                        {{'new' | translate:[] }}
+                    </ion-icon>
+                </ion-badge>
+                <ion-badge *ngIf="object.isUpdated" color="light">
+                    <ion-icon color="primary">
+                        {{'updated' | translate:[] }}
+                    </ion-icon>
+                </ion-badge>
+            </p>
+            <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
+                <ion-icon name="more" color="primary"></ion-icon>
+            </button>
+        </ion-item>
+    </ion-list>
+
+    <ion-footer>
+        <ion-toolbar>
+            <ion-buttons left>
+                <button ion-button>
+                    <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
+                </button>
+            </ion-buttons>
+            <div color="primary" *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
+            <ion-buttons right>
+                <button *ngIf="footerToolbar.offline" ion-button color="secondary">
+                    {{ 'offline' | translate:{value: null} }}
+                </button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-footer>
+
+</ion-content>

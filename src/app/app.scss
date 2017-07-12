@@ -1,0 +1,57 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// Global CSS
+// -------------------------------------------------- 
+// Put CSS rules here that you want to apply globally.
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+//
+// App Shared Sass variables belong in app.variables.scss.
+
+.ilias-object-list {
+  ion-item {
+    min-height: 7rem;
+  }
+  &.list-md > .item-block:first-child{
+    border: none;
+  }
+  &.list-md > .item-block:last-child{
+    border: none;
+  }
+  &.list-ios > .item-block:first-child {
+    border: none;
+  }
+  &.list-ios > .item-block:last-child {
+    border: none;
+  }
+}
+
+
+.object-flags {
+  padding-top: 5px;
+}
+
+// Apply this class to buttons acting as action buttons in lists, e.g. object-list, favorites
+.ilias-list-action-button {
+  min-width: 35px;
+  min-height: 35px;
+  ion-icon {
+    font-size: 2.4rem;
+  }
+}
+
+ion-spinner.centered {
+  display: block;
+  margin: auto;
+}
+.card-md div.centered {
+  text-align: center;
+}
+
+.small-date {
+  font-size: small;
+  padding-left: 5px;
+}

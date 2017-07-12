@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Login</ion-title>
+    <ion-buttons end>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding class="login">
+  <ion-card>
+    <img src="assets/img/logo_banner.png" alt="">
+    <ion-card-header>
+      {{ 'login.hello' | translate:[]}}
+    </ion-card-header>
+    <ion-card-content>
+      {{ 'login.instructions' | translate:[]}}
+    </ion-card-content>
+    <ion-item>
+      <ion-label>Installation wählen</ion-label>
+      <ion-select [(ngModel)]="installationId">
+        <ion-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}
+        </ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-col>
+      <button ion-button full block (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
+    </ion-col>
+  </ion-card>
+</ion-content>
