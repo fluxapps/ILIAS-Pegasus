@@ -4,15 +4,10 @@
     "homepage": "http://studer-raimann.ch/",
     "private": true,
     "scripts": {
-        "build": "ionic-app-scripts build; ionic-app-scripts minify --cleancss",
-        "serve": "ionic-app-scripts serve",
-        "minify": "ionic-app-scripts minify --cleancss",
-        "watch": "ionic-app-scripts watch",
-        "serve:before": "watch",
-        "emulate:before": "build",
-        "deploy:before": "build",
-        "build:before": "build",
-        "run:before": "watch"
+        "build": "ionic-app-scripts build",
+        "clean": "ionic-app-scripts clean",
+        "ionic:build": "ionic-app-scripts build",
+        "ionic:serve": "ionic-app-scripts serve"
     },
     "dependencies": {
         "@angular/common": "2.2.1",
