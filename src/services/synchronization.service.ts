@@ -139,7 +139,7 @@ export class SynchronizationService {
                     return Promise.resolve(null);
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
                 this.lastSync = new Date(result.rows.item(0).endDate);
-                this.lastSyncString = this.lastSync.getDate()+"."+this.lastSync.getMonth()+"."+this.lastSync.getFullYear();
+                this.lastSyncString = this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
             });
