@@ -123,8 +123,9 @@
   "login": {
     "title": "Login",
     "hello":"Welcome to ILIAS Pegasus!",
-    "instructions":"Choose your institution from the list given below and click on 'login', afterwards you're redirected to the browser where you have to authenticate. With ILIAS Pegasus you can mark your courses as 'Offline Available' in order to carry ILIAS in your pockets.",
-    "login": "Anmelden"
+    "instructions":"Choose your institution",
+    "instructions2":"Choose your institution",
+    "login": "Login"
   },
   "object_type": {
     "crs" : "Course",

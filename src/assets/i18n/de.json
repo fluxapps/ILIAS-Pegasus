@@ -127,7 +127,7 @@
   "login": {
     "title": "Login",
     "hello":"Willkommen zu ILIAS Pegasus!",
-    "instructions":"Wähle deine Installation und klicke auf 'Anmelden', danach wirst du auf den Browser weitergeleitet, um dich anzumelden. Mit ILIAS Pegasus kannst du deine Kurse als 'offline Verfügbar' markieren um ILIAS jederzeit auf deinem Smartphone mit dir zu tragen.",
+    "instructions":"Wähle deine Installation.",
     "login": "Anmelden"
   },
   "object_type": {

@@ -2,7 +2,7 @@
 
 
 // Global CSS
-// -------------------------------------------------- 
+// --------------------------------------------------
 // Put CSS rules here that you want to apply globally.
 //
 // To declare rules for a specific mode, create a child rule
@@ -10,6 +10,13 @@
 // automatically applied to the <body> element in the app.
 //
 // App Shared Sass variables belong in app.variables.scss.
+
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+.content, .ion-header, ion-navbar {
+  font-family: 'Raleway', sans-serif !important;
+}
+
 
 .ilias-object-list {
   ion-item {
@@ -54,4 +61,20 @@ ion-spinner.centered {
 .small-date {
   font-size: small;
   padding-left: 5px;
+}
+
+#menu-container{
+
+  background-image: linear-gradient(to top left, #4a668b, #003c66);
+
+}
+
+
+#menu-pony{
+  right: -18%;
+  // bottom: -10%;
+  top:75%;
+  width: 80%;
+  position: absolute;
+  // max-height: 20%;
 }

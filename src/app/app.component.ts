@@ -87,7 +87,7 @@ export class MyApp {
             Log.write(this, "Platform ready.");
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
-            StatusBar.styleDefault();
+            StatusBar.styleLightContent();
             this.handleGlobalEvents();
 
             return this.handleMigrations();
