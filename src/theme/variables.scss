@@ -29,7 +29,11 @@ $colors: (
         light:      #f4f4f4,
         lightish:   #a9a9a9,
         dark:       #222,
-        favorite:   #69BB7B
+        favorite:   #69BB7B,
+        nobg-w: (
+          base: transparent,
+          contrast: #ffffff,
+          ),
 );
 
 

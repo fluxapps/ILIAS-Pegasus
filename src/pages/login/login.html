@@ -1,6 +1,8 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-title>Login</ion-title>
+  <ion-navbar color="nobg-w">
+    <ion-title>
+        <ion-icon name="log-in"></ion-icon>
+    </ion-title>
     <ion-buttons end>
       <button ion-button menuToggle>
         <ion-icon name="menu"></ion-icon>
@@ -8,24 +10,28 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content padding class="login">
-  <ion-card>
-    <img src="assets/img/logo_banner.png" alt="">
-    <ion-card-header>
-      {{ 'login.hello' | translate:[]}}
-    </ion-card-header>
-    <ion-card-content>
-      {{ 'login.instructions' | translate:[]}}
-    </ion-card-content>
-    <ion-item>
-      <ion-label>Installation wählen</ion-label>
+<ion-content padding class="login" color="nobg-w">
+  <!-- <ion-card> -->
+    <img src="assets/img/Molly_pony_white.svg" alt="" id="pony">
+    <!-- <ion-card-header> -->
+      <h1>{{ 'login.hello' | translate:[]}}</h1>
+      <br>
+    <!-- </ion-card-header> -->
+    <!-- <ion-card-content> -->
+      <!-- <h4>{{ 'login.instructions' | translate:[]}}</h4> -->
+
+    <!-- </ion-card-content> -->
+    <ion-item color="nobg-w">
+      <ion-label>{{ 'login.instructions' | translate:[]}}</ion-label>
       <ion-select [(ngModel)]="installationId">
         <ion-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}
         </ion-option>
       </ion-select>
     </ion-item>
+    <br>
+    <!-- <h4>{{ 'login.instructions2' | translate:[]}}</h4> -->
     <ion-col>
       <button ion-button full block (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
     </ion-col>
-  </ion-card>
+  <!-- </ion-card> -->
 </ion-content>

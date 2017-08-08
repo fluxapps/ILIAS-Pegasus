@@ -81,6 +81,7 @@
     <allow-navigation href="http://192.168.99.69:8100" />
     <allow-navigation href="http://192.168.99.69:8001" />
     <allow-navigation href="http://192.168.99.77:8100" />
+    <allow-navigation href="http://192.168.99.36:8100" />
     <engine name="android" spec="^6.1.0" />
     <engine name="ios" spec="^4.2.1" />
     <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
