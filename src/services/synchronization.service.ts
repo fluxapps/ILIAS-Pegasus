@@ -133,7 +133,7 @@ export class SynchronizationService {
 
     public updateLastSync(user_id: number){
         return SQLiteDatabaseService.instance()
-            .then(db => db.query("SELECT endDate FROM synchronization WHERE userId = " + user_id + " AND endDate not Null LIMIT 1 ORDER BY endDate DESC"))
+            .then(db => db.query("SELECT endDate FROM synchronization WHERE userId = " + user_id + " AND endDate not Null ORDER BY endDate DESC LIMIT 1"))
             .then((result) => {
                 if(result.rows.length == 0)
                     return Promise.resolve(null);
