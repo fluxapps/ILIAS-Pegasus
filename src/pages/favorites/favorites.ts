@@ -21,6 +21,8 @@ import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {TokenLinkRewriter} from "../../services/link-rewriter.service";
+
 
 
 @Component({
@@ -40,7 +42,8 @@ export class FavoritesPage {
                 public translate:TranslateService,
                 public footerToolbar:FooterToolbarService,
                 public alert:AlertController,
-                public toast:ToastController) {
+                public toast:ToastController,
+                private readonly linkRewriter: TokenLinkRewriter) {
     }
 
     public ionViewDidLoad() {
@@ -138,7 +141,7 @@ export class FavoritesPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions:ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), object, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), object),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), object, this.linkRewriter),
             new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), object)
         ];
         actions.forEach(action => {
@@ -173,7 +176,7 @@ export class FavoritesPage {
         if (iliasObject.type == 'file') {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter);
     }
 
     protected loadFavorites() {

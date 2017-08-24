@@ -32,6 +32,8 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {TokenLinkRewriter} from "../../services/link-rewriter.service";
+
 
 @Component({
     templateUrl: 'object-list.html',
@@ -65,7 +67,8 @@ export class ObjectListPage {
                 public dataProvider: DataProvider,
                 public footerToolbar: FooterToolbarService,
                 public events: Events,
-                public loading: LoadingController) {
+                public loading: LoadingController,
+                private readonly linkRewriter: TokenLinkRewriter) {
         this.parent = params.get('parent');
 
         if (this.parent) {
@@ -127,7 +130,7 @@ export class ObjectListPage {
             .then(() => {
                 let currentDate = new Date();
                 let updatedAt = new Date(this.parent.updatedAt);
-                
+
                 let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
                 Log.describe(this, "needs refrehs", needsRefresh);
                 if (needsRefresh)
@@ -361,7 +364,7 @@ export class ObjectListPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter);
     }
 
     /**
@@ -374,7 +377,7 @@ export class ObjectListPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

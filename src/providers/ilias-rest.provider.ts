@@ -23,6 +23,38 @@ export class ILIASRestProvider {
     // protected api_url = '/restplugin.php';
     // protected app_routes_url = '/';
 
+    public getAuthToken(user: User, timeout: number = null): Promise<any> {
+
+ let installation;
+
+ return this.getInstallation(user)
+   .then(insta => {
+     installation = insta;
+     return this.checkAndUpdateAccessToken(user, installation, timeout);
+   })
+   .then(() => {
+     Log.describe(this, "User", user);
+
+     let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/auth-token';
+
+     return <Promise<Object>> this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
+       .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+       .map((response) => response.json())
+       .toPromise()
+       .then(result => {
+         Log.describe(this, "res", result);
+         return Promise.resolve(result);
+       })
+       .catch(error => {
+         Log.error(this, error);
+         if (error.status && error.status == 401) {
+           this.logout();
+         }
+         return Promise.reject(new RESTAPIException(error));
+       })
+   });
+}
+
     /**
      * Get ILIAS objects on desktop
      * @param user

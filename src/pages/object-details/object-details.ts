@@ -23,6 +23,8 @@ import {ModalController} from "ionic-angular/index";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {TokenLinkRewriter} from "../../services/link-rewriter.service";
+
 
 @Component({
     templateUrl: 'object-details.html'
@@ -47,6 +49,7 @@ export class ObjectDetailsPage {
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
+                private readonly linkRewriter: TokenLinkRewriter,
                 params: NavParams) {
         this.iliasObject = params.get('object');
         Log.describe(this, "Showing details of: ", this.iliasObject);
@@ -150,7 +153,7 @@ export class ObjectDetailsPage {
     }
 
     protected loadAvailableActions() {
-        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), this.iliasObject)];
+        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), this.iliasObject, this.linkRewriter)];
         if (!this.iliasObject.isFavorite) {
             this.actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), this.iliasObject));
         } else if (this.iliasObject.isFavorite) {
