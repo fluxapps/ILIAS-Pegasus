@@ -20,7 +20,7 @@ export class TokenLinkRewriter {
       })
       .then(tokenObject => {
 
-        const pattern: RegExp = new RegExp("/(http(?:s?):\\/\\/.*)\\/.*_(\\d+).html/");
+        const pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*_(\\d+)");
         const matches: string[] = pattern.exec(link);
 
         const host: string = matches[1];
