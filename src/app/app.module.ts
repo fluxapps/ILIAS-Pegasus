@@ -24,6 +24,7 @@ import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
+import {TokenLinkRewriter} from "../services/link-rewriter.service";
 
 
 export function createTranslateLoader(http: Http) {
@@ -75,6 +76,7 @@ export function createTranslateLoader(http: Http) {
     FileService,
     SynchronizationService,
     DataProviderFileObjectHandler,
+    TokenLinkRewriter,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [
