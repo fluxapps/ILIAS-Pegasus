@@ -23,6 +23,7 @@ export class TokenLinkRewriter {
         const pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*_(\\d+)");
         const matches: string[] = pattern.exec(link);
 
+        // TODO: Check for matches
         const host: string = matches[1];
         const refId: string = matches[2];
 

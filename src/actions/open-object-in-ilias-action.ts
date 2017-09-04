@@ -1,44 +1,42 @@
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
-import {InAppBrowser} from "ionic-native";
 import {ILIASObjectActionResult} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
 import {TokenLinkRewriter} from "../services/link-rewriter.service";
+import {Subscription} from "rxjs/Subscription";
+import {InAppBrowser} from "ionic-native";
 
+export class OpenObjectInILIASAction
+  extends ILIASObjectAction { constructor(
+      public title:string,
+      public iliasObject:ILIASObject,
+      private readonly linkRewriter: TokenLinkRewriter
+)
 
-export class OpenObjectInILIASAction extends ILIASObjectAction {
+    { super() }
 
-    public constructor(public title:string, public iliasObject:ILIASObject, private readonly linkRewriter: TokenLinkRewriter) {
-        super();
-    }
 
     public execute():Promise<ILIASObjectActionResult> {
 
+      return new Promise((resolve, reject) => {
 
-      return this.linkRewriter.rewrite(this.iliasObject.link)
-        .then(link => {
-          new InAppBrowser(link, '_system');
-          return Promise.resolve(new ILIASObjectActionNoMessage());
+        let browser: InAppBrowser = new InAppBrowser(this.iliasObject.link, "_blank");
+
+        let subscription: Subscription = browser.on("loadstop").subscribe(() => {
+          this.linkRewriter.rewrite(this.iliasObject.link)
+              .then(link => {
+                return browser.executeScript({code: `window.open('${link}')`})
+              })
+              .then(() => {
+                subscription.unsubscribe();
+                resolve(new ILIASObjectActionNoMessage())
+              })
+              .catch(error => {
+                subscription.unsubscribe();
+                reject(error)
+              })
         })
-        .catch(error => {
-          return Promise.reject('No URL given');
-        });
-
-
-        // return new Promise((resolve, reject) => {
-        //
-        //     if (this.iliasObject.link) {
-        //
-        //         const link = this.linkRewriter.rewrite(this.iliasObject.link);
-        //         console.log(link);
-        //
-        //
-        //         new InAppBrowser(link, '_system');
-        //         resolve(new ILIASObjectActionNoMessage());
-        //     } else {
-        //         reject('No URL given')
-        //     }
-        // });
+      });
     }
 
     public alert():ILIASObjectActionAlert|any {
