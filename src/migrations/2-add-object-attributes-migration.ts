@@ -11,7 +11,7 @@ export class AddObjectAttributesMigration
         SQLiteDatabaseService.instance().then(db => {
 
           db.query(
-            "ALTER TABLE objects" +
+            "ALTER TABLE objects " +
             "ADD hasPageLayout BOOLEAN NOT NULL DEFAULT 0 CHECK (hasPageLayout IN (0,1))"
           ).then(() => {
             resolve()
@@ -27,8 +27,7 @@ export class AddObjectAttributesMigration
 
       SQLiteDatabaseService.instance().then(db => {
 
-        db.query("" +
-          "ALTER TABLE objects" +
+        db.query("ALTER TABLE objects " +
           "DROP COLUMN hasPageLayout"
         ).then(() => {
           resovle()
