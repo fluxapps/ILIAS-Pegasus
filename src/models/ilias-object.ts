@@ -93,6 +93,8 @@ export class ILIASObject extends ActiveRecord {
 
     public newSubItems: number = 0;
 
+    public hasPageLayout: boolean = false;
+
     /**
      * Holds additional data as JSON string that must be accessed in a synchronous way, e.g. FileData
      */
@@ -132,7 +134,8 @@ export class ILIASObject extends ActiveRecord {
             'repoPath',
             'createdAt',
             'updatedAt',
-            'needsDownload'
+            'needsDownload',
+            'hasPageLayout'
         ]));
     }
 

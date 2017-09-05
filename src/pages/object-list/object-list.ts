@@ -33,6 +33,8 @@ import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {TokenLinkRewriter} from "../../services/link-rewriter.service";
+import {PageLayout} from "../../models/page-layout";
+import {Exception} from "../../exceptions/Exception";
 
 
 @Component({
@@ -55,6 +57,8 @@ export class ObjectListPage {
     public numberOfNewChildren = [];
     protected static desktopLastUpdate = null;
 
+    readonly pageLayout: PageLayout = new PageLayout();
+
     constructor(public nav: NavController,
                 params: NavParams,
                 public actionSheet: ActionSheetController,
@@ -68,7 +72,8 @@ export class ObjectListPage {
                 public footerToolbar: FooterToolbarService,
                 public events: Events,
                 public loading: LoadingController,
-                private readonly linkRewriter: TokenLinkRewriter) {
+                private readonly linkRewriter: TokenLinkRewriter
+    ) {
         this.parent = params.get('parent');
 
         if (this.parent) {
@@ -80,6 +85,14 @@ export class ObjectListPage {
             });
         }
         this.initEventListeners();
+    }
+
+    openPageLayout() {
+      if (this.parent == null) {
+        throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
+      }
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), this.parent, this.linkRewriter);
+      this.executeAction(action);
     }
 
     public ionViewDidEnter() {

@@ -27,6 +27,14 @@
     </ion-grid>
 
     <ion-list class="ilias-object-list">
+
+
+        <ion-item *ngIf="parent != undefined && parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+          <ion-icon [name]=pageLayout.icon item-left=""></ion-icon>
+          <span>{{pageLayout.text | translate: []}}</span>
+        </ion-item>
+
+
         <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
             <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
             <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
