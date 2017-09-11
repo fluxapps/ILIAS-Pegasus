@@ -15,7 +15,7 @@ export class TokenLinkRewriter {
 
     return User.currentUser()
       .then(user => {
-        userId = user.id;
+        userId = user.iliasUserId;
         return this.restProvider.getAuthToken(user);
       })
       .then(tokenObject => {

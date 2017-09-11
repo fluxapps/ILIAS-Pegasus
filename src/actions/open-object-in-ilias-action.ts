@@ -6,33 +6,31 @@ import {TokenLinkRewriter} from "../services/link-rewriter.service";
 import {Subscription} from "rxjs/Subscription";
 import {InAppBrowser} from "ionic-native";
 
-export class OpenObjectInILIASAction
-  extends ILIASObjectAction { constructor(
+export class OpenObjectInILIASAction extends ILIASObjectAction {
+
+  constructor(
       public title:string,
       public iliasObject:ILIASObject,
       private readonly linkRewriter: TokenLinkRewriter
-)
-
-    { super() }
-
+  ) { super() }
 
     public execute():Promise<ILIASObjectActionResult> {
 
       return new Promise((resolve, reject) => {
 
-        let browser: InAppBrowser = new InAppBrowser(this.iliasObject.link, "_blank");
+        let browser: InAppBrowser = new InAppBrowser(this.iliasObject.link, "_blank", "location=no");
 
-        let subscription: Subscription = browser.on("loadstop").subscribe(() => {
+        let subscription: Subscription = browser.on("loadstart").subscribe(() => {
+          subscription.unsubscribe();
+
           this.linkRewriter.rewrite(this.iliasObject.link)
               .then(link => {
-                return browser.executeScript({code: `window.open('${link}')`})
-              })
-              .then(() => {
-                subscription.unsubscribe();
+                // the promise may not be executed depending on the hosts security settings
+                browser.executeScript({code: `window.open('${link}')`});
                 resolve(new ILIASObjectActionNoMessage())
               })
               .catch(error => {
-                subscription.unsubscribe();
+                browser.close();
                 reject(error)
               })
         })
