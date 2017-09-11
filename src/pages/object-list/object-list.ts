@@ -57,7 +57,7 @@ export class ObjectListPage {
     public numberOfNewChildren = [];
     protected static desktopLastUpdate = null;
 
-    readonly pageLayout: PageLayout = new PageLayout();
+    readonly pageLayout: PageLayout;
 
     constructor(public nav: NavController,
                 params: NavParams,
@@ -78,8 +78,10 @@ export class ObjectListPage {
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
+            this.pageLayout = new PageLayout(this.parent.type);
         } else {
             this.pageTitle = ''; // will be updated by the observer
+            this.pageLayout = new PageLayout();
             translate.get("object-list.title").subscribe((lng) => {
                 this.pageTitle = lng;
             });
