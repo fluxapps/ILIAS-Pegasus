@@ -21,7 +21,8 @@
   "no_title": "Kein Titel",
   "close": "Schliessen",
   "object-list": {
-    "title" : "Meine Kurse und Gruppen"
+    "title" : "Meine Kurse und Gruppen",
+    "page-layout" : "Für diesen Kurs sind zusätzliche Informationen verfügbar."
   },
   "favorites": {
     "title": "Favoriten"

@@ -21,7 +21,8 @@
   "no_title": "No title",
   "close": "Close",
   "object-list": {
-    "title" : "My Courses And Groups"
+    "title" : "My Courses And Groups",
+    "page-layout" : "Additional information available for this course."
   },
   "favorites": {
     "title": "Favorites"
