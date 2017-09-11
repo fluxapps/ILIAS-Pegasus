@@ -21,8 +21,13 @@
   "no_title": "Kein Titel",
   "close": "Schliessen",
   "object-list": {
-    "title" : "Meine Kurse und Gruppen",
-    "page-layout" : "Für diesen Kurs sind zusätzliche Informationen verfügbar."
+    "title" : "Meine Kurse und Gruppen"
+  },
+  "page-layout": {
+    "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
+    "course" : "Für diesen Kurs sind zusätzliche Informationen verfügbar.",
+    "folder" : "Für diesen Ordner sind zusätzliche Informationen verfügbar.",
+    "default" : "Für dieses Objekt sind zusätzliche Informationen verfügbar."
   },
   "favorites": {
     "title": "Favoriten"

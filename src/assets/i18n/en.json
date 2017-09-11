@@ -24,6 +24,12 @@
     "title" : "My Courses And Groups",
     "page-layout" : "Additional information available for this course."
   },
+  "page-layout": {
+    "group" : "Additional information available for this group.",
+    "course" : "Additional information available for this course.",
+    "folder" : "Additional information available for this folder.",
+    "default" : "Additional information available for this object."
+  },
   "favorites": {
     "title": "Favorites"
   },
