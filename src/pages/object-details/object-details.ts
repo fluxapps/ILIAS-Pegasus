@@ -21,7 +21,6 @@ import {ILIASObjectActionResult} from "../../actions/object-action";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
 import {ModalController} from "ionic-angular/index";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
 

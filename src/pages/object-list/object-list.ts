@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {
     NavController, NavParams, ActionSheetController, AlertController,
-    ToastController, Events, DateTime
+    ToastController, Events
 } from 'ionic-angular';
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";

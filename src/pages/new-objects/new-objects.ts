@@ -24,11 +24,10 @@ import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open
 import {Log} from "../../services/log.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Job} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular/index";
+import {ModalController} from "ionic-angular";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
-import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
 
