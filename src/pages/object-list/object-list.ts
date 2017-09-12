@@ -32,9 +32,10 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
+import {ILIASLink, ILIASLinkView, TokenUrlConverter} from "../../services/url-converter.service";
 import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
+import {TimeLine} from "../../models/timeline";
 
 
 @Component({
@@ -58,6 +59,7 @@ export class ObjectListPage {
     protected static desktopLastUpdate = null;
 
     readonly pageLayout: PageLayout;
+    readonly timeline: TimeLine;
 
     constructor(public nav: NavController,
                 params: NavParams,
@@ -79,9 +81,11 @@ export class ObjectListPage {
         if (this.parent) {
             this.pageTitle = this.parent.title;
             this.pageLayout = new PageLayout(this.parent.type);
+            this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ''; // will be updated by the observer
             this.pageLayout = new PageLayout();
+            this.timeline = new TimeLine();
             translate.get("object-list.title").subscribe((lng) => {
                 this.pageTitle = lng;
             });
@@ -94,6 +98,14 @@ export class ObjectListPage {
         throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
       }
       const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter);
+      this.executeAction(action);
+    }
+
+    openTimeline() {
+      if (this.parent == null) {
+        throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
+      }
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter);
       this.executeAction(action);
     }
 
