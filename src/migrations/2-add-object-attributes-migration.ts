@@ -10,14 +10,29 @@ export class AddObjectAttributesMigration
 
         SQLiteDatabaseService.instance().then(db => {
 
-          db.query(
+          const alterPageLayout: Promise<any> = db.query(
             "ALTER TABLE objects " +
             "ADD hasPageLayout BOOLEAN NOT NULL DEFAULT 0 CHECK (hasPageLayout IN (0,1))"
           ).then(() => {
+            console.log("Alter table objects with column 'hasPageLayout'");
+          }, (error) => {
+            console.log(`Could not alter table objects with column 'hasPageLayout': ${error}`)
+          });
+
+          const alterTimeline: Promise<any> = db.query(
+            "ALTER TABLE objects " +
+            "ADD hasTimeline BOOLEAN NOT NULL DEFAULT 0 CHECK (hasTimeline IN (0,1))"
+          ).then(() => {
+            console.log("Alter table objects with column 'hasTimeline'");
+          }, (error) => {
+            console.log(`Could not alter table objects with column 'hasTimeline': ${error}`)
+          });
+
+          Promise.all([alterPageLayout, alterTimeline]).then(() => {
             resolve()
           }).catch((error) => {
             reject(error)
-          })
+          });
         })
     });
   }
@@ -27,13 +42,27 @@ export class AddObjectAttributesMigration
 
       SQLiteDatabaseService.instance().then(db => {
 
-        db.query("ALTER TABLE objects " +
+        const alterPageLayout: Promise<any> = db.query("ALTER TABLE objects " +
           "DROP COLUMN hasPageLayout"
         ).then(() => {
-          resovle()
-        }).catch(error => {
-          reject(error)
-        })
+          console.log("Alter table objects: drop column 'hasPageLayout'");
+        }, (error) => {
+          console.log(`Could not alter table objects: drop column 'hasPageLayout', error=${error}`)
+        });
+
+        const alterTimeline: Promise<any> = db.query("ALTER TABLE objects " +
+          "DROP COLUMN hasTimeline"
+        ).then(() => {
+          console.log("Alter table objects: drop column 'hasTimeline'");
+        }, (error) => {
+          console.log(`Could not alter table objects: drop column 'hasTimeline', error=${error}`)
+        });
+
+        Promise.all([alterPageLayout, alterTimeline]).then(() => {
+          resovle();
+        }).catch((error) => {
+          reject(error);
+        });
       })
     });
   }
