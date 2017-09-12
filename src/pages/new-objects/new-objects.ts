@@ -30,7 +30,7 @@ import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeExcept
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, TokenLinkRewriter} from "../../services/link-rewriter.service";
+import {ILIASLink, TokenUrlConverter} from "../../services/link-rewriter.service";
 
 
 @Component({
@@ -65,7 +65,7 @@ export class NewObjectsPage {
                 public translate: TranslateService,
                 public modal: ModalController,
                 public dataProvider: DataProvider,
-                private readonly linkRewriter: TokenLinkRewriter) {
+                private readonly urlConverter: TokenUrlConverter) {
         this.parent = params.get('parent');
         this.pageTitle = 'New Content';
     }
@@ -215,7 +215,7 @@ export class NewObjectsPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
     }
 
     /**
@@ -228,7 +228,7 @@ export class NewObjectsPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

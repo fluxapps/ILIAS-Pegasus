@@ -2,7 +2,7 @@ import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
 import {ILIASObjectActionResult} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
-import {ILIASLink, TokenLinkRewriter} from "../services/link-rewriter.service";
+import {ILIASLink, TokenUrlConverter} from "../services/link-rewriter.service";
 import {Subscription} from "rxjs/Subscription";
 import {InAppBrowser} from "ionic-native";
 import {Exception} from "../exceptions/Exception";
@@ -12,7 +12,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
   constructor(
       public title:string,
       public iliasLink: ILIASLink,
-      private readonly linkRewriter: TokenLinkRewriter
+      private readonly urlConverter: TokenUrlConverter
   ) { super() }
 
     public execute():Promise<ILIASObjectActionResult> {

@@ -18,7 +18,7 @@ export interface UrlConverter {
 
 
 @Injectable()
-export class TokenLinkRewriter implements UrlConverter{
+export class TokenUrlConverter implements UrlConverter{
 
   public constructor(
     private readonly restProvider: ILIASRestProvider
@@ -114,7 +114,7 @@ export class ILIASLink {
 
 /**
  * All views for an {@link ILIASLinkView}, that are supported
- * by the {@link TokenLinkRewriter}.
+ * by the {@link TokenUrlConverter}.
  */
 export enum ILIASLinkView {
   DEFAULT,
