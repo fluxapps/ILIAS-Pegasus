@@ -93,20 +93,33 @@ export class ObjectListPage {
         this.initEventListeners();
     }
 
-    openPageLayout() {
-      if (this.parent == null) {
-        throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
-      }
+  /**
+   * Opens the parent object in ILIAS.
+   */
+  openPageLayout() {
+      this.checkParen();
       const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter);
       this.executeAction(action);
     }
 
-    openTimeline() {
+  /**
+   * Opens the timeline of the parent object in ILIAS.
+   */
+  openTimeline() {
+      this.checkParen();
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter);
+      this.executeAction(action);
+    }
+
+  /**
+   * Checks the parent on null.
+   *
+   * @throws Exception if the parent is null
+   */
+  private checkParen() {
       if (this.parent == null) {
         throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
       }
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter);
-      this.executeAction(action);
     }
 
     public ionViewDidEnter() {
