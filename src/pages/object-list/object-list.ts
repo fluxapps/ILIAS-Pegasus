@@ -32,7 +32,7 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {TokenLinkRewriter} from "../../services/link-rewriter.service";
+import {ILIASLink, TokenLinkRewriter} from "../../services/link-rewriter.service";
 import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
 
@@ -93,7 +93,7 @@ export class ObjectListPage {
       if (this.parent == null) {
         throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
       }
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), this.parent, this.linkRewriter);
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.linkRewriter);
       this.executeAction(action);
     }
 
@@ -379,7 +379,7 @@ export class ObjectListPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter);
     }
 
     /**
@@ -392,7 +392,7 @@ export class ObjectListPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

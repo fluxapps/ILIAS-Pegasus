@@ -16,7 +16,7 @@ import {OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
 import {TranslateService} from "ng2-translate/ng2-translate";
 import {ModalController} from "ionic-angular/index";
 import {DataProvider} from "../providers/data-provider.provider";
-import {TokenLinkRewriter} from "./link-rewriter.service";
+import {ILIASLink, TokenLinkRewriter} from "./link-rewriter.service";
 
 @Injectable()
 export class ILIASObjectActionsService {
@@ -57,7 +57,7 @@ export class ILIASObjectActionsService {
             return new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), iliasObject, this.file);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter);
     }
 
     /**
@@ -66,7 +66,7 @@ export class ILIASObjectActionsService {
      * @returns {Array}
      */
     protected getActionsForDetailsPage(iliasObject:ILIASObject):ILIASObjectAction[] {
-        let actions:ILIASObjectAction[] = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter)];
+        let actions:ILIASObjectAction[] = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter)];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
         } else if (iliasObject.isFavorite) {
@@ -93,7 +93,7 @@ export class ILIASObjectActionsService {
     protected getActionsForActionMenu(iliasObject:ILIASObject):ILIASObjectAction[] {
         let actions:ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.linkRewriter),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.linkRewriter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

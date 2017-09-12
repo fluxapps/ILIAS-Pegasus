@@ -14,8 +14,13 @@
 </ion-header>
 <ion-content padding class="object-list">
 
-    <ion-list *ngIf="parent != undefined && parent.hasPageLayout">
-      <ion-item text-wrap="" (click)="openPageLayout()">
+    <ion-list *ngIf="parent != undefined">
+      <ion-item *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+        <ion-icon [name]=pageLayout.icon item-left=""></ion-icon>
+        <span>{{pageLayout.text | translate: []}}</span>
+      </ion-item>
+
+      <ion-item *ngIf="parent.hasTimeline" text-wrap="" (click)="openPageLayout()">
         <ion-icon [name]=pageLayout.icon item-left=""></ion-icon>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
