@@ -32,7 +32,7 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, TokenUrlConverter} from "../../services/link-rewriter.service";
+import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
 import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
 

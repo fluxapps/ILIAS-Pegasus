@@ -30,7 +30,7 @@ import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeExcept
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, TokenUrlConverter} from "../../services/link-rewriter.service";
+import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
 
 
 @Component({

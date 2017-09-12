@@ -16,7 +16,12 @@ export interface UrlConverter {
   convert(link: ILIASLink): Promise<string>
 }
 
-
+/**
+ * {@link TokenUrlConverter} converts u url to an url
+ * that can be used for sign in and redirect in ILIAS.
+ *
+ * A token will be get over the {@link ILIASRestProvider}.
+ */
 @Injectable()
 export class TokenUrlConverter implements UrlConverter{
 
@@ -35,27 +40,6 @@ export class TokenUrlConverter implements UrlConverter{
    */
   convert(link: ILIASLink): Promise<string> {
 
-    let userid = 0;
-
-    return User.currentUser()
-      .then(user => {
-        userid = user.iliasUserId;
-        return this.restProvider.getAuthToken(user);
-      })
-      .then(tokenObject => {
-
-        const view = link.view.toString().toLowerCase();
-        const url = `${link.host}/goto.php?target=ilias_app_auth|${userid}|${link.refId}|${view}|${tokenObject.token}`;
-
-        return Promise.resolve(url);
-      })
-      .catch(error => {
-        return Promise.reject(error);
-      });
-  }
-
-  public rewrite(link: string): Promise<string> {
-
     let userId = 0;
 
     return User.currentUser()
@@ -65,14 +49,8 @@ export class TokenUrlConverter implements UrlConverter{
       })
       .then(tokenObject => {
 
-        const pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*_(\\d+)");
-        const matches: string[] = pattern.exec(link);
-
-        // TODO: Check for matches
-        const host: string = matches[1];
-        const refId: string = matches[2];
-
-        const url: string = `${host}/goto.php?target=ilias_app_auth|${userId}|${refId}|${tokenObject.token}`;
+        const view = link.view.toString().toLowerCase();
+        const url = `${link.host}/goto.php?target=ilias_app_auth|${userId}|${link.refId}|${view}|${tokenObject.token}`;
 
         return Promise.resolve(url);
       })

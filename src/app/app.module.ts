@@ -24,7 +24,7 @@ import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
-import {TokenUrlConverter} from "../services/link-rewriter.service";
+import {TokenUrlConverter} from "../services/url-converter.service";
 
 
 export function createTranslateLoader(http: Http) {

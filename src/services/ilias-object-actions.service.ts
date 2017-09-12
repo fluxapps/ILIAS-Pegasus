@@ -16,7 +16,7 @@ import {OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
 import {TranslateService} from "ng2-translate/ng2-translate";
 import {ModalController} from "ionic-angular/index";
 import {DataProvider} from "../providers/data-provider.provider";
-import {ILIASLink, TokenUrlConverter} from "./link-rewriter.service";
+import {ILIASLink, TokenUrlConverter} from "./url-converter.service";
 
 @Injectable()
 export class ILIASObjectActionsService {
