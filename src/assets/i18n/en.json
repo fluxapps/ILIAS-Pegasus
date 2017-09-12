@@ -30,6 +30,11 @@
     "folder" : "Additional information available for this folder.",
     "default" : "Additional information available for this object."
   },
+  "timeline": {
+    "course": "Timeline availabe for this course.",
+    "group": "Timeline available for this group.",
+    "default": "Timeline available for this object."
+  },
   "favorites": {
     "title": "Favorites"
   },

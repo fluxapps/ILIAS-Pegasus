@@ -3,7 +3,7 @@
  */
 export class TimeLine {
 
-  readonly icon: string = "";
+  readonly icon: string = "pulse";
   readonly text: string;
 
   /**
@@ -14,7 +14,7 @@ export class TimeLine {
    * @param {string} type an ILIAS object type
    */
   constructor(
-    type: string
+    type: string = ""
   ) {
 
     switch (type) {
