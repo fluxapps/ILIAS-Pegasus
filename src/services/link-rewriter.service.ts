@@ -43,7 +43,10 @@ export class TokenLinkRewriter implements UrlConverter{
         return this.restProvider.getAuthToken(user);
       })
       .then(tokenObject => {
-        const url = `${link.host}/goto.php?target=ilias_app_auth|${userid}|${link.refId}|${tokenObject.token}`;
+
+        const view = link.view.toString().toLowerCase();
+        const url = `${link.host}/goto.php?target=ilias_app_auth|${userid}|${link.refId}|${view}|${tokenObject.token}`;
+
         return Promise.resolve(url);
       })
       .catch(error => {
