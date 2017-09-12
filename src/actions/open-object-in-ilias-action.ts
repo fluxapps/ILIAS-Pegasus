@@ -1,11 +1,9 @@
-import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
 import {ILIASObjectActionResult} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
 import {ILIASLink, TokenUrlConverter} from "../services/url-converter.service";
 import {Subscription} from "rxjs/Subscription";
 import {InAppBrowser} from "ionic-native";
-import {Exception} from "../exceptions/Exception";
 
 export class OpenObjectInILIASAction extends ILIASObjectAction {
 
@@ -20,7 +18,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
       return new Promise((resolve, reject) => {
 
         // TODO: use either ILIAS link or a provided url -> WIP
-        let browser: InAppBrowser = new InAppBrowser("https://google.ch", "_blank", "location=no");
+        let browser: InAppBrowser = new InAppBrowser(this.iliasLink.originalUrl, "_blank", "location=no");
 
         let subscription: Subscription = browser.on("loadstart").subscribe(() => {
           subscription.unsubscribe();

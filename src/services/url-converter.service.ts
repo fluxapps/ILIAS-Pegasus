@@ -49,7 +49,7 @@ export class TokenUrlConverter implements UrlConverter{
       })
       .then(tokenObject => {
 
-        const view = link.view.toString().toLowerCase();
+        const view = ILIASLinkView[link.view].toLowerCase();
         const url = `${link.host}/goto.php?target=ilias_app_auth|${userId}|${link.refId}|${view}|${tokenObject.token}`;
 
         return Promise.resolve(url);
@@ -67,6 +67,7 @@ export class ILIASLink {
 
   readonly host: string;
   readonly refId: number;
+  readonly originalUrl: string;
 
   /**
    * Extracts the host and the ref id from the given {@code url}.
@@ -87,6 +88,7 @@ export class ILIASLink {
     // TODO: Check for matches
     this.host = matches[1];
     this.refId = parseInt(matches[2], 10);
+    this.originalUrl = url;
   }
 }
 
