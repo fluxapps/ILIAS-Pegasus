@@ -34,8 +34,16 @@ $colors: (
           base: transparent,
           contrast: #ffffff,
           ),
+        nobg-blue: (
+          base: transparent,
+          contrast: #12466F,
+          ),
 );
 
+// ion-navbar{
+//   background-image: linear-gradient(to top left, #4a668b, #003c66);
+//
+// }
 
 // App Theme
 // --------------------------------------------------
