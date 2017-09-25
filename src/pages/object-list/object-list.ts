@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {
     NavController, NavParams, ActionSheetController, AlertController,
-    ToastController, Events, DateTime
+    ToastController, Events
 } from 'ionic-angular';
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";
@@ -32,6 +32,11 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {ILIASLink, ILIASLinkView, TokenUrlConverter} from "../../services/url-converter.service";
+import {PageLayout} from "../../models/page-layout";
+import {Exception} from "../../exceptions/Exception";
+import {TimeLine} from "../../models/timeline";
+
 
 @Component({
     templateUrl: 'object-list.html',
@@ -53,6 +58,9 @@ export class ObjectListPage {
     public numberOfNewChildren = [];
     protected static desktopLastUpdate = null;
 
+    readonly pageLayout: PageLayout;
+    readonly timeline: TimeLine;
+
     constructor(public nav: NavController,
                 params: NavParams,
                 public actionSheet: ActionSheetController,
@@ -65,18 +73,53 @@ export class ObjectListPage {
                 public dataProvider: DataProvider,
                 public footerToolbar: FooterToolbarService,
                 public events: Events,
-                public loading: LoadingController) {
+                public loading: LoadingController,
+                private readonly urlConverter: TokenUrlConverter
+    ) {
         this.parent = params.get('parent');
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
+            this.pageLayout = new PageLayout(this.parent.type);
+            this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ''; // will be updated by the observer
+            this.pageLayout = new PageLayout();
+            this.timeline = new TimeLine();
             translate.get("object-list.title").subscribe((lng) => {
                 this.pageTitle = lng;
             });
         }
         this.initEventListeners();
+    }
+
+  /**
+   * Opens the parent object in ILIAS.
+   */
+  openPageLayout() {
+      this.checkParen();
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter);
+      this.executeAction(action);
+    }
+
+  /**
+   * Opens the timeline of the parent object in ILIAS.
+   */
+  openTimeline() {
+      this.checkParen();
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter);
+      this.executeAction(action);
+    }
+
+  /**
+   * Checks the parent on null.
+   *
+   * @throws Exception if the parent is null
+   */
+  private checkParen() {
+      if (this.parent == null) {
+        throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
+      }
     }
 
     public ionViewDidEnter() {
@@ -127,7 +170,7 @@ export class ObjectListPage {
             .then(() => {
                 let currentDate = new Date();
                 let updatedAt = new Date(this.parent.updatedAt);
-                
+
                 let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
                 Log.describe(this, "needs refrehs", needsRefresh);
                 if (needsRefresh)
@@ -361,7 +404,7 @@ export class ObjectListPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
     }
 
     /**
@@ -374,7 +417,7 @@ export class ObjectListPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

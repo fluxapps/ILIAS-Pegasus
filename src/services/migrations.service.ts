@@ -3,6 +3,7 @@ import {CreateModelsMigration} from "../migrations/1-create-models-migration";
 import {Migration} from "../migrations/migration";
 import {SQLiteDatabaseService} from "./database.service";
 import {Log} from "./log.service";
+import {AddObjectAttributesMigration} from "../migrations/2-add-object-attributes-migration";
 
 @Injectable()
 export class MigrationsService {
@@ -11,7 +12,8 @@ export class MigrationsService {
 
     constructor() {
         this.migrations = [
-            {id: 1, migration: new CreateModelsMigration()}
+            {id: 1, migration: new CreateModelsMigration()},
+            {id: 2, migration: new AddObjectAttributesMigration()}
         ];
     }
 

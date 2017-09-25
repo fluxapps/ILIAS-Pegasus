@@ -21,7 +21,19 @@
   "no_title": "No title",
   "close": "Close",
   "object-list": {
-    "title" : "My Courses And Groups"
+    "title" : "My Courses And Groups",
+    "page-layout" : "Additional information available for this course."
+  },
+  "page-layout": {
+    "group" : "Additional information available for this group.",
+    "course" : "Additional information available for this course.",
+    "folder" : "Additional information available for this folder.",
+    "default" : "Additional information available for this object."
+  },
+  "timeline": {
+    "course": "Timeline availabe for this course.",
+    "group": "Timeline available for this group.",
+    "default": "Timeline available for this object."
   },
   "favorites": {
     "title": "Favorites"

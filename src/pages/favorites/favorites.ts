@@ -12,15 +12,16 @@ import { TranslateService } from "ng2-translate/src/translate.service";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
 import {User} from "../../models/user";
 import {ILIASObjectActionSuccess} from "../../actions/object-action";
-import {AlertController} from "ionic-angular/index";
-import {ToastController} from "ionic-angular/index";
+import {AlertController} from "ionic-angular";
+import {ToastController} from "ionic-angular";
 import {Job} from "../../services/footer-toolbar.service";
 import {Log} from "../../services/log.service";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
-import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
+
 
 
 @Component({
@@ -40,7 +41,8 @@ export class FavoritesPage {
                 public translate:TranslateService,
                 public footerToolbar:FooterToolbarService,
                 public alert:AlertController,
-                public toast:ToastController) {
+                public toast:ToastController,
+                private readonly urlConverter: TokenUrlConverter) {
     }
 
     public ionViewDidLoad() {
@@ -138,7 +140,7 @@ export class FavoritesPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions:ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), object, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), object),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(object.link), this.urlConverter),
             new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), object)
         ];
         actions.forEach(action => {
@@ -173,7 +175,7 @@ export class FavoritesPage {
         if (iliasObject.type == 'file') {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
     }
 
     protected loadFavorites() {

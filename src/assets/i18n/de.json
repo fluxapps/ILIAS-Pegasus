@@ -23,6 +23,17 @@
   "object-list": {
     "title" : "Meine Kurse und Gruppen"
   },
+  "page-layout": {
+    "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
+    "course" : "Für diesen Kurs sind zusätzliche Informationen verfügbar.",
+    "folder" : "Für diesen Ordner sind zusätzliche Informationen verfügbar.",
+    "default" : "Für dieses Objekt sind zusätzliche Informationen verfügbar."
+  },
+  "timeline": {
+    "course": "Für diesen Kurs ist eine Timeline verfügbar.",
+    "group": "Für diese Gruppe ist eine Timeline verfügbar.",
+    "default": "Für dieses Objeckt ist eine Timeline verfügbar."
+  },
   "favorites": {
     "title": "Favoriten"
   },

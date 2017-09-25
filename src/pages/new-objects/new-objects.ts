@@ -24,12 +24,13 @@ import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open
 import {Log} from "../../services/log.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Job} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular/index";
+import {ModalController} from "ionic-angular";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
-import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
+
 
 @Component({
     templateUrl: 'new-objects.html',
@@ -62,7 +63,8 @@ export class NewObjectsPage {
                 public footerToolbar: FooterToolbarService,
                 public translate: TranslateService,
                 public modal: ModalController,
-                public dataProvider: DataProvider) {
+                public dataProvider: DataProvider,
+                private readonly urlConverter: TokenUrlConverter) {
         this.parent = params.get('parent');
         this.pageTitle = 'New Content';
     }
@@ -212,7 +214,7 @@ export class NewObjectsPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
     }
 
     /**
@@ -225,7 +227,7 @@ export class NewObjectsPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), iliasObject),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

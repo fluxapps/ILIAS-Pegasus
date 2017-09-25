@@ -2,8 +2,7 @@
     <ion-navbar color="primary">
         <ion-title>
           <ion-icon name="ios-book"></ion-icon>
-
-          <!-- {{ pageTitle }} -->
+          {{ pageTitle }}
         </ion-title>
         <ion-buttons end>
             <button ion-button menuToggle>
@@ -13,6 +12,18 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding class="object-list">
+
+    <ion-list class="ilias-object-list" *ngIf="parent != undefined">
+      <ion-item *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+        <ion-icon [name]=pageLayout.icon item-left=""></ion-icon>
+        <span>{{pageLayout.text | translate: []}}</span>
+      </ion-item>
+
+      <ion-item *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
+        <ion-icon [name]=timeline.icon item-left=""></ion-icon>
+        <span>{{timeline.text | translate: []}}</span>
+      </ion-item>
+    </ion-list>
 
     <ion-list text-wrap *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == false">
         <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
@@ -27,6 +38,7 @@
     </ion-grid>
 
     <ion-list class="ilias-object-list">
+
         <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
             <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
             <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
