@@ -56,7 +56,7 @@ export class AddObjectAttributesMigration
         ).then(() => {
           console.log("Alter table objects: drop column 'hasPageLayout'");
         }, (error) => {
-          console.log(`Could not alter table objects: drop column 'hasPageLayout', error=${error}`)
+          console.log(`Could not alter table objects: drop column 'hasPageLayout', error=${JSON.stringify(error)}`)
         });
 
         const alterTimeline: Promise<any> = db.query("ALTER TABLE objects " +
@@ -64,10 +64,18 @@ export class AddObjectAttributesMigration
         ).then(() => {
           console.log("Alter table objects: drop column 'hasTimeline'");
         }, (error) => {
-          console.log(`Could not alter table objects: drop column 'hasTimeline', error=${error}`)
+          console.log(`Could not alter table objects: drop column 'hasTimeline', error=${JSON.stringify(error)}`)
         });
 
-        Promise.all([alterPageLayout, alterTimeline]).then(() => {
+        const alterPermissionType: Promise<any> = db.query("ALTER TABLE objects " +
+          "DROP COLUMN permissionType"
+        ).then(() => {
+          console.log("Alter table objects: drop column 'permissionType'");
+        }, (error) => {
+          console.log(`Could not alter table objects: drop column 'permissionType', error=${JSON.stringify(error)}`)
+        });
+
+        Promise.all([alterPageLayout, alterTimeline, alterPermissionType]).then(() => {
           resovle();
         }).catch((error) => {
           reject(error);
