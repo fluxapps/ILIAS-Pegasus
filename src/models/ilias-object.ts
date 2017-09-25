@@ -97,6 +97,8 @@ export class ILIASObject extends ActiveRecord {
 
     public hasTimeline: boolean = false;
 
+    public permissionType: string = "";
+
     /**
      * Holds additional data as JSON string that must be accessed in a synchronous way, e.g. FileData
      */
@@ -138,7 +140,8 @@ export class ILIASObject extends ActiveRecord {
             'updatedAt',
             'needsDownload',
             'hasPageLayout',
-            'hasTimeline'
+            'hasTimeline',
+            'permissionType'
         ]));
     }
 
