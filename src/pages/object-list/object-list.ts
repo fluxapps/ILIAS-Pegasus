@@ -397,6 +397,11 @@ export class ObjectListPage {
      * @returns {ILIASObjectAction}
      */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
+
+        if (iliasObject.isLinked()) {
+          return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
+        }
+
         if (iliasObject.isContainer()) {
             return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
         }
@@ -425,7 +430,7 @@ export class ObjectListPage {
             actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
         }
 
-        if (iliasObject.isContainer() || iliasObject.type == 'file') {
+        if (iliasObject.isContainer() && !iliasObject.isLinked() || iliasObject.type == 'file') {
             if (!iliasObject.isOfflineAvailable) {
                 actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), iliasObject, this.dataProvider, this.sync, this.modal));
             } else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {

@@ -72,7 +72,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
     details():Promise<Array<{label:string, value:string, translate?:boolean}>> {
         // let details = [{label: 'details.last_update', value: this.iliasObject.updatedAt ? this.iliasObject.updatedAt : this.iliasObject.createdAt}];
         let details = [];
-        if (this.iliasObject.isContainer()) {
+        if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
             let detailPromises = [];
 
             // Container objects display the used disk space of file items below

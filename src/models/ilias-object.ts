@@ -207,6 +207,13 @@ export class ILIASObject extends ActiveRecord {
         return (['crs', 'grp', 'fold'].indexOf(this.type) > -1);
     }
 
+  /**
+   * @returns {boolean} true if the object has permission visible, otherwise false
+   */
+  public isLinked(): boolean {
+      return this.permissionType == "visible";
+    }
+
     /**
      * @returns {ILIASObjectPresenter}
      */
