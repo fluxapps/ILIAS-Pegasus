@@ -22,7 +22,7 @@
   "close": "Close",
   "object-list": {
     "title" : "My Courses And Groups",
-    "page-layout" : "Additional information available for this course."
+    "content" : "Content"
   },
   "page-layout": {
     "group" : "Additional information available for this group.",
