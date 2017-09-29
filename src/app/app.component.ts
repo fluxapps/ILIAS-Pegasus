@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Platform, MenuController, Nav, Events} from 'ionic-angular';
-import { StatusBar } from 'ionic-native';
+import { StatusBar } from '@ionic-native/status-bar';
 import {LoginPage} from '../pages/login/login';
 import {SettingsPage} from '../pages/settings/settings';
 import {FavoritesPage} from '../pages/favorites/favorites';
@@ -14,9 +14,9 @@ import {Settings} from "../models/settings";
 import {User} from "../models/user";
 import {Network} from "ionic-native";
 import { TranslateService } from "ng2-translate/src/translate.service";
-import {ToastController} from "ionic-angular/index";
+import {ToastController} from "ionic-angular";
 import {SynchronizationService} from "../services/synchronization.service";
-import {ModalController} from "ionic-angular/index";
+import {ModalController} from "ionic-angular";
 
 @Component({
     templateUrl: 'app.html'
@@ -46,7 +46,8 @@ export class MyApp {
                 public event:Events,
                 public toast:ToastController,
                 public sync:SynchronizationService,
-                public modal:ModalController
+                public modal:ModalController,
+                private readonly statusBar: StatusBar
                 ) {
         //we initialize the app => db migration, //get global events.
         this.initializeApp()
@@ -87,7 +88,7 @@ export class MyApp {
             Log.write(this, "Platform ready.");
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
-            StatusBar.styleLightContent();
+            this.statusBar.styleLightContent();
             this.handleGlobalEvents();
 
             return this.handleMigrations();

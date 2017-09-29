@@ -25,6 +25,9 @@ import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
 import {TokenUrlConverter} from "../services/url-converter.service";
+import {BrowserModule} from "@angular/platform-browser";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {StatusBar} from "@ionic-native/status-bar";
 
 
 export function createTranslateLoader(http: Http) {
@@ -46,6 +49,8 @@ export function createTranslateLoader(http: Http) {
     ModalPage
   ],
   imports: [
+    IonicModule.forRoot(MyApp),
+    BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
     TranslateModule.forRoot({
@@ -77,6 +82,8 @@ export function createTranslateLoader(http: Http) {
     SynchronizationService,
     DataProviderFileObjectHandler,
     TokenUrlConverter,
+    StatusBar,
+    InAppBrowser,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [
