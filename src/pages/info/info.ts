@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
-import {InAppBrowser} from "ionic-native";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 /*
   Generated class for the InfoPage page.
@@ -15,13 +15,16 @@ export class InfoPage {
 
   public tab:string = 'info';
 
-  constructor(public nav: NavController) {}
+  constructor(
+    public nav: NavController,
+    private readonly browser: InAppBrowser
+  ) {}
 
   public call(number) {
     (<any> window).location = number;
   }
 
   public browse(page) {
-    new InAppBrowser(page, '_system');
+    this.browser.create(page, "_system");
   }
 }

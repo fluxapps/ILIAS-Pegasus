@@ -2,10 +2,11 @@ import {Component} from '@angular/core';
 import {NavController, Platform} from 'ionic-angular';
 import {User} from "../../models/user";
 import {ILIASInstallation} from "../../models/ilias-installation";
-import {InAppBrowser, Toast} from "ionic-native";
+import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser";
+import {Toast} from "ionic-native";
 import {Log} from "../../services/log.service";
 import {ILIASConfig} from "../../config/ilias-config";
-import {Events} from "ionic-angular/index";
+import {Events} from "ionic-angular";
 
 @Component({
     templateUrl: 'login.html',
@@ -24,7 +25,8 @@ export class LoginPage {
                 public nav:NavController,
                 public config:ILIASConfig,
                 public toast:Toast,
-                public event:Events) {
+                public event:Events,
+                private readonly browser: InAppBrowser) {
     }
 
     public ionViewDidLoad() {
@@ -38,7 +40,10 @@ export class LoginPage {
     public login() {
         let installation = this.getSelectedInstallation();
         let url = installation.url + '/login.php?target=ilias_app_oauth2';
-        let browser = new InAppBrowser(url, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
+        let options: InAppBrowserOptions = {
+          location: "no", clearsessioncache: "yes", clearcache: "yes"
+        };
+        let browser = this.browser.create(url, '_blank', options);
         Log.describe(this, "inappBrowser", browser);
         browser.on('loadstop').subscribe(() => {
             // Fetch data from inAppBrowser
