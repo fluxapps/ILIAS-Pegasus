@@ -1,6 +1,8 @@
 {
   "name": "ILIAS-App",
   "app_id": "ch.studerraimann.ilias.offline",
-  "v2": true,
-  "typescript": true
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
 }
