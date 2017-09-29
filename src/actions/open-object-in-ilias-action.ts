@@ -3,22 +3,25 @@ import {ILIASObjectActionResult} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
 import {ILIASLink, TokenUrlConverter} from "../services/url-converter.service";
 import {Subscription} from "rxjs/Subscription";
-import {InAppBrowser} from "ionic-native";
+import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
 
 export class OpenObjectInILIASAction extends ILIASObjectAction {
 
   constructor(
       public title:string,
       public iliasLink: ILIASLink,
-      private readonly urlConverter: TokenUrlConverter
+      private readonly urlConverter: TokenUrlConverter,
+      private readonly browser: InAppBrowser
   ) { super() }
 
     public execute():Promise<ILIASObjectActionResult> {
 
       return new Promise((resolve, reject) => {
 
-        // TODO: use either ILIAS link or a provided url -> WIP
-        let browser: InAppBrowser = new InAppBrowser(this.iliasLink.originalUrl, "_blank", "location=no");
+        let options: InAppBrowserOptions = {
+          location: "no"
+        };
+        let browser: InAppBrowserObject = this.browser.create(this.iliasLink.originalUrl, "_blank", options);
 
         let subscription: Subscription = browser.on("loadstart").subscribe(() => {
           subscription.unsubscribe();

@@ -36,6 +36,7 @@ import {ILIASLink, ILIASLinkView, TokenUrlConverter} from "../../services/url-co
 import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
 import {TimeLine} from "../../models/timeline";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
@@ -74,7 +75,8 @@ export class ObjectListPage {
                 public footerToolbar: FooterToolbarService,
                 public events: Events,
                 public loading: LoadingController,
-                private readonly urlConverter: TokenUrlConverter
+                private readonly urlConverter: TokenUrlConverter,
+                private readonly browser: InAppBrowser
     ) {
         this.parent = params.get('parent');
 
@@ -98,7 +100,7 @@ export class ObjectListPage {
    */
   openPageLayout() {
       this.checkParen();
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter);
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter, this.browser);
       this.executeAction(action);
     }
 
@@ -107,7 +109,7 @@ export class ObjectListPage {
    */
   openTimeline() {
       this.checkParen();
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter);
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter, this.browser);
       this.executeAction(action);
     }
 
@@ -404,7 +406,7 @@ export class ObjectListPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser);
     }
 
     /**
@@ -417,7 +419,7 @@ export class ObjectListPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

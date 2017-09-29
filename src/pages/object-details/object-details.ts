@@ -23,6 +23,7 @@ import {ModalController} from "ionic-angular/index";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
@@ -49,6 +50,7 @@ export class ObjectDetailsPage {
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
                 private readonly urlConverter: TokenUrlConverter,
+                private readonly browser: InAppBrowser,
                 params: NavParams) {
         this.iliasObject = params.get('object');
         Log.describe(this, "Showing details of: ", this.iliasObject);
@@ -152,7 +154,7 @@ export class ObjectDetailsPage {
     }
 
     protected loadAvailableActions() {
-        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.iliasObject.link), this.urlConverter)];
+        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.iliasObject.link), this.urlConverter, this.browser)];
         if (!this.iliasObject.isFavorite) {
             this.actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), this.iliasObject));
         } else if (this.iliasObject.isFavorite) {
