@@ -3,7 +3,7 @@ import {NavController, Platform} from 'ionic-angular';
 import {User} from "../../models/user";
 import {ILIASInstallation} from "../../models/ilias-installation";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser";
-import {Toast} from "ionic-native";
+import {Toast} from "@ionic-native/toast";
 import {Log} from "../../services/log.service";
 import {ILIASConfig} from "../../config/ilias-config";
 import {Events} from "ionic-angular";
@@ -80,7 +80,7 @@ export class LoginPage {
             this.event.publish("login");
         }, () => {
             Log.write(this, "Login went wrong....");
-            Toast.showShortTop('Login failed');
+            this.toast.showShortTop('Login failed');
         });
     }
 
