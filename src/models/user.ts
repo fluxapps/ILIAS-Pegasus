@@ -134,9 +134,9 @@ export class User extends ActiveRecord {
                 resolve(user);
             }, () => {
                 let user = new User();
-                user.iliasLogin = 'DummyUser';
-                user.accessToken = 'NixkZWZhdWx0LGlsaWFzX2FwcCxhY2Nlc3MsLCwxNzA2ODU1ODY3LGRkRGM2YlFIa01vOWpONVowcW44N2RnOUwsYmFhZjk3MjcxNDMzYmM3MDA0MjQwNzRlNTlmMTQwZTlmN2U3ZGM3NDY1MjY0ZjM4ODlmZWY1YjJhZmU4ZGYxNA%3D%3D';
-                user.installationId = 2;
+                user.iliasLogin = 'root';
+                user.accessToken = 'NixkZWZhdWx0LGlsaWFzX3BlZ2FzdXMsYWNjZXNzLCwsMTcxOTM4NTU3NCxsdktPRHBKWXlBSjFueW9CY2dmbzhFS0l1LGE3ZWFlNTVhZDcyOTc1NGNlN2Y5ZDhmODYwNGE2ODU0NGNmYWM1NWNhNWQ2M2Y5N2RlOGI2MGRiYjNmNjFmYWE';
+                user.installationId = 5;
                 user.iliasUserId = 6;
                 user.refreshToken = '';
                 user.lastTokenUpdate = Date.now();

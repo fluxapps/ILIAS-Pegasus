@@ -38,7 +38,7 @@ export class ILIASRestProvider {
      let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/auth-token';
 
      return <Promise<Object>> this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-       .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+       .timeout(timeout?timeout:this.defaultTimeout)
        .map((response) => response.json())
        .toPromise()
        .then(result => {
@@ -78,7 +78,7 @@ export class ILIASRestProvider {
 
                 //fire request and resolve.
                 return <Promise<Object[]>> this.http.get(endpoint, {headers: this.getAuthHeaders(user), search: params})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+                    .timeout(timeout?timeout:this.defaultTimeout)
                     // .timeoutWith
                     .map((response) => response.json())
                     .toPromise()
@@ -127,7 +127,7 @@ export class ILIASRestProvider {
                 if (recursive) endpoint += '?recursive=1';
 
                 return <Promise<Object[]>> this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+                    .timeout(timeout?timeout:this.defaultTimeout)
                     .map((response) => response.json())
                     .toPromise()
                     .catch(error => {
@@ -156,7 +156,7 @@ export class ILIASRestProvider {
             }).then(() => {
                 let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/files/' + refId;
                 return this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+                    .timeout(timeout?timeout:this.defaultTimeout)
                     .map((response) => response.json())
                     .toPromise()
                     .catch(error => {
@@ -231,7 +231,7 @@ export class ILIASRestProvider {
         Log.describe(this, "Refreshing Token using: ", endpoint);
 
         return this.http.post(endpoint, null)
-            .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
+            .timeout(timeout?timeout:this.defaultTimeout)
             .toPromise()
             .then(response => {
                 let data = response.json();

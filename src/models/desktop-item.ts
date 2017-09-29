@@ -68,7 +68,7 @@ export class DesktopItem extends ActiveRecord {
      * The overriden method makes sure the save action is atomic. We don't want the same input item twice on the desktop.
      * @returns {Promise<DesktopItem>}
      */
-    public save():Promise<number> {
+    public save():Promise<ActiveRecord> {
         return this.connector.query('INSERT OR REPLACE INTO ' + this.connector.table + '(userId, objId) VALUES (' + this.userId + ', ' + this.objId + ')')
             .then((response:any) => Promise.resolve(<number> response.insertId))
             .then((newId) => {
