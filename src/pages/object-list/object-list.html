@@ -15,12 +15,12 @@
 
     <ion-list class="ilias-object-list" *ngIf="parent != undefined">
       <ion-item *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
-        <ion-icon [name]=pageLayout.icon item-left=""></ion-icon>
+        <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
       <ion-item *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
-        <ion-icon [name]=timeline.icon item-left=""></ion-icon>
+        <ion-icon [name]=timeline.icon item-start=""></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
     </ion-list>
@@ -40,7 +40,7 @@
     <ion-list class="ilias-object-list">
 
         <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
-            <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
+            <ion-icon [name]=object.presenter.icon() item-start></ion-icon>
             <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
             {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
             <p class="object-flags">

@@ -19,7 +19,7 @@
 
     <ion-list class="ilias-object-list">
         <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)">
-            <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
+            <ion-icon [name]=object.presenter.icon() item-start></ion-icon>
             <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
             {{ object.presenter.title() }}
             <p>
