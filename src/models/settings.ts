@@ -1,10 +1,12 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
-import {Network} from "ionic-native";
+import {Network} from "@ionic-native/network";
 import {FileData} from "./file-data";
 import {ILIASObject} from "./ilias-object";
 
 export class Settings extends ActiveRecord {
+
+    static NETWORK: Network;
 
     /**
      * Internal userId
@@ -77,7 +79,8 @@ export class Settings extends ActiveRecord {
      * @returns {boolean}
      */
     public shouldntDownloadBecauseOfWLAN():boolean {
-        return window.hasOwnProperty('cordova') && this.downloadWlan && (Network.type != "wifi" && Network.type != "ethernet");
+        return window.hasOwnProperty('cordova') && this.downloadWlan && (Settings.NETWORK.type != "wifi" && Settings.NETWORK.type != "ethernet");
+
     }
 
     public fileTooBig(fileObject:ILIASObject):boolean {

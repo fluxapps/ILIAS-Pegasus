@@ -12,11 +12,13 @@ import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {Log} from "../services/log.service";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
-import {Network} from "ionic-native";
+import {Network} from "@ionic-native/network";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {ToastController} from "ionic-angular";
 import {SynchronizationService} from "../services/synchronization.service";
 import {ModalController} from "ionic-angular";
+import {SQLiteDatabaseService} from "../services/database.service";
+import {SQLite} from "@ionic-native/sqlite";
 
 @Component({
     templateUrl: 'app.html'
@@ -38,6 +40,25 @@ export class MyApp {
      */
     protected user:User;
 
+  /**
+   *
+   * This constructor sets on classes which are not injectable yet
+   * member instances. This is a workaround for Ionic 3 update with
+   * the current app architecture. This will be changed on release 2.0.0.
+   *
+   * @param {Platform} platform
+   * @param {MenuController} menu
+   * @param {MigrationsService} migrations
+   * @param {FooterToolbarService} footerToolbar
+   * @param {TranslateService} translate
+   * @param {Events} event
+   * @param {ToastController} toast
+   * @param {SynchronizationService} sync
+   * @param {ModalController} modal
+   * @param {StatusBar} statusBar
+   * @param {Network} network
+   * @param {SQLite} sqlite
+   */
     constructor(public platform:Platform,
                 public menu:MenuController,
                 public migrations:MigrationsService,
@@ -47,8 +68,16 @@ export class MyApp {
                 public toast:ToastController,
                 public sync:SynchronizationService,
                 public modal:ModalController,
-                private readonly statusBar: StatusBar
-                ) {
+                private readonly statusBar: StatusBar,
+                private readonly network: Network,
+                sqlite: SQLite
+    ) {
+
+      // Set members on classes which are not injectable
+      Settings.NETWORK = this.network;
+      SQLiteDatabaseService.SQLITE = sqlite;
+
+
         //we initialize the app => db migration, //get global events.
         this.initializeApp()
             .then(() => this.loadCurrentUser())
@@ -142,10 +171,10 @@ export class MyApp {
         this.event.subscribe("logout", () => {
             this.loggedIn = false;
         });
-        Network.onDisconnect().subscribe(() => {
+        this.network.onDisconnect().subscribe(() => {
             this.footerToolbar.offline = true;
         });
-        Network.onConnect().subscribe(() => {
+        this.network.onConnect().subscribe(() => {
             this.footerToolbar.offline = false;
         });
     }

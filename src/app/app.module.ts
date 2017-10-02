@@ -51,7 +51,6 @@ export function createTranslateLoader(http: Http) {
   imports: [
     IonicModule.forRoot(MyApp),
     BrowserModule,
-    IonicModule.forRoot(MyApp),
     HttpModule,
     TranslateModule.forRoot({
       provide: TranslateLoader,
