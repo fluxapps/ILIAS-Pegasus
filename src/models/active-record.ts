@@ -189,28 +189,6 @@ export abstract class ActiveRecord {
 
 
     /**
-     * Implement this method in derived objects to create instances of fully loaded ActiveRecords.
-     * This method guarantees that the object's properties are available, in contrast to creating the object
-     * via constructor due to asynchronous database fetching.
-     *
-     * Examples:
-     *
-     * User.find(12).then((user) => { console.log(user.iliasLogin); }); // Outputs the ILIAS login
-     *
-     * versus:
-     *
-     * let user = new User(12);
-     * user.read();
-     * console.log(user.iliasLogin); // Outputs undefined because reading from DB is async
-     *
-     * @param id
-     */
-    static find(id:number):Promise<ActiveRecord> {
-        throw new Error("Must be implemented by subclass");
-    }
-
-
-    /**
      * Persist object in database, new objects are created while existing are updated
      * Returns a Promise resolving the saved object
      */

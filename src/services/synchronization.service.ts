@@ -53,7 +53,7 @@ export class SynchronizationService {
         }else if(this._isRunning) {
             let resolver;
             let rejecter;
-            let promise = new Promise((resolve, reject) => {
+            let promise: Promise<SyncResults> = new Promise((resolve, reject) => {
                 resolver = resolve;
                 rejecter = reject;
             });

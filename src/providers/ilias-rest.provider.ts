@@ -1,20 +1,23 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {User} from "../models/user";
-import {Transfer} from "ionic-native";
 import {URLSearchParams} from '@angular/http'
 import {Log} from "../services/log.service";
 import {ILIASInstallation} from "../models/ilias-installation";
 import {ILIASConfig} from "../config/ilias-config";
-import {Events} from "ionic-angular/index";
+import {FileTransfer} from "@ionic-native/file-transfer";
+import {Events} from "ionic-angular";
 import "rxjs/add/observable/defer";
 import "rxjs/add/operator/timeout";
-import {RESTAPITimeoutException} from "../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../exceptions/RESTAPIException";
 
 @Injectable()
 export class ILIASRestProvider {
-    public constructor(private http: Http, private config: ILIASConfig, protected event: Events) {
+    public constructor(
+      private http: Http,
+      private config: ILIASConfig,
+      private readonly transfer: FileTransfer,
+      protected event: Events) {
     }
 
     protected defaultTimeout = 20000;
@@ -180,7 +183,7 @@ export class ILIASRestProvider {
 
                 let endpoint = encodeURI(installation.url + this.api_url + '/v1/files/' + refId);
                 try {
-                    let transfer = new Transfer();
+                    let transfer = this.transfer.create();
 
                     if (progressListener) {
                         transfer.onProgress(progressListener);
@@ -238,7 +241,7 @@ export class ILIASRestProvider {
                 user.accessToken = data.access_token;
                 user.refreshToken = data.refresh_token;
                 user.lastTokenUpdate = Date.now();
-                return user.save();
+                return user.save() as Promise<User>;
             }).catch(error => {
                 if (error.status && error.status == 401) {
                     this.logout();
