@@ -10,14 +10,14 @@ export interface UrlConverter {
   /**
    * Converts the given {@code link}.
    *
-   * @param {ILIASLink} link the link to convert
+   * @param {ILIASLinkBuilder} linkBuilder the builder to get an {@link ILIASLink}
    * @returns {Promise<string>} the resulting url
    */
-  convert(link: ILIASLink): Promise<string>
+  convert(linkBuilder: ILIASLinkBuilder): Promise<string>
 }
 
 /**
- * {@link TokenUrlConverter} converts u url to an url
+ * {@link TokenUrlConverter} converts an link to an url
  * that can be used for sign in and redirect in ILIAS.
  *
  * A token will be get over the {@link ILIASRestProvider}.
@@ -35,10 +35,13 @@ export class TokenUrlConverter implements UrlConverter{
    *
    * @see https://github.com/studer-raimann/PegasusHelper
    *
-   * @param {ILIASLink} link the link to convert
+   * If the given {@link ILIASLinkBuilder} can not build a {@link ILIASLink},
+   * the unconverted url will be returned.
+   *
+   * @param {ILIASLinkBuilder} linkBuilder the builder to get an {@link ILIASLink}
    * @returns {Promise<string>} the resulting url
    */
-  convert(link: ILIASLink): Promise<string> {
+  convert(linkBuilder: ILIASLinkBuilder): Promise<string> {
 
     let userId = 0;
 
@@ -49,10 +52,17 @@ export class TokenUrlConverter implements UrlConverter{
       })
       .then(tokenObject => {
 
-        const view = ILIASLinkView[link.view].toLowerCase();
-        const url = `${link.host}/goto.php?target=ilias_app_auth|${userId}|${link.refId}|${view}|${tokenObject.token}`;
+        if (linkBuilder.validate()) {
 
-        return Promise.resolve(url);
+          const link = linkBuilder.build();
+
+          const view = ILIASLinkView[link.view].toLowerCase();
+          const url = `${link.host}/goto.php?target=ilias_app_auth|${userId}|${link.refId}|${view}|${tokenObject.token}`;
+
+          return Promise.resolve(url);
+        }
+
+        return Promise.resolve(linkBuilder.url);
       })
       .catch(error => {
         return Promise.reject(error);
@@ -61,35 +71,66 @@ export class TokenUrlConverter implements UrlConverter{
 }
 
 /**
- * Data class containing information for a link to ILIAS.
+ * Builder class for an {@link ILIASLink}.
+ *
+ * This builder can only build links, if the provided url matches the regex.
+ * The url must contain 'target' as request parameter with the ref id as value, prefixed ref id is possible
+ * @example https://ilias.de/goto.php?target=crs_67 or https://ilias.de/goto.php?target=67
  */
-export class ILIASLink {
+export class ILIASLinkBuilder {
 
-  readonly host: string;
-  readonly refId: number;
-  readonly originalUrl: string;
+  private readonly pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*target=[a-z_]*(\\d+)");
 
   /**
-   * Extracts the host and the ref id from the given {@code url}.
+   * Creates an builder for a link to ILIAS.
    *
-   * @param {string} url a link to ILIAS, must contain 'target'
-   *                  as request parameter with the ref id as value, prefixed ref id is possible
-   *                  e.g. https://ilias.de/goto.php?target=crs_67 or https://ilias.de/goto.php?target=67
+   * @param {string} url a link to ILIAS
    * @param {string} view the wanted view of the of the object
    */
   constructor(
-    url: string,
+    readonly url: string,
     readonly view: ILIASLinkView = ILIASLinkView.DEFAULT
-  ) {
+  ) {}
 
-    const pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*target=[a-z_]*(\\d+)");
-    const matches: string[] = pattern.exec(url);
+  /**
+   * Checks the url of this builder against the regex of this builder.
+   *
+   * @returns {boolean} true, if the url matches the regex, otherwise false
+   */
+  validate(): boolean { return this.pattern.test(this.url); }
 
-    // TODO: Check for matches
-    this.host = matches[1];
-    this.refId = parseInt(matches[2], 10);
-    this.originalUrl = url;
+  /**
+   * Builds an {@link ILIASLink} by the url and the regex of this builder.
+   * This methods calls the {@link ILIASLinkBuilder#validate} method before the build.
+   *
+   * @returns {ILIASLink} the resulting link object
+   * @throws Error if the url does not match the regex of this builder
+   */
+  build(): ILIASLink {
+
+    if (!this.validate()) {
+      throw new Error(`Can not build link: url does not match regex, url=${this.url}`)
+    }
+
+    const matches: string[] = this.pattern.exec(this.url);
+
+    return new ILIASLink(
+      matches[1],
+      parseInt(matches[2], 10),
+      this.view
+    )
   }
+}
+
+/**
+ * Data class containing information for a link to ILIAS.
+ */
+export class ILIASLink {
+  constructor(
+    readonly host: string,
+    readonly refId: number,
+    readonly view: ILIASLinkView
+  ) {}
 }
 
 /**
