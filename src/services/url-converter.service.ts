@@ -125,7 +125,7 @@ export class ILIASLinkBuilder {
 /**
  * Data class containing information for a link to ILIAS.
  */
-export class ILIASLink {
+class ILIASLink {
   constructor(
     readonly host: string,
     readonly refId: number,

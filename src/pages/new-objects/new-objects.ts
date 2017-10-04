@@ -29,7 +29,7 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, TokenUrlConverter} from "../../services/url-converter.service";
+import {ILIASLinkBuilder, TokenUrlConverter} from "../../services/url-converter.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
@@ -216,7 +216,7 @@ export class NewObjectsPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
     }
 
     /**
@@ -229,7 +229,7 @@ export class NewObjectsPage {
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         let actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));

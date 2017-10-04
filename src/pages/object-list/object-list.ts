@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {
-    NavController, NavParams, ActionSheetController, AlertController,
-    ToastController, Events
+  NavController, NavParams, ActionSheetController, AlertController,
+  ToastController, Events, ActionSheetOptions, ActionSheetButton
 } from 'ionic-angular';
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";
@@ -32,7 +32,7 @@ import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLink, ILIASLinkView, TokenUrlConverter} from "../../services/url-converter.service";
+import {ILIASLinkBuilder, ILIASLinkView, TokenUrlConverter} from "../../services/url-converter.service";
 import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
 import {TimeLine} from "../../models/timeline";
@@ -100,7 +100,7 @@ export class ObjectListPage {
    */
   openPageLayout() {
       this.checkParen();
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link), this.urlConverter, this.browser);
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.parent.link), this.urlConverter, this.browser);
       this.executeAction(action);
     }
 
@@ -109,7 +109,7 @@ export class ObjectListPage {
    */
   openTimeline() {
       this.checkParen();
-      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter, this.browser);
+      const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter, this.browser);
       this.executeAction(action);
     }
 
@@ -406,7 +406,7 @@ export class ObjectListPage {
             return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser);
+        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
     }
 
     /**
@@ -415,11 +415,10 @@ export class ObjectListPage {
      */
     public showActions(iliasObject: ILIASObject) {
         this.actionSheetActive = true;
-        let actionButtons = [];
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
-        let actions: ILIASObjectAction[] = [
+        const actions: ILIASObjectAction[] = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLink(iliasObject.link), this.urlConverter, this.browser),
+            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser)
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
@@ -437,47 +436,52 @@ export class ObjectListPage {
             actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
         }
 
-        actions.forEach(action => {
-            actionButtons.push({
-                text: action.title,
-                handler: () => {
-                    this.actionSheetActive = false;
-                    // This action displays an alert before it gets executed
-                    if (action.alert()) {
-                        let alert = this.alert.create({
-                            title: action.alert().title,
-                            subTitle: action.alert().subTitle,
-                            buttons: [
-                                {
-                                    text: this.translate.instant("cancel"),
-                                    role: 'cancel'
-                                },
-                                {
-                                    text: 'Ok',
-                                    handler: () => {
-                                        this.executeAction(action);
-                                    }
-                                }
-                            ]
-                        });
-                        alert.present();
-                    } else {
+        const buttons: Array<ActionSheetButton> = actions.map(action => {
+
+           return <ActionSheetButton>{
+            text: action.title,
+            handler: () => {
+              this.actionSheetActive = false;
+              // This action displays an alert before it gets executed
+              if (action.alert()) {
+                let alert = this.alert.create({
+                  title: action.alert().title,
+                  subTitle: action.alert().subTitle,
+                  buttons: [
+                    {
+                      text: this.translate.instant("cancel"),
+                      role: 'cancel'
+                    },
+                    {
+                      text: 'Ok',
+                      handler: () => {
                         this.executeAction(action);
+                      }
                     }
-                }
-            });
+                  ]
+                });
+                alert.present();
+              } else {
+                this.executeAction(action);
+              }
+            }
+          };
+
         });
-        actionButtons.push({
+
+        buttons.push(<ActionSheetButton>{
             text: this.translate.instant("cancel"),
             role: 'cancel',
             handler: () => {
                 this.actionSheetActive = false;
             }
         });
-        let actionSheet = this.actionSheet.create({
-            'title': iliasObject.title,
-            'buttons': actionButtons
-        });
+
+      let options: ActionSheetOptions = {
+        title: iliasObject.title,
+        buttons: buttons
+      };
+        let actionSheet = this.actionSheet.create(options);
         actionSheet.onDidDismiss(() => {
             this.actionSheetActive = false;
         });
