@@ -90,8 +90,8 @@
     </feature>
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
-    <engine name="android" spec="^6.2.3" />
-    <engine name="ios" spec="^4.4.0" />
+    <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="^4.5.1" />
     <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0">
