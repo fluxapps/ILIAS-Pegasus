@@ -97,6 +97,8 @@ export class ILIASObject extends ActiveRecord {
 
     public hasTimeline: boolean = false;
 
+    public permissionType: string = "";
+
     /**
      * Holds additional data as JSON string that must be accessed in a synchronous way, e.g. FileData
      */
@@ -138,7 +140,8 @@ export class ILIASObject extends ActiveRecord {
             'updatedAt',
             'needsDownload',
             'hasPageLayout',
-            'hasTimeline'
+            'hasTimeline',
+            'permissionType'
         ]));
     }
 
@@ -202,6 +205,13 @@ export class ILIASObject extends ActiveRecord {
      */
     public isContainer(): boolean {
         return (['crs', 'grp', 'fold'].indexOf(this.type) > -1);
+    }
+
+  /**
+   * @returns {boolean} true if the object has permission visible, otherwise false
+   */
+  public isLinked(): boolean {
+      return this.permissionType == "visible";
     }
 
     /**

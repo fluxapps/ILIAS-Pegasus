@@ -21,7 +21,8 @@
   "no_title": "Kein Titel",
   "close": "Schliessen",
   "object-list": {
-    "title" : "Meine Kurse und Gruppen"
+    "title" : "Meine Kurse und Gruppen",
+    "content" : "Inhalt"
   },
   "page-layout": {
     "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",

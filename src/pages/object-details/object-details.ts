@@ -160,7 +160,7 @@ export class ObjectDetailsPage {
         } else if (this.iliasObject.isFavorite) {
             this.actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), this.iliasObject));
         }
-        if (this.iliasObject.isContainer()) {
+        if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
             if (!this.iliasObject.isOfflineAvailable) {
                 this.actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), this.iliasObject, this.dataProvider, this.sync, this.modal));
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
