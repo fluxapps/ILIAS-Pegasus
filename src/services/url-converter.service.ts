@@ -74,12 +74,12 @@ export class TokenUrlConverter implements UrlConverter{
  * Builder class for an {@link ILIASLink}.
  *
  * This builder can only build links, if the provided url matches the regex.
- * The url must contain 'target' as request parameter with the ref id as value, prefixed ref id is possible
- * @example https://ilias.de/goto.php?target=crs_67 or https://ilias.de/goto.php?target=67
+ * The url must contain the ref id after the match [a-z_].
+ * @example https://ilias.de/goto.php?target=crs_67 or https://ilias.de/goto_ilias_crs_67
  */
 export class ILIASLinkBuilder {
 
-  private readonly pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*target=[a-z_]*(\\d+)");
+  private readonly pattern: RegExp = new RegExp("(http(?:s?):\\/\\/.*)\\/.*[a-z_](\\d+)");
 
   /**
    * Creates an builder for a link to ILIAS.
