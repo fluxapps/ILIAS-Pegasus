@@ -19,7 +19,9 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
       return new Promise((resolve, reject) => {
 
         let options: InAppBrowserOptions = {
-          location: "no"
+          location: "no",
+          clearcache: "yes",
+          clearsessioncache: "yes"
         };
         let browser: InAppBrowserObject = this.browser.create(this.linkBuilder.url, "_blank", options);
 
