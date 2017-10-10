@@ -1,21 +1,22 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {User} from "../models/user";
 import {URLSearchParams} from '@angular/http'
 import {Log} from "../services/log.service";
-import {ILIASInstallation} from "../models/ilias-installation";
-import {ILIASConfig} from "../config/ilias-config";
+import {ILIASInstallation} from "../config/ilias-config";
 import {FileTransfer} from "@ionic-native/file-transfer";
 import {Events} from "ionic-angular";
 import "rxjs/add/observable/defer";
 import "rxjs/add/operator/timeout";
 import {RESTAPIException} from "../exceptions/RESTAPIException";
+import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../services/ilias-config-factory";
 
 @Injectable()
 export class ILIASRestProvider {
     public constructor(
       private http: Http,
-      private config: ILIASConfig,
+      @Inject(ILIAS_CONFIG_FACTORY)
+      private readonly configFactory: ILIASConfigFactory,
       private readonly transfer: FileTransfer,
       protected event: Events) {
     }
@@ -206,9 +207,9 @@ export class ILIASRestProvider {
     }
 
     protected getInstallation(user: User): Promise<ILIASInstallation> {
-        return this.config.get('installations')
-            .then(installations => {
-                let installation = installations.filter((installation) => {
+        return this.configFactory.get()
+            .then(config => {
+                const installation = config.installations.filter((installation) => {
                     return installation.id == user.installationId;
                 });
                 if (installation.length) {
