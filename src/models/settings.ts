@@ -44,7 +44,7 @@ export class Settings extends ActiveRecord {
 
         if(id == 0) {
             var userLang = navigator.language.split('-')[0]; // use navigator lang if available
-            userLang = /(de|en)/gi.test(userLang) ? userLang : 'en';
+            userLang = /(de|en|it)/gi.test(userLang) ? userLang : 'en';
 
             this.language = userLang;
         }

@@ -100,4 +100,3 @@ export function createTranslateLoader(http: Http) {
   ]
 })
 export class AppModule {}
-
