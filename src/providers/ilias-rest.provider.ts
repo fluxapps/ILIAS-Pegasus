@@ -23,7 +23,7 @@ export class ILIASRestProvider {
 
     protected defaultTimeout = 20000;
     protected api_url = '/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php';
-    protected app_routes_url = '/v1/';
+    protected app_routes_url = '/v2/';
     // protected api_url = '/restplugin.php';
     // protected app_routes_url = '/';
 
