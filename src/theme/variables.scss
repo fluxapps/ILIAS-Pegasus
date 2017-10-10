@@ -38,7 +38,16 @@ $colors: (
           base: transparent,
           contrast: #12466F,
           ),
+        light-blue: (
+          base: #f4f4f4,
+          contrast: #12466F,
+          ),
 );
+
+$refresher-text-font-size: 1em;
+
+
+
 
 // ion-navbar{
 //   background-image: linear-gradient(to top left, #4a668b, #003c66);
