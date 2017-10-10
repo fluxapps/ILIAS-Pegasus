@@ -8,17 +8,14 @@
   }
 
   .scroll-content {
-    padding: 3px 0 16px 0;
+    // padding: 3px 0 16px 0;
+    padding: 0 !important;
   }
 
   .footer {
     .button-inner {
       display: block;
     }
-  }
-
-  div.input-wrapper {
-    min-height: 75px;
   }
 
   .badge-container {
@@ -32,6 +29,10 @@
     font-size: 1rem;
     padding: 2px;
   }
+
+  .list-header-item{
+    font-weight: 900;
+
+  }
+
 }
-
-

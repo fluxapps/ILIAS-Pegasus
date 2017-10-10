@@ -11,24 +11,33 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content padding class="object-list">
+<ion-content  class="object-list">
+  <ion-refresher (ionRefresh)="startSync($event)">
+    <ion-refresher-content id="refresher-content"
+        pullingIcon="arrow-down"
+        pullingText="{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}"
+        refreshingText="{{ footerToolbar.loadingText }}">
+     </ion-refresher-content>
+  </ion-refresher>
 
-  <ion-list class="ilias-object-list">
+  <ion-list  class="ilias-object-list">
 
     <div class="" *ngIf="parent != undefined">
-      <ion-item *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
         <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
-      <ion-item *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
         <ion-icon [name]=timeline.icon item-start=""></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
     </div>
-
-    <ion-list-header class="item item-ios list-header list-header-ios">
+    <ion-item-group>
+    <ion-list-header no-lines color="light-blue" class="list-header-item">
+    <!-- <ion-item-divider color="light"> -->
       {{"object-list.content" | translate: []}}
+    <!-- </ion-item-divider> -->
     </ion-list-header>
 
     <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
@@ -74,7 +83,7 @@
     <ion-item text-wrap="" *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == false">
       {{ 'no_items' | translate:[] }}
     </ion-item>
-
+  </ion-item-group>
   </ion-list>
 
   <ion-grid *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == true">
@@ -87,7 +96,7 @@
 
 </ion-content>
 
-<ion-footer>
+<!-- <ion-footer>
   <ion-toolbar>
     <ion-buttons left>
       <button ion-button>
@@ -111,4 +120,4 @@
       </button>
     </ion-buttons>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->

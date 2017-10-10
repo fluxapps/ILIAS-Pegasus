@@ -136,7 +136,8 @@ export class ObjectListPage {
             .then(user => this.sync.updateLastSync(user.id))
             .then(last => {
                 if(!last && !this.sync.isRunning)
-                    this.startSync();
+                    this.startSync(0);
+                    //TODO: Make Method typesafe
                 return Promise.resolve();
             })
             .catch(error => Log.error(this, error))
@@ -313,7 +314,7 @@ export class ObjectListPage {
     /**
      * Run a global synchronization
      */
-    public startSync() {
+    public startSync(refresher) {
         Log.write(this, "Sync start", [], []);
         this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
         this.sync.execute()
@@ -330,6 +331,7 @@ export class ObjectListPage {
                     } else {
                         // If there were no files left out and everything went okay, we just display a "okay" result!
                         this.displaySuccessToast();
+                        refresher.complete();
                     }
                     //maybe some objects came in new.
                     this.footerToolbar.removeJob(Job.Synchronize);
@@ -356,7 +358,9 @@ export class ObjectListPage {
                     Log.error(this, message);
                     this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
                 } else {
-                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"))
+                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
+                    // refresher.complete();
+
                 }
             });
     }
@@ -367,6 +371,8 @@ export class ObjectListPage {
             duration: 3000
         });
         toast.present();
+
+
     }
 
     protected displayAlert(title: string, message: string) {
