@@ -19,7 +19,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
       return new Promise((resolve, reject) => {
 
         let options: InAppBrowserOptions = {
-          location: "no",
+          location: "yes",
           clearcache: "yes",
           clearsessioncache: "yes"
         };

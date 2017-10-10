@@ -10,11 +10,13 @@ log.txt
 *.sublime-project
 *.sublime-workspace
 *.map
+*.sourcemaps
 *.keystore
 .vscode/
 npm-debug.log*
 
 .idea/
+.sourcemaps/
 .sass-cache/
 .tmp/
 .versions/

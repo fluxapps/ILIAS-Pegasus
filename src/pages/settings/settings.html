@@ -29,6 +29,7 @@
                     <ion-select [(ngModel)]="settings.language">
                         <ion-option value="en">English</ion-option>
                         <ion-option value="de">Deutsch</ion-option>
+                        <ion-option value="it">Italiano</ion-option>
                     </ion-select>
                 </ion-item>
                 <ion-item text-wrap>
@@ -104,9 +105,9 @@
 
 </ion-content>
 
-<ion-footer>
+<!-- <ion-footer>
     <ion-toolbar>
         <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
         <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
     </ion-toolbar>
-</ion-footer>
+</ion-footer> -->
