@@ -45,5 +45,4 @@ bower_components
 src/assets/config.json
 build.sh
 build2.sh
-src/config/ilias-config.ts
 bin

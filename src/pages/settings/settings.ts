@@ -1,18 +1,18 @@
-import {Component} from '@angular/core';
-import {NavController, ToastController} from 'ionic-angular';
+import {Component, Inject} from '@angular/core';
+import {NavController, ToastController, ToastOptions} from 'ionic-angular';
 import {Settings} from "../../models/settings";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Log} from "../../services/log.service";
 import {User} from "../../models/user";
 import {FileData} from "../../models/file-data";
-import {ILIASInstallation} from "../../models/ilias-installation";
+import {ILIASInstallation} from "../../config/ilias-config";
 import {AlertController} from "ionic-angular/index";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {FileService} from "../../services/file.service";
 import {DesktopItem} from "../../models/desktop-item";
 import {Job} from "../../services/footer-toolbar.service";
-import {ILIASConfig} from "../../config/ilias-config";
+import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../../services/ilias-config-factory";
 
 @Component({
     templateUrl: 'settings.html'
@@ -39,7 +39,8 @@ export class SettingsPage {
                 public toast: ToastController,
                 public footerToolbar: FooterToolbarService,
                 public translate: TranslateService,
-                public config: ILIASConfig,
+                @Inject(ILIAS_CONFIG_FACTORY)
+                private readonly configFactory: ILIASConfigFactory,
                 public alert: AlertController,
                 public dataProvider: DataProvider,
                 public fileService: FileService) {
@@ -71,8 +72,8 @@ export class SettingsPage {
         this.totalSize = 0;
         //Load installations
         Log.write(this, "loading users and diskspace");
-        return this.config.get('installations').then((installations:ILIASInstallation[]) => {
-            this.installationsWithUsers = installations;
+        return this.configFactory.get().then((config) => {
+            this.installationsWithUsers = config.installations;
             return User.findAllUsers().then(users => {
                 let diskSpacePromises = [];
                 users.forEach(user => {
@@ -130,7 +131,7 @@ export class SettingsPage {
                 Log.write(this, "Settings saved successfully.");
                 this.translate.use(this.settings.language).subscribe(() => {
                     Log.write(this, "Switching language successful.");
-                    let toast = this.toast.create({
+                    let toast = this.toast.create(<ToastOptions>{
                         message: this.translate.instant("settings.settings_saved"),
                         duration: 3000
                     });

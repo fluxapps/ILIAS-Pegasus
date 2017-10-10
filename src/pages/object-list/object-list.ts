@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
 import {
   NavController, NavParams, ActionSheetController, AlertController,
-  ToastController, Events, ActionSheetOptions, ActionSheetButton
+  ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher
 } from 'ionic-angular';
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";
 import {FileService} from "../../services/file.service";
 import {User} from "../../models/user";
-import {SynchronizationService} from "../../services/synchronization.service";
+import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
 import {LoginPage} from "../login/login";
 import {ILIASObjectAction, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
@@ -25,10 +25,9 @@ import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Log} from "../../services/log.service";
 import {Job} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular/index";
+import {ModalController} from "ionic-angular";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {LoadingController} from "ionic-angular/index";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
@@ -56,25 +55,23 @@ export class ObjectListPage {
     public pageTitle: string;
     public user: User;
     public actionSheetActive = false;
-    public numberOfNewChildren = [];
     protected static desktopLastUpdate = null;
 
     readonly pageLayout: PageLayout;
     readonly timeline: TimeLine;
 
-    constructor(public nav: NavController,
+    constructor(private readonly nav: NavController,
                 params: NavParams,
-                public actionSheet: ActionSheetController,
-                public file: FileService,
-                public sync: SynchronizationService,
-                public modal: ModalController,
-                public alert: AlertController,
-                public toast: ToastController,
-                public translate: TranslateService,
-                public dataProvider: DataProvider,
-                public footerToolbar: FooterToolbarService,
-                public events: Events,
-                public loading: LoadingController,
+                private readonly actionSheet: ActionSheetController,
+                private readonly file: FileService,
+                private readonly sync: SynchronizationService,
+                private readonly modal: ModalController,
+                private readonly alert: AlertController,
+                private readonly toast: ToastController,
+                private readonly translate: TranslateService,
+                private readonly dataProvider: DataProvider,
+                readonly footerToolbar: FooterToolbarService,
+                private readonly events: Events,
                 private readonly urlConverter: TokenUrlConverter,
                 private readonly browser: InAppBrowser
     ) {
@@ -136,8 +133,7 @@ export class ObjectListPage {
             .then(user => this.sync.updateLastSync(user.id))
             .then(last => {
                 if(!last && !this.sync.isRunning)
-                    this.startSync(0);
-                    //TODO: Make Method typesafe
+                    this.executeSync()
                 return Promise.resolve();
             })
             .catch(error => Log.error(this, error))
@@ -314,55 +310,58 @@ export class ObjectListPage {
     /**
      * Run a global synchronization
      */
-    public startSync(refresher) {
+    public async startSync(refresher: Refresher): Promise<void> {
+
+      await this.executeSync();
+      refresher.complete();
+    }
+
+    private async executeSync(): Promise<void> {
+
+      try {
+
         Log.write(this, "Sync start", [], []);
         this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-        this.sync.execute()
-            .then(result => {
-                this.calculateChildrenMarkedAsNew();
-                return Promise.resolve(result);
-            })
-            .then((result) => {
-                this.loadObjects().then(() => {
-                    // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-                    if (result.objectsLeftOut.length > 0) {
-                        let syncModal = this.modal.create(SyncFinishedModal, {syncResult: result});
-                        syncModal.present();
-                    } else {
-                        // If there were no files left out and everything went okay, we just display a "okay" result!
-                        this.displaySuccessToast();
-                        refresher.complete();
-                    }
-                    //maybe some objects came in new.
-                    this.footerToolbar.removeJob(Job.Synchronize);
-                });
-            }).catch((error) => {
-                Log.error(this, error);
-                if (error instanceof NoWLANException) {
-                    this.footerToolbar.removeJob(Job.Synchronize);
-                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
-                    return Promise.resolve();
-                }
-                return Promise.reject(error);
-            }).catch(error => {
-                if (error instanceof RESTAPIException) {
-                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-                    this.footerToolbar.removeJob(Job.Synchronize);
-                    return Promise.resolve();
-                }
-                return Promise.reject(error);
 
-            }).catch((message) => {
-                this.footerToolbar.removeJob(Job.Synchronize);
-                if (message) {
-                    Log.error(this, message);
-                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
-                } else {
-                    this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
-                    // refresher.complete();
+        const syncResult: SyncResults = await this.sync.execute();
+        this.calculateChildrenMarkedAsNew();
 
-                }
-            });
+        await this.loadObjects();
+
+        // We have some files that were marked but not downloaded. We need to explain why and open a modal.
+        if (syncResult.objectsLeftOut.length > 0) {
+          const syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
+          syncModal.present();
+        } else {
+          // If there were no files left out and everything went okay, we just display a "okay" result!
+          this.displaySuccessToast();
+        }
+        //maybe some objects came in new.
+        this.footerToolbar.removeJob(Job.Synchronize);
+
+        return Promise.resolve();
+      } catch (error) {
+
+        Log.error(this, error);
+
+        if (error instanceof NoWLANException) {
+          this.footerToolbar.removeJob(Job.Synchronize);
+          this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
+          return Promise.resolve();
+        }
+
+        if (error instanceof RESTAPIException) {
+          this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
+          this.footerToolbar.removeJob(Job.Synchronize);
+          return Promise.resolve();
+        }
+
+        this.footerToolbar.removeJob(Job.Synchronize);
+
+        this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
+
+        return Promise.reject(error);
+      }
     }
 
     protected displaySuccessToast() {

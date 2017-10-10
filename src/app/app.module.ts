@@ -1,7 +1,6 @@
 import {NgModule, ErrorHandler} from '@angular/core';
 import {IonicApp, IonicModule, IonicErrorHandler} from 'ionic-angular';
 import { MyApp } from './app.component';
-import {ILIASConfig} from "../config/ilias-config";
 import {HttpModule, Http} from '@angular/http';
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -33,6 +32,7 @@ import {Network} from "@ionic-native/network";
 import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
+import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
 
 
 export function createTranslateLoader(http: Http) {
@@ -76,7 +76,10 @@ export function createTranslateLoader(http: Http) {
     SyncFinishedModal,
   ],
   providers: [
-    ILIASConfig,
+    {
+      provide: ILIAS_CONFIG_FACTORY,
+      useClass: HttpILIASConfigFactory
+    },
     ConnectionService,
     MigrationsService,
     ILIASRestProvider,
