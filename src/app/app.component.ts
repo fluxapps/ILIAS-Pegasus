@@ -120,6 +120,8 @@ export class MyApp {
             this.statusBar.styleLightContent();
             this.handleGlobalEvents();
 
+			this.defineBackButtonAction();
+
             return this.handleMigrations();
         });
     }
@@ -223,7 +225,49 @@ export class MyApp {
     public openPage(page) {
         // close the menu when clicking a link from the menu
         this.menu.close();
-        // navigate to the new page if it is not the current page
-        this.nav.push(page);
+
+        if (page == ObjectListPage) {
+        	// ObjectListPage is set to root
+        	this.nav.setRoot(page);
+        } else {
+        	// when coming from an ObjectListPage, just push
+        	if (this.nav.last().component == ObjectListPage) {
+				this.nav.push(page);
+			} else {
+        		// else pop previous and push
+				this.nav.pop().then( () => {this.nav.push(page)})
+			}
+		}
+
     }
+
+	/**
+	 *
+	 */
+	protected defineBackButtonAction() {
+    	let backbutton_tapped = 0;
+		this.platform.registerBackButtonAction( () => {
+			if (this.menu.isOpen()) {
+				this.menu.close();
+				return;
+			}
+			if (!this.nav.canGoBack()) {
+				if (backbutton_tapped == 0) {
+					backbutton_tapped = 1;
+					let toast = this.toast.create({
+						message: this.translate.instant('message.back_to_exit'),
+						duration: 3000
+					});
+					toast.present();
+					setTimeout( () => {
+						backbutton_tapped = 0;
+					}, 3000);
+				} else {
+					this.platform.exitApp();
+				}
+			} else {
+				this.nav.pop();
+			}
+		});
+	}
 }
