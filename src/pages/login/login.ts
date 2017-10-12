@@ -40,7 +40,7 @@ export class LoginPage {
 
     public login() {
         const installation = this.getSelectedInstallation();
-        const url = `${installation.url}/login.php?target=ilias_app_oauth2&clientId=${installation.clientId}`;
+        const url = `${installation.url}/login.php?target=ilias_app_oauth2&client_id=${installation.clientId}`;
         const options: InAppBrowserOptions = {
           location: "no", clearsessioncache: "yes", clearcache: "yes"
         };
