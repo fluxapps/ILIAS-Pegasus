@@ -136,7 +136,7 @@ export class ObjectListPage {
                     this.executeSync()
                 return Promise.resolve();
             })
-            .catch(error => Log.error(this, error))
+            .catch(error => Log.error(this, error));
         Log.describe(this, "lastdate", this.sync.lastSync);
     }
 
@@ -310,10 +310,11 @@ export class ObjectListPage {
     /**
      * Run a global synchronization
      */
-    public async startSync(refresher: Refresher): Promise<void> {
-
+    async startSync(refresher: Refresher): Promise<void> {
+      refresher.enabled = false;
       await this.executeSync();
       refresher.complete();
+      refresher.enabled = true;
     }
 
     private async executeSync(): Promise<void> {
@@ -520,7 +521,7 @@ export class ObjectListPage {
     }
 
     public executeAction(action: ILIASObjectAction): void {
-        var hash = action.instanceId();
+        const hash = action.instanceId();
         this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
             this.handleActionResult(result);
