@@ -24,39 +24,28 @@ export class ILIASRestProvider {
     protected defaultTimeout = 20000;
     protected api_url = '/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php';
     protected app_routes_url = '/v2/';
-    // protected api_url = '/restplugin.php';
-    // protected app_routes_url = '/';
 
-    public getAuthToken(user: User, timeout: number = null): Promise<any> {
+    async getAuthToken(user: User, timeout: number = this.defaultTimeout): Promise<string> {
 
- let installation;
+      try {
+        const installation: ILIASInstallation = await this.getInstallation(user);
+        await this.checkAndUpdateAccessToken(user, installation, timeout);
 
- return this.getInstallation(user)
-   .then(insta => {
-     installation = insta;
-     return this.checkAndUpdateAccessToken(user, installation, timeout);
-   })
-   .then(() => {
-     Log.describe(this, "User", user);
+        const endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/auth-token';
 
-     let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/auth-token';
+        const token = await this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
+          .timeout(timeout)
+          .map(response => response.json().token)
+          .toPromise();
 
-     return <Promise<Object>> this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-       .timeout(timeout?timeout:this.defaultTimeout)
-       .map((response) => response.json())
-       .toPromise()
-       .then(result => {
-         Log.describe(this, "res", result);
-         return Promise.resolve(result);
-       })
-       .catch(error => {
-         Log.error(this, error);
-         if (error.status && error.status == 401) {
-           this.logout();
-         }
-         return Promise.reject(new RESTAPIException(error));
-       })
-   });
+        return Promise.resolve(token);
+      } catch (error) {
+        Log.error(this, error);
+        if (error.status && error.status == 401) {
+          this.logout();
+        }
+        return Promise.reject(new RESTAPIException(error));
+      }
 }
 
     /**
