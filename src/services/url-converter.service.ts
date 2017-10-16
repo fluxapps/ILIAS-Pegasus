@@ -10,10 +10,10 @@ export interface UrlConverter {
   /**
    * Converts the given {@code link}.
    *
-   * @param {ILIASLinkBuilder} linkBuilder the builder to get an {@link ILIASLink}
+   * @param {ILIASLinkBuilder} link the link object to convert the url
    * @returns {Promise<string>} the resulting url
    */
-  convert(linkBuilder: ILIASLinkBuilder): Promise<string>
+  convert(link: ILIASLink): Promise<string>
 }
 
 /**
@@ -35,38 +35,18 @@ export class TokenUrlConverter implements UrlConverter{
    *
    * @see https://github.com/studer-raimann/PegasusHelper
    *
-   * If the given {@link ILIASLinkBuilder} can not build a {@link ILIASLink},
-   * the unconverted url will be returned.
-   *
-   * @param {ILIASLinkBuilder} linkBuilder the builder to get an {@link ILIASLink}
+   * @param {ILIASLink} link the link object to convert the url
    * @returns {Promise<string>} the resulting url
    */
-  convert(linkBuilder: ILIASLinkBuilder): Promise<string> {
+  async convert(link: ILIASLink): Promise<string> {
 
-    let userId = 0;
+    const user: User = await User.currentUser();
+    const token: string = await this.restProvider.getAuthToken(user);
 
-    return User.currentUser()
-      .then(user => {
-        userId = user.iliasUserId;
-        return this.restProvider.getAuthToken(user);
-      })
-      .then(tokenObject => {
+    const view = ILIASLinkView[link.view].toLowerCase();
+    const url = `${link.host}/goto.php?target=ilias_app_auth|${user.iliasUserId}|${link.refId}|${view}|${token}`;
 
-        if (linkBuilder.validate()) {
-
-          const link = linkBuilder.build();
-
-          const view = ILIASLinkView[link.view].toLowerCase();
-          const url = `${link.host}/goto.php?target=ilias_app_auth|${userId}|${link.refId}|${view}|${tokenObject.token}`;
-
-          return Promise.resolve(url);
-        }
-
-        return Promise.resolve(linkBuilder.url);
-      })
-      .catch(error => {
-        return Promise.reject(error);
-      });
+    return Promise.resolve(url);
   }
 }
 
@@ -125,7 +105,7 @@ export class ILIASLinkBuilder {
 /**
  * Data class containing information for a link to ILIAS.
  */
-class ILIASLink {
+export class ILIASLink {
   constructor(
     readonly host: string,
     readonly refId: number,

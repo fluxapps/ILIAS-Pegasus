@@ -1,7 +1,7 @@
 import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
 import {ILIASObjectActionResult} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
-import {ILIASLinkBuilder, TokenUrlConverter} from "../services/url-converter.service";
+import {ILIASLink, ILIASLinkBuilder, TokenUrlConverter} from "../services/url-converter.service";
 import {Subscription} from "rxjs/Subscription";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
 
@@ -18,27 +18,36 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
 
       return new Promise((resolve, reject) => {
 
-        let options: InAppBrowserOptions = {
-          location: "yes",
-          clearcache: "yes",
-          clearsessioncache: "yes"
-        };
-        let browser: InAppBrowserObject = this.browser.create(this.linkBuilder.url, "_blank", options);
+        try {
 
-        let subscription: Subscription = browser.on("loadstart").subscribe(() => {
-          subscription.unsubscribe();
+          const ilasLink: ILIASLink = this.linkBuilder.build();
+          const loginPageLink: string = `${ilasLink.host}?target=ilias_app_login_page`;
 
-          this.urlConverter.convert(this.linkBuilder)
-              .then(link => {
+          const options: InAppBrowserOptions = {
+            location: "yes",
+            clearcache: "yes",
+            clearsessioncache: "yes"
+          };
+          const browser: InAppBrowserObject = this.browser.create(loginPageLink, "_blank", options);
+
+          const subscription: Subscription = browser.on("loadstart").subscribe(() => {
+            subscription.unsubscribe();
+
+            this.urlConverter.convert(ilasLink)
+              .then(url => {
                 // the promise may not be executed depending on the hosts security settings
-                browser.executeScript({code: `window.open('${link}')`});
+                browser.executeScript({code: `window.open('${url}')`});
                 resolve(new ILIASObjectActionNoMessage())
               })
               .catch(error => {
                 browser.close();
                 reject(error)
               })
-        })
+          })
+
+        } catch (error) {
+          reject(error)
+        }
       });
     }
 

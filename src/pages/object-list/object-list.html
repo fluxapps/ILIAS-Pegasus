@@ -11,7 +11,7 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content  class="object-list">
+<ion-content class="object-list">
   <ion-refresher (ionRefresh)="startSync($event)">
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
@@ -20,7 +20,13 @@
      </ion-refresher-content>
   </ion-refresher>
 
+
+
   <ion-list  class="ilias-object-list">
+
+    <ion-item *ngIf="footerToolbar.isLoading">
+      {{ footerToolbar.loadingText }}
+    </ion-item>
 
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">

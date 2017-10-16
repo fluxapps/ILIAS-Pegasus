@@ -181,5 +181,8 @@
     "xvid" : "Interaktives Video",
     "xpdl" : "Etherpad",
     "xavc" : "Adobe Connect Meeting"
+  },
+  "message": {
+    "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
   }
 }
