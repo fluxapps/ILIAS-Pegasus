@@ -123,20 +123,27 @@ export class ObjectListPage {
 
 	public ionViewDidEnter() {
 		Log.write(this, "Did enter.");
+		User.currentUser().then( (user) => {
+			this.user = user;
+
+			if (this.parent) {
+				this.loadCachedObjectData()
+					.then( () => User.currentUser())
+					.catch(error => Log.error(this, error));
+			} else {
+				this.loadCachedDesktopData()
+					.then(() => User.currentUser())
+					.catch(error => Log.error(this, error));
+			}
+		});
+
 		return this.calculateChildrenMarkedAsNew();
 	}
 	public ionViewDidLoad() {
 		Log.write(this, "Did load page object list.");
-		this.loadObjects()
-			.then(() => User.currentUser())
-			.then(user => this.sync.updateLastSync(user.id))
-			.then(last => {
-				if(!last && !this.sync.isRunning)
-				// this.executeSync()
-					return Promise.resolve();
-			})
-			.catch(error => Log.error(this, error));
-		Log.describe(this, "lastdate", this.sync.lastSync);
+
+		// Log.describe(this, "lastdate", this.sync.lastSync);
+		return Promise.resolve();
 	}
 
 	protected loadObjects() {
@@ -169,12 +176,12 @@ export class ObjectListPage {
 				let currentDate = new Date();
 				let updatedAt = new Date(this.parent.updatedAt);
 
-				let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
-				Log.describe(this, "needs refrehs", needsRefresh);
-				if (needsRefresh)
+				// let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
+				// Log.describe(this, "needs refrehs", needsRefresh);
+				// if (needsRefresh)
 					return this.loadOnlineObjectData();
-				else
-					return Promise.resolve();
+				// else
+				// 	return Promise.resolve();
 			});
 	}
 
@@ -204,7 +211,7 @@ export class ObjectListPage {
 	 */
 	protected loadOnlineObjectData(): Promise<any> {
 		this.footerToolbar.addJob(this.parent.refId, "");
-		return this.dataProvider.getObjectData(this.parent, this.user, false).then(objects => {
+		return this.dataProvider.getObjectData(this.parent, this.user, true).then(objects => {
 			this.objects = objects;
 			this.calculateChildrenMarkedAsNew();
 			this.footerToolbar.removeJob(this.parent.refId);
@@ -228,13 +235,13 @@ export class ObjectListPage {
 					let currentDate = new Date();
 					let updatedAt = ObjectListPage.desktopLastUpdate != null ? ObjectListPage.desktopLastUpdate : new Date(1);
 
-					let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
-					Log.describe(this, "needs refrehs", needsRefresh);
-					if (needsRefresh)
+					// let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
+					// Log.describe(this, "needs refrehs", needsRefresh);
+					// if (needsRefresh)
 						return this.loadOnlineDesktopData()
 							.then(() => {ObjectListPage.desktopLastUpdate = new Date()});
-					else
-						return Promise.resolve();
+					// else
+					// 	return Promise.resolve();
 				}
 			});
 	}
@@ -309,11 +316,9 @@ export class ObjectListPage {
 	/**
 	 * Run a global synchronization
 	 */
-	startSync(refresher: Refresher) {
-		this.executeSync()
-			.then( () => {
-				refresher.complete();
-			});
+	async startSync(refresher: Refresher) {
+		await this.executeSync();
+		refresher.complete();
 	}
 
 	private async executeSync(): Promise<void> {
@@ -366,7 +371,6 @@ export class ObjectListPage {
 	}
 
 	protected displaySuccessToast() {
-
 		// this.footerToolbar.updateLoading();
 
 		let toast = this.toast.create({
@@ -374,8 +378,6 @@ export class ObjectListPage {
 			duration: 3000
 		});
 		toast.present();
-
-
 	}
 
 	protected displayAlert(title: string, message: string) {

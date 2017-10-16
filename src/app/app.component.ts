@@ -83,9 +83,18 @@ export class MyApp {
             .then(() => this.loadCurrentUser())
             .then(() => {
                 (<any> navigator).splashscreen.hide();
-                return Promise.resolve();
             })
-            // .then(sync.hasUnfinishedSync)
+			.then(() => this.sync.execute())
+			.then(() => {
+				let toast = this.toast.create({
+					message: this.translate.instant("sync.success"),
+					duration: 3000
+				});
+				toast.present();
+				return Promise.resolve();
+			})
+
+			// .then(sync.hasUnfinishedSync)
             // .then(() => sync.execute())
             // .then(syncResult => {
             //     if (syncResult.objectsLeftOut.length > 0) {
@@ -168,7 +177,15 @@ export class MyApp {
         this.event.subscribe("login", () => {
             // this.loggedIn = true;
             // this.nav.setRoot(ObjectListPage);
-            this.loadCurrentUser();
+            this.loadCurrentUser()
+				.then((user) => this.sync.execute())
+				.then(() => {
+					let toast = this.toast.create({
+						message: this.translate.instant("sync.success"),
+						duration: 3000
+					});
+					toast.present();
+				});
         });
         this.event.subscribe("logout", () => {
             this.loggedIn = false;
