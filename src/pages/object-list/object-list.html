@@ -15,7 +15,8 @@
   <ion-refresher (ionRefresh)="startSync($event)">
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
-        pullingText="{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}">
+        pullingText="{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}"
+        refreshingText="{{ footerToolbar.loadingText }}">
      </ion-refresher-content>
   </ion-refresher>
 
@@ -23,9 +24,9 @@
 
   <ion-list  class="ilias-object-list">
 
-    <ion-item no-lines *ngIf="footerToolbar.isLoading">
-      {{ footerToolbar.loadingText }}
-    </ion-item>
+    <!--<ion-item no-lines *ngIf="footerToolbar.isLoading">-->
+      <!--{{ footerToolbar.loadingText }}-->
+    <!--</ion-item>-->
 
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
