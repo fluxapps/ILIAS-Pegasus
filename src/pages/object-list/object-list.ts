@@ -133,7 +133,7 @@ export class ObjectListPage {
             .then(user => this.sync.updateLastSync(user.id))
             .then(last => {
                 if(!last && !this.sync.isRunning)
-                    this.executeSync()
+                    // this.executeSync()
                 return Promise.resolve();
             })
             .catch(error => Log.error(this, error));
@@ -359,13 +359,16 @@ export class ObjectListPage {
 
         this.footerToolbar.removeJob(Job.Synchronize);
 
-        this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_incomplete"));
+        this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_already_running"));
 
         return Promise.reject(error);
       }
     }
 
     protected displaySuccessToast() {
+
+        // this.footerToolbar.updateLoading();
+
         let toast = this.toast.create({
             message: this.translate.instant("sync.success"),
             duration: 3000
@@ -579,4 +582,5 @@ export class ObjectListPage {
         });
         alert.present();
     }
+
 }

@@ -24,6 +24,17 @@
     "title" : "I miei corsi e i miei gruppi",
     "content" : "Contenuto"
   },
+  "page-layout": {
+    "group" : "Per questo gruppo sono disponibili informazioni ulteriori.",
+    "course" : "Per questo corso sono disponibili informazioni ulteriori.",
+    "folder" : "Per questo folder sono disponibili informazioni ulteriori.",
+    "default" : "Per questo oggetto sono disponibili informazioni ulteriori."
+  },
+  "timeline": {
+  "course": "Per questo corso é disponibile una Timeline.",
+  "group": "Per questo gruppo é disponibile una Timeline.",
+  "default": "Per questo oggetto é disponibile una Timeline."
+  },
   "favorites": {
     "title": "Preferiti"
   },
