@@ -345,23 +345,24 @@ export class ObjectListPage {
 
         Log.error(this, error);
 
+        this.footerToolbar.removeJob(Job.Synchronize);
+
         if (error instanceof NoWLANException) {
-          this.footerToolbar.removeJob(Job.Synchronize);
           this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
           return Promise.resolve();
         }
 
         if (error instanceof RESTAPIException) {
           this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-          this.footerToolbar.removeJob(Job.Synchronize);
           return Promise.resolve();
         }
 
-        this.footerToolbar.removeJob(Job.Synchronize);
+        if (this.sync.isRunning) {
+			this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_already_running"));
+			return Promise.resolve();
+		}
 
-        this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_already_running"));
-
-        return Promise.reject(error);
+		return Promise.reject(error);
       }
     }
 
