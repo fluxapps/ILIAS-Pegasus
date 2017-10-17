@@ -12,10 +12,12 @@
     </ion-navbar>
 </ion-header>
 <ion-content class="object-list">
-  <ion-refresher (ionRefresh)="startSync($event)">
+  <ion-refresher
+          (ionRefresh)="startSync($event)"
+            closeDuration="400">
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
-        pullingText="{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}"
+        pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
         refreshingText="{{ footerToolbar.loadingText }}">
      </ion-refresher-content>
   </ion-refresher>
@@ -23,11 +25,6 @@
 
 
   <ion-list  class="ilias-object-list">
-
-    <!--<ion-item no-lines *ngIf="footerToolbar.isLoading">-->
-      <!--{{ footerToolbar.loadingText }}-->
-    <!--</ion-item>-->
-
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
         <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
@@ -102,7 +99,7 @@
 
 </ion-content>
 
-<!-- <ion-footer>
+<ion-footer>
   <ion-toolbar>
     <ion-buttons left>
       <button ion-button>
@@ -111,19 +108,5 @@
     </ion-buttons>
     <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
     <div *ngIf="!footerToolbar.isLoading">{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}</div>
-    <ion-buttons right>
-      <button *ngIf="!footerToolbar.offline && !sync.isRunning" ion-button color="primary" (click)="startSync()">
-        <div>
-          <ion-icon medium name="sync"></ion-icon>&nbsp;
-          <span>
-                        {{ 'synchronize' | translate:{value: null} }}
-
-                    </span>
-        </div>
-      </button>
-      <button *ngIf="footerToolbar.offline" ion-button color="secondary">
-        {{ 'offline' | translate:{value: null} }}
-      </button>
-    </ion-buttons>
   </ion-toolbar>
-</ion-footer> -->
+</ion-footer>

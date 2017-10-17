@@ -20,6 +20,8 @@
   "no": "Nein",
   "no_title": "Kein Titel",
   "close": "Schliessen",
+  "today": "Heute",
+  "yesterday": "Gestern",
   "object-list": {
     "title" : "Meine Kurse & Gruppen",
     "content" : "Inhalt"
@@ -91,7 +93,6 @@
     "unmark_as_favorite": "Von Favoriten entfernen",
     "open_in_external_app": "In externem App öffnen",
     "show_details": "Zeige Details",
-    "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
     "sync_incomplete": "Es ist etwas schiefgelaufen. Die Synchronisation ist unter Umständen unvollständig",
     "offline_and_no_local_file": "Sie sind offline und keine lokale Datei ist verfügbar.",
     "download_without_wlan": "Download ohne WLAN",
@@ -123,6 +124,7 @@
     }
   },
   "sync": {
+    "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
     "last_sync": "Letzte Synchronisation",
     "fetching_metadata": "Metadaten werden aktualisiert",
     "title": "Synchronisation",
@@ -134,7 +136,8 @@
     "download": "Download",
     "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
     "some_files_were_too_big": "Einige Dateien waren zu gross und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigrösse in den Einstellungen oder laden Sie die Datei manuell herunter.",
-    "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien."
+    "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
+    "pull_to_sync": "zum Aktualisieren herunterziehen"
   },
   "login": {
     "title": "Login",

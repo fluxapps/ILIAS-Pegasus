@@ -19,6 +19,8 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {ModalController} from "ionic-angular";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {SQLite} from "@ionic-native/sqlite";
+import {Job} from "../services/footer-toolbar.service";
+
 
 @Component({
     templateUrl: 'app.html'
@@ -84,14 +86,13 @@ export class MyApp {
             .then(() => {
                 (<any> navigator).splashscreen.hide();
             })
-			.then(() => this.sync.execute())
 			.then(() => {
-				let toast = this.toast.create({
-					message: this.translate.instant("sync.success"),
-					duration: 3000
-				});
-				toast.present();
-				return Promise.resolve();
+				this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+        		this.sync.execute()
+			})
+			.then(() => {
+				this.footerToolbar.removeJob(Job.Synchronize);
+        		return Promise.resolve()
 			})
 
 			// .then(sync.hasUnfinishedSync)
@@ -178,14 +179,14 @@ export class MyApp {
             // this.loggedIn = true;
             // this.nav.setRoot(ObjectListPage);
             this.loadCurrentUser()
-				.then((user) => this.sync.execute())
+				.then((user) => {
+					this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+            		this.sync.execute()
+				})
 				.then(() => {
-					let toast = this.toast.create({
-						message: this.translate.instant("sync.success"),
-						duration: 3000
-					});
-					toast.present();
-				});
+					this.footerToolbar.removeJob(Job.Synchronize);
+					return Promise.resolve()
+				})
         });
         this.event.subscribe("logout", () => {
             this.loggedIn = false;

@@ -314,13 +314,21 @@ export class ObjectListPage {
 
 
 	/**
-	 * Run a global synchronization
+	 * called by pull-to-refresh refresher
+	 *
+	 * @param {Refresher} refresher
+	 * @returns {Promise<void>}
 	 */
 	async startSync(refresher: Refresher) {
-		await this.executeSync();
 		refresher.complete();
+		await this.executeSync();
 	}
 
+	/**
+	 * executes global sync
+	 *
+	 * @returns {Promise<void>}
+	 */
 	private async executeSync(): Promise<void> {
 
 		try {
@@ -339,7 +347,7 @@ export class ObjectListPage {
 				syncModal.present();
 			} else {
 				// If there were no files left out and everything went okay, we just display a "okay" result!
-				this.displaySuccessToast();
+				// this.displaySuccessToast(); // not needed with footer
 			}
 			//maybe some objects came in new.
 			this.footerToolbar.removeJob(Job.Synchronize);

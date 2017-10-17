@@ -4,7 +4,7 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
-import {Events} from "ionic-angular";
+import {DateTime, Events} from "ionic-angular";
 import {FooterToolbarService} from "./footer-toolbar.service";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
@@ -50,7 +50,7 @@ export class SynchronizationService {
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == null) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
-        }else if(this._isRunning) {
+        } else if(this._isRunning) {
             let resolver;
             let rejecter;
             let promise: Promise<SyncResults> = new Promise((resolve, reject) => {
@@ -127,7 +127,7 @@ export class SynchronizationService {
             this._isRunning = false;
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
-                .then(db => db.query("UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = " + user_id + " AND isRunning = 1"))
+                .then(db => db.query("UPDATE synchronization SET isRunning = 0, endDate = datetime('now') WHERE userId = " + user_id + " AND isRunning = 1"))
                 .then(() => this.updateLastSync(user_id));
     }
 
@@ -138,12 +138,28 @@ export class SynchronizationService {
                 if(result.rows.length == 0)
                     return Promise.resolve(null);
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
-                this.lastSync = new Date(result.rows.item(0).endDate);
-                this.lastSyncString = this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
+				let now = new Date();
+				this.lastSync = new Date(result.rows.item(0).endDate);
+				this.lastSync.setTime(this.lastSync.getTime() - now.getTimezoneOffset()*60*1000);
+
+				let date_string = '';
+				if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
+					if (now.getDate() == this.lastSync.getDate()) {
+						date_string = this.translate.instant('today');
+					} else if ((now.getDate() - 1) == this.lastSync.getDate()) {
+						date_string = this.translate.instant('yesterday');
+					}
+				}
+
+				date_string = date_string ? date_string : this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
+
+                this.lastSyncString = date_string +", "+("0"+this.lastSync.getHours()).substr(-2) + ":" + ("0"+this.lastSync.getMinutes()).substr(-2);
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
             });
     }
+
+
 
     /**
      * check if the user still has a running sync in the db.
