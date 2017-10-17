@@ -4,7 +4,7 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
-import {DateTime, Events} from "ionic-angular";
+import {Events} from "ionic-angular";
 import {FooterToolbarService} from "./footer-toolbar.service";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
@@ -127,7 +127,11 @@ export class SynchronizationService {
             this._isRunning = false;
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
-                .then(db => db.query("UPDATE synchronization SET isRunning = 0, endDate = datetime('now') WHERE userId = " + user_id + " AND isRunning = 1"))
+                .then(db => {
+					let now = new Date();
+					let datestring = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+" "+("0"+now.getHours()).substr(-2) + ":" + ("0"+now.getMinutes()).substr(-2)+":00";
+					db.query("UPDATE synchronization SET isRunning = 0, endDate = '"+datestring+"' WHERE userId = " + user_id + " AND isRunning = 1")
+				})
                 .then(() => this.updateLastSync(user_id));
     }
 
@@ -140,7 +144,7 @@ export class SynchronizationService {
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
 				let now = new Date();
 				this.lastSync = new Date(result.rows.item(0).endDate);
-				this.lastSync.setTime(this.lastSync.getTime() - now.getTimezoneOffset()*60*1000);
+				// this.lastSync.setTime(this.lastSync.getTime() - now.getTimezoneOffset()*60*1000);
 
 				let date_string = '';
 				if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
