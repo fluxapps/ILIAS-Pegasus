@@ -142,7 +142,7 @@ export class SettingsPage {
     }
 
     protected deleteLocalUserData(user: User): Promise<any> {
-        this.footerToolbar.addJob(Job.DeleteFilesSettings, this.translate.instant("settings.deleting_files"));
+        this.footerToolbar.addJob(Job.DeleteFilesSettings,this.translate.instant("settings.deleting_files"));
         return this.deleteFiles(user)
             .then(() => this.loadUsersAndDiskspace())
             .then(() => {
@@ -159,6 +159,14 @@ export class SettingsPage {
         let toast = this.toast.create({
             message: this.translate.instant("settings.files_deleted"),
             duration: 3000
+        });
+        toast.present();
+    }
+
+    protected showFilesDeletingToast() {
+        let toast = this.toast.create({
+            message: this.translate.instant("Deleting files"),
+            duration: 2000
         });
         toast.present();
     }
@@ -189,6 +197,7 @@ export class SettingsPage {
                 {
                     text: this.translate.instant("ok"),
                     handler: () => {
+                        this.showFilesDeletingToast();
                         this.footerToolbar.addJob(Job.DeleteFilesSettings, this.translate.instant("settings.deleting_files"));
                         this.doDeleteAllFiles().then(() => {
                             this.loadUsersAndDiskspace().then(() => {
@@ -214,4 +223,3 @@ export class SettingsPage {
         });
     }
 }
-
