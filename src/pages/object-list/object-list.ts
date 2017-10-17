@@ -123,6 +123,11 @@ export class ObjectListPage {
 
 	public ionViewDidEnter() {
 		Log.write(this, "Did enter.");
+		return this.calculateChildrenMarkedAsNew();
+	}
+
+	public ionViewDidLoad() {
+		Log.write(this, "Did load page object list.");
 		User.currentUser().then( (user) => {
 			this.user = user;
 
@@ -133,15 +138,15 @@ export class ObjectListPage {
 			} else {
 				this.loadCachedDesktopData()
 					.then(() => User.currentUser())
+					.then(() => {
+						if (this.objects.length == 0) {
+							this.sync.execute()
+								.then(() => this.loadObjects());
+						}
+					})
 					.catch(error => Log.error(this, error));
 			}
 		});
-
-		return this.calculateChildrenMarkedAsNew();
-	}
-	public ionViewDidLoad() {
-		Log.write(this, "Did load page object list.");
-
 		// Log.describe(this, "lastdate", this.sync.lastSync);
 		return Promise.resolve();
 	}

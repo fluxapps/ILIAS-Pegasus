@@ -180,12 +180,9 @@ export class MyApp {
             // this.nav.setRoot(ObjectListPage);
             this.loadCurrentUser()
 				.then((user) => {
-					this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-            		this.sync.execute()
-				})
-				.then(() => {
-					this.footerToolbar.removeJob(Job.Synchronize);
-					return Promise.resolve()
+					// setTimeout(() => {
+					// 	this.sync.execute()
+					// }, 2000);
 				})
         });
         this.event.subscribe("logout", () => {

@@ -76,6 +76,7 @@ export class SynchronizationService {
                 if(iliasObject) {
                     return this.executeContainerSync(iliasObject);
                 } else {
+                	// console.log('executeGlobalSync');
                     return this.executeGlobalSync();
                 }
             }).then((syncResult) => {
@@ -128,9 +129,10 @@ export class SynchronizationService {
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
                 .then(db => {
-					let now = new Date();
-					let datestring = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+" "+("0"+now.getHours()).substr(-2) + ":" + ("0"+now.getMinutes()).substr(-2)+":00";
-					db.query("UPDATE synchronization SET isRunning = 0, endDate = '"+datestring+"' WHERE userId = " + user_id + " AND isRunning = 1")
+					// let now = new Date();
+					// let datestring = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+" "+("0"+now.getHours()).substr(-2) + ":" + ("0"+now.getMinutes()).substr(-2)+":00";
+					// db.query("UPDATE synchronization SET isRunning = 0, endDate = '"+datestring+"' WHERE userId = " + user_id + " AND isRunning = 1")
+					db.query("UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = " + user_id + " AND isRunning = 1")
 				})
                 .then(() => this.updateLastSync(user_id));
     }
@@ -157,7 +159,8 @@ export class SynchronizationService {
 
 				date_string = date_string ? date_string : this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
 
-                this.lastSyncString = date_string +", "+("0"+this.lastSync.getHours()).substr(-2) + ":" + ("0"+this.lastSync.getMinutes()).substr(-2);
+                // this.lastSyncString = date_string +", "+("0"+this.lastSync.getHours()).substr(-2) + ":" + ("0"+this.lastSync.getMinutes()).substr(-2);
+                this.lastSyncString = date_string;
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
             });
@@ -313,7 +316,9 @@ export class SynchronizationService {
 
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
-                this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
+				// console.log('desktopObjects:');
+				// console.log(desktopObjects);
+				this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
                 let promises = Promise.resolve();
                 for (let iliasObject of desktopObjects) {
                     promises = promises.then(() => {

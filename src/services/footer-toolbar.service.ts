@@ -63,7 +63,7 @@ export class FooterToolbarService {
             return job.text;
         }
         else
-            return "synchronizing";
+            return "";
     }
 
     protected countJobs(): number {
