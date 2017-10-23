@@ -180,7 +180,10 @@
     "xtst" : "Test Repository Object",
     "xvid" : "Interactive Video",
     "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting"
+    "xavc" : "Adobe Connect Meeting",
+    "xflc" : "Flashcards",
+    "chtr" : "Chatroom",
+    "xxco" : "Remote content"
   },
   "message": {
     "back_to_exit": "Press back again to exit."

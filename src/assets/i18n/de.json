@@ -183,7 +183,11 @@
     "xtst" : "Test Magazin Objekt",
     "xvid" : "Interaktives Video",
     "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting"
+    "xavc" : "Adobe Connect Meeting",
+    "xflc" : "Lernkarten",
+    "chtr" : "Chatraum",
+    "xxco" : "Externer Inhalt"
+
   },
   "message": {
     "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
