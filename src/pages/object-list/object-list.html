@@ -14,7 +14,8 @@
 <ion-content class="object-list">
   <ion-refresher
           (ionRefresh)="startSync($event)"
-            closeDuration="400">
+            closeDuration="400"
+            pullMin="150">
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
         pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
