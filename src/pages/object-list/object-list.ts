@@ -1,14 +1,13 @@
 import {Component} from '@angular/core';
 import {
-	NavController, NavParams, ActionSheetController, AlertController,
-	ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher
+  NavController, NavParams, ActionSheetController, AlertController,
+  ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher, AlertOptions
 } from 'ionic-angular';
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";
 import {FileService} from "../../services/file.service";
 import {User} from "../../models/user";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
-import {LoginPage} from "../login/login";
 import {ILIASObjectAction, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
@@ -36,6 +35,7 @@ import {PageLayout} from "../../models/page-layout";
 import {Exception} from "../../exceptions/Exception";
 import {TimeLine} from "../../models/timeline";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {AlertButton} from "ionic-angular/components/alert/alert-options";
 
 
 @Component({
@@ -55,7 +55,6 @@ export class ObjectListPage {
 	public pageTitle: string;
 	public user: User;
 	public actionSheetActive = false;
-	protected static desktopLastUpdate = null;
 
 	readonly pageLayout: PageLayout;
 	readonly timeline: TimeLine;
@@ -128,177 +127,145 @@ export class ObjectListPage {
 
 	public ionViewDidLoad() {
 		Log.write(this, "Did load page object list.");
-		User.currentUser().then( (user) => {
-			this.user = user;
 
-			if (this.parent) {
-				this.loadCachedObjectData()
-					.then( () => User.currentUser())
-					.catch(error => Log.error(this, error));
-			} else {
-				this.loadCachedDesktopData()
-					.then(() => User.currentUser())
-					.then(() => {
-						if (this.objects.length == 0) {
-							this.sync.execute()
-								.then(() => this.loadObjects());
-						}
-					})
-					.catch(error => Log.error(this, error));
-			}
-		});
-		// Log.describe(this, "lastdate", this.sync.lastSync);
-		return Promise.resolve();
+		User.currentUser()
+      .then(user => {
+        this.user = user;
+
+        return this.loadCachedObjects();
+      })
+      .then(() => {
+
+		    if (this.objects.length == 0 && this.parent == null) {
+		      return this.executeSync();
+        }
+      });
 	}
 
-	protected loadObjects() {
-		return User.currentUser().then(user => {
-			this.user = user;
-			if (this.parent) {
-				return this.loadObjectData();
-			} else {
-				return this.loadDesktopData();
-			}
-		}, () => {
-			// We should never get to this page if no user is logged in... just in case -> redirect to LoginPage
-			Log.write(this, "landed on object-list.");
-			this.nav.setRoot(LoginPage);
-		}).catch(error => {
-			Log.error(this, error);
-			if (error instanceof RESTAPIException) {
-				//TODO: maybe some notification?
-			}
-		});
-	}
+	private async loadCachedObjects(): Promise<void> {
 
-	/**
-	 * loads the object data from the cache. iff the cache data is older than a minute then we also update the cache data with the api data.
-	 * @returns {Promise<void>}
-	 */
-	protected loadObjectData(): Promise<any> {
-		return this.loadCachedObjectData()
-			.then(() => {
-				let currentDate = new Date();
-				let updatedAt = new Date(this.parent.updatedAt);
+	  this.user = await User.currentUser();
 
-				// let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
-				// Log.describe(this, "needs refrehs", needsRefresh);
-				// if (needsRefresh)
-					return this.loadOnlineObjectData();
-				// else
-				// 	return Promise.resolve();
-			});
-	}
+    if (this.parent == null) {
+      await this.loadCachedDesktopData();
+    } else {
+      await this.loadCachedObjectData();
+    }
+
+    return Promise.resolve();
+  }
+
+
+	private async loadOnlineObjects(): Promise<void> {
+
+    this.user = await User.currentUser();
+
+    if (this.parent == null) {
+      await this.loadOnlineDesktopData();
+    } else {
+      await this.loadOnlineObjectData();
+    }
+
+    return Promise.resolve();
+  }
 
 	/**
 	 * Loads the object data from db cache.
 	 * @returns {Promise<void>}
 	 */
-	protected loadCachedObjectData(): Promise<any> {
-		this.footerToolbar.addJob(this.parent.refId, "");
-		return ILIASObject.findByParentRefId(this.parent.refId, this.user.id)
-			.then(objects => objects.sort(ILIASObject.compare))
-			.then(objects => {
-				// Update by ref id.
-				this.objects = objects;
-				this.calculateChildrenMarkedAsNew();
-				this.footerToolbar.removeJob(this.parent.refId);
-				return Promise.resolve();
-			}).catch(error => {
-				this.footerToolbar.removeJob(this.parent.refId);
-				return Promise.reject(error);
-			});
+	private async loadCachedObjectData(): Promise<void> {
+
+	  try {
+
+      this.footerToolbar.addJob(this.parent.refId, "");
+
+      this.objects = await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
+      this.objects.sort(ILIASObject.compare);
+      this.calculateChildrenMarkedAsNew();
+
+      this.footerToolbar.removeJob(this.parent.refId);
+
+      return Promise.resolve();
+
+    } catch (error) {
+	    this.footerToolbar.removeJob(this.parent.refId);
+	    return Promise.reject(error);
+    }
 	}
 
 	/**
 	 * loads the object data from the rest api and stores it into the db chache.
 	 * @returns {Promise<void>}
 	 */
-	protected loadOnlineObjectData(): Promise<any> {
-		this.footerToolbar.addJob(this.parent.refId, "");
-		return this.dataProvider.getObjectData(this.parent, this.user, true).then(objects => {
-			this.objects = objects;
-			this.calculateChildrenMarkedAsNew();
-			this.footerToolbar.removeJob(this.parent.refId);
-			this.parent.updatedAt = new Date().toISOString();
-			return Promise.resolve();
-		}).catch(error => {
-			this.footerToolbar.removeJob(this.parent.refId);
-			return Promise.reject(error);
-		});
-	}
+	private async loadOnlineObjectData(): Promise<void> {
 
-	/**
-	 * Loads desktop items from local DB and iff the sync is NOT running then update local data with remote data.
-	 */
-	protected loadDesktopData() {
-		return this.loadCachedDesktopData()
-			.then(() => {
-				if (this.sync.isRunning)
-					return Promise.resolve();
-				else {
-					let currentDate = new Date();
-					let updatedAt = ObjectListPage.desktopLastUpdate != null ? ObjectListPage.desktopLastUpdate : new Date(1);
+	  try {
 
-					// let needsRefresh = updatedAt.getTime() + (1 * 60 * 1000) < currentDate.getTime();
-					// Log.describe(this, "needs refrehs", needsRefresh);
-					// if (needsRefresh)
-						return this.loadOnlineDesktopData()
-							.then(() => {ObjectListPage.desktopLastUpdate = new Date()});
-					// else
-					// 	return Promise.resolve();
-				}
-			});
+      this.footerToolbar.addJob(this.parent.refId, "");
+
+      this.objects = await this.dataProvider.getObjectData(this.parent, this.user, true);
+      this.calculateChildrenMarkedAsNew();
+      this.footerToolbar.removeJob(this.parent.refId);
+      this.parent.updatedAt = new Date().toISOString();
+
+      return Promise.resolve();
+
+    } catch (error) {
+	    this.footerToolbar.removeJob(this.parent.refId);
+	    return Promise.reject(error);
+    }
 	}
 
 	/**
 	 * load the desktop data from the local db.
 	 * @returns {Promise<void>}
 	 */
-	protected loadCachedDesktopData(): Promise<any> {
-		this.footerToolbar.addJob(Job.DesktopAction, "");
+	private async loadCachedDesktopData(): Promise<void> {
 
-		return DesktopItem.findByUserId(this.user.id)
-			.then(objects => {
-				Log.describe(this, "Got desktop data before sorting", objects);
-				return Promise.resolve(objects.sort(ILIASObject.compare));
-			})
-			.then(desktopItems => {
-				Log.describe(this, "Desktop Data before:", desktopItems);
-				this.objects = desktopItems;
-				this.calculateChildrenMarkedAsNew();
-				this.footerToolbar.removeJob(Job.DesktopAction);
-				return Promise.resolve();
-			}).catch(error => {
-				this.footerToolbar.removeJob(Job.DesktopAction);
-				return Promise.reject(error);
-			});
+	  try {
+
+      this.footerToolbar.addJob(Job.DesktopAction, "");
+
+      this.objects = await DesktopItem.findByUserId(this.user.id);
+      this.objects.sort(ILIASObject.compare);
+      this.calculateChildrenMarkedAsNew();
+
+      this.footerToolbar.removeJob(Job.DesktopAction);
+
+      return Promise.resolve();
+
+    } catch (error) {
+	    this.footerToolbar.removeJob(Job.DesktopAction);
+	    return Promise.reject(error);
+    }
 	}
 
 	/**
 	 * load the desktop data from the rest api. and save the data into the local db.
 	 * @returns {Promise<void>}
 	 */
-	protected loadOnlineDesktopData(): Promise<any> {
-		this.footerToolbar.addJob(Job.DesktopAction, "");
+	private async loadOnlineDesktopData(): Promise<void> {
 
-		return this.dataProvider.getDesktopData(this.user)
-			.then(objects => objects.sort(ILIASObject.compare))
-			.then(desktopItems => {
-				Log.describe(this, "loading desktop data for  ", this.user);
-				Log.describe(this, "Desktop Data after online update:", desktopItems);
-				this.objects = desktopItems;
-				this.calculateChildrenMarkedAsNew();
-				this.footerToolbar.removeJob(Job.DesktopAction);
-				if(this.sync.lastSync)
-					return Promise.resolve();
-			}).catch(error => {
-				this.footerToolbar.removeJob(Job.DesktopAction);
-				return Promise.reject(error);
-			});
+	  try {
+
+      this.footerToolbar.addJob(Job.DesktopAction, "");
+
+      this.objects = await this.dataProvider.getDesktopData(this.user);
+      this.objects.sort(ILIASObject.compare);
+      this.calculateChildrenMarkedAsNew();
+
+      this.footerToolbar.removeJob(Job.DesktopAction);
+
+      return Promise.resolve();
+
+    } catch (error) {
+	    this.footerToolbar.removeJob(Job.DesktopAction);
+	    return Promise.reject(error);
+    }
 	}
 
-	protected calculateChildrenMarkedAsNew() {
+	// TODO: Refactor method to make sure it returns a Promise<void>
+	private calculateChildrenMarkedAsNew(): void {
 		// Container objects marked as offline available display the number of new children as badge
 		this.objects.forEach(iliasObject => {
 			if (iliasObject.isContainer()) {
@@ -341,10 +308,10 @@ export class ObjectListPage {
 			Log.write(this, "Sync start", [], []);
 			this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
+			await this.loadOnlineObjects();
+
 			const syncResult: SyncResults = await this.sync.execute();
 			this.calculateChildrenMarkedAsNew();
-
-			await this.loadObjects();
 
 			// We have some files that were marked but not downloaded. We need to explain why and open a modal.
 			if (syncResult.objectsLeftOut.length > 0) {
@@ -383,20 +350,18 @@ export class ObjectListPage {
 		}
 	}
 
-	protected displaySuccessToast() {
-		// this.footerToolbar.updateLoading();
-
-		let toast = this.toast.create({
-			message: this.translate.instant("sync.success"),
-			duration: 3000
-		});
-		toast.present();
-	}
-
-	protected displayAlert(title: string, message: string) {
-		let alert = this.alert.create({
+	private displayAlert(title: string, message: string) {
+		const alert = this.alert.create(<AlertOptions>{
 			title: title,
 			message: message,
+      buttons: [
+        <AlertButton>{
+			    text: "Ok",
+          handler: () => {
+			      alert.dismiss();
+          }
+        }
+      ]
 		});
 		alert.present();
 	}
@@ -405,9 +370,9 @@ export class ObjectListPage {
 	 * Execute primary action of given object
 	 * @param iliasObject
 	 */
-	public onClick(iliasObject: ILIASObject) {
+	public onClick(iliasObject: ILIASObject): void {
 		if (this.actionSheetActive) return;
-		let primaryAction = this.getPrimaryAction(iliasObject);
+		const primaryAction = this.getPrimaryAction(iliasObject);
 		this.executeAction(primaryAction);
 		// When executing the primary action, we reset the isNew state
 		if (iliasObject.isNew || iliasObject.isUpdated) {
@@ -534,7 +499,7 @@ export class ObjectListPage {
 	public initEventListeners(): void {
 		// We want to refresh after a synchronization.
 		this.events.subscribe("sync:complete", () => {
-			this.loadObjects();
+			this.loadCachedObjects();
 		});
 	}
 
@@ -586,10 +551,10 @@ export class ObjectListPage {
 	}
 
 	protected showAlert(message) {
-		let alert = this.alert.create({
+		const alert = this.alert.create(<AlertOptions>{
 			title: message,
 			buttons: [
-				{
+				<AlertButton>{
 					text: this.translate.instant("close"),
 					role: 'cancel'
 				}

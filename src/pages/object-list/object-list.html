@@ -84,13 +84,13 @@
       </button>
     </ion-item>
 
-    <ion-item text-wrap="" *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == false">
+    <ion-item text-wrap="" *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == false">
       {{ 'no_items' | translate:[] }}
     </ion-item>
   </ion-item-group>
   </ion-list>
 
-  <ion-grid *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == true">
+  <ion-grid *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == true">
     <ion-row>
       <ion-col>
         <ion-spinner class="centered"></ion-spinner>
