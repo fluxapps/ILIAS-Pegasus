@@ -4,6 +4,7 @@
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+//    "strictNullChecks": true, -> can not be used yet, too much code will be invalid
     "lib": [
       "dom",
       "es2015"
