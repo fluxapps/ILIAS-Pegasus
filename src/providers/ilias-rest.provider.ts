@@ -153,7 +153,13 @@ export class ILIASRestProvider {
 
         const endpoint: string = this.buildURL(installation.url, "oauth2/token", "v2");
 
-        const response: Response = await this.http.post(endpoint, null).timeout(this.defaultTimeout).toPromise();
+        const headers: Headers = new Headers();
+        headers.append("api_key", installation.apiKey);
+        headers.append("api_secret", installation.apiSecret);
+        headers.append("grant_type", "refresh_token");
+        headers.append("refresh_token", user.refreshToken);
+
+        const response: Response = await this.http.post(endpoint, null, {headers: headers}).timeout(this.defaultTimeout).toPromise();
 
         const data: any = response.json();
         user.accessToken = data.access_token;
