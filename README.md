@@ -1,4 +1,4 @@
-## Install IONIC2
+## Install IONIC3
 ```
 $ sudo npm install -g ionic cordova
 ```
