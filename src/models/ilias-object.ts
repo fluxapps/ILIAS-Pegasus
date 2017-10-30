@@ -93,6 +93,12 @@ export class ILIASObject extends ActiveRecord {
 
     public newSubItems: number = 0;
 
+    public hasPageLayout: boolean = false;
+
+    public hasTimeline: boolean = false;
+
+    public permissionType: string = "";
+
     /**
      * Holds additional data as JSON string that must be accessed in a synchronous way, e.g. FileData
      */
@@ -132,7 +138,10 @@ export class ILIASObject extends ActiveRecord {
             'repoPath',
             'createdAt',
             'updatedAt',
-            'needsDownload'
+            'needsDownload',
+            'hasPageLayout',
+            'hasTimeline',
+            'permissionType'
         ]));
     }
 
@@ -196,6 +205,13 @@ export class ILIASObject extends ActiveRecord {
      */
     public isContainer(): boolean {
         return (['crs', 'grp', 'fold'].indexOf(this.type) > -1);
+    }
+
+  /**
+   * @returns {boolean} true if the object has permission visible, otherwise false
+   */
+  public isLinked(): boolean {
+      return this.permissionType == "visible";
     }
 
     /**
@@ -402,7 +418,7 @@ export class ILIASObject extends ActiveRecord {
     }
 
     /**
-     * updates the needsDownload state depending on the object type recursivly. This object and every parent recursivly.
+     * updates the needsDownload state depending on the object type recursivly. This object and every parent recursively.
      * @returns {Promise<T>} returns a list of the changed objects
      */
     public updateNeedsDownload(childNeedsUpdate = null): Promise<ILIASObject[]> {
@@ -428,7 +444,7 @@ export class ILIASObject extends ActiveRecord {
 
         } else {
             this.needsDownload = false;
-            return Promise.resolve();
+            return Promise.resolve([]);
             //we do not need to escalate. we don't even save :-)
         }
     }
@@ -457,27 +473,6 @@ export class ILIASObject extends ActiveRecord {
                     return Promise.resolve([this]);
                 }
             });
-    }
-
-    /**
-     * Find ILIAS objects by Object-IDs for the given user-ID
-     * @param objIds
-     * @param userId
-     * @returns {Promise<ILIASObject[]>}
-     */
-    public static findByObjIds(objIds: Array<number>, userId: number): Promise<ILIASObject[]> {
-        if (!objIds.length) {
-            return Promise.resolve([]);
-        }
-        return SQLiteDatabaseService.instance().then(db =>
-            { db.query('SELECT * FROM objects WHERE objId IN (?) AND userId = ?', [objIds.join(','), userId]).then((response: any) => {
-                let iliasObjects = [];
-                for (let i = 0; i < response.rows.length; i++) {
-                    iliasObjects.push(ILIASObject.find(response.rows.item(0).id));
-                }
-                return Promise.all(iliasObjects);
-            });
-        });
     }
 
     static findByUserId(userId: number): Promise<ILIASObject[]> {

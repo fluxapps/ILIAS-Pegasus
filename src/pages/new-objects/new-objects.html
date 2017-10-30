@@ -2,7 +2,7 @@
     <ion-navbar color="primary">
         <ion-title>
           <ion-icon name="stopwatch"></ion-icon>
-          <!-- {{ 'new-objects.title' | translate:{value: null} }} -->
+          {{ 'new-objects.title' | translate:{value: null} }}
         </ion-title>
         <ion-buttons end>
             <button ion-button menuToggle>
@@ -36,7 +36,7 @@
                 </ion-list-header>
                 <ion-item-sliding text-wrap *ngFor="let object of objects[desktopItem.refId]">
                     <ion-item (click)="onClick(object)" *ngIf="object">
-                        <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
+                        <ion-icon [name]=object.presenter.icon() item-start></ion-icon>
                         <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
 
                         {{ object.presenter.title() }}
@@ -80,7 +80,7 @@
 </ion-content>
 
 
-<ion-footer>
+<!-- <ion-footer>
     <ion-toolbar>
         <ion-buttons left>
             <button ion-button>
@@ -94,4 +94,4 @@
             </button>
         </ion-buttons>
     </ion-toolbar>
-</ion-footer>
+</ion-footer> -->

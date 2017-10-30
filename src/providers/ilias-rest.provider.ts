@@ -1,110 +1,92 @@
-import {Injectable} from '@angular/core';
-import {Http, Headers} from "@angular/http";
+import {Inject, Injectable} from '@angular/core';
+import {Http, Headers, Response } from "@angular/http";
 import {User} from "../models/user";
-import {Transfer} from "ionic-native";
-import {URLSearchParams} from '@angular/http'
 import {Log} from "../services/log.service";
-import {ILIASInstallation} from "../models/ilias-installation";
-import {ILIASConfig} from "../config/ilias-config";
-import {Events} from "ionic-angular/index";
+import {ILIASConfig, ILIASInstallation} from "../config/ilias-config";
+import {FileTransfer} from "@ionic-native/file-transfer";
 import "rxjs/add/observable/defer";
 import "rxjs/add/operator/timeout";
-import {RESTAPITimeoutException} from "../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../exceptions/RESTAPIException";
+import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../services/ilias-config-factory";
+import {isDefined} from "ionic-angular/es2015/util/util";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {
+  AlertController,
+  AlertOptions
+} from 'ionic-angular';
+import {AlertButton} from "ionic-angular/components/alert/alert-options";
 
 @Injectable()
 export class ILIASRestProvider {
-    public constructor(private http: Http, private config: ILIASConfig, protected event: Events) {
+
+    constructor(
+      @Inject(ILIAS_CONFIG_FACTORY) private readonly configFactory: ILIASConfigFactory,
+      private readonly http: Http,
+      private readonly transfer: FileTransfer,
+      private readonly translate: TranslateService,
+      private readonly alert: AlertController
+    ) {}
+
+    private defaultTimeout = 20000;
+    private api_url = '/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php';
+    private api_version = 'v2';
+
+    async getAuthToken(user: User, timeout: number = this.defaultTimeout): Promise<string> {
+
+      const installation: ILIASInstallation = await this.getInstallation(user);
+
+      try {
+
+        const accessToken: string = await this.getAccessToken(user, installation);
+        const endpoint: string = this.buildURL(installation.url, 'ilias-app/auth-token');
+
+        const response: any = await this.httpGET(endpoint, accessToken);
+
+        return Promise.resolve(response.token);
+
+      } catch (error) {
+
+        return Promise.reject(this.handleError(error, user, installation));
+      }
     }
 
-    protected defaultTimeout = 20000;
-    protected api_url = '/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php';
-    protected app_routes_url = '/v1/';
-    // protected api_url = '/restplugin.php';
-    // protected app_routes_url = '/';
+    async getDesktopData(user: User, timeout:number = null): Promise<Object[]> {
 
-    /**
-     * Get ILIAS objects on desktop
-     * @param user
-     * @returns {Promise<Array<Object>>}
-     */
-    public getDesktopData(user: User, timeout:number = null): Promise<Object[]> {
+        const installation: ILIASInstallation = await this.getInstallation(user);
 
-        let installation;
+        try {
 
-        return this.getInstallation(user)
-            .then(insta => {
-                installation = insta;
-                return this.checkAndUpdateAccessToken(user, installation, timeout);
-            })
-            .then(() => {
-                Log.describe(this, "User", user);
+          const accessToken: string = await this.getAccessToken(user, installation);
+          const endpoint: string = this.buildURL(installation.url, 'ilias-app/desktop');
 
-                //build request
-                let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/desktop?';
-                let params: URLSearchParams = new URLSearchParams();
+          const response: any = await this.httpGET(endpoint, accessToken);
 
-                //fire request and resolve.
-                return <Promise<Object[]>> this.http.get(endpoint, {headers: this.getAuthHeaders(user), search: params})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
-                    // .timeoutWith
-                    .map((response) => response.json())
-                    .toPromise()
-                    .then(result =>  {
-                        Log.describe(this, "res", result);
-                        return Promise.resolve(result);
-                    })
-                    .catch(error => {
-                        Log.error(this, error);
-                        if (error.status && error.status == 401) {
-                            this.logout();
-                        }
-                        return Promise.reject(new RESTAPIException(error));
-                    });
-                });
+          return Promise.resolve(response);
+
+        } catch (error) {
+            this.showAlert(this.translate.instant("actions.server_not_reachable"));
+          return Promise.reject(this.handleError(error, user, installation));
+        }
     }
 
-    /**
-     * FOR TESTING ONLY!
-     * @param ms
-     * @returns {Promise<T>}
-     */
-    protected delay(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = null): Promise<Object[]> {
 
+        const installation: ILIASInstallation = await this.getInstallation(user);
 
-    /**
-     * Get ILIAS objects under the given parent ref-ID
-     * @param parentRefId
-     * @param user
-     * @param recursive
-     * @returns {Promise<Array<Object>>}
-     */
-    public getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = null): Promise<Object[]> {
+        try {
 
-        let installation;
+          const accessToken: string = await this.getAccessToken(user, installation);
+          const restPath: string = (recursive)? `ilias-app/objects/${parentRefId}?recursive=1` : `ilias-app/objects/${parentRefId}`;
+          const endpoint: string = this.buildURL(installation.url, restPath);
 
-        return this.getInstallation(user)
-            .then(insta => {
-                installation = insta;
-                return this.checkAndUpdateAccessToken(user, installation, timeout);
-            }).then(() => {
-                // do your work.
-                let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/objects/' + parentRefId;
-                if (recursive) endpoint += '?recursive=1';
+          const response: any = await this.httpGET(endpoint, accessToken);
 
-                return <Promise<Object[]>> this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
-                    .map((response) => response.json())
-                    .toPromise()
-                    .catch(error => {
-                        if (error.status && error.status == 401) {
-                            this.logout();
-                        }
-                        return Promise.reject(new RESTAPIException(error));
-                    });
-            });
+          return Promise.resolve(response);
+
+        } catch (error) {
+            this.showAlert(this.translate.instant("actions.server_not_reachable"));
+          return Promise.reject(this.handleError(error, user, installation));
+        }
     }
 
 
@@ -114,127 +96,154 @@ export class ILIASRestProvider {
      * @param user
      * @returns {Promise<Object>}
      */
-    public getFileData(refId: number, user: User, timeout: number = null): Promise<Object> {
-        let installation;
+    async getFileData(refId: number, user: User, timeout: number = null): Promise<Object> {
 
-        return this.getInstallation(user)
-            .then(insta => {
-                installation = insta;
-                return this.checkAndUpdateAccessToken(user, installation, timeout);
-            }).then(() => {
-                let endpoint = installation.url + this.api_url + this.app_routes_url + 'ilias-app/files/' + refId;
-                return this.http.get(endpoint, {headers: this.getAuthHeaders(user)})
-                    .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
-                    .map((response) => response.json())
-                    .toPromise()
-                    .catch(error => {
-                        if (error.status && error.status == 401) {
-                            this.logout();
-                        }
-                        return Promise.reject(new RESTAPIException(error));
-                    });
-            });
+      const installation: ILIASInstallation = await this.getInstallation(user);
+
+      try {
+
+        const accessToken: string = await this.getAccessToken(user, installation);
+        const endpoint: string = this.buildURL(installation.url, `ilias-app/files/${refId}`);
+
+        const response: any = await this.httpGET(endpoint, accessToken);
+
+        return Promise.resolve(response);
+
+      } catch (error) {
+          this.showAlert(this.translate.instant("actions.server_not_reachable"));
+        return Promise.reject(this.handleError(error, user, installation));
+      }
     }
 
 
-    public downloadFile(refId: number, storageLocation: string, user: User, progressListener = null, timeout = null): Promise<any> {
-        let installation: ILIASInstallation;
-        return this.getInstallation(user)
-            .then((install) => {
-                installation = install;
-                return this.checkAndUpdateAccessToken(user, installation, timeout);
-            })
-            .then(user => {
+    async downloadFile(refId: number, storageLocation: string, user: User, progressListener = null, timeout = null): Promise<any> {
 
-                let endpoint = encodeURI(installation.url + this.api_url + '/v1/files/' + refId);
-                try {
-                    let transfer = new Transfer();
+      const installation: ILIASInstallation = await this.getInstallation(user);
 
-                    if (progressListener) {
-                        transfer.onProgress(progressListener);
-                    }
+      try {
 
-                    Log.describe(this, "Downloading from: ", endpoint);
-                    Log.describe(this, "Downloading to: ", storageLocation);
+        const accessToken: string = await this.getAccessToken(user, installation);
+        const endpoint: string = this.buildURL(installation.url, `files/${refId}`, "v1");
 
-                    return transfer.download(endpoint, storageLocation, false, {headers: this.getAuthHeaders(user)});
-                } catch (e) {
-                    return Promise.reject(e);
-                }
-            }).catch(error => {
-                //if we no longer have the permission to the ressource we want to logout.
-                if (error.status && error.status == 401) {
-                    this.logout();
-                }
-                return Promise.reject(new RESTAPIException(error));
-            })
-    }
+        const transfer = this.transfer.create();
 
-    protected getInstallation(user: User): Promise<ILIASInstallation> {
-        return this.config.get('installations')
-            .then(installations => {
-                let installation = installations.filter((installation) => {
-                    return installation.id == user.installationId;
-                });
-                if (installation.length) {
-                    return Promise.resolve(installation[0]);
-                }
-                return Promise.reject("The user has no valid installation ID!");
-            });
-    }
-
-    public checkAndUpdateAccessToken(user: User, installation: ILIASInstallation, timeout = null): Promise<User> {
-        Log.describe(this, "install...", this.isStillValid(user.lastTokenUpdate, installation.accessTokenTTL));
-
-        // If the token is fresh enough, we just resolve.
-        if (this.isStillValid(user.lastTokenUpdate, installation.accessTokenTTL)) {
-            Log.describe(this, "lastTokenUpdate", user.lastTokenUpdate);
-            Log.describe(this, "accessTokenTTL", installation.accessTokenTTL);
-            return Promise.resolve(user);
+        if (progressListener != null) {
+          transfer.onProgress(progressListener);
         }
 
-        //Otherwise we update the token
-        //generates post request that looks sth like: http://localhost/ilias_50/restplugin.php/v2/oauth2/token?api_key=ilias_app&api_secret=abb1.6b92-9c&grant_type=refresh_token&refresh_token=Nix0cnVuayxpbGlhc19hcHAscmVmcmVzaCwsLDIwMzk0NjY0OTUxLE5xaGcyUWl5TzE5VlVvOEQzMlZPQzR4elFOalIySSwzMzE0NzNlODNjNWYzOTJmMTMzZjc5ZWY2Yzc1MmFjNzE2NzIzYmQ5ZDAzMzNhNDVlNjE2Zjg3MTBiMDJmMzk4
-        let endpoint = installation.url + this.api_url + '/v2/oauth2/token?api_key=' + installation.apiKey + '&api_secret=' + installation.apiSecret + '&grant_type=refresh_token&refresh_token=' + user.refreshToken;
-        Log.describe(this, "Refreshing Token using: ", endpoint);
+        Log.describe(this, "Downloading from: ", endpoint);
+        Log.describe(this, "Downloading to: ", storageLocation);
 
-        return this.http.post(endpoint, null)
-            .timeout(timeout?timeout:this.defaultTimeout, new RESTAPITimeoutException())
-            .toPromise()
-            .then(response => {
-                let data = response.json();
-                user.accessToken = data.access_token;
-                user.refreshToken = data.refresh_token;
-                user.lastTokenUpdate = Date.now();
-                return user.save();
-            }).catch(error => {
-                if (error.status && error.status == 401) {
-                    this.logout();
-                }
-                return Promise.reject(new RESTAPIException(error));
-            })
+        const headers: Headers = new Headers();
+        headers.append("Authorization", `Bearer ${accessToken}`);
+
+        return transfer.download(endpoint, storageLocation, false, {headers: headers});
+
+      } catch (error) {
+          this.showAlert(this.translate.instant("actions.server_not_reachable"));
+        return Promise.reject(this.handleError(error, user, installation));
+      }
     }
 
-    protected isStillValid(updatedAt: number, timeToLife: number): boolean {
-        return Date.now() - updatedAt < timeToLife;
+    private async getInstallation(user: User): Promise<ILIASInstallation> {
+
+      const config: ILIASConfig = await this.configFactory.get();
+
+      const installation: ILIASInstallation | undefined = config.installations
+        .find(installation => { return installation.id == user.installationId });
+
+      if (isDefined(installation)) {
+        return Promise.resolve(installation);
+      }
+
+      return Promise.reject("The user has no valid installation ID!");
     }
 
-    /**
-     * Build authentication headers containing the users accessToken
-     * @param user
-     * @param withDebugHeaders
-     * @returns Headers
-     */
-    protected getAuthHeaders(user: User, withDebugHeaders: boolean = false): Headers {
-        let authHeaders = new Headers();
-        authHeaders.append('Authorization', 'Bearer ' + user.accessToken);
-        if (withDebugHeaders) {
-            authHeaders.append('XDEBUG_SESSION', 'PHPSTORM');
-        }
-        return authHeaders;
+    private async updateAccessToken(user: User, installation: ILIASInstallation): Promise<User> {
+
+      try {
+
+        const endpoint: string = this.buildURL(installation.url, "oauth2/token", "v2");
+
+        const headers: Headers = new Headers();
+        headers.append("api_key", installation.apiKey);
+        headers.append("api_secret", installation.apiSecret);
+        headers.append("grant_type", "refresh_token");
+        headers.append("refresh_token", user.refreshToken);
+
+        const response: Response = await this.http.post(endpoint, null, {headers: headers}).timeout(this.defaultTimeout).toPromise();
+
+        const data: any = response.json();
+        user.accessToken = data.access_token;
+        user.refreshToken = data.refresh_token;
+        user.lastTokenUpdate = Date.now();
+
+        await user.save();
+
+        return Promise.resolve(user);
+
+      } catch (error) {
+        this.showAlert(this.translate.instant("actions.server_not_reachable"));
+        return Promise.reject(new RESTAPIException(error))
+      }
     }
 
-    protected logout() {
-        this.event.publish("doLogout");
+    private async httpGET(url: string, accessToken: string): Promise<any> {
+
+      try {
+
+        const headers: Headers = new Headers();
+        headers.append("Authorization", `Bearer ${accessToken}`);
+
+        const response: Response = await this.http.get(url, {headers: headers})
+          .timeout(this.defaultTimeout)
+          .toPromise();
+
+        return Promise.resolve(response.json());
+
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
+
+    private async getAccessToken(user: User, installation: ILIASInstallation): Promise<string> {
+
+      if (!isStillValid(user.lastTokenUpdate, installation.accessTokenTTL)) {
+        await this.updateAccessToken(user, installation);
+      }
+
+      return Promise.resolve(user.accessToken);
+
+      function  isStillValid(updatedAt: number, timeToLife: number): boolean {
+        return Date.now() - updatedAt < (timeToLife * 1000); // timeToLife is in seconds, so we convert them to milliseconds
+      }
+    }
+
+    private async handleError(error, user: User, installation: ILIASInstallation): Promise<RESTAPIException> {
+
+      Log.error(this, error);
+
+      if (isDefined(error.status) && error.status == 401) {
+        await this.updateAccessToken(user, installation);
+      }
+
+      return Promise.resolve(new RESTAPIException(error));
+    }
+
+    private buildURL(host: string, restPath: string, apiVersion = this.api_version): string {
+      return encodeURI(`${host}${this.api_url}/${apiVersion}/${restPath}`);
+    }
+
+    private showAlert(message) {
+  		const alert = this.alert.create(<AlertOptions>{
+  			title: message,
+  			buttons: [
+  				<AlertButton>{
+  					text: this.translate.instant("close"),
+  					role: 'cancel'
+  				}
+  			]
+  		});
+  		alert.present();
+  	}
 }

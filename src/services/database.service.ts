@@ -1,4 +1,4 @@
-import {SQLite} from 'ionic-native';
+import {SQLite, SQLiteDatabaseConfig, SQLiteObject} from '@ionic-native/sqlite';
 import {Log} from "./log.service";
 
 export interface DatabaseService {
@@ -11,22 +11,21 @@ export interface DatabaseService {
 export class SQLiteDatabaseService implements DatabaseService {
 
     public static _instance:SQLiteDatabaseService;
+    static  SQLITE: SQLite;
+
     public DB_NAME = 'ilias_app';
-    protected database:SQLite;
+    private database: SQLiteObject;
 
-    public constructor() {
-        if (SQLiteDatabaseService._instance) {
-            throw new Error("SQLiteDatabaseService must be accessed via singleton: SQLiteDatabaseService.instance()")
-        }
+  private constructor() {}
 
-    }
-
-    /**
+  /**
      * Return singleton instance of DatabaseService
+     *
      * @returns {DatabaseService}
+     * @deprecated Since version 1.1.0. Will be deleted in version 2.0.0. Use angular injection instead.
      */
     static instance():Promise<SQLiteDatabaseService> {
-        if (SQLiteDatabaseService._instance) {
+        if (SQLiteDatabaseService._instance != null) {
             return Promise.resolve(SQLiteDatabaseService._instance);
         }
 
@@ -35,26 +34,28 @@ export class SQLiteDatabaseService implements DatabaseService {
             () => Promise.resolve(SQLiteDatabaseService._instance));
     }
 
-    public openDatabase():Promise<SQLite> {
+    private openDatabase():Promise<SQLiteObject> {
         return new Promise((resolve, reject) => {
 
             if ((<any> window).cordova) {
                 Log.write(this, "using database cordova plugin.");
-                let database = new SQLite();
                 Log.write(this, "opening DB.");
 
-                database.openDatabase({
-                    name: 'ilias_app',
-                    location: 'default' // the location field is required
-                }).then( () => {
+                let config: SQLiteDatabaseConfig = {
+                  name: this.DB_NAME,
+                  location: "default"
+                };
+
+                SQLiteDatabaseService.SQLITE.create(config)
+                  .then( (db) => {
                     Log.write(this, "database opened");
-                   resolve(database);
-                }).catch((err) => {
+                   resolve(db);
+                  }).catch((err) => {
                     console.error('Unable to open database: ', err);
                     reject(err);
-                });
+                  });
             } else {
-                let database = (<any> window).openDatabase("ilias_app", '1.0', 'ilias_app', 1024 * 1024 * 100); // browser
+                let database = (<any> window).openDatabase(this.DB_NAME, '1.0', this.DB_NAME, 1024 * 1024 * 100); // browser
                 if(database) {
                     resolve(database);
                 } else {
@@ -65,7 +66,7 @@ export class SQLiteDatabaseService implements DatabaseService {
         });
     }
 
-    public initDatabase():Promise<any> {
+    private initDatabase():Promise<any> {
         Log.write(this, "Initializing database.");
         return new Promise((resolve, reject) => {
         	this.openDatabase().then(db => {
@@ -87,8 +88,7 @@ export class SQLiteDatabaseService implements DatabaseService {
      */
     query(sql:string, params = []):Promise<any> {
         if ((<any> window).cordova) {
-            let promise = this.database.executeSql(sql, params);
-            return promise;
+          return this.database.executeSql(sql, params);
         } else {
             return new Promise((resolve, reject) => {
                 this.database.transaction((tx) => {

@@ -1,7 +1,6 @@
 import {NgModule, ErrorHandler} from '@angular/core';
 import {IonicApp, IonicModule, IonicErrorHandler} from 'ionic-angular';
 import { MyApp } from './app.component';
-import {ILIASConfig} from "../config/ilias-config";
 import {HttpModule, Http} from '@angular/http';
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -24,6 +23,16 @@ import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
+import {TokenUrlConverter} from "../services/url-converter.service";
+import {BrowserModule} from "@angular/platform-browser";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {StatusBar} from "@ionic-native/status-bar";
+import {FileTransfer} from "@ionic-native/file-transfer";
+import {Network} from "@ionic-native/network";
+import {File} from "@ionic-native/file";
+import {SQLite} from "@ionic-native/sqlite";
+import {Toast} from "@ionic-native/toast";
+import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
 
 
 export function createTranslateLoader(http: Http) {
@@ -46,6 +55,7 @@ export function createTranslateLoader(http: Http) {
   ],
   imports: [
     IonicModule.forRoot(MyApp),
+    BrowserModule,
     HttpModule,
     TranslateModule.forRoot({
       provide: TranslateLoader,
@@ -66,7 +76,10 @@ export function createTranslateLoader(http: Http) {
     SyncFinishedModal,
   ],
   providers: [
-    ILIASConfig,
+    {
+      provide: ILIAS_CONFIG_FACTORY,
+      useClass: HttpILIASConfigFactory
+    },
     ConnectionService,
     MigrationsService,
     ILIASRestProvider,
@@ -75,6 +88,14 @@ export function createTranslateLoader(http: Http) {
     FileService,
     SynchronizationService,
     DataProviderFileObjectHandler,
+    TokenUrlConverter,
+    StatusBar,
+    InAppBrowser,
+    File,
+    FileTransfer,
+    Network,
+    SQLite,
+    Toast,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [
@@ -82,4 +103,3 @@ export function createTranslateLoader(http: Http) {
   ]
 })
 export class AppModule {}
-

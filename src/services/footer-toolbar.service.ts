@@ -44,7 +44,7 @@ export class FooterToolbarService {
     };
 
     protected updateLoading() {
-        var jobs = this.countJobs();
+        const jobs = this.countJobs();
         Log.write(this, "number of jobs running: ", this.countJobs());
         Log.write(this, "Currently running jobs: ", this._jobs);
         if (jobs > 0) {

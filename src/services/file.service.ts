@@ -3,7 +3,7 @@ import {Events, Platform} from "ionic-angular";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {File} from 'ionic-native';
+import {File} from '@ionic-native/file';
 import {FileData} from "../models/file-data";
 import {FooterToolbarService} from "./footer-toolbar.service";
 import {Log} from "./log.service";
@@ -12,7 +12,7 @@ import {Settings} from "../models/settings";
 import {Job} from "./footer-toolbar.service";
 import {CantOpenFileTypeException} from "../exceptions/CantOpenFileTypeException";
 import {NoWLANException} from "../exceptions/noWLANException";
-import {Network} from "ionic-native"
+import {Network} from "@ionic-native/network"
 
 export interface DownloadProgress {
     fileObject:ILIASObject;
@@ -28,7 +28,9 @@ export class FileService {
                        protected platform:Platform,
                        protected rest:ILIASRestProvider,
                        protected footerToolbar:FooterToolbarService,
-                       protected translate:TranslateService) {
+                       protected translate:TranslateService,
+                       private readonly file: File,
+                       private readonly network: Network) {
     }
 
 
@@ -128,7 +130,7 @@ export class FileService {
      * Deletes the local file on the device from the given ILIAS file object
      * @param fileObject
      */
-    public remove(fileObject:ILIASObject):Promise<any> {
+    public remove(fileObject:ILIASObject):Promise<void> {
         return User.find(fileObject.userId).then(user => {
             if (fileObject.data.hasOwnProperty('fileName') && fileObject.data.hasOwnProperty('fileVersionDateLocal')) {
                 let storageLocation = this.getStorageLocation(user, fileObject);
@@ -139,9 +141,9 @@ export class FileService {
 
                 // We delete the file and save the metadata.
                 return Promise.all([
-                    File.removeFile(storageLocation, fileObject.data.fileName),
+                    this.file.removeFile(storageLocation, fileObject.data.fileName),
                     this.resetFileVersionLocal(fileObject)
-                ]);
+                ]).then(() => { return Promise.resolve() });
 
             } else {
                 return Promise.reject(new Error('Metadata of file object is not (fully) present'));
@@ -297,7 +299,7 @@ export class FileService {
      * Set the fileVersionDateLocal to fileVersionDate from ILIAS
      * @param fileObject
      */
-    protected storeFileVersionLocal(fileObject:ILIASObject):Promise<FileData> {
+    protected storeFileVersionLocal(fileObject:ILIASObject):Promise<ILIASObject> {
         return new Promise((resolve, reject) => {
             FileData.find(fileObject.id).then(fileData => {
                 // First update the local file date.
@@ -323,7 +325,7 @@ export class FileService {
      * Reset fileVersionDateLocal
      * @param fileObject
      */
-    protected resetFileVersionLocal(fileObject:ILIASObject):Promise<FileData> {
+    protected resetFileVersionLocal(fileObject:ILIASObject):Promise<ILIASObject> {
         return new Promise((resolve, reject) => {
             FileData.find(fileObject.id).then(fileData => {
                 Log.write(this, "File meta found.")
@@ -355,6 +357,6 @@ export class FileService {
      * @returns {boolean}
      */
     public isOffline():boolean {
-        return Network.type == 'none';
+        return this.network.type == 'none';
     }
 }

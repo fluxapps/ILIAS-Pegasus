@@ -9,10 +9,14 @@
 log.txt
 *.sublime-project
 *.sublime-workspace
+*.map
+*.sourcemaps
+*.keystore
 .vscode/
 npm-debug.log*
 
 .idea/
+.sourcemaps/
 .sass-cache/
 .tmp/
 .versions/
@@ -40,5 +44,5 @@ www/*
 bower_components
 src/assets/config.json
 build.sh
-src/config/ilias-config.ts
+build2.sh
 bin

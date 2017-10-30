@@ -11,7 +11,7 @@
 //
 // App Shared Sass variables belong in app.variables.scss.
 
-@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,600');
 
 .content, .ion-header, ion-navbar {
   font-family: 'Raleway', sans-serif !important;
@@ -71,7 +71,7 @@ ion-spinner.centered {
 
 
 #menu-pony{
-  right: -18%;
+  right: -28%;
   // bottom: -10%;
   top:75%;
   width: 80%;

@@ -1,11 +1,12 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {NavController, Platform} from 'ionic-angular';
 import {User} from "../../models/user";
-import {ILIASInstallation} from "../../models/ilias-installation";
-import {InAppBrowser, Toast} from "ionic-native";
+import {ILIASInstallation} from "../../config/ilias-config";
+import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
+import {Toast} from "@ionic-native/toast";
 import {Log} from "../../services/log.service";
-import {ILIASConfig} from "../../config/ilias-config";
-import {Events} from "ionic-angular/index";
+import {Events} from "ionic-angular";
+import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../../services/ilias-config-factory";
 
 @Component({
     templateUrl: 'login.html',
@@ -13,7 +14,7 @@ import {Events} from "ionic-angular/index";
 })
 export class LoginPage {
 
-    public installations:ILIASInstallation[];
+    public readonly installations: Array<ILIASInstallation> = [];
 
     /**
      * Selected installation id
@@ -22,23 +23,28 @@ export class LoginPage {
 
     constructor(public platform:Platform,
                 public nav:NavController,
-                public config:ILIASConfig,
+
+                @Inject(ILIAS_CONFIG_FACTORY)
+                private readonly configFactory: ILIASConfigFactory,
+
                 public toast:Toast,
-                public event:Events) {
-    }
+                public event:Events,
+                private readonly browser: InAppBrowser
+    ) {
 
-    public ionViewDidLoad() {
-        Log.describe(this, "nav", this.nav);
-
-        this.config.get('installations').then((installations:ILIASInstallation[]) => {
-            this.installations = installations;
-        });
+      this.configFactory.get().then((config) => {
+        console.log(config.installations);
+        this.installations.push(...config.installations);
+      });
     }
 
     public login() {
-        let installation = this.getSelectedInstallation();
-        let url = installation.url + '/login.php?target=ilias_app_oauth2';
-        let browser = new InAppBrowser(url, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
+        const installation = this.getSelectedInstallation();
+        const url = `${installation.url}/login.php?target=ilias_app_oauth2&client_id=${installation.clientId}`;
+        const options: InAppBrowserOptions = {
+          location: "no", clearsessioncache: "yes", clearcache: "yes"
+        };
+        const browser: InAppBrowserObject = this.browser.create(url, '_blank', options);
         Log.describe(this, "inappBrowser", browser);
         browser.on('loadstop').subscribe(() => {
             // Fetch data from inAppBrowser
@@ -75,7 +81,7 @@ export class LoginPage {
             this.event.publish("login");
         }, () => {
             Log.write(this, "Login went wrong....");
-            Toast.showShortTop('Login failed');
+            this.toast.showShortTop('Login failed');
         });
     }
 

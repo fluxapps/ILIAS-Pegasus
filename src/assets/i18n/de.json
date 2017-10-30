@@ -20,8 +20,22 @@
   "no": "Nein",
   "no_title": "Kein Titel",
   "close": "Schliessen",
+  "today": "Heute",
+  "yesterday": "Gestern",
   "object-list": {
-    "title" : "Meine Kurse und Gruppen"
+    "title" : "Meine Kurse & Gruppen",
+    "content" : "Inhalt"
+  },
+  "page-layout": {
+    "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
+    "course" : "Für diesen Kurs sind zusätzliche Informationen verfügbar.",
+    "folder" : "Für diesen Ordner sind zusätzliche Informationen verfügbar.",
+    "default" : "Für dieses Objekt sind zusätzliche Informationen verfügbar."
+  },
+  "timeline": {
+    "course": "Für diesen Kurs ist eine Timeline verfügbar.",
+    "group": "Für diese Gruppe ist eine Timeline verfügbar.",
+    "default": "Für dieses Objeckt ist eine Timeline verfügbar."
   },
   "favorites": {
     "title": "Favoriten"
@@ -79,7 +93,6 @@
     "unmark_as_favorite": "Von Favoriten entfernen",
     "open_in_external_app": "In externem App öffnen",
     "show_details": "Zeige Details",
-    "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
     "sync_incomplete": "Es ist etwas schiefgelaufen. Die Synchronisation ist unter Umständen unvollständig",
     "offline_and_no_local_file": "Sie sind offline und keine lokale Datei ist verfügbar.",
     "download_without_wlan": "Download ohne WLAN",
@@ -92,7 +105,7 @@
     "remove_local_files_in_text": "Sind Sie sicher, dass Sie alle heruntergeladenen Dateien löschen wollen?",
     "download_successful": "Datei wurde heruntergeladen",
     "cant_open_file": "Es wurde keine Applikation gefunden, die diesen Dateityp öffnen kann.",
-    "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut."
+    "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut oder loggen Sie sich erneut ein."
   },
   "details" : {
     "last_update": "Letztes Update",
@@ -111,6 +124,7 @@
     }
   },
   "sync": {
+    "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
     "last_sync": "Letzte Synchronisation",
     "fetching_metadata": "Metadaten werden aktualisiert",
     "title": "Synchronisation",
@@ -122,7 +136,8 @@
     "download": "Download",
     "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
     "some_files_were_too_big": "Einige Dateien waren zu gross und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigrösse in den Einstellungen oder laden Sie die Datei manuell herunter.",
-    "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien."
+    "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
+    "pull_to_sync": "zum Aktualisieren herunterziehen"
   },
   "login": {
     "title": "Login",
@@ -168,6 +183,13 @@
     "xtst" : "Test Magazin Objekt",
     "xvid" : "Interaktives Video",
     "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting"
+    "xavc" : "Adobe Connect Meeting",
+    "xflc" : "Lernkarten",
+    "chtr" : "Chatraum",
+    "xxco" : "Externer Inhalt"
+
+  },
+  "message": {
+    "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
   }
 }

@@ -69,7 +69,7 @@ export class DataProvider {
             .then(parent => {
                 if(the_iliasObject.id == 0 && parent != null)
                     the_iliasObject.isNew = true;
-                return the_iliasObject.save();
+                return the_iliasObject.save() as Promise<ILIASObject>;
             })
             .then((iliasObject:ILIASObject) => {
                 if (iliasObject.type == 'file') {
@@ -77,7 +77,7 @@ export class DataProvider {
                         return this.onSaveFile(user, iliasObject);
                     else {
                         iliasObject.isOfflineAvailable = false;
-                        return iliasObject.save();
+                        return iliasObject.save() as Promise<ILIASObject>;
                     }
                 } else {
                     return Promise.resolve(iliasObject);

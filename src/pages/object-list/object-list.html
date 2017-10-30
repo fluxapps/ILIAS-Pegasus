@@ -2,8 +2,7 @@
     <ion-navbar color="primary">
         <ion-title>
           <ion-icon name="ios-book"></ion-icon>
-
-          <!-- {{ pageTitle }} -->
+          {{ pageTitle }}
         </ion-title>
         <ion-buttons end>
             <button ion-button menuToggle>
@@ -12,79 +11,103 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content padding class="object-list">
+<ion-content class="object-list">
+  <ion-refresher
+          (ionRefresh)="startSync($event)"
+            closeDuration="400"
+            pullMin="150">
+    <ion-refresher-content id="refresher-content"
+        pullingIcon="arrow-down"
+        pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+        refreshingText="{{ footerToolbar.loadingText }}">
+     </ion-refresher-content>
+  </ion-refresher>
 
-    <ion-list text-wrap *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == false">
-        <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
-    </ion-list>
 
-    <ion-grid *ngIf="objects && objects.length == 0 && footerToolbar.isLoading == true">
-        <ion-row>
-            <ion-col>
-                <ion-spinner class="centered"></ion-spinner>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
 
-    <ion-list class="ilias-object-list">
-        <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
-            <ion-icon [name]=object.presenter.icon() item-left></ion-icon>
-            <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
-            {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
-            <p class="object-flags">
-                <ion-badge color="light" *ngIf="object.isFavorite">
-                    <ion-icon color="primary" name="star"></ion-icon>
-                </ion-badge>
-                <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
-                    <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
-                </ion-badge>
+  <ion-list  class="ilias-object-list">
+    <div class="" *ngIf="parent != undefined">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+        <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
+        <span>{{pageLayout.text | translate: []}}</span>
+      </ion-item>
 
-                <ion-badge *ngIf="object.isNew" color="light">
-                    <ion-icon color="primary">
-                        {{'new' | translate:[] }}
-                    </ion-icon>
-                </ion-badge>
-                <ion-badge *ngIf="object.isUpdated" color="light">
-                    <ion-icon color="primary">
-                        {{'updated' | translate:[] }}
-                    </ion-icon>
-                </ion-badge>
-                <ion-badge *ngIf="object.newSubItems" color="light">
-                    <ion-icon color="primary">
-                        {{ object.newSubItems }}
-                    </ion-icon>
-                </ion-badge>
-            </p>
-            <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
-                <ion-icon name="more" color="primary"></ion-icon>
-            </button>
-        </ion-item>
-    </ion-list>
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
+        <ion-icon [name]=timeline.icon item-start=""></ion-icon>
+        <span>{{timeline.text | translate: []}}</span>
+      </ion-item>
+    </div>
+    <ion-item-group>
+    <ion-list-header no-lines color="light-blue" class="list-header-item">
+    <!-- <ion-item-divider color="light"> -->
+      {{"object-list.content" | translate: []}}
+    <!-- </ion-item-divider> -->
+    </ion-list-header>
+
+    <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
+
+      <ion-icon [name]=object.presenter.icon() item-left class="badge-container">
+
+        <ion-badge *ngIf="object.isLinked()" color="light" class="badge-link">
+          <ion-icon name="open-outline"></ion-icon>
+        </ion-badge>
+      </ion-icon>
+
+      <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
+      {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+      <p class="object-flags">
+        <ion-badge color="light" *ngIf="object.isFavorite">
+          <ion-icon color="primary" name="star"></ion-icon>
+        </ion-badge>
+        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+          <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
+        </ion-badge>
+
+        <ion-badge *ngIf="object.isNew" color="light">
+          <ion-icon color="primary">
+            {{'new' | translate:[] }}
+          </ion-icon>
+        </ion-badge>
+        <ion-badge *ngIf="object.isUpdated" color="light">
+          <ion-icon color="primary">
+            {{'updated' | translate:[] }}
+          </ion-icon>
+        </ion-badge>
+        <ion-badge *ngIf="object.newSubItems" color="light">
+          <ion-icon color="primary">
+            {{ object.newSubItems }}
+          </ion-icon>
+        </ion-badge>
+      </p>
+      <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
+        <ion-icon name="more" color="primary"></ion-icon>
+      </button>
+    </ion-item>
+
+    <ion-item text-wrap="" *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == false">
+      {{ 'no_items' | translate:[] }}
+    </ion-item>
+  </ion-item-group>
+  </ion-list>
+
+  <ion-grid *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == true">
+    <ion-row>
+      <ion-col>
+        <ion-spinner class="centered"></ion-spinner>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>
 
 <ion-footer>
-    <ion-toolbar>
-        <ion-buttons left>
-            <button ion-button>
-                <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
-            </button>
-        </ion-buttons>
-        <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
-        <div *ngIf="!footerToolbar.isLoading">{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}</div>
-        <ion-buttons right>
-            <button *ngIf="!footerToolbar.offline && !sync.isRunning" ion-button color="primary" (click)="startSync()">
-                <div>
-                    <ion-icon medium name="sync"></ion-icon>&nbsp;
-                    <span>
-                        {{ 'synchronize' | translate:{value: null} }}
-
-                    </span>
-                </div>
-                </button>
-            <button *ngIf="footerToolbar.offline" ion-button color="secondary">
-                {{ 'offline' | translate:{value: null} }}
-            </button>
-        </ion-buttons>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button>
+        <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
+      </button>
+    </ion-buttons>
+    <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
+    <div *ngIf="!footerToolbar.isLoading">{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}</div>
+  </ion-toolbar>
 </ion-footer>

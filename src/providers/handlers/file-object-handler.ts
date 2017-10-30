@@ -42,10 +42,10 @@ export class DataProviderFileObjectHandler implements DataProviderILIASObjectHan
             }).then((fileData:FileData) => {
                 fileData.readFromObject(fileMetaData);
                 iliasObject.needsDownload = fileData.needsDownload();
-                return fileData.save();
+                return fileData.save() as Promise<ILIASObject>;
             }).then(() => {
                 iliasObject.data = Object.assign(iliasObject.data, fileMetaData);
-                return iliasObject.save();
+                return iliasObject.save() as Promise<ILIASObject>;
             });
     }
 

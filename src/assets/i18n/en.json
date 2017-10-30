@@ -20,8 +20,22 @@
   "no": "No",
   "no_title": "No title",
   "close": "Close",
+  "today": "Today",
+  "yesterday": "Yesterday",
   "object-list": {
-    "title" : "My Courses And Groups"
+    "title" : "My Courses & Groups",
+    "content" : "Content"
+  },
+  "page-layout": {
+    "group" : "Additional information available for this group.",
+    "course" : "Additional information available for this course.",
+    "folder" : "Additional information available for this folder.",
+    "default" : "Additional information available for this object."
+  },
+  "timeline": {
+    "course": "Timeline availabe for this course.",
+    "group": "Timeline available for this group.",
+    "default": "Timeline available for this object."
   },
   "favorites": {
     "title": "Favorites"
@@ -77,7 +91,6 @@
     "unmark_as_favorite": "Remove from favorites",
     "open_in_external_app": "Open with external app",
     "show_details": "Show Details",
-    "sync_already_running": "A synchronization is already in progress.",
     "sync_incomplete": "Something went wrong: The synchronisation is incomplete.",
     "offline_and_no_local_file": "You are offline and no local file is available.",
     "download_without_wlan": "Download without WLAN",
@@ -88,7 +101,7 @@
     "remove_local_files_in_text": "Are you sure you want to delete all downloaded files?",
     "download_successful": "Download successful",
     "cant_open_file": "There's no application that could open this filetype.",
-    "server_not_reachable": "We cannot reach the server, please try again later."
+    "server_not_reachable": "We cannot reach the server, please try again later or try logging in again."
   },
   "details" : {
     "last_update": "Last update",
@@ -107,6 +120,7 @@
     }
   },
   "sync": {
+    "sync_already_running": "A synchronization is already in progress.",
     "last_sync": "Last synchronization",
     "fetching_metadata": "Fetching metadata",
     "title": "Synchronization",
@@ -118,7 +132,9 @@
     "download": "Download",
     "sync_finished_text": "The synchronization terminated. There are a total of {{totalItems}} marked files. {{updated}} files have been downloaded to the newest version. {{uptodate}} files are still up to date and don't need to be downloaded.",
     "some_files_were_too_big": "Some files were too big. Increase the max. file size in the settings or download the files manually.",
-    "no_more_space": "The disk space exceeded and some files couldn't be downloaded. Delete some files or increase the disk space available to the synchronization in the settings."
+    "no_more_space": "The disk space exceeded and some files couldn't be downloaded. Delete some files or increase the disk space available to the synchronization in the settings.",
+    "sync_already_running": "A synchronization is already in progress.",
+    "pull_to_sync": "Pull to refresh"
   },
   "login": {
     "title": "Login",
@@ -164,6 +180,12 @@
     "xtst" : "Test Repository Object",
     "xvid" : "Interactive Video",
     "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting"
+    "xavc" : "Adobe Connect Meeting",
+    "xflc" : "Flashcards",
+    "chtr" : "Chatroom",
+    "xxco" : "Remote content"
+  },
+  "message": {
+    "back_to_exit": "Press back again to exit."
   }
 }

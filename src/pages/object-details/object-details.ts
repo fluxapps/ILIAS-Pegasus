@@ -21,8 +21,10 @@ import {ILIASObjectActionResult} from "../../actions/object-action";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
 import {ModalController} from "ionic-angular/index";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {RESTAPITimeoutException} from "../../exceptions/RESTAPITimeoutException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {ILIASLinkBuilder, TokenUrlConverter} from "../../services/url-converter.service";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+
 
 @Component({
     templateUrl: 'object-details.html'
@@ -47,6 +49,8 @@ export class ObjectDetailsPage {
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
+                private readonly urlConverter: TokenUrlConverter,
+                private readonly browser: InAppBrowser,
                 params: NavParams) {
         this.iliasObject = params.get('object');
         Log.describe(this, "Showing details of: ", this.iliasObject);
@@ -150,13 +154,13 @@ export class ObjectDetailsPage {
     }
 
     protected loadAvailableActions() {
-        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), this.iliasObject)];
+        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.iliasObject.link), this.urlConverter, this.browser)];
         if (!this.iliasObject.isFavorite) {
             this.actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), this.iliasObject));
         } else if (this.iliasObject.isFavorite) {
             this.actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), this.iliasObject));
         }
-        if (this.iliasObject.isContainer()) {
+        if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
             if (!this.iliasObject.isOfflineAvailable) {
                 this.actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), this.iliasObject, this.dataProvider, this.sync, this.modal));
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {

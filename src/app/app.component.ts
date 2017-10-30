@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Platform, MenuController, Nav, Events} from 'ionic-angular';
-import { StatusBar } from 'ionic-native';
+import { StatusBar } from '@ionic-native/status-bar';
 import {LoginPage} from '../pages/login/login';
 import {SettingsPage} from '../pages/settings/settings';
 import {FavoritesPage} from '../pages/favorites/favorites';
@@ -12,11 +12,15 @@ import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {Log} from "../services/log.service";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
-import {Network} from "ionic-native";
+import {Network} from "@ionic-native/network";
 import { TranslateService } from "ng2-translate/src/translate.service";
-import {ToastController} from "ionic-angular/index";
+import {ToastController} from "ionic-angular";
 import {SynchronizationService} from "../services/synchronization.service";
-import {ModalController} from "ionic-angular/index";
+import {ModalController} from "ionic-angular";
+import {SQLiteDatabaseService} from "../services/database.service";
+import {SQLite} from "@ionic-native/sqlite";
+import {Job} from "../services/footer-toolbar.service";
+
 
 @Component({
     templateUrl: 'app.html'
@@ -38,6 +42,25 @@ export class MyApp {
      */
     protected user:User;
 
+  /**
+   *
+   * This constructor sets on classes which are not injectable yet
+   * member instances. This is a workaround for Ionic 3 update with
+   * the current app architecture. This will be changed on release 2.0.0.
+   *
+   * @param {Platform} platform
+   * @param {MenuController} menu
+   * @param {MigrationsService} migrations
+   * @param {FooterToolbarService} footerToolbar
+   * @param {TranslateService} translate
+   * @param {Events} event
+   * @param {ToastController} toast
+   * @param {SynchronizationService} sync
+   * @param {ModalController} modal
+   * @param {StatusBar} statusBar
+   * @param {Network} network
+   * @param {SQLite} sqlite
+   */
     constructor(public platform:Platform,
                 public menu:MenuController,
                 public migrations:MigrationsService,
@@ -46,16 +69,33 @@ export class MyApp {
                 public event:Events,
                 public toast:ToastController,
                 public sync:SynchronizationService,
-                public modal:ModalController
-                ) {
+                public modal:ModalController,
+                private readonly statusBar: StatusBar,
+                private readonly network: Network,
+                sqlite: SQLite
+    ) {
+
+      // Set members on classes which are not injectable
+      Settings.NETWORK = this.network;
+      SQLiteDatabaseService.SQLITE = sqlite;
+
+
         //we initialize the app => db migration, //get global events.
         this.initializeApp()
             .then(() => this.loadCurrentUser())
             .then(() => {
                 (<any> navigator).splashscreen.hide();
-                return Promise.resolve();
             })
-            // .then(sync.hasUnfinishedSync)
+			.then(() => {
+				this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+        		this.sync.execute()
+			})
+			.then(() => {
+				this.footerToolbar.removeJob(Job.Synchronize);
+        		return Promise.resolve()
+			})
+
+			// .then(sync.hasUnfinishedSync)
             // .then(() => sync.execute())
             // .then(syncResult => {
             //     if (syncResult.objectsLeftOut.length > 0) {
@@ -87,8 +127,10 @@ export class MyApp {
             Log.write(this, "Platform ready.");
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
-            StatusBar.styleLightContent();
+            this.statusBar.styleLightContent();
             this.handleGlobalEvents();
+
+			this.defineBackButtonAction();
 
             return this.handleMigrations();
         });
@@ -136,15 +178,20 @@ export class MyApp {
         this.event.subscribe("login", () => {
             // this.loggedIn = true;
             // this.nav.setRoot(ObjectListPage);
-            this.loadCurrentUser();
+            this.loadCurrentUser()
+				.then((user) => {
+					// setTimeout(() => {
+					// 	this.sync.execute()
+					// }, 2000);
+				})
         });
         this.event.subscribe("logout", () => {
             this.loggedIn = false;
         });
-        Network.onDisconnect().subscribe(() => {
+        this.network.onDisconnect().subscribe(() => {
             this.footerToolbar.offline = true;
         });
-        Network.onConnect().subscribe(() => {
+        this.network.onConnect().subscribe(() => {
             this.footerToolbar.offline = false;
         });
     }
@@ -193,7 +240,49 @@ export class MyApp {
     public openPage(page) {
         // close the menu when clicking a link from the menu
         this.menu.close();
-        // navigate to the new page if it is not the current page
-        this.nav.push(page);
+
+        if (page == ObjectListPage) {
+        	// ObjectListPage is set to root
+        	this.nav.setRoot(page);
+        } else {
+        	// when coming from an ObjectListPage, just push
+        	if (this.nav.last().component == ObjectListPage) {
+				this.nav.push(page);
+			} else {
+        		// else pop previous and push
+				this.nav.pop().then( () => {this.nav.push(page)})
+			}
+		}
+
     }
+
+	/**
+	 *
+	 */
+	protected defineBackButtonAction() {
+    	let backbutton_tapped = 0;
+		this.platform.registerBackButtonAction( () => {
+			if (this.menu.isOpen()) {
+				this.menu.close();
+				return;
+			}
+			if (!this.nav.canGoBack()) {
+				if (backbutton_tapped == 0) {
+					backbutton_tapped = 1;
+					let toast = this.toast.create({
+						message: this.translate.instant('message.back_to_exit'),
+						duration: 3000
+					});
+					toast.present();
+					setTimeout( () => {
+						backbutton_tapped = 0;
+					}, 3000);
+				} else {
+					this.platform.exitApp();
+				}
+			} else {
+				this.nav.pop();
+			}
+		});
+	}
 }

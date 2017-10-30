@@ -8,7 +8,8 @@
   }
 
   .scroll-content {
-    padding: 3px 0 16px 0;
+    // padding: 3px 0 16px 0;
+    padding: 0 !important;
   }
 
   .footer {
@@ -17,9 +18,21 @@
     }
   }
 
-  div.input-wrapper {
-    min-height: 75px;
+  .badge-container {
+    position: relative;
   }
+
+  .badge-link {
+    position: absolute;
+    left: 70%;
+    bottom: 60%;
+    font-size: 1rem;
+    padding: 2px;
+  }
+
+  .list-header-item{
+    font-weight: 900;
+
+  }
+
 }
-
-

@@ -1,8 +1,8 @@
 <ion-header>
   <ion-navbar color="nobg-w">
-    <ion-title>
+    <!-- <ion-title>
         <ion-icon name="log-in"></ion-icon>
-    </ion-title>
+    </ion-title> -->
     <ion-buttons end>
       <button ion-button menuToggle>
         <ion-icon name="menu"></ion-icon>
@@ -34,4 +34,9 @@
       <button ion-button full block (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
     </ion-col>
   <!-- </ion-card> -->
+
+    <ion-item no-lines text-align:center color="nobg-w" id="version-if-footer">
+        Version 1.1.0
+      </ion-item>
+
 </ion-content>

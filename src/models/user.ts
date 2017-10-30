@@ -1,7 +1,6 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Settings} from "./settings";
-import {Log} from "../services/log.service";
 import {ILIASObject} from "./ilias-object";
 
 export class User extends ActiveRecord {
@@ -72,7 +71,8 @@ export class User extends ActiveRecord {
      */
     static find(id:number):Promise<User> {
         let user = new User(id);
-        return user.read();
+        return user.read()
+          .then(activeRecord => { return activeRecord as User })
     }
 
 
@@ -128,27 +128,30 @@ export class User extends ActiveRecord {
         if (window['cordova']) {
             return User.findActiveUser();
         }
+
+        throw new Error("User can not be loaded in browser. This is not possible due the current state of the app.");
+
         // Return a fake user when developing in browser
-        return new Promise((resolve, reject) => {
-            User.findActiveUser().then((user) => {
-                resolve(user);
-            }, () => {
-                let user = new User();
-                user.iliasLogin = 'DummyUser';
-                user.accessToken = 'NixkZWZhdWx0LGlsaWFzX2FwcCxhY2Nlc3MsLCwxNzA2ODU1ODY3LGRkRGM2YlFIa01vOWpONVowcW44N2RnOUwsYmFhZjk3MjcxNDMzYmM3MDA0MjQwNzRlNTlmMTQwZTlmN2U3ZGM3NDY1MjY0ZjM4ODlmZWY1YjJhZmU4ZGYxNA%3D%3D';
-                user.installationId = 2;
-                user.iliasUserId = 6;
-                user.refreshToken = '';
-                user.lastTokenUpdate = Date.now();
-                user.save().then((u) => {
-                    Log.describe(this, "user saved", u);
-                    resolve(u);
-                }).catch(err => {
-                    Log.error(this, err);
-                    reject(err);
-                });
-            });
-        });
+        // return new Promise((resolve, reject) => {
+        //     User.findActiveUser().then((user) => {
+        //         resolve(user);
+        //     }, () => {
+        //         let user = new User();
+        //         user.iliasLogin = 'root';
+        //         user.accessToken = 'NixkZWZhdWx0LGlsaWFzX3BlZ2FzdXMsYWNjZXNzLCwsMTcxOTM4NTU3NCxsdktPRHBKWXlBSjFueW9CY2dmbzhFS0l1LGE3ZWFlNTVhZDcyOTc1NGNlN2Y5ZDhmODYwNGE2ODU0NGNmYWM1NWNhNWQ2M2Y5N2RlOGI2MGRiYjNmNjFmYWE';
+        //         user.installationId = 5;
+        //         user.iliasUserId = 6;
+        //         user.refreshToken = '';
+        //         user.lastTokenUpdate = Date.now();
+        //         user.save().then((u) => {
+        //             Log.describe(this, "user saved", u);
+        //             resolve(u);
+        //         }).catch(err => {
+        //             Log.error(this, err);
+        //             reject(err);
+        //         });
+        //     });
+        // });
     }
 
     /**

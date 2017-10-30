@@ -50,10 +50,10 @@ export class SynchronizationService {
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == null) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
-        }else if(this._isRunning) {
+        } else if(this._isRunning) {
             let resolver;
             let rejecter;
-            let promise = new Promise((resolve, reject) => {
+            let promise: Promise<SyncResults> = new Promise((resolve, reject) => {
                 resolver = resolve;
                 rejecter = reject;
             });
@@ -76,6 +76,7 @@ export class SynchronizationService {
                 if(iliasObject) {
                     return this.executeContainerSync(iliasObject);
                 } else {
+                	// console.log('executeGlobalSync');
                     return this.executeGlobalSync();
                 }
             }).then((syncResult) => {
@@ -127,7 +128,12 @@ export class SynchronizationService {
             this._isRunning = false;
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
-                .then(db => db.query("UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = " + user_id + " AND isRunning = 1"))
+                .then(db => {
+					// let now = new Date();
+					// let datestring = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+" "+("0"+now.getHours()).substr(-2) + ":" + ("0"+now.getMinutes()).substr(-2)+":00";
+					// db.query("UPDATE synchronization SET isRunning = 0, endDate = '"+datestring+"' WHERE userId = " + user_id + " AND isRunning = 1")
+					db.query("UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = " + user_id + " AND isRunning = 1")
+				})
                 .then(() => this.updateLastSync(user_id));
     }
 
@@ -138,12 +144,29 @@ export class SynchronizationService {
                 if(result.rows.length == 0)
                     return Promise.resolve(null);
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
-                this.lastSync = new Date(result.rows.item(0).endDate);
-                this.lastSyncString = this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
+				let now = new Date();
+				this.lastSync = new Date(result.rows.item(0).endDate);
+				// this.lastSync.setTime(this.lastSync.getTime() - now.getTimezoneOffset()*60*1000);
+
+				let date_string = '';
+				if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
+					if (now.getDate() == this.lastSync.getDate()) {
+						date_string = this.translate.instant('today');
+					} else if ((now.getDate() - 1) == this.lastSync.getDate()) {
+						date_string = this.translate.instant('yesterday');
+					}
+				}
+
+				date_string = date_string ? date_string : this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
+
+                // this.lastSyncString = date_string +", "+("0"+this.lastSync.getHours()).substr(-2) + ":" + ("0"+this.lastSync.getMinutes()).substr(-2);
+                this.lastSyncString = date_string;
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
             });
     }
+
+
 
     /**
      * check if the user still has a running sync in the db.
@@ -293,7 +316,9 @@ export class SynchronizationService {
 
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
-                this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
+				// console.log('desktopObjects:');
+				// console.log(desktopObjects);
+				this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
                 let promises = Promise.resolve();
                 for (let iliasObject of desktopObjects) {
                     promises = promises.then(() => {
