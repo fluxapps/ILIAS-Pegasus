@@ -25,7 +25,7 @@ export interface UrlConverter {
 @Injectable()
 export class TokenUrlConverter implements UrlConverter{
 
-  public constructor(
+  constructor(
     private readonly restProvider: ILIASRestProvider
   ) {}
 
@@ -43,12 +43,17 @@ export class TokenUrlConverter implements UrlConverter{
     const user: User = await User.currentUser();
     const token: string = await this.restProvider.getAuthToken(user);
 
-    const view = ILIASLinkView[link.view].toLowerCase();
-    const url = `${link.host}/goto.php?target=ilias_app_auth|${user.iliasUserId}|${link.refId}|${view}|${token}`;
+    const view: string = ILIASLinkView[link.view].toLowerCase();
+    const url: string = `${link.host}/goto.php?target=ilias_app_auth|${user.iliasUserId}|${link.refId}|${view}|${token}`;
 
     return Promise.resolve(url);
   }
 }
+
+// Magic numbers used by ILIASLinkProvider
+const REF_ID: number = 2;
+const HOST: number = 1;
+const BASE_10: number = 10;
 
 /**
  * Builder class for an {@link ILIASLink}.
@@ -92,11 +97,11 @@ export class ILIASLinkBuilder {
       throw new Error(`Can not build link: url does not match regex, url=${this.url}`)
     }
 
-    const matches: string[] = this.pattern.exec(this.url);
+    const matches: Array<string> = this.pattern.exec(this.url);
 
     return new ILIASLink(
-      matches[1],
-      parseInt(matches[2], 10),
+      matches[HOST],
+      parseInt(matches[REF_ID], BASE_10),
       this.view
     )
   }
