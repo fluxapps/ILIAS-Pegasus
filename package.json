@@ -63,10 +63,12 @@
     "devDependencies": {
         "@ionic/app-scripts": "^3.0.0",
         "@types/chai": "^4.0.4",
+        "@types/chai-as-promised": "^7.1.0",
         "@types/mocha": "^2.2.43",
         "@types/sinon": "^2.3.6",
         "angular2-template-loader": "^0.6.2",
         "chai": "^4.1.2",
+        "chai-as-promised": "^7.1.1",
         "core-js": "^2.5.1",
         "html-loader": "^0.5.1",
         "jsdom": "^11.3.0",

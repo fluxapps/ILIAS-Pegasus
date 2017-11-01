@@ -7,14 +7,15 @@ Error.stackTraceLimit = Infinity;
 
 require('core-js/es6');
 require('core-js/es7/reflect');
+require('rxjs');
 
-// zone.js is needed by AngularJS
 require('zone.js/dist/zone');
 require('zone.js/dist/long-stack-trace-zone');
 require('zone.js/dist/proxy');
 require('zone.js/dist/sync-test');
 require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
+require("zone.js/dist/mocha-patch");
 
 // configure chai
 let chai = require("chai");
