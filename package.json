@@ -8,7 +8,8 @@
         "clean": "ionic-app-scripts clean",
         "ionic:build": "ionic-app-scripts build",
         "ionic:serve": "ionic-app-scripts serve",
-        "tslint": "./node_modules/tslint/bin/tslint -c tslint.json -p tsconfig.json"
+        "tslint": "./node_modules/tslint/bin/tslint -c tslint.json -p tsconfig.json",
+        "test": "./node_modules/karma/bin/karma start ./test/karma.conf.js"
     },
     "dependencies": {
         "@angular/animations": "^4.4.3",
