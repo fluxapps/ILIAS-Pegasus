@@ -1,4 +1,8 @@
-// Karma configuration
+/*
+ * Karma configuration for continuous integration and file watchers.
+ * Tests will be executed and then listen of file changes.
+ * The karma server runs until its stopped manually.
+ */
 
 const webpackConfig = require("./webpack.test");
 

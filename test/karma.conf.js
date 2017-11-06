@@ -1,4 +1,7 @@
-// Karma configuration for singlerun tests
+/*
+ * Karma configuration for singlerun tests without file watchers.
+ * Tests will be executed once and then the karma server stops.
+ */
 
 const webpackConfig = require("./webpack.test");
 
