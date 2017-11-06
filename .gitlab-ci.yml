@@ -1,0 +1,13 @@
+cache:
+  key: node
+  paths:
+    - node_modules
+
+stages:
+  - test
+
+test:
+  stage: test
+  script: npm test
+  tags:
+    - node
