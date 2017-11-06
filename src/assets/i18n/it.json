@@ -176,6 +176,9 @@
     "xtst" : "Test Repository Object",
     "xvid" : "Video Interattivo",
     "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting"
+    "xavc" : "Adobe Connect Meeting",
+    "xflc" : "Flashcards",
+    "chtr" : "Chat",
+    "xxco" : "Contenuto esterno"
   }
 }

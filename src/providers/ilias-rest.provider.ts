@@ -9,6 +9,12 @@ import "rxjs/add/operator/timeout";
 import {RESTAPIException} from "../exceptions/RESTAPIException";
 import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../services/ilias-config-factory";
 import {isDefined} from "ionic-angular/es2015/util/util";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {
+  AlertController,
+  AlertOptions
+} from 'ionic-angular';
+import {AlertButton} from "ionic-angular/components/alert/alert-options";
 
 @Injectable()
 export class ILIASRestProvider {
@@ -16,7 +22,9 @@ export class ILIASRestProvider {
     constructor(
       @Inject(ILIAS_CONFIG_FACTORY) private readonly configFactory: ILIASConfigFactory,
       private readonly http: Http,
-      private readonly transfer: FileTransfer
+      private readonly transfer: FileTransfer,
+      private readonly translate: TranslateService,
+      private readonly alert: AlertController
     ) {}
 
     private defaultTimeout = 20000;
@@ -56,6 +64,7 @@ export class ILIASRestProvider {
           return Promise.resolve(response);
 
         } catch (error) {
+            this.showAlert(this.translate.instant("actions.server_not_reachable"));
           return Promise.reject(this.handleError(error, user, installation));
         }
     }
@@ -75,6 +84,7 @@ export class ILIASRestProvider {
           return Promise.resolve(response);
 
         } catch (error) {
+            this.showAlert(this.translate.instant("actions.server_not_reachable"));
           return Promise.reject(this.handleError(error, user, installation));
         }
     }
@@ -100,6 +110,7 @@ export class ILIASRestProvider {
         return Promise.resolve(response);
 
       } catch (error) {
+          this.showAlert(this.translate.instant("actions.server_not_reachable"));
         return Promise.reject(this.handleError(error, user, installation));
       }
     }
@@ -129,6 +140,7 @@ export class ILIASRestProvider {
         return transfer.download(endpoint, storageLocation, false, {headers: headers});
 
       } catch (error) {
+          this.showAlert(this.translate.instant("actions.server_not_reachable"));
         return Promise.reject(this.handleError(error, user, installation));
       }
     }
@@ -171,6 +183,7 @@ export class ILIASRestProvider {
         return Promise.resolve(user);
 
       } catch (error) {
+        this.showAlert(this.translate.instant("actions.server_not_reachable"));
         return Promise.reject(new RESTAPIException(error))
       }
     }
@@ -220,4 +233,17 @@ export class ILIASRestProvider {
     private buildURL(host: string, restPath: string, apiVersion = this.api_version): string {
       return encodeURI(`${host}${this.api_url}/${apiVersion}/${restPath}`);
     }
+
+    private showAlert(message) {
+  		const alert = this.alert.create(<AlertOptions>{
+  			title: message,
+  			buttons: [
+  				<AlertButton>{
+  					text: this.translate.instant("close"),
+  					role: 'cancel'
+  				}
+  			]
+  		});
+  		alert.present();
+  	}
 }
