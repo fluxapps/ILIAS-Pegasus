@@ -15,12 +15,11 @@
     "target": "es5"
   },
   "include": [
-    "src/**/*.ts",
-    "test"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-//    "test"
+    "test"
   ],
   "compileOnSave": false,
   "atom": {
