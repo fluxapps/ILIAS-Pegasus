@@ -1,6 +1,6 @@
 // Karma configuration
 
-let webpackConfig = require("./webpack.test");
+const webpackConfig = require("./webpack.test");
 
 module.exports = function(config) {
   config.set({
