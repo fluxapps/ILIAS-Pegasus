@@ -4,7 +4,6 @@
     "homepage": "http://studer-raimann.ch/",
     "private": true,
     "scripts": {
-        "postinstall": "npm install -g cordova ionic",
         "start": "ionic cordova emulate",
         "build": "ionic-app-scripts build",
         "clean": "ionic-app-scripts clean",
