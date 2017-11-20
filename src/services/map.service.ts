@@ -248,6 +248,8 @@ export class MapBuilder {
 
   /**
    * Uses the given {@code marker} on the map.
+   * Only one marker can be used. A second call
+   * on this method will override the previous marker.
    *
    * @param {Marker} marker the marker to add to the map
    *
