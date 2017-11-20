@@ -1,7 +1,7 @@
 
 import {
-  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMapsEvent, ILatLng,
-  MarkerOptions
+  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMapsEvent, ILatLng, LatLng, MapType,
+  MarkerOptions, MyLocation, MyLocationOptions, VisibleRegion
 } from "@ionic-native/google-maps";
 import {isUndefined} from "util";
 
@@ -17,8 +17,74 @@ export interface Marker {
 }
 
 export interface StandardMap {
+  
+  setDiv(domNode: string | HTMLElement): void
 
-  // TODO: Expose methods from GoogleMap until this method: https://ionicframework.com/docs/native/google-maps/#setPadding
+  getDiv(): HTMLElement
+
+  setMapTypeId(mapTypeId: MapType): void
+
+  animateCamera(position: CameraPosition<ILatLng>): Promise<void>
+
+  animateCameraZoomIn(): Promise<void>
+
+  animateCameraZoomOut(): Promise<void>
+
+  moveCamera(position: CameraPosition<ILatLng>): Promise<void>
+
+  moveCameraZoomIn(): Promise<void>
+
+  moveCameraZoomOut(): Promise<void>
+
+  getCameraPosition(): CameraPosition<ILatLng>
+
+  getCameraTarget(): Promise<ILatLng>
+
+  getCameraZoom(): number
+
+  getCameraBearing(): number
+
+  getCameraTilt(): number
+
+  setCameraTarget(target: ILatLng): void
+
+  setCameraZoom(zoomLevel: number): void
+
+  setCameraTilt(tiltLevel: number): void
+
+  setCameraBearing(bearing: number): void
+
+  panBy(x: number, y: number): void
+
+  getVisibleRegion(): VisibleRegion
+
+  getMyLocation(options?: MyLocationOptions): Promise<MyLocation>
+
+  setClickable(isClickable: boolean): void
+
+  remove(): Promise<void>
+
+  clear(): Promise<void>
+
+  fromLatLngToPoint(latLng: ILatLng): Promise<object>
+
+  fromPointToLatLng(point: object): Promise<LatLng>
+
+  setMyLocationEnabled(enabled: boolean): void
+
+  getFocusedBuilding(): Promise<object>
+
+  setIndoorEnabled(enabled: boolean): void
+
+  setTrafficEnabled(enabled: boolean): void
+
+  setCompassEnabled(enabled: boolean): void
+
+  setAllGesturesEnabled(enabled: boolean): void
+
+  setVisible(visible: boolean): void
+
+  setPadding(top: number, right: number, left: number, bottom: number): void
 }
 
 class StandardMapBinding implements StandardMap {
@@ -26,6 +92,86 @@ class StandardMapBinding implements StandardMap {
     constructor(
       private readonly map: GoogleMap
     ) {}
+
+  setDiv(domNode: string | HTMLElement): void { this.map.setDiv(domNode) }
+
+  getDiv(): HTMLElement { return this.map.getDiv() }
+
+  setMapTypeId(mapTypeId: MapType): void { this.map.setMapTypeId(mapTypeId) }
+
+  async animateCamera(position: CameraPosition<ILatLng>): Promise<void> {
+    return this.map.animateCamera(position)
+  }
+
+  animateCameraZoomIn(): Promise<void> { return this.map.animateCameraZoomIn() }
+
+  animateCameraZoomOut(): Promise<void> { return this.map.animateCameraZoomOut() }
+
+  moveCamera(position: CameraPosition<ILatLng>): Promise<void> {
+    return this.map.moveCamera(position);
+  }
+
+  moveCameraZoomIn(): Promise<void> { return this.map.moveCameraZoomIn() }
+
+  moveCameraZoomOut(): Promise<void> { return this.map.moveCameraZoomOut() }
+
+  getCameraPosition(): CameraPosition<ILatLng> { return this.map.getCameraPosition() }
+
+  async getCameraTarget(): Promise<ILatLng> { return this.map.getCameraTarget() }
+
+  getCameraZoom(): number { return this.map.getCameraZoom() }
+
+  getCameraBearing(): number { return this.map.getCameraBearing() }
+
+  getCameraTilt(): number { return this.map.getCameraTilt() }
+
+  setCameraTarget(target: ILatLng): void { this.map.setCameraTarget(target) }
+
+  setCameraZoom(zoomLevel: number): void { this.map.setCameraZoom(zoomLevel) }
+
+  setCameraTilt(tiltLevel: number): void { this.map.setCameraTilt(tiltLevel) }
+
+  setCameraBearing(bearing: number): void { this.map.setCameraBearing(bearing) }
+
+  panBy(x: number, y: number): void { this.map.panBy(x, y) }
+
+  getVisibleRegion(): VisibleRegion { return this.map.getVisibleRegion() }
+
+  async getMyLocation(options?: MyLocationOptions): Promise<MyLocation> {
+    return this.map.getMyLocation(options);
+  }
+
+  setClickable(isClickable: boolean): void { this.map.setClickable(isClickable) }
+
+  async remove(): Promise<void> { return this.map.remove() }
+
+  async clear(): Promise<void> { return this.map.clear() }
+
+  async fromLatLngToPoint(latLng: ILatLng): Promise<object> {
+    return this.map.fromLatLngToPoint(latLng);
+  }
+
+  async fromPointToLatLng(point: object): Promise<LatLng> {
+    return this.map.fromPointToLatLng(point);
+  }
+
+  setMyLocationEnabled(enabled: boolean): void { this.map.setMyLocationEnabled(enabled) }
+
+  getFocusedBuilding(): Promise<object> { return this.map.getFocusedBuilding() }
+
+  setIndoorEnabled(enabled: boolean): void { this.map.setIndoorEnabled(enabled) }
+
+  setTrafficEnabled(enabled: boolean): void { this.map.setTrafficEnabled(enabled) }
+
+  setCompassEnabled(enabled: boolean): void { this.map.setCompassEnabled(enabled) }
+
+  setAllGesturesEnabled(enabled: boolean): void { this.map.setAllGesturesEnabled(enabled) }
+
+  setVisible(visible: boolean): void { this.map.setVisible(visible) }
+
+  setPadding(top: number, right: number, bottom: number, left: number): void {
+      this.map.setPadding(top, right, bottom, left);
+  }
 }
 
 export class MapBuilder {
