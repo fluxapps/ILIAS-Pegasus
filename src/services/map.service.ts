@@ -1,9 +1,8 @@
 
 import {
-  CameraPosition, GoogleMap, ILatLng,
+  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMapsEvent, ILatLng,
   MarkerOptions
 } from "@ionic-native/google-maps";
-import {BuildError} from "@ionic/app-scripts/dist/util/errors";
 import {isUndefined} from "util";
 
 export interface GeoCoordinate {
@@ -33,7 +32,7 @@ export class MapBuilder {
 
   private cameraPosition?: CameraPosition<ILatLng>;
   private markerOptions?: MarkerOptions;
-  private binding?: HTMLElement;
+  private binding?: string | HTMLElement;
 
   camera(position: GeoCoordinate): MapBuilder {
 
@@ -50,24 +49,59 @@ export class MapBuilder {
   }
 
   marker(marker: Marker): MapBuilder {
-    throw new Error("This method is not implemented yet");
+
+    this.markerOptions = <MarkerOptions>{
+      title: marker.title,
+      icon: "blue",
+      animation: "DROP",
+      position: <ILatLng>{
+        lat: marker.position.latitude,
+        lng: marker.position.longitude
+      },
+      snippet: marker.snippet
+    };
+
+    return this;
   }
 
   bind(node: string | HTMLElement): MapBuilder {
-    throw new Error("This method is not implemented yet");
+
+    this.binding = node;
+
+    return this;
   }
 
   async build(): Promise<StandardMap> {
 
-    if (isUndefined(this.cameraPosition)) {
-      throw new MapEvaluationError("Can not build map: Requires camera position");
-    }
+    this.throwIfUndefined(this.cameraPosition, () => {
+      return new MapEvaluationError("Can not build map: Requires camera position");
+    });
 
-    if (isUndefined(this.binding)) {
-      throw new MapEvaluationError("Can not build map: Requires a node to bind the map");
-    }
+    this.throwIfUndefined(this.binding, () => {
+      return new MapEvaluationError("Can not build map: Requires a node to bind the map")
+    });
 
-    throw new Error("This method is not implemented yet");
+    const map: GoogleMap = new GoogleMap(this.binding, <GoogleMapOptions>{camera: this.cameraPosition});
+
+    await map.one(GoogleMapsEvent.MAP_READY);
+
+    this.applyIfNotUndefined(this.markerOptions, async(options: MarkerOptions) => {
+      await map.addMarker(options);
+    });
+
+    return Promise.resolve(map);
+  }
+
+  private throwIfUndefined<T>(object: T | undefined, error: () => Error): void {
+    if (isUndefined(object)) {
+      throw error();
+    }
+  }
+
+  private applyIfNotUndefined<T>(object: T | undefined, block: (object: T) => void): void {
+    if (!isUndefined(object)) {
+      block(object);
+    }
   }
 }
 
