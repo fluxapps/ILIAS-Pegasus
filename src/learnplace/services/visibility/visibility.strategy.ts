@@ -36,7 +36,7 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- class AlwaysStrategy implements VisibilityStrategy {
+ export class AlwaysStrategy implements VisibilityStrategy {
 
   /**
    * Sets the {@code visible} property of the given {@code block}to true.
@@ -52,7 +52,7 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- class NeverStrategy implements VisibilityStrategy {
+ export class NeverStrategy implements VisibilityStrategy {
 
   /**
    * Sets the {@code visible} property of the given {@code block} to false.
