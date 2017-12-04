@@ -37,6 +37,7 @@
     "@ionic-native/status-bar": "^4.3.0",
     "@ionic-native/toast": "^4.3.0",
     "@ionic/storage": "^2.0.1",
+    "@types/node": "^8.0.54",
     "ch.ti8m.documenthandler": "git+https://github.com/studer-raimann/DocumentHandler.git",
     "cordova-android": "^6.3.0",
     "cordova-ios": "^4.5.2",
@@ -64,6 +65,7 @@
     "ng2-translate": "^3.1.0",
     "rxjs": "^5.4.3",
     "sw-toolbox": "^3.6.0",
+    "typeorm": "^0.1.7",
     "zone.js": "^0.8.18"
   },
   "devDependencies": {
