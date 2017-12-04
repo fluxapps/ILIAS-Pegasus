@@ -14,6 +14,9 @@
     "karma:singlerun": "./node_modules/karma/bin/karma start ./test/karma.conf.js",
     "test": "npm run tslint && npm run karma:singlerun"
   },
+  "config": {
+    "ionic_webpack": "./config/webpack.config.js"
+  },
   "dependencies": {
     "@angular/animations": "^4.4.3",
     "@angular/common": "^4.4.3",
