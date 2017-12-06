@@ -34,6 +34,7 @@ import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
 import {HttpClient} from "../providers/http";
+import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 
 
 export function createTranslateLoader(http: Http) {
@@ -80,6 +81,10 @@ export function createTranslateLoader(http: Http) {
     {
       provide: ILIAS_CONFIG_FACTORY,
       useClass: HttpILIASConfigFactory
+    },
+    {
+      provide: CONFIG_PROVIDER,
+      useClass: ILIASConfigProvider
     },
     ConnectionService,
     MigrationsService,
