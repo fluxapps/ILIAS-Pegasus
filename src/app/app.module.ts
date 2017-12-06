@@ -33,6 +33,7 @@ import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
+import {HttpClient} from "../providers/http";
 
 
 export function createTranslateLoader(http: Http) {
@@ -96,6 +97,7 @@ export function createTranslateLoader(http: Http) {
     Network,
     SQLite,
     Toast,
+    HttpClient,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [

@@ -1,21 +1,56 @@
 import {Http, RequestOptionsArgs, Response} from "@angular/http";
 import {Validator, ValidatorResult} from "jsonschema";
+import {Injectable} from "@angular/core";
+
+export const DEFAULT_TIMEOUT: number = 20000;
 
 /**
  * Abstracts the Http service of angular in async methods.
  * In addition, a smarter response type is used.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
+@Injectable()
 export class HttpClient {
 
    constructor(
      private readonly http: Http
    ) {}
 
+  /**
+   * Wraps the {@link Http#get} method uses a timeout and returns a promise instead of an observable.
+   *
+   * @param {string} url the url to perform the request
+   * @param {RequestOptionsArgs} options options used for the request
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   */
    async get(url: string, options?: RequestOptionsArgs): Promise<HttpResponse> {
-     throw new Error("This method is not implemented yet");
+
+     const response: Response = await this.http.get(url, options)
+       .timeout(DEFAULT_TIMEOUT)
+       .toPromise();
+
+     return new HttpResponse(response);
+   }
+
+  /**
+   * Wraps the {@link Http#post} method uses a timeout and returns a promise instead of an observable.
+   *
+   * @param {string} url the url to perform the request
+   * @param {object} body the request body to post
+   * @param {RequestOptionsArgs} options options used for the request
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   */
+   async post(url: string, body?: object, options?: RequestOptionsArgs): Promise<HttpResponse> {
+
+     const response: Response = await this.http.post(url, body, options)
+       .timeout(DEFAULT_TIMEOUT)
+       .toPromise();
+
+     return new HttpResponse(response);
    }
  }
 
@@ -83,23 +118,17 @@ export class HttpClient {
     *
     * @returns {string} the resulting text
     */
-    text(encodingHint?: "legacy" | "iso-8859"): string {
-     return this.response.text(encodingHint);
-    }
+    text(encodingHint?: "legacy" | "iso-8859"): string { return this.response.text(encodingHint) }
 
    /**
     * @returns {ArrayBuffer} the body as an array buffer
     */
-    arrayBuffer(): ArrayBuffer {
-     return this.response.arrayBuffer();
-    }
+    arrayBuffer(): ArrayBuffer { return this.response.arrayBuffer() }
 
    /**
     * @returns {Blob} the request's body as a Blob, assuming that body exists
     */
-    blob(): Blob {
-     return this.response.blob();
-    }
+    blob(): Blob { return this.response.blob() }
 
    /**
     * Executes the {@link Response#json} method in a try catch.
