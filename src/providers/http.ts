@@ -1,4 +1,5 @@
 import {Http, RequestOptionsArgs, Response} from "@angular/http";
+import {Validator, ValidatorResult} from "jsonschema";
 
 /**
  * Abstracts the Http service of angular in async methods.
@@ -24,11 +25,21 @@ export class HttpClient {
   * @author nmaerchy <nm@studer-raimann.ch>
   * @version 1.0.0
   */
-  export interface HttpResponse {
+  export class HttpResponse {
 
     readonly ok: boolean;
     readonly status: number;
     readonly statusText: string;
+
+    private readonly validator: Validator = new Validator();
+
+   constructor(
+     private readonly response: Response
+   ) {
+     this.ok = response.ok;
+     this.status = response.status;
+     this.statusText = response.statusText;
+   }
 
    /**
     * Parses the response into json with the given {@code schema}.
@@ -38,7 +49,20 @@ export class HttpClient {
     * @returns {Object} the valid json
     * @throws JsonValidationError if the body could not be parsed or does not match the schema
     */
-    json(schema: object): object;
+    json(schema: object): object {
+
+      const json: object = this.tryJson(this.response, (): Error =>
+        new JsonValidationError("Could not parse response body to json")
+      );
+
+      const result: ValidatorResult = this.validator.validate(json, schema);
+
+      if (result.valid) {
+        return json;
+      }
+
+      throw new JsonValidationError(result.errors[0].message);
+    }
 
    /**
     * /**
@@ -59,59 +83,44 @@ export class HttpClient {
     *
     * @returns {string} the resulting text
     */
-    text(encodingHint?: "legacy" | "iso-8859"): string;
+    text(encodingHint?: "legacy" | "iso-8859"): string {
+     return this.response.text(encodingHint);
+    }
 
    /**
     * @returns {ArrayBuffer} the body as an array buffer
     */
-    arrayBuffer(): ArrayBuffer;
+    arrayBuffer(): ArrayBuffer {
+     return this.response.arrayBuffer();
+    }
 
    /**
-    *
     * @returns {Blob} the request's body as a Blob, assuming that body exists
     */
-    blob(): Blob;
-  }
-
- /**
-  * Abstracts the Response type of angular in a smarter way.
-  *
-  * @author nmaerchy <nm@studer-raimann.ch>
-  * @version 0.0.1
-  */
-  class HttpResponseImpl implements HttpResponse {
-
-   readonly ok: boolean;
-   readonly status: number;
-   readonly statusText: string;
-
-   constructor(
-     private readonly response: Response
-   ) {
-      this.ok = response.ok;
-      this.status = response.status;
-      this.statusText = response.statusText;
-   }
-
-   json(schema: object): object {
-     throw new Error("Method not implemented.");
-   }
-
-   text(encodingHint?: "legacy" | "iso-8859"): string {
-     return this.response.text(encodingHint);
-   }
-
-   arrayBuffer(): ArrayBuffer {
-     return this.response.arrayBuffer();
-   }
-
-   blob(): Blob {
+    blob(): Blob {
      return this.response.blob();
-   }
+    }
+
+   /**
+    * Executes the {@link Response#json} method in a try catch.
+    * If an error occurs the given {@code errorSupplier} is used to throw an {@link Error}.
+    *
+    * @param {Response} response response to call the json method
+    * @param {() => Error} errorSupplier supplies the error that is thrown on catch
+    *
+    * @returns {object} the resulting json
+    */
+    private tryJson(response: Response, errorSupplier: () => Error): object {
+      try {
+        return response.json();
+      } catch (error) {
+        throw errorSupplier();
+      }
+    }
   }
 
 /**
- * Indicates a json that could not be parsed or does not match a required json schema
+ * Indicates a that a json could not be parsed or does not match a required json schema.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
