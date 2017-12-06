@@ -1,6 +1,7 @@
 import {Http, RequestOptionsArgs, Response} from "@angular/http";
 import {Validator, ValidatorResult} from "jsonschema";
 import {Injectable} from "@angular/core";
+import * as HttpStatus from "http-status-codes";
 
 export const DEFAULT_TIMEOUT: number = 20000;
 
@@ -82,7 +83,7 @@ export class HttpClient {
     * @param {Object} schema the json schema to validate the response
     *
     * @returns {Object} the valid json
-    * @throws JsonValidationError if the body could not be parsed or does not match the schema
+    * @throws {JsonValidationError} if the body could not be parsed or does not match the schema
     */
     json(schema: object): object {
 
@@ -154,10 +155,58 @@ export class HttpClient {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class JsonValidationError extends Error {
+export class JsonValidationError extends TypeError {
 
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, JsonValidationError.prototype);
+  }
+}
+
+/**
+ * Indicates a http request error with a status code 4xx or 5xx.
+ * - 4xx Client Errors
+ * - 5xx Server Errors
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class HttpRequestError extends Error {
+
+  constructor(
+    readonly statuscode: number,
+    message: string,
+    readonly responseBody?: string
+  ) {
+    super(message);
+    Object.setPrototypeOf(this, HttpRequestError.prototype);
+  }
+}
+
+/**
+ * Indicates an 401 Authentication Failure from a http request.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class AuthenticateError extends HttpRequestError {
+
+  constructor(message: string, responseBody?: string) {
+    super(HttpStatus.BAD_REQUEST, message, responseBody);
+    Object.setPrototypeOf(this, AuthenticateError.prototype);
+  }
+}
+
+/**
+ * Indicates a 404 Not Found failure from a http request.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class NotFoundError extends HttpRequestError {
+
+  constructor(message: string, responseBody?: string) {
+    super(HttpStatus.NOT_FOUND, message, responseBody);
+    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
