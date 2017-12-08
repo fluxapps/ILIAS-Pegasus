@@ -4,7 +4,9 @@ import {Inject, Injectable} from "@angular/core";
 import {User} from "../../models/user";
 import {Headers} from "@angular/http";
 
-// console.log(HttpClient);
+const FACTOR_SEC_TO_MILLI: number = 1000;
+const ILIAS_API_URL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
+
 /**
  * Supported API versions.
  */
@@ -69,12 +71,10 @@ export interface ILIASRest {
  * Manages an access token from the active user.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
  export class ILIASTokenManager implements TokenManager {
-
-   private accessToken: string = "";
 
    constructor(
      private readonly httpClient: HttpClient,
@@ -82,16 +82,47 @@ export interface ILIASRest {
      private readonly activeUser: ActiveUserProvider
    ) {}
 
+  /**
+   * Ensures that the returned access token is valid.
+   * If the access token is expired, it will be refreshed.
+   *
+   * @returns {Promise<string>} the resulting access token
+   * @throws {TokenExpiredError} if no valid access token can be used and the token can not be refreshed
+   */
    async getAccessToken(): Promise<string> {
 
-     const user: User = await this.activeUser.read();
-     const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+     try {
 
-     if (Date.now() - user.lastTokenUpdate < (installation.accessTokenTTL * 1000)) {
-       return user.accessToken;
+       const user: User = await this.activeUser.read();
+       const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+
+       if (this.hasValidToken(user, installation.accessTokenTTL)) {
+         return user.accessToken;
+       }
+
+       return this.updateAccessToken(user, installation);
+
+     } catch (error) {
+       throw new TokenExpiredError("Could not find a valid access token");
      }
+   }
 
-     const url: string = installation.url + "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php/v2/oauth2/token";
+  /**
+   * Refreshes the access token by the refresh token and returns it.
+   * The given arguments are used to get all relevant data to update
+   * the access token.
+   *
+   * The given {@code user} will be updated with the new access token.
+   *
+   * @param {User} user the user used
+   * @param {ILIASInstallation} installation the ILIAS installation of the user
+   *
+   * @returns {Promise<string>} the updated access token
+   * @throws {HttpRequestError} if the response is not ok
+   */
+   private async updateAccessToken(user: User, installation: ILIASInstallation): Promise<string> {
+
+     const url: string = `${installation.url}${ILIAS_API_URL}/v2/oauth2/token`;
 
      const headers: Headers = new Headers();
      headers.append("api_key", installation.apiKey);
@@ -99,15 +130,41 @@ export interface ILIASRest {
      headers.append("grant_type", "refresh_token");
      headers.append("refresh_token", user.refreshToken);
 
-     const response: HttpResponse = await this.httpClient.post(url, undefined, {headers: headers})
+     const response: HttpResponse = await this.httpClient.post(url, undefined, {headers: headers});
 
-     const data: any = response.json({});
+     return response.handle(async(it): Promise<string> => {
+       const data: OAuthToken = it.json<OAuthToken>(oAuthTokenSchema);
+       await this.updateTokens(user, data);
+
+       return data.access_token;
+     });
+   }
+
+  /**
+   * Checks if the given {@code user} has a valid access token
+   * by comparing the users last token update with the given {@code ttl}.
+   *
+   * @param {User} user the user to check the token
+   * @param {number} ttl time to life of the access token in seconds
+   *
+   * @returns {boolean} true if the token is valid, otherwise false
+   */
+   private hasValidToken(user: User, ttl: number): boolean {
+     return Date.now() - user.lastTokenUpdate < ttl * FACTOR_SEC_TO_MILLI;
+   }
+
+  /**
+   * Updates the tokens on the given {@code user}
+   * and persists the changes.
+   *
+   * @param {User} user the user to update
+   * @param {OAuthToken} data the token data
+   */
+   private async updateTokens(user: User, data: OAuthToken): Promise<void> {
      user.accessToken = data.access_token;
-     user.refreshToken = data.refres_token;
+     user.refreshToken = data.refresh_token;
      user.lastTokenUpdate = Date.now();
      await this.activeUser.write(user);
-
-     return data.access_token;
    }
 }
 
@@ -127,7 +184,32 @@ export interface ILIASRest {
  }
 
 /**
- * Describes request options for ILIAS.
+ * Json response on OAuth2 authentication.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+interface OAuthToken {
+   readonly access_token: string;
+   readonly refresh_token: string;
+   readonly expires_in: number;
+   readonly token_type: string;
+}
+
+const oAuthTokenSchema: object = {
+  "title": "oauth2 token",
+  "type": "object",
+  "properties": {
+    "access_token": { "type": "string" },
+    "refresh_token": { "type": "string" },
+    "expires_in": { "type": "integer" },
+    "token_type": { "type": "string" }
+  },
+  "required": ["access_token", "refresh_token", "expires_in", "token_type"]
+};
+
+/**
+ * request options for ILIAS.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
@@ -138,7 +220,7 @@ export interface ILIASRequestOptions {
 }
 
 /**
- * Indicates, that a authentication token is expired.
+ * Indicates an expired token.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0

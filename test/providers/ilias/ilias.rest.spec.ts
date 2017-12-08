@@ -1,4 +1,4 @@
-import {ActiveUserProvider, ILIASTokenManager} from "../../../src/providers/ilias/ilias.rest";
+import {ActiveUserProvider, ILIASTokenManager, TokenExpiredError} from "../../../src/providers/ilias/ilias.rest";
 import {SinonSandbox, createSandbox, SinonSpy, stub, assert, SinonStubStatic, SinonStub} from "sinon";
 import {stubInstance} from "../../SinonUtils";
 import {HttpClient, HttpResponse} from "../../../src/providers/http";
@@ -70,7 +70,7 @@ describe("a ILIAS token manager", () => {
 
 		context("expired access token", () => {
 
-			it("should get a new assess token", async() => {
+			it("should get a new access token", async() => {
 
         const user: User = new User();
         user.accessToken = "access token";
@@ -89,6 +89,11 @@ describe("a ILIAS token manager", () => {
             token_type: "bearer"
           });
 
+        const handleStub: SinonStub = sandbox.stub(mockResponse, "handle")
+          .callsFake((args): Promise<string> => {
+            return args(mockResponse);
+          });
+
         sandbox.stub(mockHttpClient, "post")
           .resolves(mockResponse);
 
@@ -98,9 +103,25 @@ describe("a ILIAS token manager", () => {
         const token: string = await manager.getAccessToken();
 
 
-        chai.assert.isTrue(writeStub.calledOnce);
+        chai.assert.isTrue(writeStub.calledOnce, "expected ActiveUserRepository#write method to be called once");
+        chai.assert.isTrue(handleStub.calledOnce, "expected HttpResponse#handle method to be called once");
         chai.expect(token)
           .to.be.equal("new access token");
+			})
+		});
+
+		context("thrown error from dependency", () => {
+
+			it("should throw a token expired error", (done) => {
+
+		    sandbox.stub(mockActiveUser, "read")
+          .throws(Error);
+
+
+		    chai.expect(manager.getAccessToken())
+          .to.be.rejectedWith(TokenExpiredError)
+          .and.eventually.to.have.property("message", "Could not find a valid access token")
+          .notify(done);
 			})
 		});
 	});
