@@ -1,6 +1,10 @@
-import {HttpResponse} from "../http";
+import {HttpClient, HttpResponse} from "../http";
+import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+import {Inject, Injectable} from "@angular/core";
 import {User} from "../../models/user";
+import {Headers} from "@angular/http";
 
+// console.log(HttpClient);
 /**
  * Supported API versions.
  */
@@ -12,7 +16,7 @@ export type ILIASApiVersion = "v1" | "v2";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export interface TokeManager {
+export interface TokenManager {
 
   /**
    * Ensures that the returned access token is valid.
@@ -58,23 +62,68 @@ export interface ILIASRest {
    * @throws {HttpRequestError} if the request was not successful
    * @throws {AuthenticateError} if the request could not be authenticated
    */
-  get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>
+  get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>;
 }
 
 /**
- * Abstracts the {@link User} Active Record as a repository,
- * that only can get the active user.
+ * Manages an access token from the active user.
  *
- * Is necessary for testing purposes, which is not possible with the RDM pattern.
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+@Injectable()
+ export class ILIASTokenManager implements TokenManager {
+
+   private accessToken: string = "";
+
+   constructor(
+     private readonly httpClient: HttpClient,
+     @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
+     private readonly activeUser: ActiveUserProvider
+   ) {}
+
+   async getAccessToken(): Promise<string> {
+
+     const user: User = await this.activeUser.read();
+     const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+
+     if (Date.now() - user.lastTokenUpdate < (installation.accessTokenTTL * 1000)) {
+       return user.accessToken;
+     }
+
+     const url: string = installation.url + "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php/v2/oauth2/token";
+
+     const headers: Headers = new Headers();
+     headers.append("api_key", installation.apiKey);
+     headers.append("api_secret", installation.apiSecret);
+     headers.append("grant_type", "refresh_token");
+     headers.append("refresh_token", user.refreshToken);
+
+     const response: HttpResponse = await this.httpClient.post(url, undefined, {headers: headers})
+
+     const data: any = response.json({});
+     user.accessToken = data.access_token;
+     user.refreshToken = data.refres_token;
+     user.lastTokenUpdate = Date.now();
+     await this.activeUser.write(user);
+
+     return data.access_token;
+   }
+}
+
+/**
+ * Abstract the User Active Record to operate and only operate on the active user.
+ *
+ * Is needed for testing purposes.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
- export class ActiveUserRepository {
+ export class ActiveUserProvider {
 
-   async get(): Promise<User> { return User.findActiveUser() }
+   async read(): Promise<User> { return User.findActiveUser() }
 
-   async save(user: User): Promise<void> { await user.save() }
+   async write(user: User): Promise<void> { await user.save() }
  }
 
 /**
