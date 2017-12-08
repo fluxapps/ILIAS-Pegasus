@@ -35,6 +35,10 @@ import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
 import {HttpClient} from "../providers/http";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
+import {
+  ActiveUserProvider, ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
+  TOKEN_MANAGER
+} from "../providers/ilias/ilias.rest";
 
 
 export function createTranslateLoader(http: Http) {
@@ -82,10 +86,25 @@ export function createTranslateLoader(http: Http) {
       provide: ILIAS_CONFIG_FACTORY,
       useClass: HttpILIASConfigFactory
     },
+
+    /* from src/config/ilias-config */
     {
       provide: CONFIG_PROVIDER,
       useClass: ILIASConfigProvider
     },
+
+    /* from src/providers/ilias/lias.rest */
+    {
+      provide: TOKEN_MANAGER,
+      useClass: ILIASTokenManager
+    },
+    {
+      provide: ILIAS_REST,
+      useClass: ILIASRestImpl
+    },
+    ActiveUserProvider,
+
+
     ConnectionService,
     MigrationsService,
     ILIASRestProvider,

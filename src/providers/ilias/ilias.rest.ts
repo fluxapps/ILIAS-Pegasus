@@ -1,6 +1,6 @@
 import {HttpClient, HttpResponse} from "../http";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
-import {Inject, Injectable} from "@angular/core";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {User} from "../../models/user";
 import {Headers, RequestOptionsArgs} from "@angular/http";
 
@@ -28,6 +28,7 @@ export interface TokenManager {
    */
   getAccessToken(): Promise<string>
 }
+export const TOKEN_MANAGER: InjectionToken<TokenManager> = new InjectionToken("token for token manager");
 
 /**
  * Describes a REST client specialized for ILIAS.
@@ -65,6 +66,7 @@ export interface ILIASRest {
    */
   get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>;
 }
+export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token for ILIAS rest");
 
 /**
  * Manages an access token from the active user.
@@ -129,7 +131,7 @@ export interface ILIASRest {
      headers.append("grant_type", "refresh_token");
      headers.append("refresh_token", user.refreshToken);
 
-     const response: HttpResponse = await this.httpClient.post(url, undefined, {headers: headers});
+     const response: HttpResponse = await this.httpClient.post(url, undefined, <RequestOptionsArgs>{headers: headers});
 
      return response.handle(async(it): Promise<string> => {
        const data: OAuthToken = it.json<OAuthToken>(oAuthTokenSchema);
@@ -173,11 +175,12 @@ export interface ILIASRest {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
+@Injectable()
  export class ILIASRestImpl implements ILIASRest {
 
    constructor(
-     private readonly tokenManager: TokenManager,
-     private readonly configProvider: ConfigProvider,
+     @Inject(TOKEN_MANAGER) private readonly tokenManager: TokenManager,
+     @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
      private readonly httpClient: HttpClient,
      private readonly activeUser: ActiveUserProvider
    ) {}
@@ -222,6 +225,7 @@ export interface ILIASRest {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+@Injectable()
  export class ActiveUserProvider {
 
    async read(): Promise<User> { return User.findActiveUser() }
