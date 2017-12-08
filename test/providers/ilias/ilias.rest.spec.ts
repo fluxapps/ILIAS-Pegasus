@@ -1,5 +1,5 @@
-import {ActiveUserProvider, ILIASTokenManager, TokenExpiredError} from "../../../src/providers/ilias/ilias.rest";
-import {SinonSandbox, createSandbox, SinonSpy, stub, assert, SinonStubStatic, SinonStub} from "sinon";
+import { ActiveUserProvider, ILIASTokenManager, TokenExpiredError } from "../../../src/providers/ilias/ilias.rest";
+import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {stubInstance} from "../../SinonUtils";
 import {HttpClient, HttpResponse} from "../../../src/providers/http";
 import {ConfigProvider, ILIASConfig, ILIASInstallation} from "../../../src/config/ilias-config";

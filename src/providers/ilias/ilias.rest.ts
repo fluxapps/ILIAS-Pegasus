@@ -2,7 +2,7 @@ import {HttpClient, HttpResponse} from "../http";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {Inject, Injectable} from "@angular/core";
 import {User} from "../../models/user";
-import {Headers} from "@angular/http";
+import {Headers, RequestOptionsArgs} from "@angular/http";
 
 const FACTOR_SEC_TO_MILLI: number = 1000;
 const ILIAS_API_URL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
@@ -61,8 +61,7 @@ export interface ILIASRest {
    * @param {ILIASRequestOptions} options ILIAS specific request options
    *
    * @returns {Promise<HttpResponse>} the resulting response
-   * @throws {HttpRequestError} if the request was not successful
-   * @throws {AuthenticateError} if the request could not be authenticated
+   * @throws {TokenExpiredError} if the access token is expired and could not be refreshed
    */
   get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>;
 }
@@ -166,6 +165,53 @@ export interface ILIASRest {
      user.lastTokenUpdate = Date.now();
      await this.activeUser.write(user);
    }
+}
+
+/**
+ * Implementation of {@link ILIASRest}.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+ export class ILIASRestImpl implements ILIASRest {
+
+   constructor(
+     private readonly tokenManager: TokenManager,
+     private readonly configProvider: ConfigProvider,
+     private readonly httpClient: HttpClient,
+     private readonly activeUser: ActiveUserProvider
+   ) {}
+
+  /**
+   * Performs a get request to the given {@code path}.
+   * The path MUST start with a '/' character.
+   *
+   * The api version MUST NOT be part of the path. Instead its required in the
+   * {@code options} parameter.
+   *
+   * @param {string} path the endpoint without host, specific path and api version
+   * @param {ILIASRequestOptions} options ILIAS specific request options
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   * @throws {TokenExpiredError} if the access token is expired and could not be refreshed
+   */
+  async get(path: string, options: ILIASRequestOptions): Promise<HttpResponse> {
+
+     const user: User = await this.activeUser.read();
+     const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+
+     const url: string = `${installation.url}${ILIAS_API_URL}/${options.apiVersion}${path}`;
+     const headers: Headers = new Headers();
+     headers.append("Authorization", `Bearer ${this.tokenManager.getAccessToken()}`);
+
+
+     const requestOptions: RequestOptionsArgs = <RequestOptionsArgs>{
+       headers:headers,
+       search: options.urlParams
+     };
+
+     return this.httpClient.get(url, requestOptions);
+  }
 }
 
 /**
