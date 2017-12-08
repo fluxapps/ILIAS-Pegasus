@@ -85,16 +85,16 @@ export class HttpClient {
     * @returns {Object} the valid json
     * @throws {JsonValidationError} if the body could not be parsed or does not match the schema
     */
-    json(schema: object): object {
+    json<T>(schema: object): T {
 
-      const json: object = this.tryJson(this.response, (): Error =>
+      const json: {} = this.tryJson(this.response, (): Error =>
         new JsonValidationError("Could not parse response body to json")
       );
 
       const result: ValidatorResult = this.validator.validate(json, schema);
 
       if (result.valid) {
-        return json;
+        return <T>json;
       }
 
       throw new JsonValidationError(result.errors[0].message);
@@ -148,6 +148,17 @@ export class HttpClient {
       }
     }
   }
+
+/**
+ * Describes an object that matches the schema.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+ export interface JsonSchema<T> {
+   readonly type: T;
+   getSchema(): object;
+ }
 
 /**
  * Indicates a that a json could not be parsed or does not match a required json schema.
