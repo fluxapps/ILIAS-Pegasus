@@ -13,6 +13,7 @@ import {FavoritesPage} from "../pages/favorites/favorites";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {SettingsPage} from "../pages/settings/settings";
 import {InfoPage} from "../pages/info/info";
+import {MapPage} from "../learnplace/pages/map/map.component";
 import {SynchronizationService} from "../services/synchronization.service";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
@@ -51,7 +52,8 @@ export function createTranslateLoader(http: Http) {
     LoginPage,
     FileSizePipe,
     SyncFinishedModal,
-    ModalPage
+    ModalPage,
+    MapPage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -74,6 +76,7 @@ export function createTranslateLoader(http: Http) {
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
+    MapPage
   ],
   providers: [
     {
