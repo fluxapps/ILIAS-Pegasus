@@ -148,7 +148,7 @@ export class HttpResponse {
    * @throws {NotFoundError} if the status code is 404
    * @throws {HttpRequestError} if no status code is not explicit handled and not ok
    */
-  async handle<T>(success: (response: HttpResponse) => T): Promise<T> {
+  async handle<T>(success: (response: HttpResponse) => Promise<T>): Promise<T> {
     // TODO: Add logger when error
     switch (true) {
       case this.ok:

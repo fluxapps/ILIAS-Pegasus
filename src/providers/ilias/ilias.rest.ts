@@ -133,7 +133,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
      const response: HttpResponse = await this.httpClient.post(url, undefined, <RequestOptionsArgs>{headers: headers});
 
-     return response.handle(async(it): Promise<string> => {
+     return response.handle<string>(async(it): Promise<string> => {
        const data: OAuthToken = it.json<OAuthToken>(oAuthTokenSchema);
        await this.updateTokens(user, data);
 
