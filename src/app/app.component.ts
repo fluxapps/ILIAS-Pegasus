@@ -20,7 +20,7 @@ import {ModalController} from "ionic-angular";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {SQLite} from "@ionic-native/sqlite";
 import {Job} from "../services/footer-toolbar.service";
-import {MapPage} from "../learnplace/pages/map/map.component";
+import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 
 
 @Component({
@@ -259,7 +259,7 @@ export class MyApp {
 
     openTestpage(): void {
       this.menu.close();
-      this.nav.push(MapPage);
+      this.nav.push(TabsPage);
     }
 
 	/**
