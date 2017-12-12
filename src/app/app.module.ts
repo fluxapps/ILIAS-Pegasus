@@ -34,6 +34,7 @@ import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
+import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 
 
 export function createTranslateLoader(http: Http) {
@@ -53,7 +54,8 @@ export function createTranslateLoader(http: Http) {
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
-    MapPage
+    MapPage,
+    TabsPage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -76,7 +78,8 @@ export function createTranslateLoader(http: Http) {
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
-    MapPage
+    MapPage,
+    TabsPage
   ],
   providers: [
     {
