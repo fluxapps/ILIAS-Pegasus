@@ -36,7 +36,7 @@ import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-co
 import {HttpClient} from "../providers/http";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {
-  ActiveUserProvider, ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
+  ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
   TOKEN_MANAGER
 } from "../providers/ilias/ilias.rest";
 
@@ -102,7 +102,6 @@ export function createTranslateLoader(http: Http) {
       provide: ILIAS_REST,
       useClass: ILIASRestImpl
     },
-    ActiveUserProvider,
 
 
     ConnectionService,
