@@ -1,10 +1,12 @@
-import { ActiveUserProvider, ILIASTokenManager, TokenExpiredError } from "../../../src/providers/ilias/ilias.rest";
+import { ILIASTokenManager, TokenExpiredError } from "../../../src/providers/ilias/ilias.rest";
 import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {stubInstance} from "../../SinonUtils";
 import {HttpClient, HttpResponse} from "../../../src/providers/http";
-import {ConfigProvider, ILIASConfig, ILIASInstallation} from "../../../src/config/ilias-config";
-import {User} from "../../../src/models/user";
 import * as chaiAsPromised from "chai-as-promised";
+import {
+  ClientCredentials, OAuth2DataSupplier, Token,
+  TokenResponseConsumer
+} from "../../../src/providers/ilias/ilias.rest-api";
 
 // enables promise assert with chai
 chai.use(chaiAsPromised);
@@ -18,28 +20,17 @@ describe("a ILIAS token manager", () => {
   const sandbox: SinonSandbox = createSandbox();
 
   const mockHttpClient: HttpClient = stubInstance(HttpClient);
-  const mockConfigProvider: ConfigProvider = <ConfigProvider>{
-    loadConfig: (): Promise<ILIASConfig> => undefined,
-    loadInstallation: (): Promise<ILIASInstallation> => undefined
+  const mockDataSupplier: OAuth2DataSupplier = <OAuth2DataSupplier>{
+    getClientCredentials: (): {} => undefined
   };
-  const mockActiveUser: ActiveUserProvider = stubInstance(ActiveUserProvider);
+  const mockResponseConsumer: TokenResponseConsumer = <TokenResponseConsumer>{
+    accept: (arg): {} => undefined
+  };
 
-  let manager: ILIASTokenManager = new ILIASTokenManager(mockHttpClient, mockConfigProvider, mockActiveUser);
+  let manager: ILIASTokenManager = new ILIASTokenManager(mockHttpClient, mockDataSupplier, mockResponseConsumer);
 
 	beforeEach(() => {
-		manager = new ILIASTokenManager(mockHttpClient, mockConfigProvider, mockActiveUser);
-
-    const installation: ILIASInstallation = <ILIASInstallation>{
-      id: 1,
-      accessTokenTTL: ONE_HOUR_IN_SEC,
-      title: "test name",
-      url: "https://test.ilias.de",
-      clientId: "default",
-      apiKey: "key",
-      apiSecret: "secret"
-    };
-    sandbox.stub(mockConfigProvider, "loadInstallation")
-      .returns(installation);
+		manager = new ILIASTokenManager(mockHttpClient, mockDataSupplier, mockResponseConsumer);
 	});
 
 	afterEach(() => {
@@ -52,19 +43,27 @@ describe("a ILIAS token manager", () => {
 
 			it("should return the access token", async() => {
 
-        const user: User = new User();
-        user.accessToken = "access token";
-        user.lastTokenUpdate = Date.now();
-
-        sandbox.stub(mockActiveUser, "read")
-          .resolves(user);
+			  const clientCredentials: ClientCredentials = <ClientCredentials>{
+			    clientId: "client id",
+          clientSecret: "secret",
+          accessTokenURL: "https://ilias.de/token",
+          token: <Token>{
+			      type: "Bearer",
+            accessToken: "access",
+            refreshToken: "refresh",
+            lastTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI,
+            ttl: ONE_HOUR_IN_SEC
+          }
+        };
+			  sandbox.stub(mockDataSupplier, "getClientCredentials")
+          .resolves(clientCredentials);
 
 
         const token: string = await manager.getAccessToken();
 
 
         chai.expect(token)
-          .to.deep.equal("access token");
+          .to.deep.equal("access");
 			});
 		});
 
@@ -72,13 +71,21 @@ describe("a ILIAS token manager", () => {
 
 			it("should get a new access token", async() => {
 
-        const user: User = new User();
-        user.accessToken = "access token";
-        user.refreshToken = "refresh token";
-        user.lastTokenUpdate = Date.now() - TWO_HOURS_IN_SEC * FACTOR_SEC_TO_MILLI;
+        const clientCredentials: ClientCredentials = <ClientCredentials>{
+          clientId: "client id",
+          clientSecret: "secret",
+          accessTokenURL: "https://ilias.de/token",
+          token: <Token>{
+            type: "Bearer",
+            accessToken: "access",
+            refreshToken: "refresh",
+            lastTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI - TWO_HOURS_IN_SEC,
+            ttl: ONE_HOUR_IN_SEC
+          }
+        };
+        sandbox.stub(mockDataSupplier, "getClientCredentials")
+          .resolves(clientCredentials);
 
-        sandbox.stub(mockActiveUser, "read")
-          .resolves(user);
 
         const mockResponse: HttpResponse = stubInstance(HttpResponse);
         sandbox.stub(mockResponse, "json")
@@ -97,13 +104,13 @@ describe("a ILIAS token manager", () => {
         sandbox.stub(mockHttpClient, "post")
           .resolves(mockResponse);
 
-        const writeStub: SinonStub = sandbox.stub(mockActiveUser, "write");
+        const consumeStub: SinonStub = sandbox.stub(mockResponseConsumer, "accept");
 
 
         const token: string = await manager.getAccessToken();
 
 
-        chai.assert.isTrue(writeStub.calledOnce, "expected ActiveUserRepository#write method to be called once");
+        chai.assert.isTrue(consumeStub.calledOnce, "expected TokenResponseConsumer#accept method to be called once");
         chai.assert.isTrue(handleStub.calledOnce, "expected HttpResponse#handle method to be called once");
         chai.expect(token)
           .to.be.equal("new access token");
@@ -114,13 +121,13 @@ describe("a ILIAS token manager", () => {
 
 			it("should throw a token expired error", (done) => {
 
-		    sandbox.stub(mockActiveUser, "read")
+		    sandbox.stub(mockDataSupplier, "getClientCredentials")
           .throws(Error);
 
 
 		    chai.expect(manager.getAccessToken())
           .to.be.rejectedWith(TokenExpiredError)
-          .and.eventually.to.have.property("message", "Could not find a valid access token")
+          .and.eventually.to.have.property("message", "Could not get a valid access token")
           .notify(done);
 			})
 		});

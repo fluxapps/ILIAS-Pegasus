@@ -1,16 +1,15 @@
 import {HttpClient, HttpResponse} from "../http";
-import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {User} from "../../models/user";
 import {Headers, RequestOptionsArgs} from "@angular/http";
+import {
+  ClientCredentials,
+  OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier, OAuth2Token, Token, TOKEN_RESPONSE_CONSUMER,
+  TokenResponseConsumer
+} from "./ilias.rest-api";
+import {isUndefined} from "ionic-angular/es2015/util/util";
 
-const FACTOR_SEC_TO_MILLI: number = 1000;
+const MILLISEC_TO_SEC: number = 1000;
 const ILIAS_API_URL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
-
-/**
- * Supported API versions.
- */
-export type ILIASApiVersion = "v1" | "v2";
 
 /**
  * Describes a manager to validate authentication tokens.
@@ -69,18 +68,20 @@ export interface ILIASRest {
 export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token for ILIAS rest");
 
 /**
- * Manages an access token from the active user.
+ * Manages credentials provided by the given {@link OAuth2DataSupplier}.
+ *
+ * The given {@link TokenResponseConsumer} is called on successful access token refresh.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Injectable()
  export class ILIASTokenManager implements TokenManager {
 
    constructor(
      private readonly httpClient: HttpClient,
-     @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
-     private readonly activeUser: ActiveUserProvider
+     @Inject(OAUTH2_DATA_SUPPLIER) private readonly dataSupplier: OAuth2DataSupplier,
+     @Inject(TOKEN_RESPONSE_CONSUMER) private readonly responseConsumer: TokenResponseConsumer
    ) {}
 
   /**
@@ -94,18 +95,52 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
      try {
 
-       const user: User = await this.activeUser.read();
-       const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+       const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-       if (this.hasValidToken(user, installation.accessTokenTTL)) {
-         return user.accessToken;
-       }
+       const token: string | undefined = await this.takeIf<string>(credentials.token.accessToken, (): boolean =>
+         Date.now() / MILLISEC_TO_SEC - credentials.token.lastTokenUpdate < credentials.token.ttl
+       );
 
-       return this.updateAccessToken(user, installation);
+       return this.orElseGet<string>(token, (): Promise<string> => this.updateAccessToken(credentials));
 
      } catch (error) {
-       throw new TokenExpiredError("Could not find a valid access token");
+       throw new TokenExpiredError("Could not get a valid access token");
      }
+   }
+
+
+  /**
+   * Returns the given {@code object} if the given {@code condition} is true.
+   *
+   * @param {T} object - the object to check
+   * @param {() => boolean} condition - the condition to use
+   *
+   * @returns {Promise<T | undefined>} the object if the condition is true, otherwise undefined
+   */
+   private async takeIf<T>(object: T, condition: () => boolean): Promise<T| undefined> {
+
+      if (condition()) {
+        return object
+      }
+
+      return undefined;
+   }
+
+  /**
+   * Returns the given {@code object} or the given {@code supplier} if the object is undefined.
+   *
+   * @param {T | undefined} object - the object to get
+   * @param {() => Promise<T>} supplier - the supplier to use
+   *
+   * @returns {Promise<T>} the resulting object
+   */
+   private async orElseGet<T>(object: T | undefined, supplier: () => Promise<T>): Promise<T> {
+
+     if (isUndefined(object)) {
+       return supplier();
+     }
+
+     return object
    }
 
   /**
@@ -113,59 +148,31 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    * The given arguments are used to get all relevant data to update
    * the access token.
    *
-   * The given {@code user} will be updated with the new access token.
+   * This method calls the {@link TokenResponseConsumer} on successful update.
    *
-   * @param {User} user the user used
-   * @param {ILIASInstallation} installation the ILIAS installation of the user
+   * @param {ClientCredentials} credentials - the credentials to use
    *
    * @returns {Promise<string>} the updated access token
    * @throws {HttpRequestError} if the response is not ok
    */
-   private async updateAccessToken(user: User, installation: ILIASInstallation): Promise<string> {
+   private async updateAccessToken(credentials: ClientCredentials): Promise<string> {
 
-     const url: string = `${installation.url}${ILIAS_API_URL}/v2/oauth2/token`;
+     const url: string = `${credentials.accessTokenURL}${ILIAS_API_URL}/v2/oauth2/token`;
 
      const headers: Headers = new Headers();
-     headers.append("api_key", installation.apiKey);
-     headers.append("api_secret", installation.apiSecret);
+     headers.append("api_key", credentials.clientId);
+     headers.append("api_secret", credentials.clientSecret);
      headers.append("grant_type", "refresh_token");
-     headers.append("refresh_token", user.refreshToken);
+     headers.append("refresh_token", credentials.token.refreshToken);
 
      const response: HttpResponse = await this.httpClient.post(url, undefined, <RequestOptionsArgs>{headers: headers});
 
      return response.handle<string>(async(it): Promise<string> => {
-       const data: OAuthToken = it.json<OAuthToken>(oAuthTokenSchema);
-       await this.updateTokens(user, data);
+       const data: OAuth2Token = it.json<OAuth2Token>(oAuthTokenSchema);
+       await this.responseConsumer.accept(data);
 
        return data.access_token;
      });
-   }
-
-  /**
-   * Checks if the given {@code user} has a valid access token
-   * by comparing the users last token update with the given {@code ttl}.
-   *
-   * @param {User} user the user to check the token
-   * @param {number} ttl time to life of the access token in seconds
-   *
-   * @returns {boolean} true if the token is valid, otherwise false
-   */
-   private hasValidToken(user: User, ttl: number): boolean {
-     return Date.now() - user.lastTokenUpdate < ttl * FACTOR_SEC_TO_MILLI;
-   }
-
-  /**
-   * Updates the tokens on the given {@code user}
-   * and persists the changes.
-   *
-   * @param {User} user the user to update
-   * @param {OAuthToken} data the token data
-   */
-   private async updateTokens(user: User, data: OAuthToken): Promise<void> {
-     user.accessToken = data.access_token;
-     user.refreshToken = data.refresh_token;
-     user.lastTokenUpdate = Date.now();
-     await this.activeUser.write(user);
    }
 }
 
@@ -173,26 +180,24 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
  * Implementation of {@link ILIASRest}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
  export class ILIASRestImpl implements ILIASRest {
 
    constructor(
      @Inject(TOKEN_MANAGER) private readonly tokenManager: TokenManager,
-     @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
+     @Inject(OAUTH2_DATA_SUPPLIER) private readonly dataSupplier: OAuth2DataSupplier,
      private readonly httpClient: HttpClient,
-     private readonly activeUser: ActiveUserProvider
    ) {}
 
   /**
    * Performs a get request to the given {@code path}.
+   *
    * The path MUST start with a '/' character.
+   * The api version MUST be part of the path.
    *
-   * The api version MUST NOT be part of the path. Instead its required in the
-   * {@code options} parameter.
-   *
-   * @param {string} path the endpoint without host, specific path and api version
+   * @param {string} path the endpoint without host, specific path
    * @param {ILIASRequestOptions} options ILIAS specific request options
    *
    * @returns {Promise<HttpResponse>} the resulting response
@@ -200,11 +205,11 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    */
   async get(path: string, options: ILIASRequestOptions): Promise<HttpResponse> {
 
-     const user: User = await this.activeUser.read();
-     const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.installationId);
+     const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-     const url: string = `${installation.url}${ILIAS_API_URL}/${options.apiVersion}${path}`;
+     const url: string = `${credentials.accessTokenURL}${ILIAS_API_URL}/${path}`;
      const headers: Headers = new Headers();
+     headers.append("Accept", options.accept);
      headers.append("Authorization", `Bearer ${this.tokenManager.getAccessToken()}`);
 
 
@@ -215,35 +220,6 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
      return this.httpClient.get(url, requestOptions);
   }
-}
-
-/**
- * Abstract the User Active Record to operate and only operate on the active user.
- *
- * Is needed for testing purposes.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
- */
-@Injectable()
- export class ActiveUserProvider {
-
-   async read(): Promise<User> { return User.findActiveUser() }
-
-   async write(user: User): Promise<void> { await user.save() }
- }
-
-/**
- * Json response on OAuth2 authentication.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
- */
-interface OAuthToken {
-   readonly access_token: string;
-   readonly refresh_token: string;
-   readonly expires_in: number;
-   readonly token_type: string;
 }
 
 const oAuthTokenSchema: object = {
@@ -265,7 +241,7 @@ const oAuthTokenSchema: object = {
  * @version 1.0.0
  */
 export interface ILIASRequestOptions {
-  readonly apiVersion: ILIASApiVersion,
+  readonly accept: string,
   readonly urlParams?: URLSearchParams
 }
 

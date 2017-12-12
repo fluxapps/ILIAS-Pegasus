@@ -16,7 +16,7 @@ export interface OAuth2DataSupplier {
    */
    getClientCredentials(): Promise<ClientCredentials>
 }
-const OAUTH2_DATA_SUPPLIER: InjectionToken<OAuth2DataSupplier> = new InjectionToken("oauth2 data supplier");
+export const OAUTH2_DATA_SUPPLIER: InjectionToken<OAuth2DataSupplier> = new InjectionToken("oauth2 data supplier");
 
 /**
  * Describes a consumer, that will be called when the response
@@ -34,7 +34,7 @@ export interface TokenResponseConsumer {
    */
   accept(token: OAuth2Token): Promise<void>
 }
-const TOKEN_RESPONSE_CONSUMER: InjectionToken<TokenResponseConsumer> = new InjectionToken("token response consumer");
+export const TOKEN_RESPONSE_CONSUMER: InjectionToken<TokenResponseConsumer> = new InjectionToken("token response consumer");
 
 /**
  * Default implementation of a {@link TokenResponseConsumer}.
