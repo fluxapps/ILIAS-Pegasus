@@ -13,6 +13,7 @@ import {FavoritesPage} from "../pages/favorites/favorites";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {SettingsPage} from "../pages/settings/settings";
 import {InfoPage} from "../pages/info/info";
+import {MapPage} from "../learnplace/pages/map/map.component";
 import {SynchronizationService} from "../services/synchronization.service";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
@@ -33,6 +34,7 @@ import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
+import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 
 
 export function createTranslateLoader(http: Http) {
@@ -51,7 +53,9 @@ export function createTranslateLoader(http: Http) {
     LoginPage,
     FileSizePipe,
     SyncFinishedModal,
-    ModalPage
+    ModalPage,
+    MapPage,
+    TabsPage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -74,6 +78,8 @@ export function createTranslateLoader(http: Http) {
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
+    MapPage,
+    TabsPage
   ],
   providers: [
     {
