@@ -1,5 +1,5 @@
 import {
-  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMapsEvent, ILatLng, LatLng, MapType,
+  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, ILatLng, LatLng, MapType,
   MarkerOptions, MyLocation, MyLocationOptions, VisibleRegion
 } from "@ionic-native/google-maps";
 import {isUndefined} from "util";
@@ -225,6 +225,20 @@ export class MapBuilder {
   private markerOptions?: MarkerOptions;
   private binding?: string | HTMLElement;
 
+  private readonly defaultControls: object = {
+    compass: false,
+    myLocationButton: true,
+    indoorPicker: false,
+    zoom: true
+  };
+
+  private readonly defaultGestures: object = {
+    rotate: true,
+    scroll: true,
+    tilt: false,
+    zoom: true
+  };
+
   /**
    * Uses the given {@code position} as the map camera.
    *
@@ -304,7 +318,12 @@ export class MapBuilder {
       return new MapEvaluationError("Can not build map: Requires a node to bind the map")
     });
 
-    const googleMap: GoogleMap = new GoogleMap(this.binding, <GoogleMapOptions>{camera: this.cameraPosition});
+    console.log(JSON.stringify(this.binding));
+    const googleMap: GoogleMap = new GoogleMap(this.binding, <GoogleMapOptions>{
+      camera: this.cameraPosition,
+      controls: this.defaultControls,
+      gestures: this.defaultGestures
+    });
 
     await googleMap.one(GoogleMapsEvent.MAP_READY);
 
