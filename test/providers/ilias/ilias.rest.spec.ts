@@ -46,6 +46,7 @@ describe("a ILIAS token manager", () => {
 			  const clientCredentials: ClientCredentials = <ClientCredentials>{
 			    clientId: "client id",
           clientSecret: "secret",
+          apiURl: "https/ilias.de",
           accessTokenURL: "https://ilias.de/token",
           token: <Token>{
 			      type: "Bearer",
@@ -74,6 +75,7 @@ describe("a ILIAS token manager", () => {
         const clientCredentials: ClientCredentials = <ClientCredentials>{
           clientId: "client id",
           clientSecret: "secret",
+          apiURl: "https://ilias.de",
           accessTokenURL: "https://ilias.de/token",
           token: <Token>{
             type: "Bearer",

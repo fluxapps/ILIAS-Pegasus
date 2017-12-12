@@ -54,16 +54,18 @@ export const TOKEN_RESPONSE_CONSUMER: InjectionToken<TokenResponseConsumer> = ne
  * Data object for client credentials.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  *
  * @property {string} clientId        - the client id of the ILIAS api
  * @property {string} clientSecret    - the secret of the ILIAS api
+ * @property {string} apiURl          - the url to the ILIAS rest api
  * @property {string} accessTokenURL  - the url to get the access token
  * @property {Token} token            - The token values
  */
 export interface ClientCredentials {
   readonly clientId: string;
   readonly clientSecret: string;
+  readonly apiURl: string,
   readonly accessTokenURL: string;
   readonly token: Token;
 }

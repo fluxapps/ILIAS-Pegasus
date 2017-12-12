@@ -9,7 +9,6 @@ import {
 import {isUndefined} from "ionic-angular/es2015/util/util";
 
 const MILLISEC_TO_SEC: number = 1000;
-const ILIAS_API_URL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
 
 /**
  * Describes a manager to validate authentication tokens.
@@ -157,15 +156,13 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    */
    private async updateAccessToken(credentials: ClientCredentials): Promise<string> {
 
-     const url: string = `${credentials.accessTokenURL}${ILIAS_API_URL}/v2/oauth2/token`;
-
      const headers: Headers = new Headers();
      headers.append("api_key", credentials.clientId);
      headers.append("api_secret", credentials.clientSecret);
      headers.append("grant_type", "refresh_token");
      headers.append("refresh_token", credentials.token.refreshToken);
 
-     const response: HttpResponse = await this.httpClient.post(url, undefined, <RequestOptionsArgs>{headers: headers});
+     const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptionsArgs>{headers: headers});
 
      return response.handle<string>(async(it): Promise<string> => {
        const data: OAuth2Token = it.json<OAuth2Token>(oAuthTokenSchema);
@@ -207,11 +204,10 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
      const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-     const url: string = `${credentials.accessTokenURL}${ILIAS_API_URL}/${path}`;
+     const url: string = `${credentials.apiURl}${path}`;
      const headers: Headers = new Headers();
      headers.append("Accept", options.accept);
-     headers.append("Authorization", `Bearer ${this.tokenManager.getAccessToken()}`);
-
+     headers.append("Authorization", `${credentials.token.type} ${this.tokenManager.getAccessToken()}`);
 
      const requestOptions: RequestOptionsArgs = <RequestOptionsArgs>{
        headers:headers,
