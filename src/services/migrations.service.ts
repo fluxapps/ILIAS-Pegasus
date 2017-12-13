@@ -4,6 +4,8 @@ import {Migration} from "../migrations/migration";
 import {SQLiteDatabaseService} from "./database.service";
 import {Log} from "./log.service";
 import {AddObjectAttributesMigration} from "../migrations/2-add-object-attributes-migration";
+import {Connection, getConnection} from "typeorm";
+import {CONNECTION_NAME} from "../config/typeORM-config";
 
 /**
  * Describes a service to handle database migrations.
@@ -15,6 +17,8 @@ export interface DBMigration {
 
   /**
    * Migrates the database with all found migrations.
+   *
+   * @throws {MigrationError} if a migration fails
    */
   migrate(): Promise<void>
 
@@ -22,6 +26,8 @@ export interface DBMigration {
    * Reverts the last n steps.
    *
    * @param {number} steps step count to revert
+   *
+   * @throws {MigrationError} if a revert step fails
    */
   revert(steps: number): Promise<void>
 }
@@ -31,17 +37,64 @@ const DB_MIGRATION: InjectionToken<DBMigration> = new InjectionToken("db migrati
  * DB Migration with TypeORM.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
+@Injectable()
 export class TypeOrmDbMigration implements DBMigration {
 
+  /**
+   * Migrates the database with all migrations found by typeORM.
+   *
+   * @throws {MigrationError} if a migration fails
+   */
+  async migrate(): Promise<void> {
 
-  migrate(): Promise<void> {
-    throw new Error("This method is not implemented yet");
+    try {
+
+      const connection: Connection = getConnection(CONNECTION_NAME);
+      await connection.runMigrations();
+
+    } catch (error) {
+      throw new MigrationError("Could not finish database migration");
+    }
   }
 
-  revert(steps: number): Promise<void> {
-    throw new Error("This method is not implemented yet");
+  /**
+   * Reverts the last n steps with typeORM connection.
+   *
+   * @param {number} steps - step count to revert
+   *
+   * @throws {MigrationError} if a revert step fails
+   */
+  async revert(steps: number): Promise<void> {
+
+    let currentStep: number = 0;
+
+    try {
+
+      const connection: Connection = getConnection(CONNECTION_NAME);
+
+      for(;currentStep < steps; currentStep++) {
+        await connection.undoLastMigration();
+      }
+
+    } catch (error) {
+      throw new MigrationError(`Could not revert step ${currentStep}`);
+    }
+  }
+}
+
+/**
+ * Indicates a failure during a database migration.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class MigrationError extends Error {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, MigrationError.prototype);
   }
 }
 
