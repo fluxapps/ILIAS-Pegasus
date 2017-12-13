@@ -1,8 +1,6 @@
-
-
-
 import {AfterViewInit, Component} from "@angular/core";
-import {GeoCoordinate, MapBuilder} from "../../../services/map.service";
+import {GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
+import {Platform} from "ionic-angular";
 
 /**
  * Component to display a map view.
@@ -16,8 +14,13 @@ import {GeoCoordinate, MapBuilder} from "../../../services/map.service";
 })
 export class MapPage implements AfterViewInit{
 
+  constructor(
+    private readonly platform: Platform
+  ) {}
+
   ngAfterViewInit(): void {
-    this.init();
+
+    this.platform.ready().then((): void => {this.init()})
   }
 
   async init(): Promise<void> {
@@ -25,12 +28,20 @@ export class MapPage implements AfterViewInit{
     const builder: MapBuilder = new MapBuilder();
 
     const camera: GeoCoordinate = <GeoCoordinate>{
-      longitude: 20,
-      latitude: 20
+      latitude: 47.059819,
+      longitude: 7.624037
+    };
+
+    const marker: Marker = <Marker>{
+      position: <GeoCoordinate>{
+        latitude: 47.059819, longitude: 7.624037
+      },
+      title: "A marker is here"
     };
 
     await builder
       .camera(camera)
+      .marker(marker)
       .bind("map")
       .build();
   }
