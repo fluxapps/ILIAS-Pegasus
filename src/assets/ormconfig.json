@@ -1,4 +1,5 @@
 {
+  "name": "ilias-pegasus",
   "type": "cordova",
   "database": "ilias_app",
   "location": "default",
