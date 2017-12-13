@@ -3,7 +3,7 @@ import {
   TokenResponseConsumer
 } from "../providers/ilias/ilias.rest-api";
 import {User} from "../models/user";
-import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "./ilias-config";
+import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "./ilias-config";
 import {Inject, Injectable} from "@angular/core";
 
 const apiURL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
@@ -12,7 +12,7 @@ const apiURL: string = "/Customizing/global/plugins/Services/UIComponent/UserInt
  * Provides the credentials data to ILIAS rest.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
@@ -21,6 +21,13 @@ export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
     @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider
   ) {}
 
+  /**
+   * Loads the current user and gets the installation of him.
+   *
+   * Last Token update is converted from milliseconds to seconds.
+   *
+   * @returns {Promise<ClientCredentials>} the client credentials that should be used
+   */
   async getClientCredentials(): Promise<ClientCredentials> {
 
     const currentUser: User = await User.findActiveUser();
@@ -46,11 +53,16 @@ export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
  * Consumes the token response from ILIAS rest.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class TokenResponseConsumerImpl implements TokenResponseConsumer {
 
+  /**
+   * Store the given token data to the current user.
+   *
+   * @param {OAuth2Token} token   - the response of an access token url
+   */
   async accept(token: OAuth2Token): Promise<void> {
 
     const currentUser: User = await User.findActiveUser();
