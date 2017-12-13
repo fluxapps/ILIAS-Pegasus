@@ -1,0 +1,17 @@
+{
+  "type": "cordova",
+  "database": "ilias_app",
+  "location": "default",
+  "synchronize": false,
+  "logging": false,
+  "migrationsRun": true,
+  "entities": [
+    "src/entity/**/*.ts"
+  ],
+  "migrations": [
+    "src/migrations/*.ts"
+  ],
+  "cil": {
+    "migrationsDir": "src/migration"
+  }
+}
