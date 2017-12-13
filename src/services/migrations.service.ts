@@ -1,14 +1,54 @@
-import {Injectable} from '@angular/core';
+import {Injectable, InjectionToken} from "@angular/core";
 import {CreateModelsMigration} from "../migrations/1-create-models-migration";
 import {Migration} from "../migrations/migration";
 import {SQLiteDatabaseService} from "./database.service";
 import {Log} from "./log.service";
 import {AddObjectAttributesMigration} from "../migrations/2-add-object-attributes-migration";
 
+/**
+ * Describes a service to handle database migrations.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface DBMigration {
+
+  /**
+   * Migrates the database with all found migrations.
+   */
+  migrate(): Promise<void>
+
+  /**
+   * Reverts the last n steps.
+   *
+   * @param {number} steps step count to revert
+   */
+  revert(steps: number): Promise<void>
+}
+const DB_MIGRATION: InjectionToken<DBMigration> = new InjectionToken("db migration token");
+
+/**
+ * DB Migration with TypeORM.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export class TypeOrmDbMigration implements DBMigration {
+
+
+  migrate(): Promise<void> {
+    throw new Error("This method is not implemented yet");
+  }
+
+  revert(steps: number): Promise<void> {
+    throw new Error("This method is not implemented yet");
+  }
+}
+
 @Injectable()
 export class MigrationsService {
 
-    protected migrations:Array<{id:number, migration:Migration}>;
+    protected migrations: Array<{id: number, migration: Migration}>;
 
     constructor() {
         this.migrations = [
@@ -20,8 +60,8 @@ export class MigrationsService {
     /**
      * Execute all pending migrations
      */
-    public executeAll():Promise<any> {
-        var migrations = [];
+    executeAll(): Promise<{}> {
+        const migrations = [];
         Log.describe(this, "Migrations: ", this.migrations);
 
         return this.init().then(() => {
@@ -39,13 +79,13 @@ export class MigrationsService {
      * Reverse migration with given ID
      * @param id
      */
-    public reverse(id:number):Promise<any> {
+    reverse(id: number): Promise<{}> {
         return new Promise((resolve, reject) => {
-            let migration = this.getMigration(id);
+            const migration = this.getMigration(id);
             migration.down().then(() => {
                 SQLiteDatabaseService.instance().then( db => {
-                    db.query('DELETE FROM migrations WHERE id = ?', [id]).then(() => {
-                        console.log('Reversed migration ' + id);
+                    db.query("DELETE FROM migrations WHERE id = ?", [id]).then(() => {
+                        console.log("Reversed migration " + id);
                         resolve();
                     }, () => {
                         reject();
@@ -57,7 +97,7 @@ export class MigrationsService {
 
     protected init() {
         return SQLiteDatabaseService.instance()
-            .then(db => { db.query('CREATE TABLE IF NOT EXISTS migrations (id INTEGER, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)'); })
+            .then(db => { db.query("CREATE TABLE IF NOT EXISTS migrations (id INTEGER, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"); })
             .then(() => {
                 Log.write(this, "init migrations table finished.");
                 return Promise.resolve();
@@ -68,21 +108,21 @@ export class MigrationsService {
      * Execute migration with given ID if not yet executed
      * @param id
      */
-    protected execute(id:number):Promise<any> {
+    protected execute(id: number): Promise<{}> {
         return new Promise((resolve, reject) => {
             SQLiteDatabaseService.instance().then( db => {
                 Log.write(this, "got db instance.");
-                db.query('SELECT * FROM migrations WHERE id = ?', [id]).then((response) => {
+                db.query("SELECT * FROM migrations WHERE id = ?", [id]).then((response) => {
                     Log.describe(this, "found migrations: ", response);
                     // Only execute the migration if not executed before!
                     if (response.rows.length > 0) {
                         resolve();
                     } else {
-                        let migration = this.getMigration(id);
+                        const migration = this.getMigration(id);
                         Log.write(this, "Migrate UP!");
                         migration.up().then(() => {
                             SQLiteDatabaseService.instance().then(db => {
-                                db.query('INSERT INTO migrations (id) VALUES (?)', [id]).then(() => {
+                                db.query("INSERT INTO migrations (id) VALUES (?)", [id]).then(() => {
                                     resolve();
                                 }, (error) => {
                                     reject(error);
@@ -105,8 +145,8 @@ export class MigrationsService {
      * @param id
      * @returns {Migration}
      */
-    protected getMigration(id:number):Migration {
-        return this.migrations.filter(function (migration) {
+    protected getMigration(id: number): Migration {
+        return this.migrations.filter(function(migration) {
             return migration.id == id;
         })[0].migration;
     }
