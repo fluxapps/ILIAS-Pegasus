@@ -34,6 +34,14 @@ import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
 import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
+import {HttpClient} from "../providers/http";
+import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
+import {
+  ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
+  TOKEN_MANAGER
+} from "../providers/ilias/ilias.rest";
+import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/ilias.rest-api";
+import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 
 
@@ -86,6 +94,33 @@ export function createTranslateLoader(http: Http) {
       provide: ILIAS_CONFIG_FACTORY,
       useClass: HttpILIASConfigFactory
     },
+
+    /* from src/config/ilias-config */
+    {
+      provide: CONFIG_PROVIDER,
+      useClass: ILIASConfigProvider
+    },
+
+    /* from src/providers/ilias/lias.rest */
+    {
+      provide: TOKEN_MANAGER,
+      useClass: ILIASTokenManager
+    },
+    {
+      provide: ILIAS_REST,
+      useClass: ILIASRestImpl
+    },
+
+    /* from src/config/ilias.rest-config */
+    {
+      provide: OAUTH2_DATA_SUPPLIER,
+      useClass: Oauth2DataSupplierImpl
+    },
+    {
+      provide: TOKEN_RESPONSE_CONSUMER,
+      useClass: TokenResponseConsumerImpl
+    },
+
     ConnectionService,
     MigrationsService,
     ILIASRestProvider,
@@ -102,6 +137,7 @@ export function createTranslateLoader(http: Http) {
     Network,
     SQLite,
     Toast,
+    HttpClient,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [

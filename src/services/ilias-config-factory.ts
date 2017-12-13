@@ -11,8 +11,8 @@ export const ILIAS_CONFIG_FACTORY = new InjectionToken<ILIASConfigFactory>("ilia
  *
  * @author nmaerchy
  * @version 1.0.0
+ * @deprecated use {@link ConfigProvider} instead
  */
-
 export interface ILIASConfigFactory {
 
   /**
