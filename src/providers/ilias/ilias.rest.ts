@@ -97,7 +97,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
        const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
        const token: string | undefined = await this.takeIf<string>(credentials.token.accessToken, (): boolean =>
-         Date.now() / MILLISEC_TO_SEC - credentials.token.lastTokenUpdate < credentials.token.ttl
+         Date.now() / MILLISEC_TO_SEC - credentials.token.lastAccessTokenUpdate < credentials.token.accessTokenTTL
        );
 
        return this.orElseGet<string>(token, (): Promise<string> => this.updateAccessToken(credentials));
@@ -204,7 +204,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
      const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-     const url: string = `${credentials.apiURl}${path}`;
+     const url: string = `${credentials.apiURL}${path}`;
      const headers: Headers = new Headers();
      headers.append("Accept", options.accept);
      headers.append("Authorization", `${credentials.token.type} ${this.tokenManager.getAccessToken()}`);

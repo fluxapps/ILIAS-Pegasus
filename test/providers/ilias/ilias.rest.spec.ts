@@ -46,14 +46,14 @@ describe("a ILIAS token manager", () => {
 			  const clientCredentials: ClientCredentials = <ClientCredentials>{
 			    clientId: "client id",
           clientSecret: "secret",
-          apiURl: "https/ilias.de",
+          apiURL: "https/ilias.de",
           accessTokenURL: "https://ilias.de/token",
           token: <Token>{
 			      type: "Bearer",
             accessToken: "access",
             refreshToken: "refresh",
-            lastTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI,
-            ttl: ONE_HOUR_IN_SEC
+            lastAccessTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI,
+            accessTokenTTL: ONE_HOUR_IN_SEC
           }
         };
 			  sandbox.stub(mockDataSupplier, "getClientCredentials")
@@ -75,14 +75,14 @@ describe("a ILIAS token manager", () => {
         const clientCredentials: ClientCredentials = <ClientCredentials>{
           clientId: "client id",
           clientSecret: "secret",
-          apiURl: "https://ilias.de",
+          apiURL: "https://ilias.de",
           accessTokenURL: "https://ilias.de/token",
           token: <Token>{
             type: "Bearer",
             accessToken: "access",
             refreshToken: "refresh",
-            lastTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI - TWO_HOURS_IN_SEC,
-            ttl: ONE_HOUR_IN_SEC
+            lastAccessTokenUpdate: Date.now() / FACTOR_SEC_TO_MILLI - TWO_HOURS_IN_SEC,
+            accessTokenTTL: ONE_HOUR_IN_SEC
           }
         };
         sandbox.stub(mockDataSupplier, "getClientCredentials")

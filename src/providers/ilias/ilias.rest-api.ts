@@ -23,7 +23,7 @@ export const OAUTH2_DATA_SUPPLIER: InjectionToken<OAuth2DataSupplier> = new Inje
  * of a access token url is resolved.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 export interface TokenResponseConsumer {
 
@@ -65,7 +65,7 @@ export const TOKEN_RESPONSE_CONSUMER: InjectionToken<TokenResponseConsumer> = ne
 export interface ClientCredentials {
   readonly clientId: string;
   readonly clientSecret: string;
-  readonly apiURl: string,
+  readonly apiURL: string,
   readonly accessTokenURL: string;
   readonly token: Token;
 }
@@ -76,18 +76,18 @@ export interface ClientCredentials {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  *
- * @property {string} type          - the token type used, e.g. Bearer
- * @property {string} accessToken   - the access token value
- * @property {string} refreshToken  - the refresh token value
- * @property {lastTokenUpdate}      - unix time of the last token update in seconds
- * @property {ttl}                  - time to life of the token in seconds
+ * @property {string} type           - the token type used, e.g. Bearer
+ * @property {string} accessToken    - the access token value
+ * @property {string} refreshToken   - the refresh token value
+ * @property {lastAccessTokenUpdate} - unix time of the last token update in seconds
+ * @property {accessTokenTTL}        - time to life of the token in seconds
  */
 export interface Token {
   readonly type: string;
   readonly accessToken: string;
   readonly refreshToken: string;
-  readonly lastTokenUpdate: number;
-  readonly ttl: number;
+  readonly lastAccessTokenUpdate: number;
+  readonly accessTokenTTL: number;
 }
 
 /**
