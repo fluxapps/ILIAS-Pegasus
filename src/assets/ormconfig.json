@@ -5,14 +5,12 @@
   "location": "default",
   "synchronize": false,
   "logging": false,
-  "migrationsRun": true,
-  "entities": [
-    "src/entity/**/*.ts"
-  ],
+  "migrationsRun": false,
+  "entities": [],
   "migrations": [
     "src/migrations/*.ts"
   ],
   "cil": {
-    "migrationsDir": "src/migration"
+    "migrationsDir": "src/migrations"
   }
 }
