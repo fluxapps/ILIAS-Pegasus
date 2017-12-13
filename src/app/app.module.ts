@@ -1,10 +1,10 @@
-import {NgModule, ErrorHandler} from '@angular/core';
-import {IonicApp, IonicModule, IonicErrorHandler} from 'ionic-angular';
-import { MyApp } from './app.component';
-import {HttpModule, Http} from '@angular/http';
+import {NgModule, ErrorHandler} from "@angular/core";
+import {IonicApp, IonicModule, IonicErrorHandler} from "ionic-angular";
+import { MyApp } from "./app.component";
+import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {MigrationsService} from "../services/migrations.service";
+import {DB_MIGRATION, MigrationsService, TypeOrmDbMigration} from "../services/migrations.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
 import {DataProvider} from "../providers/data-provider.provider";
@@ -17,7 +17,7 @@ import {MapPage} from "../learnplace/pages/map/map.component";
 import {SynchronizationService} from "../services/synchronization.service";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
-import {TranslateModule} from 'ng2-translate/ng2-translate';
+import {TranslateModule} from "ng2-translate/ng2-translate";
 import {TranslateLoader} from "ng2-translate/src/translate.service";
 import {TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
@@ -45,8 +45,8 @@ import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias
 import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 
 
-export function createTranslateLoader(http: Http) {
-  return new TranslateStaticLoader(http, './assets/i18n', '.json');
+export function createTranslateLoader(http: Http): TranslateStaticLoader {
+  return new TranslateStaticLoader(http, "./assets/i18n", ".json");
 }
 
 @NgModule({
@@ -119,6 +119,12 @@ export function createTranslateLoader(http: Http) {
     {
       provide: TOKEN_RESPONSE_CONSUMER,
       useClass: TokenResponseConsumerImpl
+    },
+
+    /* from src/services/migration.service */
+    {
+      provide: DB_MIGRATION,
+      useClass: TypeOrmDbMigration
     },
 
     ConnectionService,

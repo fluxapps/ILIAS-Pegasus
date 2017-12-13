@@ -31,7 +31,7 @@ export interface DBMigration {
    */
   revert(steps: number): Promise<void>
 }
-const DB_MIGRATION: InjectionToken<DBMigration> = new InjectionToken("db migration token");
+export const DB_MIGRATION: InjectionToken<DBMigration> = new InjectionToken("db migration token");
 
 /**
  * DB Migration with TypeORM.
