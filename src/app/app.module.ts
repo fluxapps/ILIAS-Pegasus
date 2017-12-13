@@ -39,6 +39,8 @@ import {
   ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
   TOKEN_MANAGER
 } from "../providers/ilias/ilias.rest";
+import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/ilias.rest-api";
+import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 
 
 export function createTranslateLoader(http: Http) {
@@ -103,6 +105,15 @@ export function createTranslateLoader(http: Http) {
       useClass: ILIASRestImpl
     },
 
+    /* from src/config/ilias.rest-config */
+    {
+      provide: OAUTH2_DATA_SUPPLIER,
+      useClass: Oauth2DataSupplierImpl
+    },
+    {
+      provide: TOKEN_RESPONSE_CONSUMER,
+      useClass: TokenResponseConsumerImpl
+    },
 
     ConnectionService,
     MigrationsService,
