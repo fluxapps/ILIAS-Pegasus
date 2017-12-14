@@ -5,7 +5,7 @@ import {SQLiteDatabaseService} from "./database.service";
 import {Log} from "./log.service";
 import {AddObjectAttributesMigration} from "../migrations/2-add-object-attributes-migration";
 import {Connection, getConnection} from "typeorm";
-import {CONNECTION_NAME} from "../config/typeORM-config";
+import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 
 /**
  * Describes a service to handle database migrations.
@@ -51,9 +51,9 @@ export class TypeOrmDbMigration implements DBMigration {
 
     try {
 
-      const connection: Connection = getConnection(CONNECTION_NAME);
+      const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
       await connection.runMigrations();
-
+      console.log("finish migration");
     } catch (error) {
       throw new MigrationError("Could not finish database migration");
     }
@@ -72,7 +72,7 @@ export class TypeOrmDbMigration implements DBMigration {
 
     try {
 
-      const connection: Connection = getConnection(CONNECTION_NAME);
+      const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
 
       for(;currentStep < steps; currentStep++) {
         await connection.undoLastMigration();
