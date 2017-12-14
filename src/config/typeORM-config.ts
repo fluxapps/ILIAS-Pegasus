@@ -1,18 +1,26 @@
-import {ConnectionOptions, ConnectionOptionsReader, createConnection} from "typeorm";
+import {File} from "@ionic-native/file";
+import {Injectable} from "@angular/core";
+import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";
 
-const ORM_CONFIG: {"root": string; "configName": string} = {
-  root: "assets/",
-  configName: "ormconfig.json"
-};
-
-export const CONNECTION_NAME: string = "ilias-pegasus";
+export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
+const ORM_CONFIG_FILE: string = "ormconfig.json";
 
 /**
- * Creates the typeORM connection by reading the orm config file.
+ * Configuraten adapter for typeORM connections
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
  */
-export async function setupConnection(): Promise<void> {
-  const connectionOptionsReader: ConnectionOptionsReader = new ConnectionOptionsReader(ORM_CONFIG);
-  const connectionOptions: ConnectionOptions = await connectionOptionsReader.get(CONNECTION_NAME);
+@Injectable()
+export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter {
 
-  await createConnection(connectionOptions)
+  constructor(
+    private readonly file: File
+  ) {}
+
+  addConnections(registry: DatabaseConnectionRegistry): void {
+    registry.addConnection(PEGASUS_CONNECTION_NAME)
+      .setDirectory(`${this.file.applicationDirectory}/assets/`)
+      .setFileName(ORM_CONFIG_FILE);
+  }
 }
