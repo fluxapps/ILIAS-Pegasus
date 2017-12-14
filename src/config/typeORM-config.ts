@@ -3,7 +3,6 @@ import {Injectable} from "@angular/core";
 import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
-const ORM_CONFIG_FILE: string = "ormconfig.json";
 
 /**
  * Configuraten adapter for typeORM connections
@@ -20,7 +19,6 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
 
   addConnections(registry: DatabaseConnectionRegistry): void {
     registry.addConnection(PEGASUS_CONNECTION_NAME)
-      .setDirectory(`${this.file.applicationDirectory}/assets/`)
-      .setFileName(ORM_CONFIG_FILE);
+      .setDirectory("assets/");
   }
 }
