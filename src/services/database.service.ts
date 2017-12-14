@@ -87,7 +87,8 @@ export class SQLiteDatabaseService implements DatabaseService {
    * @param params Array holding the values escaped in the SQL string, in the same order
    * @returns {Promise<any>}
    */
-  query(sql: string, params = []): Promise<{}> {
+  query(sql: string, params = []): Promise<any> {
+
     if ((<{}> window).cordova) {
       return this.database.executeSql(sql, params);
     } else {

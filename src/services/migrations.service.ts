@@ -162,35 +162,36 @@ export class MigrationsService {
      * @param id
      */
     protected execute(id: number): Promise<{}> {
-        return new Promise((resolve, reject) => {
-            SQLiteDatabaseService.instance().then( db => {
-                Log.write(this, "got db instance.");
-                db.query("SELECT * FROM migrations WHERE id = ?", [id]).then((response) => {
-                    Log.describe(this, "found migrations: ", response);
-                    // Only execute the migration if not executed before!
-                    if (response.rows.length > 0) {
-                        resolve();
-                    } else {
-                        const migration = this.getMigration(id);
-                        Log.write(this, "Migrate UP!");
-                        migration.up().then(() => {
-                            SQLiteDatabaseService.instance().then(db => {
-                                db.query("INSERT INTO migrations (id) VALUES (?)", [id]).then(() => {
-                                    resolve();
-                                }, (error) => {
-                                    reject(error);
-                                });
-                            }, (error) => {
-                                reject(error);
-                            });
-                        });
-                    }
-                }, (error) => {
-                    Log.error(this, error);
-                    reject(error);
-                });
-            });
-        });
+        // return new Promise((resolve, reject) => {
+        //     SQLiteDatabaseService.instance().then( db => {
+        //         Log.write(this, "got db instance.");
+        //         db.query("SELECT * FROM migrations WHERE id = ?", [id]).then((response) => {
+        //             Log.describe(this, "found migrations: ", response);
+        //             // Only execute the migration if not executed before!
+        //             if (response.rows.length > 0) {
+        //                 resolve();
+        //             } else {
+        //                 const migration = this.getMigration(id);
+        //                 Log.write(this, "Migrate UP!");
+        //                 migration.up().then(() => {
+        //                     SQLiteDatabaseService.instance().then(db => {
+        //                         db.query("INSERT INTO migrations (id) VALUES (?)", [id]).then(() => {
+        //                             resolve();
+        //                         }, (error) => {
+        //                             reject(error);
+        //                         });
+        //                     }, (error) => {
+        //                         reject(error);
+        //                     });
+        //                 });
+        //             }
+        //         }, (error) => {
+        //             Log.error(this, error);
+        //             reject(error);
+        //         });
+        //     });
+        // });
+      throw new Error("This method is not implemented yet");
     }
 
     /**
