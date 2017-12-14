@@ -39,7 +39,7 @@ export class Database {
    */
   async ready(connectionName: string = DEFAULT_CONNECTION_NAME): Promise<void> {
 
-    if (this.readyConnections.find(it => it === connectionName)) {
+    if (this.readyConnections.findIndex(it => it === connectionName) > 0) {
       return Promise.resolve();
     }
 
@@ -50,10 +50,25 @@ export class Database {
       root: connection.getDirectory(),
       configName: connection.getFileName()
     });
-    const connectionOptions: ConnectionOptions = await connectionOptionsReader.get(connectionName);
 
-    await createConnection(connectionOptions);
+    console.log(JSON.stringify(connection));
 
+    // TODO: Read options from file
+    // const connectionOptions: ConnectionOptions = await connectionOptionsReader.get(connectionName);
+    await createConnection({
+      "name": "ilias-pegasus",
+      "type": "cordova",
+      "database": "ilias_app",
+      "location": "default",
+      "synchronize": false,
+      "logging": ["error"],
+      "migrationsRun": false,
+      "entities": [],
+      "migrations": [
+
+      ]
+    });
+    console.log("created connection");
     this.readyConnections.push(connectionName);
   }
 }

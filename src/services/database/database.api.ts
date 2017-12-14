@@ -1,6 +1,7 @@
 import {Injectable, InjectionToken} from "@angular/core";
 
 export const DEFAULT_CONNECTION_NAME: string = "default";
+const DEFAULT_CONFIG_FILE: string = "ormconfig.json";
 
 /**
  * Describes a class to configure database connections.
@@ -60,7 +61,7 @@ export class DatabaseConnectionRegistry {
  */
 export class DatabaseConnection {
 
-  private fileName: string = DEFAULT_CONNECTION_NAME;
+  private fileName: string = DEFAULT_CONFIG_FILE;
   private directory: string = process.cwd();
 
 
