@@ -38,7 +38,6 @@ export class SQLiteDatabaseService implements DatabaseService {
   private openDatabase(): Promise<SQLiteObject> {
     return new Promise((resolve, reject) => {
 
-      if ((<{}> window).cordova) {
         Log.write(this, "using database cordova plugin.");
         Log.write(this, "opening DB.");
 
@@ -55,15 +54,6 @@ export class SQLiteDatabaseService implements DatabaseService {
           console.error("Unable to open database: ", err);
           reject(err);
         });
-      } else {
-        const database = (<{}> window).openDatabase(this.DB_NAME, "1.0", this.DB_NAME, 1024 * 1024 * 100); // browser
-        if (database) {
-          resolve(database);
-        } else {
-          Log.error(this, "Unable to open database");
-          reject("Unable to open database");
-        }
-      }
     });
   }
 
@@ -88,17 +78,6 @@ export class SQLiteDatabaseService implements DatabaseService {
    * @returns {Promise<any>}
    */
   query(sql: string, params = []): Promise<any> {
-
-    if ((<{}> window).cordova) {
       return this.database.executeSql(sql, params);
-    } else {
-      return new Promise((resolve, reject) => {
-        this.database.transaction((tx) => {
-          tx.executeSql(sql, params, (tx, res) => {
-            resolve(res);
-          });
-        });
-      });
-    }
   }
 }
