@@ -43,6 +43,10 @@ import {
 import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/ilias.rest-api";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
+import {SplashScreen} from "@ionic-native/splash-screen";
+import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
+import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../services/database/database.api";
+import {Database} from "../services/database/database";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -127,6 +131,14 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       useClass: TypeOrmDbMigration
     },
 
+    /* from src/services/database.service */
+    {
+      provide: DATABASE_CONFIGURATION_ADAPTER,
+      useClass: TypeORMConfigurationAdapter
+    },
+    DatabaseConnectionRegistry,
+    Database,
+
     ConnectionService,
     MigrationsService,
     ILIASRestProvider,
@@ -144,6 +156,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     SQLite,
     Toast,
     HttpClient,
+    SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [
