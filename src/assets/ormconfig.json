@@ -8,7 +8,7 @@
   "migrationsRun": false,
   "entities": [],
   "migrations": [
-    "src/migrations/*.ts"
+
   ],
   "cil": {
     "migrationsDir": "src/migrations"

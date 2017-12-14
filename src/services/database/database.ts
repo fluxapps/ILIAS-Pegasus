@@ -1,15 +1,16 @@
-import {ConnectionOptions, ConnectionOptionsReader, createConnection} from "typeorm";
+import {createConnection} from "typeorm";
 import {Inject, Injectable} from "@angular/core";
 import {
   DATABASE_CONFIGURATION_ADAPTER, DatabaseConfigurationAdapter, DatabaseConnection, DatabaseConnectionRegistry,
   DEFAULT_CONNECTION_NAME
 } from "./database.api";
+import {Http, Response} from "@angular/http";
 
 /**
  * The Database can be used to get information about a certain connection.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Injectable()
 export class Database {
@@ -18,7 +19,8 @@ export class Database {
 
   constructor(
     @Inject(DATABASE_CONFIGURATION_ADAPTER) private readonly configurationAdapter: DatabaseConfigurationAdapter,
-    private readonly registry: DatabaseConnectionRegistry
+    private readonly registry: DatabaseConnectionRegistry,
+    private readonly http: Http
   ) {
   }
 
@@ -46,29 +48,10 @@ export class Database {
     this.configurationAdapter.addConnections(this.registry);
     const connection: DatabaseConnection = this.registry.getConnection(connectionName);
 
-    const connectionOptionsReader: ConnectionOptionsReader = new ConnectionOptionsReader({
-      root: connection.getDirectory(),
-      configName: connection.getFileName()
-    });
+    const file: Response = await this.http.get(connection.getDirectory() + connection.getFileName()).toPromise();
 
-    console.log(JSON.stringify(connection));
+    await createConnection(file.json());
 
-    // TODO: Read options from file
-    // const connectionOptions: ConnectionOptions = await connectionOptionsReader.get(connectionName);
-    await createConnection({
-      "name": "ilias-pegasus",
-      "type": "cordova",
-      "database": "ilias_app",
-      "location": "default",
-      "synchronize": false,
-      "logging": ["error"],
-      "migrationsRun": false,
-      "entities": [],
-      "migrations": [
-
-      ]
-    });
-    console.log("created connection");
     this.readyConnections.push(connectionName);
   }
 }
