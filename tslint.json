@@ -102,7 +102,6 @@
     "array-type": [true, "generic"],
     "arrow-return-shorthand": true,
     "class-name": true,
-    "comment-format": [true, "check-space"],
     "completed-docs": [true,
       "classes",
       "enums",
