@@ -1,6 +1,9 @@
 import {InjectionToken} from "@angular/core";
 import {QueryRunner} from "typeorm";
 
+const BASE_10: number = 10;
+const VERSION_NUMBER: number = 1;
+
 /**
  * Describes a service to handle database migrations.
  *
@@ -53,6 +56,8 @@ export const MIGRATION_SUPPLIER: InjectionToken<MigrationSupplier> = new Injecti
  */
 export interface Migration {
 
+  readonly version: MigrationVersion;
+
   /**
    * Runs this migration.
    *
@@ -73,6 +78,32 @@ export interface Migration {
 }
 
 /**
+ * Defines a migration version. This class ensures, that a version has a correct value.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class MigrationVersion {
+
+  private readonly versionNumber: number;
+
+  private readonly pattern: RegExp = new RegExp("^V__(\\d{1,})$");
+
+  constructor(version: string) {
+
+    if (this.pattern.test(version)) {
+
+      const matches: Array<string> = this.pattern.exec(version);
+      this.versionNumber = parseInt(matches[VERSION_NUMBER], BASE_10);
+    } else {
+      throw new MigrationVersionError(`Invalid version number: ${version}`);
+    }
+  }
+
+  getVersion(): number { return this.versionNumber }
+}
+
+/**
  * Indicates a failure during a database migration.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
@@ -83,5 +114,19 @@ export class MigrationError extends Error {
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, MigrationError.prototype);
+  }
+}
+
+/**
+ * Indicates a invalid migration version number.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class MigrationVersionError extends MigrationError {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, MigrationVersionError.prototype);
   }
 }
