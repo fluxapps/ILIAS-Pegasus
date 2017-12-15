@@ -43,7 +43,6 @@ export class TypeOrmDbMigration implements DBMigration {
       migrations.forEach(async(it) => {
 
         const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
-        console.log(result);
         if (result.length < 1) {
 
           await it.up(queryRunner);
