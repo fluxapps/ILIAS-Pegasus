@@ -47,8 +47,8 @@ import {SplashScreen} from "@ionic-native/splash-screen";
 import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
 import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../services/database/database.api";
 import {Database} from "../services/database/database";
-import {DB_MIGRATION} from "../services/migration/migration.api";
-import {TypeOrmDbMigration} from "../services/migration/migration.service";
+import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
+import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -127,10 +127,16 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       useClass: TokenResponseConsumerImpl
     },
 
-    /* from src/services/migration.service */
+    /* from src/services/migration/migration.service */
+    /* from src/services/migration/migration.api */
     {
       provide: DB_MIGRATION,
       useClass: TypeOrmDbMigration
+    },
+
+    {
+      provide: MIGRATION_SUPPLIER,
+      useClass: SimpleMigrationSupplier
     },
 
     /* from src/services/database.service */
