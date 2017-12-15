@@ -1,7 +1,7 @@
 import {ILIASConfig} from "./ilias-config";
 import {Http, Response} from "@angular/http";
 import {isDefined} from "ionic-angular/es2015/util/util";
-import {InjectionToken} from "@angular/core";
+import {Injectable, InjectionToken} from "@angular/core";
 
 const CONFIG_FILE: string = "assets/config.json";
 
@@ -55,6 +55,7 @@ export interface ConfigProvider {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+@Injectable()
  export class ILIASConfigProvider implements ConfigProvider {
 
   private readonly config: Promise<ILIASConfig>;

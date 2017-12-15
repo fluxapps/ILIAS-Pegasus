@@ -1,10 +1,9 @@
-import {NgModule, ErrorHandler} from '@angular/core';
-import {IonicApp, IonicModule, IonicErrorHandler} from 'ionic-angular';
-import { MyApp } from './app.component';
-import {HttpModule, Http} from '@angular/http';
+import {NgModule, ErrorHandler} from "@angular/core";
+import {IonicApp, IonicModule, IonicErrorHandler} from "ionic-angular";
+import { MyApp } from "./app.component";
+import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {MigrationsService} from "../services/migrations.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
 import {DataProvider} from "../providers/data-provider.provider";
@@ -17,7 +16,7 @@ import {MapPage} from "../learnplace/pages/map/map.component";
 import {SynchronizationService} from "../services/synchronization.service";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
-import {TranslateModule} from 'ng2-translate/ng2-translate';
+import {TranslateModule} from "ng2-translate/ng2-translate";
 import {TranslateLoader} from "ng2-translate/src/translate.service";
 import {TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
@@ -43,10 +42,16 @@ import {
 import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/ilias.rest-api";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
+import {SplashScreen} from "@ionic-native/splash-screen";
+import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
+import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../services/database/database.api";
+import {Database} from "../services/database/database";
+import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
+import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 
 
-export function createTranslateLoader(http: Http) {
-  return new TranslateStaticLoader(http, './assets/i18n', '.json');
+export function createTranslateLoader(http: Http): TranslateStaticLoader {
+  return new TranslateStaticLoader(http, "./assets/i18n", ".json");
 }
 
 @NgModule({
@@ -121,8 +126,27 @@ export function createTranslateLoader(http: Http) {
       useClass: TokenResponseConsumerImpl
     },
 
+    /* from src/services/migration/migration.service */
+    /* from src/services/migration/migration.api */
+    {
+      provide: DB_MIGRATION,
+      useClass: TypeOrmDbMigration
+    },
+
+    {
+      provide: MIGRATION_SUPPLIER,
+      useClass: SimpleMigrationSupplier
+    },
+
+    /* from src/services/database.service */
+    {
+      provide: DATABASE_CONFIGURATION_ADAPTER,
+      useClass: TypeORMConfigurationAdapter
+    },
+    DatabaseConnectionRegistry,
+    Database,
+
     ConnectionService,
-    MigrationsService,
     ILIASRestProvider,
     FooterToolbarService,
     DataProvider,
@@ -138,6 +162,7 @@ export function createTranslateLoader(http: Http) {
     SQLite,
     Toast,
     HttpClient,
+    SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ],
   exports: [

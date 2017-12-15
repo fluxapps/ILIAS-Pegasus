@@ -43,7 +43,6 @@ www/*
 !www/.placeholder
 bower_components
 src/assets/config.json
-src/assets/*.json
 build.sh
 build2.sh
 bin
