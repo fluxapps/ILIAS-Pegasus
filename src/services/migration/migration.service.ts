@@ -5,6 +5,8 @@ import {
   DBMigration, Migration, MIGRATION_SUPPLIER, MigrationError, MigrationSupplier,
   MigrationVersion
 } from "./migration.api";
+import {InitDatabase} from "../../migrations/V__1-init-database";
+import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
 
 /**
  * DB Migration with TypeORM.
@@ -36,6 +38,7 @@ export class TypeOrmDbMigration implements DBMigration {
       await migrationTable.up(queryRunner);
 
       const migrations: Array<Migration> = await this.migrationSupplier.get();
+      migrations.sort((first, second) => this.sort(first.version, second.version));
 
       migrations.forEach(async(it) => {
 
@@ -85,6 +88,31 @@ export class TypeOrmDbMigration implements DBMigration {
       throw new MigrationError(`Could not revert step ${currentStep}`);
     }
   }
+
+  /**
+   * Comparator for {@link MigrationVersion}.
+   *
+   * Returns negative number if {@code first} is before {@code second}.
+   * Returns positive number if {@code first} is after {@code second}.
+   * Returns 0 if {@code first} is equal to {@code second}.
+   *
+   * @param {MigrationVersion} first - migration to compare with
+   * @param {MigrationVersion} second - other migration
+   *
+   * @returns {number} the resulting number
+   */
+  private sort(first: MigrationVersion, second: MigrationVersion): number {
+
+    if (first.getVersion() < second.getVersion()) {
+      return -1;
+    }
+
+    if (first.getVersion() > second.getVersion()) {
+      return 1;
+    }
+
+    return 0;
+  }
 }
 
 /**
@@ -99,13 +127,13 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
 
   /**
    * Returns all migration that are being executed by the {@link DBMigration}.
-   * The migrations are executed in the order of the returned array.
    *
    * @returns {Promise<Array<Migration>>} the migrations to run
    */
   async get(): Promise<Array<Migration>> {
     return [
-      // Add migrations here
+      new InitDatabase(),
+      new AddObjectAttributes()
     ];
   }
 }

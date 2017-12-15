@@ -39,7 +39,7 @@ export const DB_MIGRATION: InjectionToken<DBMigration> = new InjectionToken("db 
 export interface MigrationSupplier {
 
   /**
-   * Returns all migrations in the order they must be executed.
+   * Returns all migrations that should be executed.
    *
    * @returns {Promise<Array<Migration>>} the resulting migrations
    */
