@@ -77,7 +77,7 @@ export class TypeOrmDbMigration implements DBMigration {
 
       for(;currentStep < steps; currentStep++) {
 
-        const migration: Migration = await migrations.pop();
+        const migration: Migration = migrations.pop();
 
         await migration.down(queryRunner);
         await queryRunner.query("DELETE FROM migrations WHERE id = ?", [migration.version.getVersion()])
@@ -148,10 +148,20 @@ class CreateMigrationTable implements Migration {
 
   readonly version: MigrationVersion = new MigrationVersion("V__0");
 
+  /**
+   * Creates the migration table, in which all migrations will be write in.
+   *
+   * @param {QueryRunner} queryRunner - to execute sql queries
+   */
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query("CREATE TABLE IF NOT EXISTS migrations (id INTEGER, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
   }
 
+  /**
+   * Deletes the migration table.
+   *
+   * @param {QueryRunner} queryRunner - to execute sql queries
+   */
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query("DELETE TABLE migrations");
   }
