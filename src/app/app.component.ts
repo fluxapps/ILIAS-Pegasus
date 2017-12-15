@@ -8,7 +8,6 @@ import {LoginPage} from "../pages/login/login";
 import {SettingsPage} from "../pages/settings/settings";
 import {FavoritesPage} from "../pages/favorites/favorites";
 import {InfoPage} from "../pages/info/info";
-import {DB_MIGRATION, DBMigration} from "../services/migrations.service";
 import {ObjectListPage} from "../pages/object-list/object-list";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
@@ -24,6 +23,7 @@ import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {SplashScreen} from "@ionic-native/splash-screen";
 import {Database} from "../services/database/database";
+import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 
 @Component({
   templateUrl: "app.html"

@@ -4,7 +4,7 @@ import { MyApp } from "./app.component";
 import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {DB_MIGRATION, MigrationsService, TypeOrmDbMigration} from "../services/migrations.service";
+import {MigrationsService} from "../services/migrations.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
 import {DataProvider} from "../providers/data-provider.provider";
@@ -47,6 +47,8 @@ import {SplashScreen} from "@ionic-native/splash-screen";
 import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
 import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../services/database/database.api";
 import {Database} from "../services/database/database";
+import {DB_MIGRATION} from "../services/migration/migration.api";
+import {TypeOrmDbMigration} from "../services/migration/migration.service";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {

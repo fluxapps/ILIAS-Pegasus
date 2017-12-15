@@ -6,11 +6,5 @@
   "synchronize": false,
   "logging": false,
   "migrationsRun": false,
-  "entities": [],
-  "migrations": [
-
-  ],
-  "cil": {
-    "migrationsDir": "src/migrations"
-  }
+  "entities": []
 }
