@@ -4,7 +4,6 @@ import { MyApp } from "./app.component";
 import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {MigrationsService} from "../services/migrations.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
 import {DataProvider} from "../providers/data-provider.provider";
@@ -148,7 +147,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     Database,
 
     ConnectionService,
-    MigrationsService,
     ILIASRestProvider,
     FooterToolbarService,
     DataProvider,
