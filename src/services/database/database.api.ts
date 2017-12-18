@@ -35,13 +35,13 @@ export class DatabaseConnectionRegistry {
 
   private readonly connections: Map<string, DatabaseConnection> = new Map();
 
-  addConnection(name: string): DatabaseConnection {
+  addConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseConnection {
     const connection: DatabaseConnection = new DatabaseConnection();
     this.connections.set(name, connection);
     return connection;
   }
 
-  getConnection(name: string): DatabaseConnection {
+  getConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseConnection {
     try {
       return this.connections.get(name);
     } catch (error) {
