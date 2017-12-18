@@ -6,11 +6,46 @@
  */
 export interface Logger {
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#TRACE}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   trace(msg: () => string): void
+
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#DEBUG}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   debug(msg: () => string): void
+
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#INFO}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   info(msg: () => string): void
+
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#WARN}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   warn(msg: () => string): void
+
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#ERROR}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   error(msg: () => string): void
+
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#FATAL}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   fatal(msg: () => string): void
 }
 
@@ -44,24 +79,47 @@ export interface LogAppender {
  */
 export abstract class LogBuffer implements LogAppender {
 
-  private readonly messages: Array<() => void> = [];
+  private messages: Array<() => void> = [];
 
   constructor(
     private readonly buffer: number
   ) {}
 
+  /**
+   * Pushes the log entry to the buffer.
+   * If the buffer size is reached all logs will be logged.
+   *
+   * @param {LogEntry} logEntry - the entry to log
+   */
   log(logEntry: LogEntry): void {
-    throw new Error("This method is not implemented yet");
+
+    this.messages.push(() => this.writeToBuffer(logEntry));
+
+    if (this.messages.length === this.buffer) {
+      this.logAll();
+    }
   }
 
+  /**
+   * Logs all remaining logs.
+   */
   shutdown(): void {
-    throw new Error("This method is not implemented yet");
+    this.logAll();
   }
 
+  /**
+   * Is called from this appender, if the buffer size is reached.
+   *
+   * @param {LogEntry} logEntry - the entry to log
+   */
   protected abstract writeToBuffer(logEntry: LogEntry): void
 
+  /**
+   * Logs all messages and clears them afterwards.
+   */
   private logAll(): void {
-    throw new Error("This method is not implemented yet");
+    this.messages.forEach(it => it());
+    this.messages = [];
   }
 }
 
@@ -80,11 +138,98 @@ export abstract class LogLevelAppender extends LogBuffer {
     super(buffer);
   }
 
+  /**
+   * Writes the given {@code logEntry} to the {@link LogBuffer}
+   * if its match the log level of this appender.
+   *
+   * @param {LogEntry} logEntry
+   */
   protected writeToBuffer(logEntry: LogEntry): void {
-    throw new Error("This method is not implemented yet");
+    if (this.include(logEntry)) {
+      this.write(logEntry);
+    }
   }
 
+  /**
+   * Will be called from this appender, if the log entry does match
+   * this appenders log level.
+   *
+   * @param {LogEntry} logEntry - the entry to write
+   */
   protected abstract write(logEntry: LogEntry): void
+
+  /**
+   * Returns true, if the given {@code logEntry} is included in this appenders log level.
+   *
+   * @param {LogEntry} logEntry - the entry to test
+   *
+   * @returns {boolean} true, if the entry should be logged, otherwise false
+   */
+  private include(logEntry: LogEntry): boolean {
+
+    switch (this.level) {
+      case LogLevel.TRACE:
+        return false;
+      case LogLevel.DEBUG:
+        return this.isDebug(logEntry.level);
+      case LogLevel.INFO:
+        return this.isInfo(logEntry.level);
+      case LogLevel.WARN:
+        return this.isWarn(logEntry.level);
+      case LogLevel.ERROR:
+        return this.isError(logEntry.level);
+      default:
+        return true;
+    }
+  }
+
+  private isDebug(level: LogLevel): boolean {
+    switch (level) {
+      case LogLevel.TRACE:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  private isInfo(level: LogLevel): boolean {
+    switch (level) {
+      case LogLevel.TRACE:
+        return false;
+      case LogLevel.DEBUG:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  private isWarn(level: LogLevel): boolean {
+    switch (level) {
+      case LogLevel.TRACE:
+        return false;
+      case LogLevel.DEBUG:
+        return false;
+      case LogLevel.INFO:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  private isError(level: LogLevel): boolean {
+    switch (level) {
+      case LogLevel.TRACE:
+        return false;
+      case LogLevel.DEBUG:
+        return false;
+      case LogLevel.INFO:
+        return false;
+      case LogLevel.WARN:
+        return false;
+      default:
+        return true;
+    }
+  }
 }
 
 /**

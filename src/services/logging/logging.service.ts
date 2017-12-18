@@ -42,47 +42,22 @@ export class DefaultLogger implements Logger {
     private readonly appenders: Array<LogAppender>
   ) {}
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#TRACE}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   trace(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.TRACE, msg)))
   }
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#DEBUG}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   debug(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.DEBUG, msg)))
   }
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#INFO}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   info(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.INFO, msg)))
   }
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#WARN}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   warn(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.WARN, msg)))
   }
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#ERROR}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   error(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.ERROR, msg)))
   }
