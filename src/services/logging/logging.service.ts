@@ -8,15 +8,24 @@ namespace Logging {
     new ConsoleLogAppender(LogLevel.WARN)
   ];
 
+  /**
+   * Creates a {@link DefaultLogger} with the given location.
+   *
+   * @param {{constructor: string} | string} location - which is logging the message, can be a class or any name
+   * @returns {Logger}
+   */
   export function getLogger(location: {constructor: string} | string): Logger {
 
     if (isString(location)) {
-      return new DefaultLoger(location, appenders);
+      return new DefaultLogger(location, appenders);
     }
 
-    return new DefaultLoger(location.constructor, appenders);
+    return new DefaultLogger(location.constructor, appenders);
   }
 
+  /**
+   * Shuts down all appenders used.
+   */
   export function shutdown(): void { appenders.forEach(it => it.shutdown()) }
 }
 
@@ -24,40 +33,77 @@ namespace Logging {
  * Default logger implementation.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
-export class DefaultLoger implements Logger {
+export class DefaultLogger implements Logger {
 
   constructor(
     private readonly location: string,
     private readonly appenders: Array<LogAppender>
   ) {}
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#TRACE}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   trace(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.TRACE, msg)))
   }
 
-
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#DEBUG}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   debug(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.DEBUG, msg)))
   }
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#INFO}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   info(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.INFO, msg)))
   }
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#WARN}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   warn(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.WARN, msg)))
   }
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#ERROR}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   error(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.ERROR, msg)))
   }
 
+  /**
+   * Logs the given {@code msg} as log level {@link LogLevel#FATAL}.
+   *
+   * @param {() => string} msg - lambda that returns the message to log
+   */
   fatal(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.FATAL, msg)))
   }
 
+  /**
+   * Creates a {@link LogEntry} by the given arguments.
+   *
+   * @param {LogLevel} level - the log level
+   * @param {() => string} msg - the message to log
+   *
+   * @returns {LogEntry} the resulting entry
+   */
   private createEntry(level: LogLevel, msg: () => string): LogEntry {
     return <LogEntry>{
       level: level,
