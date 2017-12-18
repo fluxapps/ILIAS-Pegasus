@@ -15,57 +15,6 @@ export interface Logger {
 }
 
 /**
- * Factory class to get loggers.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
- */
-export class LoggingFactory {
-
-  getLogger(location: object | string): Logger {
-    throw new Error("This method is not implemented yet");
-  }
-}
-
-/**
- * Default logger implementation.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
- */
-export class DefaultLoger implements Logger {
-
-  constructor(
-    private readonly location: string,
-    private readonly appenders: Array<LogAppender>
-  ) {}
-
-  trace(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-
-  debug(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-
-  info(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-
-  warn(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-
-  error(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-
-  fatal(msg: () => string): void {
-    throw new Error("This method is not implemented yet");
-  }
-}
-
-/**
  * Describes a appender for a logger.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
