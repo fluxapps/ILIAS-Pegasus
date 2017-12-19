@@ -1,32 +1,47 @@
 import {ConsoleLogAppender} from "./logging.appenders";
 import {LogAppender, LogEntry, Logger, LogLevel} from "./logging.api";
-import {isString} from "ionic-angular/es2015/util/util";
+import {hasOwnProperty} from "tslint/lib/utils";
 
-namespace Logging {
+export namespace Logging {
 
   const appenders: Array<LogAppender> = [
-    new ConsoleLogAppender(LogLevel.WARN)
+    new ConsoleLogAppender(LogLevel.INFO)
   ];
 
   /**
    * Creates a {@link DefaultLogger} with the given location.
    *
-   * @param {{constructor: string} | string} location - which is logging the message, can be a class or any name
-   * @returns {Logger}
+   * @param {string} location - which is logging the message, when used inside a class, provide MyClass.name
+   *
+   * @returns {Logger} the resulting logger
    */
-  export function getLogger(location: {constructor: string} | string): Logger {
-
-    if (isString(location)) {
-      return new DefaultLogger(location, appenders);
-    }
-
-    return new DefaultLogger(location.constructor, appenders);
+  export function getLogger(location: string): Logger {
+    return new DefaultLogger(location, appenders);
   }
 
   /**
    * Shuts down all appenders used.
    */
   export function shutdown(): void { appenders.forEach(it => it.shutdown()) }
+
+  /**
+   * Utility function to get a message from an error.
+   * Useful for error logging, since javascript can throw any type.
+   *
+   * This method returns the errors message property if it exists, otherwise
+   * it returns the given {@code fallback}.
+   *
+   * @param error - the object to check for the message property
+   * @param {string} fallback - message to use as
+   * @returns {string}
+   */
+  export function getMessage(error: any, fallback: string): string {
+
+    if (hasOwnProperty(error, "message")) {
+      return error.message;
+    }
+    return fallback;
+  }
 }
 
 /**
@@ -62,11 +77,6 @@ export class DefaultLogger implements Logger {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.ERROR, msg)))
   }
 
-  /**
-   * Logs the given {@code msg} as log level {@link LogLevel#FATAL}.
-   *
-   * @param {() => string} msg - lambda that returns the message to log
-   */
   fatal(msg: () => string): void {
     this.appenders.forEach(it => it.log(this.createEntry(LogLevel.FATAL, msg)))
   }
