@@ -11,7 +11,6 @@ import {InfoPage} from "../pages/info/info";
 import {ObjectListPage} from "../pages/object-list/object-list";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
-import {Log} from "../services/log.service";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
 import {Network} from "@ionic-native/network";
@@ -24,6 +23,9 @@ import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {SplashScreen} from "@ionic-native/splash-screen";
 import {Database} from "../services/database/database";
 import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
+import {Logger} from "../services/logging/logging.api";
+import {Logging} from "../services/logging/logging.service";
+import getMessage = Logging.getMessage;
 
 @Component({
   templateUrl: "app.html"
@@ -45,6 +47,8 @@ export class MyApp {
    * The current logged in user
    */
   private user: User;
+
+  private readonly log: Logger = Logging.getLogger(MyApp.name);
 
   /**
    *
@@ -89,9 +93,13 @@ export class MyApp {
     // init after platform is ready and native stuff is available
     this.platform.ready().then(() => {
 
-      Log.write(this, "Platform ready.");
+      this.log.info(() => "Platform is ready");
+
       return this.initializeApp();
-    }).catch(error => console.log(JSON.stringify(error)));
+
+    }).catch(error =>
+      this.log.warn(() => getMessage(error, `Could not initialize app. Error occurred: \n${JSON.stringify(error)}`))
+    )
   }
 
   /**
@@ -135,20 +143,16 @@ export class MyApp {
    */
   private async initializeApp(): Promise<void> {
 
-    console.log("initialize App");
+    this.log.info(() => "Initialize app");
     this.statusBar.styleLightContent();
     this.subscribeOnGlobalEvents();
     this.defineBackButtonAction();
 
-    console.log("setup database");
     await this.database.ready(PEGASUS_CONNECTION_NAME);
-    console.log("Run migration");
     await this.dbMigration.migrate();
 
-    console.log("Set root page");
     await this.setRootPage();
 
-    // (<{}> navigator).splashscreen.hide();
     this.splashScreen.hide();
 
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));

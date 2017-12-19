@@ -1,5 +1,8 @@
 import {Injectable} from '@angular/core';
 
+/**
+ * @deprecated Use Logging.getLogger instead.
+ */
 @Injectable()
 export class Log {
 
