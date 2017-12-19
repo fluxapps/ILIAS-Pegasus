@@ -92,6 +92,7 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <allow-navigation href="http://192.168.99.47:8100" />
     <allow-navigation href="http://192.168.1.105:8100" />
+    <allow-navigation href="http://192.168.99.44:8100" />
     <engine name="android" spec="^6.3.0" />
     <engine name="ios" spec="^4.5.2" />
     <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
