@@ -46,7 +46,7 @@ export class Database {
   async ready(connectionName: string = DEFAULT_CONNECTION_NAME): Promise<void> {
 
     if (this.readyConnections.findIndex(it => it === connectionName) > 0) {
-      this.log.info(() => `Connection ${connectionName} is ready`)
+      this.log.info(() => `Connection ${connectionName} is ready`);
       return Promise.resolve();
     }
 
