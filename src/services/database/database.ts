@@ -5,6 +5,8 @@ import {
   DEFAULT_CONNECTION_NAME
 } from "./database.api";
 import {Http, Response} from "@angular/http";
+import {Logger} from "../logging/logging.api";
+import {Logging} from "../logging/logging.service";
 
 /**
  * The Database can be used to get information about a certain connection.
@@ -16,6 +18,8 @@ import {Http, Response} from "@angular/http";
 export class Database {
 
   private readonly readyConnections: Array<string> = [];
+
+  private readonly log: Logger = Logging.getLogger(Database.name);
 
   constructor(
     @Inject(DATABASE_CONFIGURATION_ADAPTER) private readonly configurationAdapter: DatabaseConfigurationAdapter,
@@ -42,6 +46,7 @@ export class Database {
   async ready(connectionName: string = DEFAULT_CONNECTION_NAME): Promise<void> {
 
     if (this.readyConnections.findIndex(it => it === connectionName) > 0) {
+      this.log.info(() => `Connection ${connectionName} is ready`)
       return Promise.resolve();
     }
 
@@ -50,6 +55,7 @@ export class Database {
 
     const file: Response = await this.http.get(connection.getDirectory() + connection.getFileName()).toPromise();
 
+    this.log.info(() => `Create database connection: name=${connectionName}`);
     await createConnection(file.json());
 
     this.readyConnections.push(connectionName);

@@ -7,6 +7,8 @@ import {
 } from "./migration.api";
 import {InitDatabase} from "../../migrations/V__1-init-database";
 import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
+import {Logger} from "../logging/logging.api";
+import {Logging} from "../logging/logging.service";
 
 /**
  * DB Migration with TypeORM.
@@ -16,6 +18,8 @@ import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
  */
 @Injectable()
 export class TypeOrmDbMigration implements DBMigration {
+
+  private readonly log: Logger = Logging.getLogger(TypeOrmDbMigration.name);
 
   constructor(
     @Inject(MIGRATION_SUPPLIER) private readonly migrationSupplier: MigrationSupplier
@@ -45,11 +49,14 @@ export class TypeOrmDbMigration implements DBMigration {
         const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
         if (result.length < 1) {
 
+          this.log.info(() => `Run database migration: version=${it.version.getVersion()}`);
           await it.up(queryRunner);
 
           await queryRunner.query("INSERT INTO migrations (id) VALUES (?)", [it.version.getVersion()])
         }
-      })
+      });
+
+      this.log.info(() => "Successfully migrate database");
 
     } catch (error) {
       throw new MigrationError("Could not finish database migration");
@@ -82,6 +89,8 @@ export class TypeOrmDbMigration implements DBMigration {
         await migration.down(queryRunner);
         await queryRunner.query("DELETE FROM migrations WHERE id = ?", [migration.version.getVersion()])
       }
+
+      this.log.info(() => `Successfully revert ${steps} database migrations`);
 
     } catch (error) {
       throw new MigrationError(`Could not revert step ${currentStep}`);

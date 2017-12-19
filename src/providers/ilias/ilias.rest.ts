@@ -7,6 +7,8 @@ import {
   TokenResponseConsumer
 } from "./ilias.rest-api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 
 const MILLISEC_TO_SEC: number = 1000;
 
@@ -77,6 +79,8 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 @Injectable()
  export class ILIASTokenManager implements TokenManager {
 
+   private readonly log: Logger = Logging.getLogger(ILIASTokenManager.name);
+
    constructor(
      private readonly httpClient: HttpClient,
      @Inject(OAUTH2_DATA_SUPPLIER) private readonly dataSupplier: OAuth2DataSupplier,
@@ -96,6 +100,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
        const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
+       this.log.info(() => "Validate access token");
        const token: string | undefined = await this.takeIf<string>(credentials.token.accessToken, (): boolean =>
          Date.now() / MILLISEC_TO_SEC - credentials.token.lastAccessTokenUpdate < credentials.token.accessTokenTTL
        );
@@ -162,6 +167,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
      headers.append("grant_type", "refresh_token");
      headers.append("refresh_token", credentials.token.refreshToken);
 
+     this.log.info(() => "Refresh access token by refresh token");
      const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptionsArgs>{headers: headers});
 
      return response.handle<string>(async(it): Promise<string> => {

@@ -2,6 +2,8 @@ import {Http, RequestOptionsArgs, Response} from "@angular/http";
 import {Validator, ValidatorResult} from "jsonschema";
 import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
+import {Logger} from "../services/logging/logging.api";
+import {Logging} from "../services/logging/logging.service";
 
 export const DEFAULT_TIMEOUT: number = 20000;
 
@@ -14,6 +16,8 @@ export const DEFAULT_TIMEOUT: number = 20000;
  */
 @Injectable()
 export class HttpClient {
+
+  private readonly log: Logger = Logging.getLogger(HttpClient.name);
 
   constructor(private readonly http: Http) {
   }
@@ -28,6 +32,7 @@ export class HttpClient {
    */
   async get(url: string, options?: RequestOptionsArgs): Promise<HttpResponse> {
 
+    this.log.info(() => `Http GET request to: ${url}`);
     const response: Response = await this.http.get(url, options)
       .timeout(DEFAULT_TIMEOUT)
       .toPromise();
@@ -46,6 +51,7 @@ export class HttpClient {
    */
   async post(url: string, body?: object, options?: RequestOptionsArgs): Promise<HttpResponse> {
 
+    this.log.info(() => `Http POST request to: ${url}`);
     const response: Response = await this.http.post(url, body, options)
       .timeout(DEFAULT_TIMEOUT)
       .toPromise();
@@ -67,6 +73,8 @@ export class HttpResponse {
   readonly statusText: string;
 
   private readonly validator: Validator = new Validator();
+
+  private readonly log: Logger = Logging.getLogger(HttpResponse.name);
 
   constructor(private readonly response: Response) {
     this.ok = response.ok;
@@ -149,15 +157,25 @@ export class HttpResponse {
    * @throws {HttpRequestError} if no status code is not explicit handled and not ok
    */
   async handle<T>(success: (response: HttpResponse) => Promise<T>): Promise<T> {
-    // TODO: Add logger when error
+
     switch (true) {
+
       case this.ok:
         return success(this);
+
       case this.status === HttpStatus.UNAUTHORIZED:
+        this.log.warn(() => `Response handling with status code ${this.status}`);
+        this.log.trace(() => this.getErrorMessage());
         throw new AuthenticateError(this.getErrorMessage());
+
       case this.status === HttpStatus.NOT_FOUND:
+        this.log.warn(() => `Response handling with status code ${this.status}`);
+        this.log.trace(() => this.getErrorMessage());
         throw new NotFoundError(this.getErrorMessage());
+
       default:
+        this.log.warn(() => `Response handling with status code ${this.status}`);
+        this.log.trace(() => this.getErrorMessage());
         throw new HttpRequestError(this.status, this.getErrorMessage());
     }
   }
