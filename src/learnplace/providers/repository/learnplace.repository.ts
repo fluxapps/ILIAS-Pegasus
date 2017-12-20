@@ -1,6 +1,8 @@
-import {CRUDRepository} from "./repository.api";
 import {LearnplaceEnity} from "../../entity/learnplace.enity";
 import {Injectable, InjectionToken} from "@angular/core";
+import {AbstractCRUDRepository, CRUDRepository} from "../../../providers/repository/repository.api";
+import {Database} from "../../../services/database/database";
+import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 
 /**
  * Describes a CRUD repository for {@link LearnplaceEnity}.
@@ -9,26 +11,22 @@ import {Injectable, InjectionToken} from "@angular/core";
  * @version 1.0.0
  */
 export interface LearnplaceRepository extends CRUDRepository<LearnplaceEnity, number> {}
-const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new InjectionToken("token for learnplace repository");
 
 /**
  * Uses TypeORM for CRUD operations of the {@link LearnplaceEnity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
-export class TypeORMLearnplaceRepository implements LearnplaceRepository {
+export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEnity, number> implements LearnplaceRepository {
 
-  save(entity: LearnplaceEnity): Promise<LearnplaceEnity> {
-    throw new Error("This method is not implemented yet");
+  constructor(database: Database) {
+    super(database, PEGASUS_CONNECTION_NAME);
   }
 
-  find(primaryKey: number): Promise<LearnplaceEnity> {
-    throw new Error("This method is not implemented yet");
-  }
+  protected getEntityName(): string { return LearnplaceEnity.name }
 
-  delete(entity: LearnplaceEnity): Promise<void> {
-    throw new Error("This method is not implemented yet");
-  }
+  protected getIdName(): string { return "id" }
 }
+const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new InjectionToken("token for TypeORM learnplace repository");

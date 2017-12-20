@@ -1,6 +1,8 @@
-import {CRUDRepository} from "./repository.api";
 import {MapEntity} from "../../entity/map.entity";
 import {Injectable, InjectionToken} from "@angular/core";
+import {AbstractCRUDRepository, CRUDRepository} from "../../../providers/repository/repository.api";
+import {Database} from "../../../services/database/database";
+import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 
 /**
  * Describes a CRUD repository for {@link MapEntity}.
@@ -19,30 +21,43 @@ export interface MapRepository extends CRUDRepository<MapEntity, number> {
    */
   findByLearnplaceId(learnplaceId: number): Promise<MapEntity>
 }
-const MAP_REPOSITORY: InjectionToken<MapRepository> = new InjectionToken("token for map repository");
 
 /**
  * Uses TypeORM for CRUD operations of the {@link MapEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
-export class TypeORMMapRepository implements MapRepository {
+export class TypeORMMapRepository extends AbstractCRUDRepository<MapEntity, number> implements MapRepository {
 
-  findByLearnplaceId(learnplaceId: number): Promise<MapEntity> {
-    throw new Error("This method is not implemented yet");
+  constructor(database: Database) {
+    super(database, PEGASUS_CONNECTION_NAME);
   }
 
-  save(entity: MapEntity): Promise<MapEntity> {
-    throw new Error("This method is not implemented yet");
+  /**
+   * Searches a {@link MapEntity} related with the given {@code learnplaceId}.
+   *
+   * The entity is found by TypeORMs query builder.
+   *
+   * @param {number} learnplaceId - id of the learnplace relation
+   *
+   * @returns {Promise<MapEntity>} - the resulting entity
+   */
+  async findByLearnplaceId(learnplaceId: number): Promise<MapEntity> {
+
+    await this.database.ready(PEGASUS_CONNECTION_NAME);
+
+    return this.connection
+      .createQueryBuilder()
+      .select()
+      .from(MapEntity, "map")
+      .where("map.FK_learnplace = :learnplaceId", {learnplaceId: learnplaceId})
+      .getOne();
   }
 
-  find(primaryKey: number): Promise<MapEntity> {
-    throw new Error("This method is not implemented yet");
-  }
+  protected getEntityName(): string { return MapEntity.name }
 
-  delete(entity: MapEntity): Promise<void> {
-    throw new Error("This method is not implemented yet");
-  }
+  protected getIdName(): string { return "id" }
 }
+const MAP_REPOSITORY: InjectionToken<MapRepository> = new InjectionToken("token for TypeORM map repository");
