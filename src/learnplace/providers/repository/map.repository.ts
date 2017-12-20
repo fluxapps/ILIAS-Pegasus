@@ -60,4 +60,4 @@ export class TypeORMMapRepository extends AbstractCRUDRepository<MapEntity, numb
 
   protected getIdName(): string { return "id" }
 }
-const MAP_REPOSITORY: InjectionToken<MapRepository> = new InjectionToken("token for TypeORM map repository");
+export const MAP_REPOSITORY: InjectionToken<MapRepository> = new InjectionToken("token for TypeORM map repository");

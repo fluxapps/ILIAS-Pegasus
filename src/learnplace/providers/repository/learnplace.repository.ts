@@ -29,4 +29,4 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
 
   protected getIdName(): string { return "id" }
 }
-const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new InjectionToken("token for TypeORM learnplace repository");
+export const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new InjectionToken("token for TypeORM learnplace repository");
