@@ -103,4 +103,4 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
     );
   }
 }
-const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken("token for learnplace api");
+export const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken("token for learnplace api");
