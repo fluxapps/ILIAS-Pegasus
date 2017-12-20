@@ -9,6 +9,7 @@ import {InitDatabase} from "../../migrations/V__1-init-database";
 import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
+import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
 
 /**
  * DB Migration with TypeORM.
@@ -141,7 +142,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
   async get(): Promise<Array<Migration>> {
     return [
       new InitDatabase(),
-      new AddObjectAttributes()
+      new AddObjectAttributes(),
+      new CreateLearnplace()
     ];
   }
 }

@@ -1,11 +1,11 @@
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner} from "typeorm";
+import {QueryRunner, Table, TableColumn} from "typeorm";
 
 /**
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 0.0.2
  */
 export class CreateLearnplace implements Migration {
 
@@ -13,42 +13,39 @@ export class CreateLearnplace implements Migration {
 
   async up(queryRunner: QueryRunner): Promise<void> {
 
-    await queryRunner.query(
-      "CREATE TABLE IF NOT EXISTS Learnplace (" +
-                  "objectId INTEGER NOT NULL PRIMARY KEY" +
-      ")"
-    );
+    const learnplace: Table = new Table("Learnplace", [
+      new TableColumn({name: "objectId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
 
-    await queryRunner.query(
-      "CREATE TABLE IF NOT EXISTS Visibility (" +
-                  "value TEXT NOT NULL PRIMARY KEY" +
-      ")"
-    );
+    const visibility: Table = new Table("Visibility", [
+      new TableColumn({name: "value", type: "string", length: "128", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
 
-    await queryRunner.query(
-      "CREATE TABLE IF NOT EXISTS Location (" +
-                  "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
-                  "latitude FLOAT NOT NULL" +
-                  "longitude FLOAT NOT NULL" +
-                  "elevation FLOAT NOT NULL" +
-                  "radius INTEGER NOT NULL" +
-                  "FK_learnplace INTEGER NOT NULL" +
-      ")"
-    );
+    const location: Table = new Table("Location", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isGenerated: true, isNullable: false}),
+      new TableColumn({name: "latitude", type: "double", isNullable: false}),
+      new TableColumn({name: "longitude", type: "double", isNullable: false}),
+      new TableColumn({name: "elevation", type:"double", isNullable: false}),
+      new TableColumn({name: "radius", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
 
-    await queryRunner.query(
-      "CREATE TABLE IF NOT EXISTS Map (" +
-                  "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
-                  "FK_visibility TEXT NOT NULL" +
-                  "FK_learnplace INTEGER NOT NULL" +
-      ")"
-    );
+    const map: Table = new Table("Map", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
+    await queryRunner.createTable(learnplace);
+    await queryRunner.createTable(visibility);
+    await queryRunner.createTable(location);
+    await queryRunner.createTable(map);
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DROP TABLE IF EXISTS Map");
-    await queryRunner.query("DROP TABLE IF EXISTS Location");
-    await queryRunner.query("DROP TABLE IF EXISTS Visibility");
-    await queryRunner.query("DROP TABLE IF EXISTS Learnplace");
+    await queryRunner.dropTable("Map");
+    await queryRunner.dropTable("Location");
+    await queryRunner.dropTable("Visibility");
+    await queryRunner.dropTable("Learnplace");
   }
 }
