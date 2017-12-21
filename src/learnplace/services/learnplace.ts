@@ -7,6 +7,7 @@ import {MapEntity} from "../entity/map.entity";
 import {Logging} from "../../services/logging/logging.service";
 import getMessage = Logging.getMessage;
 import {Inject, Injectable} from "@angular/core";
+import {VisibilityEntity} from "../entity/visibility.entity";
 
 /**
  * Describes a loader for a single learnplace.
@@ -55,9 +56,11 @@ export class RestLearnplaceLoader implements LearnPlaceLoader {
       locationEntity.elevation = learnplace.location.elevation;
       locationEntity.radius = learnplace.location.radius;
 
+      const visibilityEntity: VisibilityEntity = new VisibilityEntity();
+      visibilityEntity.visibility = learnplace.map.visibility;
+
       const mapEntity: MapEntity = new MapEntity();
-      // TODO: Visibility must be stored during the migration and then read here
-      // mapEntity.visibility = learnplace.map.visibility;
+      mapEntity.visibility = visibilityEntity;
 
       const learnplaceEntity: LearnplaceEnity = new LearnplaceEnity();
       learnplaceEntity.objectId = learnplace.objectId;

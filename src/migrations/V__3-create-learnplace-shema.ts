@@ -40,6 +40,11 @@ export class CreateLearnplace implements Migration {
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
+
+    await queryRunner.insert("Visibility", {name: "ALWAYS"});
+    await queryRunner.insert("Visibility", {name: "NEVER"});
+    await queryRunner.insert("Visibility", {name: "ONLY_AT_PLACE"});
+    await queryRunner.insert("Visibility", {name: "AFTER_VISIT_PLACE"});
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
