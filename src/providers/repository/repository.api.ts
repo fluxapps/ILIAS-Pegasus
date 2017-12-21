@@ -111,7 +111,7 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
   }
 
   /**
-   * @returns {string} the name of the entity use
+   * @returns {string} the name of the entity used
    */
   protected abstract getEntityName(): string
 
