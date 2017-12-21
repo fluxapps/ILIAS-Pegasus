@@ -28,7 +28,7 @@ export interface LearnPlaceLoader {
    */
   load(id: number): Promise<void>
 }
-const LEARNPLACE_LOADER: InjectionToken<LearnPlaceLoader> = new InjectionToken("token four learnplace loader");
+export const LEARNPLACE_LOADER: InjectionToken<LearnPlaceLoader> = new InjectionToken("token four learnplace loader");
 
 /**
  * Loads a single learnplace over ILIAS rest and stores
