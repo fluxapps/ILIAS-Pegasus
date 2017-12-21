@@ -5,9 +5,9 @@ import {LearnplaceEnity} from "../entity/learnplace.enity";
 import {LocationEntity} from "../entity/location.entity";
 import {MapEntity} from "../entity/map.entity";
 import {Logging} from "../../services/logging/logging.service";
-import getMessage = Logging.getMessage;
-import {Inject, Injectable} from "@angular/core";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityEntity} from "../entity/visibility.entity";
+import {Logger} from "../../services/logging/logging.api";
 
 /**
  * Describes a loader for a single learnplace.
@@ -28,16 +28,19 @@ export interface LearnPlaceLoader {
    */
   load(id: number): Promise<void>
 }
+const LEARNPLACE_LOADER: InjectionToken<LearnPlaceLoader> = new InjectionToken("token four learnplace loader");
 
 /**
  * Loads a single learnplace over ILIAS rest and stores
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnPlaceLoader {
+
+  private readonly log: Logger = Logging.getLogger(RestLearnplaceLoader.name);
 
   constructor(
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
@@ -47,6 +50,8 @@ export class RestLearnplaceLoader implements LearnPlaceLoader {
   async load(id: number): Promise<void> {
 
     try {
+
+      this.log.info(() => `Load learnplace with id: ${id}`);
 
       const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
 
@@ -70,7 +75,7 @@ export class RestLearnplaceLoader implements LearnPlaceLoader {
       await this.learnplaceRepository.save(learnplaceEntity);
 
     } catch (error) {
-      throw new InvalidLearnplaceError(getMessage(error, "Could not load learnplace"));
+      throw new InvalidLearnplaceError(Logging.getMessage(error, "Could not load learnplace"));
     }
   }
 }
