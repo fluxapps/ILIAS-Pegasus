@@ -45,7 +45,7 @@ export class TypeOrmDbMigration implements DBMigration {
       const migrations: Array<Migration> = await this.migrationSupplier.get();
       migrations.sort((first, second) => this.sort(first.version, second.version));
 
-      migrations.forEach(async(it) => {
+      for(const it of migrations) {
 
         const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
         if (result.length < 1) {
@@ -55,8 +55,8 @@ export class TypeOrmDbMigration implements DBMigration {
 
           await queryRunner.query("INSERT INTO migrations (id) VALUES (?)", [it.version.getVersion()])
         }
-      });
-
+      }
+      
       this.log.info(() => "Successfully migrate database");
 
     } catch (error) {
