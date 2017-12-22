@@ -41,6 +41,7 @@ export interface LearnplaceAPI {
    */
   getBlocks(learnplaceObjectId: number): Promise<BlockObject>
 }
+export const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken("token for learnplace api");
 
 /**
  * {@link LearnplaceAPI} implementation for ILIAS.
@@ -103,4 +104,3 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
     );
   }
 }
-export const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken("token for learnplace api");
