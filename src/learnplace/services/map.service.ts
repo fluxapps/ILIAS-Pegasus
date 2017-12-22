@@ -1,7 +1,11 @@
 import {MapModel} from "../page.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {VisibilityContextFactory} from "./visibility/visibility.context";
+import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
 import {MAP_REPOSITORY, MapRepository} from "../providers/repository/map.repository";
+import {MapEntity} from "../entity/map.entity";
+import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {LearnplaceEnity} from "../entity/learnplace.enity";
 
 /**
  * Describes a service to operate with Maps.
@@ -33,10 +37,23 @@ export class VisibilityManagedMapService implements MapService {
 
   constructor(
     private readonly visibilityContextFactory: VisibilityContextFactory,
-    @Inject(MAP_REPOSITORY) private readonly mapRepository: MapRepository
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
   ) {}
 
-  getMap(learnplaceId: number): Promise<MapModel> {
-    throw new Error("This method is not implemented yet");
+  async getMap(learnplaceId: number): Promise<MapModel> {
+
+    const learnplace: LearnplaceEnity = await this.learnplaceRepository.find(learnplaceId);
+
+    const map: MapModel = new MapModel(
+      "title", // TODO: what title do we want
+      learnplace.location.latitude,
+      learnplace.location.longitude
+    );
+
+    const visibilityType: VisibilityStrategyType = VisibilityStrategyType[learnplace.map.visibility.value]
+    const visibilityContext: VisibilityContext = this.visibilityContextFactory.create(visibilityType);
+    visibilityContext.use(map);
+
+    return map;
   }
 }
