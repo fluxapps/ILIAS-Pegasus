@@ -1,12 +1,15 @@
-import {AfterViewInit, Component} from "@angular/core";
+import {AfterViewInit, Component, Inject} from "@angular/core";
 import {GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {Platform} from "ionic-angular";
+import {MAP_SERVICE, MapService} from "../../services/map.service";
+import {MapModel} from "../../page.model";
+import {LEARNPLACE, LearnplaceData} from "../../services/learnplace";
 
 /**
  * Component to display a map view.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 0.0.3
  */
 @Component({
     selector: "map",
@@ -15,7 +18,9 @@ import {Platform} from "ionic-angular";
 export class MapPage implements AfterViewInit{
 
   constructor(
-    private readonly platform: Platform
+    private readonly platform: Platform,
+    @Inject(MAP_SERVICE) private readonly mapService: MapService,
+    @Inject(LEARNPLACE) private readonly learnplace: LearnplaceData
   ) {}
 
   ngAfterViewInit(): void {
@@ -25,18 +30,20 @@ export class MapPage implements AfterViewInit{
 
   async init(): Promise<void> {
 
+    const map: MapModel = await this.mapService.getMap(this.learnplace.getId());
+
     const builder: MapBuilder = new MapBuilder();
 
     const camera: GeoCoordinate = <GeoCoordinate>{
-      latitude: 47.059819,
-      longitude: 7.624037
+      latitude: map.latitude,
+      longitude: map.longitude
     };
 
     const marker: Marker = <Marker>{
       position: <GeoCoordinate>{
-        latitude: 47.059819, longitude: 7.624037
+        latitude: map.latitude, longitude: map.longitude
       },
-      title: "A marker is here"
+      title: map.title
     };
 
     await builder
