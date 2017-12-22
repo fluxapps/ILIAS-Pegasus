@@ -81,7 +81,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
   private createVisibility(learnplace: LearnPlace): VisibilityEntity {
     const visibilityEntity: VisibilityEntity = new VisibilityEntity();
-    visibilityEntity.visibility = learnplace.map.visibility;
+    visibilityEntity.value = learnplace.map.visibility;
     return visibilityEntity;
   }
 
