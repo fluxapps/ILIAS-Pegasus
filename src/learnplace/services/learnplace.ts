@@ -16,7 +16,7 @@ import {Logger} from "../../services/logging/logging.api";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export interface LearnPlaceLoader {
+export interface LearnplaceLoader {
 
   /**
    * Loads all relevant data of the learnplace matching
@@ -28,7 +28,7 @@ export interface LearnPlaceLoader {
    */
   load(id: number): Promise<void>
 }
-export const LEARNPLACE_LOADER: InjectionToken<LearnPlaceLoader> = new InjectionToken("token four learnplace loader");
+export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new InjectionToken("token four learnplace loader");
 
 /**
  * Loads a single learnplace over ILIAS rest and stores
@@ -38,13 +38,14 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnPlaceLoader> = new Injection
  * @version 1.0.0
  */
 @Injectable()
-export class RestLearnplaceLoader implements LearnPlaceLoader {
+export class RestLearnplaceLoader implements LearnplaceLoader {
 
   private readonly log: Logger = Logging.getLogger(RestLearnplaceLoader.name);
 
   constructor(
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
+    @Inject(MUT_LEARNPLACE) private readonly learnplace: MutableLearnplaceData
   ) {}
 
   async load(id: number): Promise<void> {
@@ -55,28 +56,128 @@ export class RestLearnplaceLoader implements LearnPlaceLoader {
 
       const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
 
-      const locationEntity: LocationEntity = new LocationEntity();
-      locationEntity.latitude = learnplace.location.latitude;
-      locationEntity.longitude = learnplace.location.longitude;
-      locationEntity.elevation = learnplace.location.elevation;
-      locationEntity.radius = learnplace.location.radius;
-
-      const visibilityEntity: VisibilityEntity = new VisibilityEntity();
-      visibilityEntity.visibility = learnplace.map.visibility;
-
-      const mapEntity: MapEntity = new MapEntity();
-      mapEntity.visibility = visibilityEntity;
-
-      const learnplaceEntity: LearnplaceEnity = new LearnplaceEnity();
-      learnplaceEntity.objectId = learnplace.objectId;
-      learnplaceEntity.location = locationEntity;
-      learnplaceEntity.map = mapEntity;
+      const learnplaceEntity: LearnplaceEnity = this.createLearnplace(learnplace);
 
       await this.learnplaceRepository.save(learnplaceEntity);
+
+      // TODO: set name properly
+      this.learnplace.setId(id);
+      this.learnplace.setName("Learnplace xy")
 
     } catch (error) {
       throw new InvalidLearnplaceError(Logging.getMessage(error, "Could not load learnplace"));
     }
+  }
+
+  private createLocation(learnplace: LearnPlace): LocationEntity {
+    const locationEntity: LocationEntity = new LocationEntity();
+    locationEntity.latitude = learnplace.location.latitude;
+    locationEntity.longitude = learnplace.location.longitude;
+    locationEntity.elevation = learnplace.location.elevation;
+    locationEntity.radius = learnplace.location.radius;
+    return locationEntity;
+  }
+
+  private createVisibility(learnplace: LearnPlace): VisibilityEntity {
+    const visibilityEntity: VisibilityEntity = new VisibilityEntity();
+    visibilityEntity.visibility = learnplace.map.visibility;
+    return visibilityEntity;
+  }
+
+  private createMap(learnplace: LearnPlace): MapEntity {
+    const mapEntity: MapEntity = new MapEntity();
+    mapEntity.visibility = this.createVisibility(learnplace);
+    return mapEntity;
+  }
+
+  private createLearnplace(learnplace: LearnPlace): LearnplaceEnity {
+    const learnplaceEntity: LearnplaceEnity = new LearnplaceEnity();
+    learnplaceEntity.objectId = learnplace.objectId;
+    learnplaceEntity.location = this.createLocation(learnplace);
+    learnplaceEntity.map = this.createMap(learnplace);
+    return learnplaceEntity;
+  }
+}
+
+/**
+ * A readonly instance of the currently opened learnplace.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.2
+ */
+export interface LearnplaceData {
+
+  /**
+   * @returns {number} - the id of the opened learnplace
+   * @throws {InvalidLearnplaceError} if this object is in a unusable state
+   */
+  getId(): number
+
+  /**
+   * @returns {string} - the name of the opened learnplace
+   * @throws {InvalidLearnplaceError} if this object is in a unusable state
+   */
+  getName(): string
+}
+export const LEARNPLACE: InjectionToken<LearnplaceData> = new InjectionToken("token for a learnplace");
+
+/**
+ * A mutable instacne of the currently opended learnplace.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export interface MutableLearnplaceData extends LearnplaceData {
+
+  /**
+   * Sets the id of the learnplace.
+   *
+   * @param {number} id - the id of the learnplace
+   */
+  setId(id: number): void
+
+  /**
+   * Sets the name of the learnplace.
+   *
+   * @param {string} name - the name of the learnplace
+   */
+  setName(name: string): void
+}
+export const MUT_LEARNPLACE: InjectionToken<MutableLearnplaceData> = new InjectionToken("token for a mutable learnplace");
+
+/**
+ * Holds information about the currently opened learnplace.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.1.0
+ */
+@Injectable()
+export class LearnplaceObject implements MutableLearnplaceData {
+
+  private id: number = -1;
+  private name: string = "";
+
+  getId(): number {
+    if (this.id === -1) {
+      throw new InvalidLearnplaceError("Learnplace is not setup: id was never assigned");
+    }
+    return this.id;
+  }
+
+  setId(id: number): void {
+    this.id = id;
+  }
+
+
+  getName(): string {
+    if (this.name === "") {
+      throw new InvalidLearnplaceError("Learnplace is not setup: name was never assigned");
+    }
+    return this.name;
+  }
+
+  setName(name: string): void {
+    this.name = name;
   }
 }
 
