@@ -1,4 +1,14 @@
 /**
+ * Contains information to display a map.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class MapModel {
+
+}
+
+/**
  * Enumerator for all available block types.
  *
  * @author nmaerchy <nm@studer-raiann.ch>

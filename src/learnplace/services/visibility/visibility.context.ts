@@ -1,5 +1,14 @@
-import {Block} from "../../block.model";
 import {AlwaysStrategy, NeverStrategy, VisibilityStrategy, VisibilityStrategyType} from "./visibility.strategy";
+
+/**
+ * Describes an object that can be visibile or not.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface VisibilityAware {
+  visible: boolean;
+}
 
 /**
  * Describes a context to revise a visibility on a block.
@@ -10,11 +19,11 @@ import {AlwaysStrategy, NeverStrategy, VisibilityStrategy, VisibilityStrategyTyp
 export interface VisibilityContext {
 
   /**
-   * Uses the given {@code block} in this context.
+   * Uses the given {@code object} in this context.
    *
-   * @param {Block} block the block to use
+   * @param {VisibilityAware} object - the object to use
    */
-  use(block: Block): void
+  use(object: VisibilityAware): void
 }
 
 /**
@@ -30,11 +39,11 @@ export interface VisibilityContext {
    ) {}
 
   /**
-   * Uses the given {@code block} with the set strategy on this context.
+   * Uses the given {@code object} with the set strategy on this context.
    *
-   * @param {Block} block
+   * @param {VisibilityAware} object - the object to use the strategy on
    */
-  use(block: Block): void { this.strategy.on(block) }
+  use(object: VisibilityAware): void { this.strategy.on(object) }
 }
 
 /**
