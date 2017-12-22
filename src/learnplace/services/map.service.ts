@@ -1,8 +1,6 @@
 import {MapModel} from "../page.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
-import {MAP_REPOSITORY, MapRepository} from "../providers/repository/map.repository";
-import {MapEntity} from "../entity/map.entity";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEnity} from "../entity/learnplace.enity";
