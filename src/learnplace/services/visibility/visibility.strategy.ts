@@ -1,4 +1,5 @@
 import {VisibilityAware} from "./visibility.context";
+import {Injectable} from "@angular/core";
 
 /**
  * Enumerator for available strategies.
@@ -35,7 +36,8 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- export class AlwaysStrategy implements VisibilityStrategy {
+@Injectable()
+export class AlwaysStrategy implements VisibilityStrategy {
 
   /**
    * Sets the {@code visible} property of the given {@code object} to true.
@@ -51,7 +53,8 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- export class NeverStrategy implements VisibilityStrategy {
+@Injectable()
+export class NeverStrategy implements VisibilityStrategy {
 
   /**
    * Sets the {@code visible} property of the given {@code object} to false.
