@@ -4,5 +4,5 @@ import {Entity, PrimaryColumn} from "typeorm";
 export class VisibilityEntity {
 
   @PrimaryColumn()
-  visibility: string
+  value: string
 }
