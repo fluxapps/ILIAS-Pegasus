@@ -176,18 +176,17 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       useClass: TypeORMMapRepository
     },
     {
-      provide: LEARNPLACE_LOADER,
-      useClass: RestLearnplaceLoader
-    },
-    {
       provide: LEARNPLACE,
       useClass: LearnplaceObject
     },
     {
       provide: MUT_LEARNPLACE,
-      useClass: LearnplaceObject
+      useExisting: LEARNPLACE
     },
-
+    {
+      provide: LEARNPLACE_LOADER,
+      useClass: RestLearnplaceLoader
+    },
     {
       provide: LEARNPLACE_API,
       useClass: ILIASLearnplaceAPI
