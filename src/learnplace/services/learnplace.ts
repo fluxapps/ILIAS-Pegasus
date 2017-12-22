@@ -8,6 +8,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityEntity} from "../entity/visibility.entity";
 import {Logger} from "../../services/logging/logging.api";
+import {isUndefined} from "ionic-angular/es2015/util/util";
 
 /**
  * Describes a loader for a single learnplace.
@@ -154,11 +155,11 @@ export const MUT_LEARNPLACE: InjectionToken<MutableLearnplaceData> = new Injecti
 @Injectable()
 export class LearnplaceObject implements MutableLearnplaceData {
 
-  private id: number = -1;
-  private name: string = "";
+  private id: number | undefined = undefined;
+  private name: string | undefined =undefined;
 
   getId(): number {
-    if (this.id === -1) {
+    if (isUndefined(this.id)) {
       throw new InvalidLearnplaceError("Learnplace is not setup: id was never assigned");
     }
     return this.id;
@@ -170,7 +171,7 @@ export class LearnplaceObject implements MutableLearnplaceData {
 
 
   getName(): string {
-    if (this.name === "") {
+    if (isUndefined(this.name)) {
       throw new InvalidLearnplaceError("Learnplace is not setup: name was never assigned");
     }
     return this.name;
