@@ -1,6 +1,8 @@
 import {Connection, getConnection} from "typeorm";
 import {DEFAULT_CONNECTION_NAME} from "../../services/database/database.api";
 import {Database} from "../../services/database/database";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 
 /**
  * Describes a repository with basic CRUD operations.
@@ -43,11 +45,13 @@ export interface CRUDRepository<T, K> {
  * on your specific repository.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.0.1
  */
 export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, K> {
 
   protected connection: Connection;
+
+  private readonly log: Logger = Logging.getLogger(AbstractCRUDRepository.name);
 
   constructor(
     protected readonly database: Database,
@@ -70,8 +74,10 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
 
     await this.database.ready(this.connectionName);
 
-    return getConnection(this.connectionName)
-      .getRepository(this.getEntityName)
+    this.log.info(() => `Save entity "${this.getEntityName()}"`);
+
+    return this.connection
+      .getRepository(this.getEntityName())
       .save(entity);
   }
 
@@ -88,9 +94,11 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
 
     await this.database.ready(this.connectionName);
 
+    this.log.info(() => `Find entity "${this.getEntityName()}" by id "${primaryKey}"`);
+
     // await is needed here, so we can cast it to T
-    return await getConnection(this.connectionName)
-      .getRepository(this.getEntityName)
+    return await this.connection
+      .getRepository(this.getEntityName())
       .findOneById(primaryKey) as T;
   }
 
@@ -105,8 +113,10 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
 
     await this.database.ready(this.connectionName);
 
-    await getConnection(this.connectionName)
-      .getRepository(this.getEntityName)
+    this.log.info(() => `Delete entity "${this.getEntityName()}"`);
+
+    await this.connection
+      .getRepository(this.getEntityName())
       .deleteById(entity[this.getIdName()]);
   }
 
