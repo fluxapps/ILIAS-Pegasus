@@ -1,6 +1,6 @@
 import {Entity, PrimaryColumn} from "typeorm";
 
-@Entity()
+@Entity("Visibility")
 export class VisibilityEntity {
 
   @PrimaryColumn()

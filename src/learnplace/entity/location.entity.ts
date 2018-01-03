@@ -1,6 +1,7 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {LearnplaceEnity} from "./learnplace.enity";
 
-@Entity()
+@Entity("Location")
 export class LocationEntity {
 
   @PrimaryGeneratedColumn()
@@ -17,4 +18,8 @@ export class LocationEntity {
 
   @Column()
   radius: number;
+
+  @OneToOne(type => LearnplaceEnity, learnplace => learnplace.location)
+  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
+  learnplace: LearnplaceEnity;
 }

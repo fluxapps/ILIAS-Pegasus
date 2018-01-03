@@ -1,18 +1,16 @@
 import {LocationEntity} from "./location.entity";
 import {MapEntity} from "./map.entity";
-import {Entity, JoinColumn, OneToOne, PrimaryColumn} from "typeorm";
+import {Entity, OneToOne, PrimaryColumn, RelationOptions} from "typeorm";
 
-@Entity()
+@Entity("Learnplace")
 export class LearnplaceEnity {
 
   @PrimaryColumn()
   objectId: number;
 
-  @OneToOne(type => LocationEntity)
-  @JoinColumn()
+  @OneToOne(type => LocationEntity, location => location.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   location: LocationEntity;
 
-  @OneToOne(type => MapEntity)
-  @JoinColumn()
+  @OneToOne(type => MapEntity, map => map.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   map: MapEntity;
 }
