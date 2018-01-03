@@ -16,7 +16,7 @@ export interface LearnplaceRepository extends CRUDRepository<LearnplaceEnity, nu
  * Uses TypeORM for CRUD operations of the {@link LearnplaceEnity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Injectable()
 export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEnity, number> implements LearnplaceRepository {
@@ -25,7 +25,7 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
     super(database, PEGASUS_CONNECTION_NAME);
   }
 
-  protected getEntityName(): string { return LearnplaceEnity.name }
+  protected getEntityName(): string { return "Learnplace" }
 
   protected getIdName(): string { return "id" }
 }
