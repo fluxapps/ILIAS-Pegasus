@@ -9,6 +9,7 @@ import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityEntity} from "../entity/visibility.entity";
 import {Logger} from "../../services/logging/logging.api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
+import {Optional} from "../../util/util.optional";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -127,8 +128,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
   constructor(
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    @Inject(MUT_LEARNPLACE) private readonly learnplace: MutableLearnplaceData
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
   ) {}
 
   async load(id: number): Promise<void> {
@@ -139,13 +139,25 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
       const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
 
-      const learnplaceEntity: LearnplaceEnity = this.createLearnplace(learnplace);
+      const learnplaceOptional: Optional<LearnplaceEnity> = await this.learnplaceRepository.find(id);
 
-      await this.learnplaceRepository.save(learnplaceEntity);
+      if (learnplaceOptional.isPresent()) {
 
-      // TODO: set name properly
-      this.learnplace.setId(id);
-      this.learnplace.setName("Learnplace xy")
+        const learnplaceEntity: LearnplaceEnity = learnplaceOptional.get();
+        learnplaceEntity.map.visibility.value = learnplace.map.visibility;
+        learnplaceEntity.location.latitude = learnplace.location.latitude;
+        learnplaceEntity.location.longitude = learnplace.location.longitude;
+        learnplaceEntity.location.radius = learnplace.location.radius;
+        learnplaceEntity.location.elevation = learnplace.location.elevation;
+
+        await this.learnplaceRepository.save(learnplaceEntity);
+
+      } else {
+
+        const learnplaceEntity: LearnplaceEnity = this.createLearnplace(learnplace);
+
+        await this.learnplaceRepository.save(learnplaceEntity);
+      }
 
     } catch (error) {
       throw new InvalidLearnplaceError(Logging.getMessage(error, "Could not load learnplace"));
