@@ -76,6 +76,11 @@ export class Optional<T> {
   }
 
   /**
+   * @returns {boolean} true if there is a value present, otherwise false
+   */
+  isPresent(): boolean { return !isUndefined(this.value) }
+
+  /**
    * Returns the value if present, otherwise returns {@code other}.
    *
    * @param {T} other - value to returns on non-present value
