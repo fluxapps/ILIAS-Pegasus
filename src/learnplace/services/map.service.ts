@@ -28,7 +28,7 @@ export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token
  * Manages the visibility of a map by using the {@link VisibilityContext}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class VisibilityManagedMapService implements MapService {
@@ -38,9 +38,19 @@ export class VisibilityManagedMapService implements MapService {
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
   ) {}
 
+  /**
+   * Creates a map by the given {@code learnplaceId}.
+   *
+   * The returned maps visibility is managed by the {@link VisibilityContext}.
+   *
+   * @param {number} learnplaceId - the id of the learnplace to find the according map
+   *
+   * @returns {Promise<MapModel>} the resulting model
+   * @throws {NoSuchElementError} if no learnplace matches the given id
+   */
   async getMap(learnplaceId: number): Promise<MapModel> {
 
-    const learnplace: LearnplaceEnity = await this.learnplaceRepository.find(learnplaceId);
+    const learnplace: LearnplaceEnity = (await this.learnplaceRepository.find(learnplaceId)).get();
 
     const map: MapModel = new MapModel(
       "title", // TODO: what title do we want

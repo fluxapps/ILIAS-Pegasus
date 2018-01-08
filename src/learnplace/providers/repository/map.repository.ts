@@ -1,14 +1,16 @@
 import {MapEntity} from "../../entity/map.entity";
 import {Injectable, InjectionToken} from "@angular/core";
-import {AbstractCRUDRepository, CRUDRepository} from "../../../providers/repository/repository.api";
+import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
 import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
+import {Optional} from "../../../util/util.optional";
+import {Logging} from "../../../services/logging/logging.service";
 
 /**
  * Describes a CRUD repository for {@link MapEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export interface MapRepository extends CRUDRepository<MapEntity, number> {
 
@@ -17,16 +19,17 @@ export interface MapRepository extends CRUDRepository<MapEntity, number> {
    *
    * @param {number} learnplaceId - id of the learnplace relation
    *
-   * @returns {Promise<MapEntity>} - the resulting entity
+   * @returns {Promise<Optional<MapEntity>>} - an Optional of the resulting entity
+   * @throws {RepositoryError} if an error occurs during this operation
    */
-  findByLearnplaceId(learnplaceId: number): Promise<MapEntity>
+  findByLearnplaceId(learnplaceId: number): Promise<Optional<MapEntity>>
 }
 
 /**
  * Uses TypeORM for CRUD operations of the {@link MapEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Injectable()
 export class TypeORMMapRepository extends AbstractCRUDRepository<MapEntity, number> implements MapRepository {
@@ -42,18 +45,27 @@ export class TypeORMMapRepository extends AbstractCRUDRepository<MapEntity, numb
    *
    * @param {number} learnplaceId - id of the learnplace relation
    *
-   * @returns {Promise<MapEntity>} - the resulting entity
+   * @returns {Promise<Optional<MapEntity>>} - an Optional of the resulting entity
+   * @throws {RepositoryError} if an error occurs during this operation
    */
-  async findByLearnplaceId(learnplaceId: number): Promise<MapEntity> {
+  async findByLearnplaceId(learnplaceId: number): Promise<Optional<MapEntity>> {
 
-    await this.database.ready(PEGASUS_CONNECTION_NAME);
+    try {
 
-    return this.connection
-      .createQueryBuilder()
-      .select()
-      .from(MapEntity, "map")
-      .where("map.FK_learnplace = :learnplaceId", {learnplaceId: learnplaceId})
-      .getOne();
+      await this.database.ready(PEGASUS_CONNECTION_NAME);
+
+      const result: MapEntity | null = await this.connection
+        .createQueryBuilder()
+        .select()
+        .from(MapEntity, "map")
+        .where("map.FK_learnplace = :learnplaceId", {learnplaceId: learnplaceId})
+        .getOne();
+
+      return Optional.ofNullable(result);
+
+    } catch (error) {
+      throw new RepositoryError(Logging.getMessage(error, `Could not find MapEntity by learnplaceId "${learnplaceId}"`));
+    }
   }
 
   protected getEntityName(): string { return MapEntity.name }
