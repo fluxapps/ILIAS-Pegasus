@@ -1,4 +1,5 @@
-import {Block} from "../../block.model";
+import {VisibilityAware} from "./visibility.context";
+import {Injectable} from "@angular/core";
 
 /**
  * Enumerator for available strategies.
@@ -10,8 +11,7 @@ export enum VisibilityStrategyType {
   ALWAYS,
   NEVER,
   ONLY_AT_PLACE,
-  AFTER_VISIT_PLACE,
-  AFTER_VISIT_OTHER_PLACE
+  AFTER_VISIT_PLACE
 }
 
 /**
@@ -23,11 +23,11 @@ export enum VisibilityStrategyType {
 export interface VisibilityStrategy {
 
   /**
-   * Uses this strategy on the given {@code block}.
+   * Uses this strategy on the given {@code object}.
    *
-   * @param {Block} block the block to use in this strategy
+   * @param {VisibilityAware} object the block to use in this strategy
    */
-  on(block: Block): void
+  on(object: VisibilityAware): void
 }
 
 /**
@@ -36,14 +36,15 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- export class AlwaysStrategy implements VisibilityStrategy {
+@Injectable()
+export class AlwaysStrategy implements VisibilityStrategy {
 
   /**
-   * Sets the {@code visible} property of the given {@code block}to true.
+   * Sets the {@code visible} property of the given {@code object} to true.
    *
-   * @param {Block} block the block to use in this strategy
+   * @param {VisibilityAware} object the block to use in this strategy
    */
-  on(block: Block): void { block.visible = true }
+  on(object: VisibilityAware): void { object.visible = true }
 }
 
 /**
@@ -52,14 +53,15 @@ export interface VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
- export class NeverStrategy implements VisibilityStrategy {
+@Injectable()
+export class NeverStrategy implements VisibilityStrategy {
 
   /**
-   * Sets the {@code visible} property of the given {@code block} to false.
+   * Sets the {@code visible} property of the given {@code object} to false.
    *
-   * @param {Block} block the block to use in this strategy
+   * @param {VisibilityAware} object the block to use in this strategy
    */
-  on(block: Block): void { block.visible = false }
+  on(object: VisibilityAware): void { object.visible = false }
 }
 
 // TODO: add all other strategies after the repository layer is implemented

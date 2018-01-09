@@ -48,6 +48,20 @@ import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../ser
 import {Database} from "../services/database/database";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
+import {
+  LEARNPLACE, LEARNPLACE_LOADER, LearnplaceObject, MUT_LEARNPLACE,
+  RestLearnplaceLoader
+} from "../learnplace/services/learnplace";
+import {
+  LEARNPLACE_REPOSITORY,
+  TypeORMLearnplaceRepository
+} from "../learnplace/providers/repository/learnplace.repository";
+import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
+import {LearnplacePage} from "../learnplace/pages/learnplace/learnplace.component";
+import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
+import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/visibility.strategy";
+import {VisibilityContextFactory} from "../learnplace/services/visibility/visibility.context";
+import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -67,6 +81,9 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
+
+    /* from src/learnplace */
+    LearnplacePage,
     MapPage,
     TabsPage
   ],
@@ -91,6 +108,9 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
+
+    /* from src/learnplace */
+    LearnplacePage,
     MapPage,
     TabsPage
   ],
@@ -145,6 +165,39 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     DatabaseConnectionRegistry,
     Database,
+
+    /* from src/learnplace */
+    {
+      provide: LEARNPLACE_REPOSITORY,
+      useClass: TypeORMLearnplaceRepository
+    },
+    {
+      provide: MAP_REPOSITORY,
+      useClass: TypeORMMapRepository
+    },
+    {
+      provide: LEARNPLACE,
+      useClass: LearnplaceObject
+    },
+    {
+      provide: MUT_LEARNPLACE,
+      useExisting: LEARNPLACE
+    },
+    {
+      provide: LEARNPLACE_LOADER,
+      useClass: RestLearnplaceLoader
+    },
+    {
+      provide: LEARNPLACE_API,
+      useClass: ILIASLearnplaceAPI
+    },
+    {
+      provide: MAP_SERVICE,
+      useClass: VisibilityManagedMapService
+    },
+    AlwaysStrategy,
+    NeverStrategy,
+    VisibilityContextFactory,
 
     ConnectionService,
     ILIASRestProvider,

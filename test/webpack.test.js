@@ -40,7 +40,15 @@ module.exports = {
       root('./src'), // location of your src
       {} // a map of your routes
     )
-  ]
+  ],
+
+  // Some libraries import Node modules but don't use them in the browser.
+  // Tell Webpack to provide empty mocks for them so importing them works.
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };
 
 function root(localPath) {

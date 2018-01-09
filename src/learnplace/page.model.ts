@@ -1,3 +1,25 @@
+import {VisibilityAware} from "./services/visibility/visibility.context";
+
+/**
+ * Contains information to display a map.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class MapModel implements VisibilityAware {
+
+  visible: boolean;
+
+  constructor(
+    readonly title: string,
+    readonly latitude: number,
+    readonly longitude: number,
+    visible: boolean = false
+  ) {
+    this.visible = visible;
+  }
+}
+
 /**
  * Enumerator for all available block types.
  *

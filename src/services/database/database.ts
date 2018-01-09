@@ -2,17 +2,22 @@ import {createConnection} from "typeorm";
 import {Inject, Injectable} from "@angular/core";
 import {
   DATABASE_CONFIGURATION_ADAPTER, DatabaseConfigurationAdapter, DatabaseConnection, DatabaseConnectionRegistry,
+  DatabaseOptions,
   DEFAULT_CONNECTION_NAME
 } from "./database.api";
 import {Http, Response} from "@angular/http";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
+import {LearnplaceEnity} from "../../learnplace/entity/learnplace.enity";
+import {LocationEntity} from "../../learnplace/entity/location.entity";
+import {MapEntity} from "../../learnplace/entity/map.entity";
+import {VisibilityEntity} from "../../learnplace/entity/visibility.entity";
 
 /**
  * The Database can be used to get information about a certain connection.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.1.0
+ * @version 1.1.1
  */
 @Injectable()
 export class Database {
@@ -23,8 +28,7 @@ export class Database {
 
   constructor(
     @Inject(DATABASE_CONFIGURATION_ADAPTER) private readonly configurationAdapter: DatabaseConfigurationAdapter,
-    private readonly registry: DatabaseConnectionRegistry,
-    private readonly http: Http
+    private readonly registry: DatabaseConnectionRegistry
   ) {
   }
 
@@ -45,18 +49,16 @@ export class Database {
    */
   async ready(connectionName: string = DEFAULT_CONNECTION_NAME): Promise<void> {
 
-    if (this.readyConnections.findIndex(it => it === connectionName) > 0) {
+    if (this.readyConnections.indexOf(connectionName) > -1) {
       this.log.info(() => `Connection ${connectionName} is ready`);
       return Promise.resolve();
     }
 
     this.configurationAdapter.addConnections(this.registry);
-    const connection: DatabaseConnection = this.registry.getConnection(connectionName);
-
-    const file: Response = await this.http.get(connection.getDirectory() + connection.getFileName()).toPromise();
+    const connection: DatabaseOptions = this.registry.getConnection(connectionName);
 
     this.log.info(() => `Create database connection: name=${connectionName}`);
-    await createConnection(file.json());
+    await createConnection(connection.getOptions());
 
     this.readyConnections.push(connectionName);
   }
