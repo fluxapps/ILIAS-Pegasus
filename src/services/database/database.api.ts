@@ -1,7 +1,9 @@
 import {Injectable, InjectionToken} from "@angular/core";
+import {ConnectionOptions} from "typeorm";
+import {CordovaDatabaseConnection, CordovaDatabaseConnectionImpl} from "./cordova.database";
+import {NoSuchElementError} from "../../error/errors";
 
 export const DEFAULT_CONNECTION_NAME: string = "default";
-const DEFAULT_CONFIG_FILE: string = "ormconfig.json";
 
 /**
  * Describes a class to configure database connections.
@@ -33,53 +35,77 @@ export const DATABASE_CONFIGURATION_ADAPTER: InjectionToken<DatabaseConfiguratio
 @Injectable()
 export class DatabaseConnectionRegistry {
 
-  private readonly connections: Map<string, DatabaseConnection> = new Map();
+  private readonly connections: Map<string, DatabaseOptions> = new Map();
 
-  addConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseConnection {
-    const connection: DatabaseConnection = new DatabaseConnection();
-    this.connections.set(name, connection);
+  addConnection(name: string = DEFAULT_CONNECTION_NAME, options: (it: DatabaseConnection) => DatabaseOptions): DatabaseConnection {
+    const connection: DatabaseConnection = new DatabaseConnection(name);
+    this.connections.set(name, options(connection));
     return connection;
   }
 
-  getConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseConnection {
+  getConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseOptions {
     try {
       return this.connections.get(name);
     } catch (error) {
-      throw new RangeError(`Could not find a connection with name: ${name}`);
+      throw new NoSuchElementError(`Could not find a connection with name: ${name}`);
     }
   }
 }
 
 /**
- * Data class for database connection information.
+ * Provides specific database connections.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
- *
- * @property {string} filename        - the file name of your orm config file, by default {@link DEFAULT_CONNECTION_NAME}
- * @property {string} directory       - absolute path to the directory of your config file, by default process.cwd()
+ * @version 1.0.0
  */
 export class DatabaseConnection {
 
-  private fileName: string = DEFAULT_CONFIG_FILE;
-  private directory: string = process.cwd();
+  constructor(
+    private readonly name: string
+  ) {}
 
-
-  getFileName(): string {
-    return this.fileName;
+  cordova(): CordovaDatabaseConnection {
+    return new CordovaDatabaseConnectionImpl(this.name);
   }
+}
 
-  setFileName(value: string): DatabaseConnection {
-    this.fileName = value;
-    return this;
-  }
+/**
+ * Base interface for all database connections.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface DatabaseOptions {
 
-  getDirectory(): string {
-    return this.directory;
-  }
+  /**
+   * @returns {ConnectionOptions} the connection options of this database connection
+   */
+  getOptions(): ConnectionOptions
+}
 
-  setDirectory(value: string): DatabaseConnection {
-    this.directory = value;
-    return this;
-  }
+/**
+ * Provides common database connection options.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface CommonDatabaseOptions<T> extends DatabaseOptions {
+
+  /**
+   * Registers all given entities in this connection.
+   *
+   * @param {Array<object>} entity - entities to add
+   *
+   * @returns {T} the specific database connection
+   */
+  addEntity(...entity: Array<object>): T
+
+  /**
+   * Enables or disable the sql logging of this connection.
+   *
+   * @param {boolean} enable - true if logging should be enabled, otherwise false
+   *
+   * @returns {T} the specific database connection
+   */
+  enableLogging(enable: boolean): T
 }
