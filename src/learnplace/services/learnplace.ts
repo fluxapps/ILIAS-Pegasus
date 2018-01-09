@@ -15,7 +15,7 @@ import {Optional} from "../../util/util.optional";
  * A readonly instance of the currently opened learnplace.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.2
+ * @version 1.0.0
  */
 export interface LearnplaceData {
 
@@ -34,10 +34,10 @@ export interface LearnplaceData {
 export const LEARNPLACE: InjectionToken<LearnplaceData> = new InjectionToken("token for a learnplace");
 
 /**
- * A mutable instacne of the currently opended learnplace.
+ * A mutable instance of the currently opened learnplace.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 export interface MutableLearnplaceData extends LearnplaceData {
 
@@ -131,65 +131,91 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
   ) {}
 
+  /**
+   * Loads all relevant data of the learnplace matching
+   * the given {@code id} and stores them.
+   * If the learnplace is already stored, it will be updated.
+   *
+   * @param {number} id - the id to use
+   *
+   * @throws {InvalidLearnplaceError} if the learnplace could not be loaded
+   */
   async load(id: number): Promise<void> {
 
     try {
 
       this.log.info(() => `Load learnplace with id: ${id}`);
 
-      const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
+      const learnplace: LearnplaceEnity = await this.getLearnplace(id);
 
-      const learnplaceOptional: Optional<LearnplaceEnity> = await this.learnplaceRepository.find(id);
-
-      if (learnplaceOptional.isPresent()) {
-
-        const learnplaceEntity: LearnplaceEnity = learnplaceOptional.get();
-        learnplaceEntity.map.visibility.value = learnplace.map.visibility;
-        learnplaceEntity.location.latitude = learnplace.location.latitude;
-        learnplaceEntity.location.longitude = learnplace.location.longitude;
-        learnplaceEntity.location.radius = learnplace.location.radius;
-        learnplaceEntity.location.elevation = learnplace.location.elevation;
-
-        await this.learnplaceRepository.save(learnplaceEntity);
-
-      } else {
-
-        const learnplaceEntity: LearnplaceEnity = this.createLearnplace(learnplace);
-
-        await this.learnplaceRepository.save(learnplaceEntity);
-      }
+      await this.learnplaceRepository.save(learnplace);
 
     } catch (error) {
       throw new InvalidLearnplaceError(Logging.getMessage(error, "Could not load learnplace"));
     }
   }
 
-  private createLocation(learnplace: LearnPlace): LocationEntity {
-    const locationEntity: LocationEntity = new LocationEntity();
-    locationEntity.latitude = learnplace.location.latitude;
-    locationEntity.longitude = learnplace.location.longitude;
-    locationEntity.elevation = learnplace.location.elevation;
-    locationEntity.radius = learnplace.location.radius;
-    return locationEntity;
+  /**
+   * Gets the learnplace entity matching the given {@code id}.
+   *
+   * If the learnplace is already stored, it will be updated with the learnplace data from the {@link LearnplaceAPI} and then returned.
+   *
+   * If the learnplace is new, it will be created and filled with the learnplace data from the {@link LearnplaceAPI} and then returned.
+   *
+   * @param {number} id - the id to use
+   *
+   * @returns {Promise<LearnplaceEnity>} the resulting entity
+   */
+  private async getLearnplace(id: number): Promise<LearnplaceEnity> {
+
+    const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
+
+    const learnplaceOptional: Optional<LearnplaceEnity> = await this.learnplaceRepository.find(id);
+
+    if (learnplaceOptional.isPresent()) {
+      return this.fillEntity(learnplaceOptional.get(), learnplace);
+    }
+    return this.createLearnplace(learnplace);
   }
 
-  private createVisibility(learnplace: LearnPlace): VisibilityEntity {
-    const visibilityEntity: VisibilityEntity = new VisibilityEntity();
-    visibilityEntity.value = learnplace.map.visibility;
-    return visibilityEntity;
+  /**
+   * Fills the given {@code entity} with the data of the given {@code source}, assuming there are non-null / non-undefined values.
+   * This method does not modify any ids of the given {@code entity} and its relations.
+   *
+   * @param {LearnplaceEnity} entity - the entity to fill in the data
+   * @param {LearnPlace} source - the source data to fill into the entity
+   *
+   * @returns {LearnplaceEnity} - the given entity with the filled data
+   */
+  private fillEntity(entity: LearnplaceEnity, source: LearnPlace): LearnplaceEnity {
+
+    entity.map.visibility.value = source.map.visibility;
+    entity.location.latitude = source.location.latitude;
+    entity.location.longitude = source.location.longitude;
+    entity.location.radius = source.location.radius;
+    entity.location.elevation = source.location.elevation;
+
+    return entity;
   }
 
-  private createMap(learnplace: LearnPlace): MapEntity {
-    const mapEntity: MapEntity = new MapEntity();
-    mapEntity.visibility = this.createVisibility(learnplace);
-    return mapEntity;
-  }
-
+  /**
+   * Creates a {@link LearnplaceEnity} and ensures that there are only non-null / non-undefined values,
+   * in order to use the {@link fillEntity} method.
+   *
+   * @param {LearnPlace} learnplace - the learnplace data to use
+   *
+   * @returns {LearnplaceEnity} the new learnplace entity filled with the data of the learnplace
+   */
   private createLearnplace(learnplace: LearnPlace): LearnplaceEnity {
     const learnplaceEntity: LearnplaceEnity = new LearnplaceEnity();
+
     learnplaceEntity.objectId = learnplace.objectId;
-    learnplaceEntity.location = this.createLocation(learnplace);
-    learnplaceEntity.map = this.createMap(learnplace);
+    learnplaceEntity.location = new LocationEntity();
+    learnplaceEntity.map = new MapEntity();
+    learnplaceEntity.map.visibility = new VisibilityEntity();
+
+    this.fillEntity(learnplaceEntity, learnplace);
+
     return learnplaceEntity;
   }
 }
