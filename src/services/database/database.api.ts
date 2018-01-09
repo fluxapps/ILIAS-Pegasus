@@ -27,10 +27,10 @@ export interface DatabaseConfigurationAdapter {
 export const DATABASE_CONFIGURATION_ADAPTER: InjectionToken<DatabaseConfigurationAdapter> = new InjectionToken("token for database configurer");
 
 /**
- *
+ * Registry to add different types of database connections.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class DatabaseConnectionRegistry {
