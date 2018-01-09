@@ -94,11 +94,12 @@ export interface CommonDatabaseOptions<T> extends DatabaseOptions {
   /**
    * Registers all given entities in this connection.
    *
-   * @param {Array<object>} entity - entities to add
+   * @param {Function} first - entity to add
+   * @param {Array<Function>} more - additional entities to add
    *
    * @returns {T} the specific database connection
    */
-  addEntity(...entity: Array<object>): T
+  addEntity(first: Function, ...more: Array<Function>): T
 
   /**
    * Enables or disable the sql logging of this connection.

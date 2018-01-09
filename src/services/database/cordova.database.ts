@@ -41,7 +41,7 @@ export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection 
   private database: string = "cordova_db";
   private location: string = "default";
   private logging: boolean = false;
-  private entities: Array<object> = [];
+  private entities: Array<Function> = [];
 
   constructor(
     private readonly name: string
@@ -57,8 +57,9 @@ export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection 
     return this;
   }
 
-  addEntity(...entity: Array<object>): CordovaDatabaseConnection {
-    this.entities.push(entity);
+  addEntity(first: Function, ...more: Array<Function>): CordovaDatabaseConnection {
+    this.entities.push(first);
+    more.forEach(it => this.entities.push(it));
     return this;
   }
 
