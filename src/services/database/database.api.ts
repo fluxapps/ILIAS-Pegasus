@@ -37,10 +37,9 @@ export class DatabaseConnectionRegistry {
 
   private readonly connections: Map<string, DatabaseOptions> = new Map();
 
-  addConnection(name: string = DEFAULT_CONNECTION_NAME, options: (it: DatabaseConnection) => DatabaseOptions): DatabaseConnection {
+  addConnection(name: string = DEFAULT_CONNECTION_NAME, options: (it: DatabaseConnection) => DatabaseOptions): void {
     const connection: DatabaseConnection = new DatabaseConnection(name);
     this.connections.set(name, options(connection));
-    return connection;
   }
 
   getConnection(name: string = DEFAULT_CONNECTION_NAME): DatabaseOptions {
