@@ -1,8 +1,28 @@
-import {LocationAccessError, RoamingAccessError, WifiAccessError} from "./hardware-access.errors";
+import {HardwareAccessError, LocationAccessError, RoamingAccessError, WifiAccessError} from "./hardware-access.errors";
+
+export enum HardwareFeature {
+  LOCATION,
+  WIFI,
+  ROAMING
+}
+
+export function checkFeature(feature: HardwareFeature): Promise<void> {
+
+  switch (feature) {
+    case HardwareFeature.LOCATION:
+      return checkLocation();
+    case HardwareFeature.ROAMING:
+      return checkRoaming();
+    case HardwareFeature.WIFI:
+      return checkWifi();
+    default:
+      return Promise.reject(new HardwareAccessError(`Feature could not be evaluated: ${feature}`));
+  }
+}
 
 export function checkLocation(): Promise<void> {
 
-  return new Promise((resolve: (value?: any) => void, reject: (reason?: Error) => void): void => {
+  return new Promise((resolve: () => void, reject: (reason: Error) => void): void => {
 
     window["cordova"].plugins.diagnostic.getLocationAuthorizationStatus((status: string): void => {
 
@@ -19,7 +39,7 @@ export function checkLocation(): Promise<void> {
 
 export function checkWifi(): Promise<void> {
 
-  return new Promise((resolve: (value?: any) => void, reject: (reason?: Error) => void): void => {
+  return new Promise((resolve: () => void, reject: (reason: Error) => void): void => {
 
     window["cordova"].plugins.diagnostics.isWifiAvailable((available: boolean) => {
 
@@ -37,7 +57,7 @@ export function checkWifi(): Promise<void> {
 
 export function checkRoaming(): Promise<void> {
 
-  return new Promise((resolve: (value?: any) => void, reject: (reason?: Error) => void): void => {
+  return new Promise((resolve: () => void, reject: (reason: Error) => void): void => {
 
     window["cordova"].plugins.diagnostics.isDataRoamingEnabled((enabled: boolean) => {
 
