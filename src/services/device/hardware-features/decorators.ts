@@ -1,6 +1,7 @@
 import {checkFeature, checkLocation, checkRoaming, checkWifi, HardwareFeature} from "./diagnostics.util";
+import * as Q from "q";
 
-export function RequireAll(...features: Array<HardwareFeature>): Function {
+export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
 
   return function(
     target: object,
@@ -9,13 +10,48 @@ export function RequireAll(...features: Array<HardwareFeature>): Function {
   ): TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
 
     const method: Function = descriptor.value;
+    const features: Array<HardwareFeature> = [first];
+    more.forEach(it => features.push(it));
 
-    descriptor.value = function (...args: Array<any>): Promise<any> {
+    descriptor.value = function(...args: Array<any>): Promise<any> {
 
       const featureStates: Array<Promise<any>> = [];
 
-      features.forEach(feature => {
-        featureStates.push(checkFeature(feature));
+      features.forEach(it => {
+        featureStates.push(checkFeature(it));
+      });
+
+      return new Promise(function(resolve: (value: any) => void, reject: (reason?: any) => void): void {
+
+        Q.any(featureStates)
+          .then(function(): void {
+            resolve(method.apply(this, args));
+          }.bind(this), reject)
+      }.bind(this));
+    }.bind(this);
+
+    return descriptor;
+  }
+}
+
+export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
+
+  return function(
+    target: object,
+    key: string,
+    descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>)
+    : TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+
+    const method: Function = descriptor.value;
+    const features: Array<HardwareFeature> = [first];
+    more.forEach(it => features.push(it));
+
+    descriptor.value = function(...args: Array<any>): Promise<any> {
+
+      const featureStates: Array<Promise<any>> = [];
+
+      features.forEach(it => {
+        featureStates.push(checkFeature(it));
       });
 
       return Promise.all(featureStates)
@@ -25,7 +61,7 @@ export function RequireAll(...features: Array<HardwareFeature>): Function {
     }.bind(this);
 
     return descriptor;
-  }
+  };
 }
 
 export function RequireLocation(
