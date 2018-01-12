@@ -1,7 +1,30 @@
+/*
+
+Contains decorators to evaluate hardware features.
+
+These decorators will break the control flow of the program, if its condition is not fulfilled by throwing a HardwareAccessError.
+In order to avoid side effects, a decorator does just invoke the decorated function, if an error occurs while evaluating the condition.
+
+Or in oder words
+A DECORATOR WILL BREAK THE CONTROL FLOW OF THE PROGRAM, IF AND ONLY IF THE CONDITION IS EXPLICITLY NOT FULFILLED.
+
+Due the way how an thrown error works in javascript it is only safe to use these decorators inside an Angular Component.
+More info about these decorators: @see https://confluence.studer-raimann.ch/display/P32ILAPP/Device+Hardware+Features
+ */
+
 import {checkFeature, checkLocation, checkRoaming, checkWifi, HardwareFeature} from "./diagnostics.util";
 import * as Q from "q";
 
-export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
+/**
+ * At least one of the given hardware features must be available in order to invoke the decorated function.
+ *
+ * @param {HardwareFeature} first - at least one feature is required
+ * @param {HardwareFeature} more - any additional feature to check
+ *
+ * @returns {Function} this decorator
+ * @throws {HardwareAccessError} if one or more of the given features is not available
+ */
+export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
 
   return function(
     target: object,
@@ -34,7 +57,16 @@ export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeatur
   }
 }
 
-export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
+/**
+ * All given hardware features must be available in order to invoke the decorated function.
+ *
+ * @param {HardwareFeature} first - at least one feature is required
+ * @param {HardwareFeature} more - any additional feature to check
+ *
+ * @returns {Function} this decorator
+ * @throws {HardwareAccessError} if no of the given features is available
+ */
+export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
 
   return function(
     target: object,
@@ -64,6 +96,9 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
   };
 }
 
+/**
+ * The location must be enabled in order to invoke the decorated function.
+ */
 export function RequireLocation(
   target: object,
   key: string,
@@ -83,6 +118,9 @@ export function RequireLocation(
   return descriptor;
 }
 
+/**
+ * The Wifi must be available in order to invoke the decorated function.
+ */
 export function RequireWifi(
   target: object,
   key: string,
@@ -102,6 +140,11 @@ export function RequireWifi(
   return descriptor;
 }
 
+/**
+ * ANDROID ONLY!!!
+ *
+ * The roaming data service must be enabled in order to invoke the decorated function.
+ */
 export function RequireRoaming(
   target: object,
   key: string,
