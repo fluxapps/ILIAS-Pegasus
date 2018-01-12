@@ -29,3 +29,13 @@ declare module "q" {
    */
   export function any<T>(promises: Array<IWhenable<T>>): Promise<T>;
 }
+
+/**
+ * For easier type def in a Promise constructor.
+ *
+ * @example new Promise((resolve: Resolve<string>, reject: Reject<Error>) => {...);
+ *
+ * The {@code Reject} type requires an Error type to be more consistence in the javascript error handling
+ */
+declare type Resolve<T> = (value?: T) => void
+declare type Reject<T extends Error> = (reason: T) => void
