@@ -30,6 +30,7 @@
     "@angular/platform-server": "^4.4.3",
     "@angular/tsc-wrapped": "^4.4.4",
     "@ionic-native/core": "^4.3.0",
+    "@ionic-native/diagnostic": "^4.5.2",
     "@ionic-native/file": "^4.3.0",
     "@ionic-native/file-transfer": "^4.3.0",
     "@ionic-native/google-maps": "^4.4.0",
@@ -157,7 +158,8 @@
       "cordova-plugin-googlemaps": {
         "API_KEY_FOR_ANDROID": "YOUR_API_KEY_FOR_ANDROID",
         "API_KEY_FOR_IOS": "YOUR_API_KEY_FOR_IOS"
-      }
+      },
+      "cordova.plugins.diagnostic": {}
     }
   }
 }

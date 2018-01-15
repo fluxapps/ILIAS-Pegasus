@@ -121,4 +121,5 @@
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
     </plugin>
+    <plugin name="cordova.plugins.diagnostic" spec="~3.9.0" />
 </widget>
