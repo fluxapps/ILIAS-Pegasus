@@ -8,6 +8,7 @@ import {LocationFallbackScreen} from "./location/location-fallback.component";
 import {RoamingFallbackScreen} from "./roaming/roaming-fallback.component";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+import {Injectable} from "@angular/core";
 
 /**
  * Error handler for the fallback screen.
@@ -16,6 +17,7 @@ import {Logging} from "../../services/logging/logging.service";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+@Injectable()
 export class FallbackscreenErrorHandler {
 
   private readonly log: Logger = Logging.getLogger(FallbackscreenErrorHandler.name);
