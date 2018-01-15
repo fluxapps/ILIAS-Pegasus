@@ -60,7 +60,7 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
           .then(function(msg: string): void {
             log.info(() => `First required hardware feature found: ${msg}`);
             resolve(method.apply(this, args));
-          }.bind(this), err => reject(new HardwareAccessError(Logging.getMessage(err, "Non of the required hardware features is available"))))
+          }.bind(this), reject)
       }.bind(this));
     }.bind(this);
 
@@ -106,7 +106,7 @@ export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeatur
           log.info(() => `Found all required hardware features: ${features.join(",")}`);
           return Promise.resolve(method.apply(this, args))
         }.bind(this))
-        .catch(err => Promise.reject(new HardwareAccessError(Logging.getMessage(err, "At last one required hardware feature is not available"))));
+        .catch(err => Promise.reject(err));
 
     }.bind(this);
 
