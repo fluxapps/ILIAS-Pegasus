@@ -17,6 +17,9 @@ import * as Q from "q";
 import {Reject, Resolve} from "../../../declarations";
 import {HardwareAccessError} from "./hardware-access.errors";
 import {Logging} from "../../logging/logging.service";
+import {Logger} from "../../logging/logging.api";
+
+declare type HardwareFeatureFunction = (...args: Array<any>) => Promise<any>;
 
 /**
  * At least one of the given hardware features must be available in order to invoke the decorated function.
@@ -29,11 +32,13 @@ import {Logging} from "../../logging/logging.service";
  */
 export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
 
+  const log: Logger = Logging.getLogger("@RequireAny");
+
   return function(
     target: object,
     key: string,
-    descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>
-  ): TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+    descriptor: TypedPropertyDescriptor<HardwareFeatureFunction>
+  ): TypedPropertyDescriptor<HardwareFeatureFunction> {
 
     const method: Function = descriptor.value;
     const features: Array<HardwareFeature> = [first];
@@ -41,7 +46,9 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
 
     descriptor.value = function(...args: Array<any>): Promise<any> {
 
-      const featureStates: Array<Promise<any>> = [];
+      log.trace(() => `Evaluate any of the required hardware features: ${features.join(",")}`);
+
+      const featureStates: Array<Promise<string>> = [];
 
       features.forEach(it => {
         featureStates.push(checkFeature(it));
@@ -50,7 +57,8 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
       return new Promise(function(resolve: Resolve<any>, reject: Reject<Error>): void {
 
         Q.any(featureStates)
-          .then(function(): void {
+          .then(function(msg: string): void {
+            log.info(() => `First required hardware feature found: ${msg}`);
             resolve(method.apply(this, args));
           }.bind(this), err => reject(new HardwareAccessError(Logging.getMessage(err, "Non of the required hardware features is available"))))
       }.bind(this));
@@ -71,11 +79,13 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
  */
 export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeature>): Function {
 
+  const log: Logger = Logging.getLogger("@RequireAll");
+
   return function(
     target: object,
     key: string,
-    descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>)
-    : TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+    descriptor: TypedPropertyDescriptor<HardwareFeatureFunction>
+  ): TypedPropertyDescriptor<HardwareFeatureFunction> {
 
     const method: Function = descriptor.value;
     const features: Array<HardwareFeature> = [first];
@@ -83,15 +93,20 @@ export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeatur
 
     descriptor.value = function(...args: Array<any>): Promise<any> {
 
-      const featureStates: Array<Promise<any>> = [];
+      log.trace(() => `Evaluate all of the required hardware features: ${features.join(",")}`);
+
+      const featureStates: Array<Promise<string>> = [];
 
       features.forEach(it => {
         featureStates.push(checkFeature(it));
       });
 
       return Promise.all(featureStates)
-        .then(function(): Promise<any> {return Promise.resolve(method.apply(this, args))}.bind(this))
-        .catch(err => Promise.reject(err));
+        .then(function(): Promise<any> {
+          log.info(() => `Found all required hardware features: ${features.join(",")}`);
+          return Promise.resolve(method.apply(this, args))
+        }.bind(this))
+        .catch(err => Promise.reject(new HardwareAccessError(Logging.getMessage(err, "At last one required hardware feature is not available"))));
 
     }.bind(this);
 
@@ -105,8 +120,8 @@ export function RequireAll(first: HardwareFeature, ...more: Array<HardwareFeatur
 export function RequireLocation(
   target: object,
   key: string,
-  descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>
-): TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+  descriptor: TypedPropertyDescriptor<HardwareFeatureFunction>
+): TypedPropertyDescriptor<HardwareFeatureFunction> {
 
   const method: Function = descriptor.value;
 
@@ -127,8 +142,8 @@ export function RequireLocation(
 export function RequireWifi(
   target: object,
   key: string,
-  descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>
-): TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+  descriptor: TypedPropertyDescriptor<HardwareFeatureFunction>
+): TypedPropertyDescriptor<HardwareFeatureFunction> {
 
   const method: Function = descriptor.value;
 
@@ -151,8 +166,8 @@ export function RequireWifi(
 export function RequireRoaming(
   target: object,
   key: string,
-  descriptor: TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>>
-): TypedPropertyDescriptor<(...args: Array<any>) => Promise<any>> {
+  descriptor: TypedPropertyDescriptor<HardwareFeatureFunction>
+): TypedPropertyDescriptor<HardwareFeatureFunction> {
 
   const method: Function = descriptor.value;
 

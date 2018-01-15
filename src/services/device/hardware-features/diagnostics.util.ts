@@ -56,7 +56,11 @@ export function checkLocation(): Promise<string> {
 
   return new Promise((resolve: Resolve<string>, reject: Reject<HardwareAccessError>): void => {
 
+    log.info(() => "Evaluate location authorization status");
+
     diagnostic.getLocationAuthorizationStatus((status: string): void => {
+
+      log.info(() => `Found location authorization status: ${status}`);
 
       if (status == diagnostic.permissionStatus.DENIED){
         reject(new LocationAccessError("Can not use location: Permission denied"));
@@ -84,7 +88,11 @@ export function checkWifi(): Promise<string> {
 
   return new Promise((resolve: Resolve<string>, reject: Reject<HardwareAccessError>): void => {
 
+    log.info(() => "Evaluate wifi availability");
+
     diagnostic.isWifiAvailable((available: boolean) => {
+
+      log.info(() => (available)? "Wifi is available" : "Wifi is not available");
 
       if (available) {
         resolve("Wifi is available");
@@ -115,7 +123,11 @@ export function checkRoaming(): Promise<string> {
 
   return new Promise((resolve: Resolve<string>, reject: Reject<HardwareAccessError>): void => {
 
+    log.info(() => "Evaluate roaming service");
+
     diagnostic.isDataRoamingEnabled((enabled: boolean) => {
+
+      log.info(() => (enabled)? "Roaming service is enabled" : "Roaming service is disabled");
 
       if (enabled) {
         resolve("Data roaming is available");
