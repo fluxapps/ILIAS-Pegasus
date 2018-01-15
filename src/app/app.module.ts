@@ -62,6 +62,11 @@ import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/l
 import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/visibility.strategy";
 import {VisibilityContextFactory} from "../learnplace/services/visibility/visibility.context";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
+import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
+import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
+import {PegasusErrorHandler} from "./error-handler";
+import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handler";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -85,7 +90,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* from src/learnplace */
     LearnplacePage,
     MapPage,
-    TabsPage
+    TabsPage,
+
+    /* fallback screens */
+    WifiFallbackScreen,
+    LocationFallbackScreen,
+    RoamingFallbackScreen
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -112,7 +122,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* from src/learnplace */
     LearnplacePage,
     MapPage,
-    TabsPage
+    TabsPage,
+
+    /* fallback screens */
+    WifiFallbackScreen,
+    LocationFallbackScreen,
+    RoamingFallbackScreen
   ],
   providers: [
     {
@@ -216,7 +231,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     Toast,
     HttpClient,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+
+    IonicErrorHandler,
+    FallbackscreenErrorHandler,
+    {provide: ErrorHandler, useClass: PegasusErrorHandler}
   ],
   exports: [
     TranslateModule
