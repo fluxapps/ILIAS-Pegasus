@@ -35,7 +35,7 @@ declare module "q" {
  *
  * @example new Promise((resolve: Resolve<string>, reject: Reject<Error>) => {...);
  *
- * The {@code Reject} type requires an Error type to be more consistence in the javascript error handling
+ * The {@code Reject} type requires an Error type to be more consistent in the javascript error handling
  */
 declare type Resolve<T> = (value?: T) => void
 declare type Reject<T extends Error> = (reason: T) => void
