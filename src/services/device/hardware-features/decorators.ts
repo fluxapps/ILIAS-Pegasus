@@ -14,6 +14,9 @@ More info about these decorators: @see https://confluence.studer-raimann.ch/disp
 
 import {checkFeature, checkLocation, checkRoaming, checkWifi, HardwareFeature} from "./diagnostics.util";
 import * as Q from "q";
+import {Reject, Resolve} from "../../../declarations";
+import {HardwareAccessError} from "./hardware-access.errors";
+import {Logging} from "../../logging/logging.service";
 
 /**
  * At least one of the given hardware features must be available in order to invoke the decorated function.
@@ -44,12 +47,12 @@ export function RequireAny(first: HardwareFeature, ...more: Array<HardwareFeatur
         featureStates.push(checkFeature(it));
       });
 
-      return new Promise(function(resolve: (value: any) => void, reject: (reason?: any) => void): void {
+      return new Promise(function(resolve: Resolve<any>, reject: Reject<Error>): void {
 
         Q.any(featureStates)
           .then(function(): void {
             resolve(method.apply(this, args));
-          }.bind(this), reject)
+          }.bind(this), err => reject(new HardwareAccessError(Logging.getMessage(err, "Non of the required hardware features is available"))))
       }.bind(this));
     }.bind(this);
 
