@@ -3,8 +3,6 @@ import {Reject, Resolve} from "../../../declarations";
 import {Logger} from "../../logging/logging.api";
 import {Logging} from "../../logging/logging.service";
 
-const diagnostic: any = window["cordova"].plugins.diagnostic;
-
 /**
  * Enumerator for all supported hardware features
  *
@@ -58,11 +56,11 @@ export function checkLocation(): Promise<string> {
 
     log.info(() => "Evaluate location authorization status");
 
-    diagnostic.getLocationAuthorizationStatus((status: string): void => {
+    window["cordova"].plugins.diagnostic.getLocationAuthorizationStatus((status: string): void => {
 
       log.info(() => `Found location authorization status: ${status}`);
 
-      if (status == diagnostic.permissionStatus.DENIED){
+      if (status == window["cordova"].plugins.diagnostic.permissionStatus.DENIED){
         reject(new LocationAccessError("Can not use location: Permission denied"));
       } else {
         resolve(`Location Authorization Status: Permission ${status}`);
@@ -90,7 +88,7 @@ export function checkWifi(): Promise<string> {
 
     log.info(() => "Evaluate wifi availability");
 
-    diagnostic.isWifiAvailable((available: boolean) => {
+    window["cordova"].plugins.diagnostic.isWifiAvailable((available: boolean) => {
 
       log.info(() => (available)? "Wifi is available" : "Wifi is not available");
 
@@ -125,7 +123,7 @@ export function checkRoaming(): Promise<string> {
 
     log.info(() => "Evaluate roaming service");
 
-    diagnostic.isDataRoamingEnabled((enabled: boolean) => {
+    window["cordova"].plugins.diagnostic.isDataRoamingEnabled((enabled: boolean) => {
 
       log.info(() => (enabled)? "Roaming service is enabled" : "Roaming service is disabled");
 

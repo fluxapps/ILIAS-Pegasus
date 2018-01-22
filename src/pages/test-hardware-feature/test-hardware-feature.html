@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<ion-header>
+  <ion-navbar color="nobg-blue">
+    <ion-buttons left>
+      <!-- <button ion-button icon-only (click)="dismiss()">
+        <ion-icon name ="close"></ion-icon>
+      </button> -->
+    </ion-buttons>
+    <!-- <ion-title>
+      <ion-icon name="ios-book"></ion-icon>
+      {{ pageTitle }}
+    </ion-title>
+    <ion-buttons end>
+        <button ion-button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+    </ion-buttons> -->
+  </ion-navbar>
+</ion-header>
+<ion-content>
+
+  <ion-grid>
+    <ion-row justify-content-center padding>
+
+      Test Requirements
+
+    </ion-row>
+    <ion-row padding>
+      <button ion-button round outline (click)="wifi()" id="middle-button">Wifi</button>
+    </ion-row>
+
+    <ion-row padding>
+      <button ion-button round outline (click)="location()" id="middle-button">Location</button>
+    </ion-row>
+
+    <ion-row padding>
+      <button ion-button round outline (click)="all()" id="middle-button">all</button>
+    </ion-row>
+
+    <ion-row padding>
+      <button ion-button round outline (click)="any()" id="middle-button">any</button>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

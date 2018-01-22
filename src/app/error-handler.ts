@@ -37,9 +37,29 @@ export class PegasusErrorHandler implements ErrorHandler {
   handleError(error: any): void {
 
     try {
+      console.log("Error handler");
 
-      if (error instanceof HardwareAccessError) {
-        this.fallback.handle(error);
+      // console.log(error.rejection.constructor.prototype);
+      // console.log(this.isHardwareAccessError(error));
+
+      // console.log(this._findOriginalError(error));
+
+      const originalError: Error = new error.rejection.constructor("");
+
+      // console.log(originalError instanceOf HardwareAccessError);
+
+
+      // if (error instanceof Error) {
+      //   console.log("It is an error: " + error.name);
+      //
+      //
+      //
+      // } else {
+      //   console.log("It is something else, properly any")
+      // }
+
+      if (originalError instanceof HardwareAccessError) {
+        this.fallback.handle(originalError);
         return;
       }
 
@@ -54,5 +74,18 @@ export class PegasusErrorHandler implements ErrorHandler {
     } catch (err) {
       this.log.warn(() => `Error occurred during error handling: ${JSON.stringify(err)}`);
     }
+  }
+
+  _findOriginalError(error: Error): any {
+    let e = this.getOriginalError(error);
+    while (e && this.getOriginalError(e)) {
+      e = this.getOriginalError(e);
+    }
+
+    return e;
+  }
+
+  getOriginalError(error: Error): Error {
+    return (error as any)["ngOriginalError"];
   }
 }

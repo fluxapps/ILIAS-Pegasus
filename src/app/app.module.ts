@@ -67,6 +67,7 @@ import {LocationFallbackScreen} from "./fallback/location/location-fallback.comp
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {PegasusErrorHandler} from "./error-handler";
 import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handler";
+import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -95,7 +96,9 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* fallback screens */
     WifiFallbackScreen,
     LocationFallbackScreen,
-    RoamingFallbackScreen
+    RoamingFallbackScreen,
+
+    HardwareFeaturePage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -127,7 +130,9 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* fallback screens */
     WifiFallbackScreen,
     LocationFallbackScreen,
-    RoamingFallbackScreen
+    RoamingFallbackScreen,
+
+    HardwareFeaturePage
   ],
   providers: [
     {
