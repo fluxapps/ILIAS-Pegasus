@@ -26,6 +26,7 @@ import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
+import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 
 @Component({
   templateUrl: "app.html"
@@ -135,7 +136,7 @@ export class MyApp {
    */
   openTestpage(): void {
     this.menu.close();
-    this.nav.push(TabsPage);
+    this.nav.push(HardwareFeaturePage);
   }
 
   /**

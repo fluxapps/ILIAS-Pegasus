@@ -30,6 +30,7 @@
     "@angular/platform-server": "^4.4.3",
     "@angular/tsc-wrapped": "^4.4.4",
     "@ionic-native/core": "^4.3.0",
+    "@ionic-native/diagnostic": "^4.5.2",
     "@ionic-native/file": "^4.3.0",
     "@ionic-native/file-transfer": "^4.3.0",
     "@ionic-native/google-maps": "^4.4.0",
@@ -40,7 +41,6 @@
     "@ionic-native/status-bar": "^4.3.0",
     "@ionic-native/toast": "^4.3.0",
     "@ionic/storage": "^2.0.1",
-    "@types/node": "^8.0.54",
     "ch.ti8m.documenthandler": "git+https://github.com/studer-raimann/DocumentHandler.git",
     "cordova-android": "^6.3.0",
     "cordova-ios": "^4.5.2",
@@ -68,10 +68,12 @@
     "ios-sim": "^6.1.2",
     "jsonschema": "^1.2.0",
     "ng2-translate": "^3.1.0",
+    "q": "^1.5.1",
     "rxjs": "^5.4.3",
     "sw-toolbox": "^3.6.0",
     "typeorm": "^0.1.7",
-    "zone.js": "^0.8.18"
+    "zone.js": "^0.8.18",
+    "cordova.plugins.diagnostic": "~3.9.0"
   },
   "devDependencies": {
     "@ionic/app-scripts": "^3.0.0",
@@ -79,6 +81,8 @@
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^2.2.43",
     "@types/sinon": "^2.3.6",
+    "@types/node": "^8.0.54",
+    "@types/q": "^1.0.6",
     "angular2-template-loader": "^0.6.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
@@ -155,7 +159,8 @@
       "cordova-plugin-googlemaps": {
         "API_KEY_FOR_ANDROID": "YOUR_API_KEY_FOR_ANDROID",
         "API_KEY_FOR_IOS": "YOUR_API_KEY_FOR_IOS"
-      }
+      },
+      "cordova.plugins.diagnostic": {}
     }
   }
 }

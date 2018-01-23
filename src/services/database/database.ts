@@ -1,17 +1,12 @@
 import {createConnection} from "typeorm";
 import {Inject, Injectable} from "@angular/core";
 import {
-  DATABASE_CONFIGURATION_ADAPTER, DatabaseConfigurationAdapter, DatabaseConnection, DatabaseConnectionRegistry,
+  DATABASE_CONFIGURATION_ADAPTER, DatabaseConfigurationAdapter, DatabaseConnectionRegistry,
   DatabaseOptions,
   DEFAULT_CONNECTION_NAME
 } from "./database.api";
-import {Http, Response} from "@angular/http";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
-import {LearnplaceEnity} from "../../learnplace/entity/learnplace.enity";
-import {LocationEntity} from "../../learnplace/entity/location.entity";
-import {MapEntity} from "../../learnplace/entity/map.entity";
-import {VisibilityEntity} from "../../learnplace/entity/visibility.entity";
 
 /**
  * The Database can be used to get information about a certain connection.
@@ -30,6 +25,7 @@ export class Database {
     @Inject(DATABASE_CONFIGURATION_ADAPTER) private readonly configurationAdapter: DatabaseConfigurationAdapter,
     private readonly registry: DatabaseConnectionRegistry
   ) {
+    this.configurationAdapter.addConnections(this.registry);
   }
 
   /**
@@ -54,7 +50,6 @@ export class Database {
       return Promise.resolve();
     }
 
-    this.configurationAdapter.addConnections(this.registry);
     const connection: DatabaseOptions = this.registry.getConnection(connectionName);
 
     this.log.info(() => `Create database connection: name=${connectionName}`);

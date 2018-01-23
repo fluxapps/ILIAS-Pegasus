@@ -66,7 +66,7 @@
     "title": "Info",
     "guide": "Anleitung",
     "instructions1": "Wenn du auf der Startseite 'Meine Kurse und Gruppen' bist, kannst du die Kurse und Gruppen als offline Verfügbar markieren. Sie werden mit einer grauen Wolke gekennzeichnet. Sobald die Dateien synchronisiert wurden, wird die Wolke blau.",
-    "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder wenn ein Kurs als offline Verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch einen Klick auf 'Synchronisieren' auf der Seite 'Meine Kurse und Gruppen'."
+    "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder wenn ein Kurs als offline Verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch ein herunterziehen (Pull to Refresh) der Seite 'Meine Kurse und Gruppen'."
   },
   "logout": {
     "title": "Logout",
