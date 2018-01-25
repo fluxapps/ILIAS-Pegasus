@@ -36,10 +36,17 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
+    const textBlock: Table = new Table("TextBlock", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
     await queryRunner.createTable(learnplace);
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
+    await queryRunner.createTable(textBlock);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -52,5 +59,6 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Location");
     await queryRunner.dropTable("Visibility");
     await queryRunner.dropTable("Learnplace");
+    await queryRunner.dropTable("TextBlock");
   }
 }
