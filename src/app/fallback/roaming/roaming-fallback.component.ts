@@ -1,6 +1,6 @@
 import {Component} from "@angular/core";
 import {Diagnostic} from "@ionic-native/diagnostic";
-import {Location} from "@angular/common";
+import {ViewController} from "ionic-angular";
 
 @Component({
   templateUrl: "roaming-fallbackscreen.html"
@@ -9,11 +9,15 @@ export class RoamingFallbackScreen {
 
   constructor(
     private readonly diagnostic: Diagnostic,
-    private readonly location: Location
+    private readonly viewCtrl: ViewController
   ) {}
 
-  switchToRoamingService(): void {
+  async switchToRoamingService(): Promise<void> {
     this.diagnostic.switchToMobileDataSettings();
-    this.location.back();
+    await this.close();
+  }
+
+  async close(): Promise<void> {
+    await this.viewCtrl.dismiss();
   }
 }
