@@ -1,15 +1,23 @@
 import {HardwareAccessError} from "./hardware-access.errors";
 import {Injectable} from "@angular/core";
+import {ModalController} from "ionic-angular";
+import {DiagnosticUtil} from "./diagnostics.util";
+import {LocationRequirement, RoamingRequirement, WifiRequirement} from "./hardware-requirements";
 
 /**
  * Provides various hardware feature requirements in order to check, if these features
  * are available to the app.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 0.0.2
  */
 @Injectable()
 export class Hardware {
+
+  constructor(
+    private readonly modalCtrl: ModalController,
+    private readonly diagnosticUtil: DiagnosticUtil
+  ) {}
 
   /**
    * All given {@link HardwareFeature} must be enabled in order to surpass the check.
@@ -41,7 +49,7 @@ export class Hardware {
    * @returns {HardwareRequirement} the created hardware requirement
    */
   requireLocation(): HardwareRequirement {
-    throw new Error("This method is not implemented yet");
+    return new LocationRequirement(this.modalCtrl, this.diagnosticUtil);
   }
 
   /**
@@ -50,7 +58,7 @@ export class Hardware {
    * @returns {HardwareRequirement} the created hardware requirement
    */
   requireWifi(): HardwareRequirement {
-    throw new Error("This method is not implemented yet");
+    return new WifiRequirement(this.modalCtrl, this.diagnosticUtil);
   }
 
   /**
@@ -61,7 +69,7 @@ export class Hardware {
    * @returns {HardwareRequirement} the created hardware requirement
    */
   requireRoaming(): HardwareRequirement {
-    throw new Error("This method is not implemented yet");
+    return new RoamingRequirement(this.modalCtrl, this.diagnosticUtil);
   }
 }
 
