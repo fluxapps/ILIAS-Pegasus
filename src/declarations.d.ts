@@ -39,3 +39,6 @@ declare module "q" {
  */
 declare type Resolve<T> = (value?: T) => void
 declare type Reject<T extends Error> = (reason: T) => void
+
+declare type Runnable = () => void
+declare type Consumer<T> = (item: T) => void
