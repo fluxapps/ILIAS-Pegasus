@@ -1,8 +1,10 @@
 import {HardwareFeature, HardwareRequirement} from "./hardware-feature.service";
-import {ModalController} from "ionic-angular";
+import {Modal, ModalController} from "ionic-angular";
 import {DiagnosticUtil} from "./diagnostics.util";
 import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Consumer} from "../../../declarations";
+import {LocationFallbackScreen} from "../../../app/fallback/location/location-fallback.component";
+import {LocationAccessError} from "./hardware-access.errors";
 
 /**
  * Implements parts of a {@link HardwareRequirement} that are exactly the same across all specific requirements.
@@ -42,7 +44,15 @@ export class LocationRequirement extends AbstractRequirement {
   ) {super()}
 
   async check(): Promise<void> {
-    throw new Error("This method is not implemented yet");
+
+    if(!(await this.diagnosticUtil.isLocationEnabled())) {
+
+      const modal: Modal = this.modalCtl.create(LocationFallbackScreen);
+      this.ifOnFailure((action) => modal.onDidDismiss((_, __) => action()));
+      await modal.present();
+
+      throw new LocationAccessError("Can not use location: Permission Denied");
+    }
   }
 }
 
