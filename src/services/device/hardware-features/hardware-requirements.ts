@@ -2,7 +2,7 @@ import {HardwareFeature, HardwareRequirement} from "./hardware-feature.service";
 import {ModalController} from "ionic-angular";
 import {DiagnosticUtil} from "./diagnostics.util";
 import {isUndefined} from "ionic-angular/es2015/util/util";
-import {Consumer, Runnable} from "../../../declarations";
+import {Consumer} from "../../../declarations";
 
 /**
  * Implements parts of a {@link HardwareRequirement} that are exactly the same across all specific requirements.
@@ -12,16 +12,16 @@ import {Consumer, Runnable} from "../../../declarations";
  */
 export abstract class AbstractRequirement implements HardwareRequirement {
 
-  private onFailureAction: Runnable | undefined = undefined;
+  private onFailureAction: Function | undefined = undefined;
 
-  onFailure(action: Runnable): HardwareRequirement {
+  onFailure(action: Function): HardwareRequirement {
     this.onFailureAction = action;
     return this;
   }
 
   abstract check(): Promise<void>
 
-  protected ifOnFailure(consumer: Consumer<Runnable>): void {
+  protected ifOnFailure(consumer: Consumer<Function>): void {
     if (!isUndefined(this.onFailureAction)) {
       consumer(this.onFailureAction);
     }

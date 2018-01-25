@@ -1,6 +1,5 @@
 import {HardwareAccessError} from "./hardware-access.errors";
 import {Injectable} from "@angular/core";
-import {Runnable} from "../../../declarations";
 
 /**
  * Provides various hardware feature requirements in order to check, if these features
@@ -86,11 +85,11 @@ export interface HardwareRequirement {
   /**
    * Executes the given {@code action} when the requirement is not fulfilled.
    *
-   * @param {Runnable} action - function to execute
+   * @param {Function} action - function to execute
    *
    * @returns {HardwareRequirement} this instance
    */
-  onFailure(action: Runnable): HardwareRequirement
+  onFailure(action: Function): HardwareRequirement
 
   /**
    * Evaluates the hardware feature and throws an {@link HardwareAccessError} if the feature is not enabled.
