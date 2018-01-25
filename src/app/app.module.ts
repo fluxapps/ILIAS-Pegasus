@@ -68,6 +68,7 @@ import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.compone
 import {PegasusErrorHandler} from "./error-handler";
 import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handler";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {NewsPage} from "../pages/news/news";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -87,6 +88,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
+    NewsPage,
 
     /* from src/learnplace */
     LearnplacePage,
@@ -121,6 +123,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
+    NewsPage,
 
     /* from src/learnplace */
     LearnplacePage,
