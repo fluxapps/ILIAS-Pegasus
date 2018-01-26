@@ -1,6 +1,6 @@
 import {BlockModel, TextBlockModel} from "../page.model";
-import {InjectionToken} from "@angular/core";
-import {LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
 import {LearnplaceEnity} from "../entity/learnplace.enity";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
@@ -24,7 +24,7 @@ export interface BlockService {
    */
   getBlocks(learnplaceId: number): Promise<Array<BlockModel>>
 }
-const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockService>("token for block service");
+export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockService>("token for block service");
 
 /**
  * Manages the visibility of all blocks by using the {@link VisibilityContext}.
@@ -32,10 +32,11 @@ const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockServ
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.2
  */
+@Injectable()
 export class VisibilityManagedBlockService implements BlockService {
 
   constructor(
-    private readonly learnplaceRepository: LearnplaceRepository,
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     private readonly contextFactory: VisibilityContextFactory
   ) {}
 
