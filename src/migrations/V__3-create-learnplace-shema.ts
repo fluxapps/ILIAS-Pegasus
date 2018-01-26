@@ -38,6 +38,7 @@ export class CreateLearnplace implements Migration {
 
     const textBlock: Table = new Table("TextBlock", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "content", type: "string", length: "5000", isNullable: false}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
