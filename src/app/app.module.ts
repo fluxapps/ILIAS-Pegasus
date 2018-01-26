@@ -63,6 +63,8 @@ import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/v
 import {VisibilityContextFactory} from "../learnplace/services/visibility/visibility.context";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
+import {ContentPage} from "../learnplace/pages/content/content.component";
+import {TextBlock} from "../learnplace/directives/textblock/textblock.directive";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -86,7 +88,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* from src/learnplace */
     LearnplacePage,
     MapPage,
-    TabsPage
+    TabsPage,
+    ContentPage,
+
+    TextBlock
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -113,7 +118,8 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     /* from src/learnplace */
     LearnplacePage,
     MapPage,
-    TabsPage
+    TabsPage,
+    ContentPage
   ],
   providers: [
     {
