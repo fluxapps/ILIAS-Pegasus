@@ -1,7 +1,10 @@
 import {BlockModel, TextBlockModel} from "../page.model";
 import {InjectionToken} from "@angular/core";
 import {LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {VisibilityContextFactory} from "./visibility/visibility.context";
+import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
+import {LearnplaceEnity} from "../entity/learnplace.enity";
+import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+import {NoSuchElementError} from "../../error/errors";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
@@ -27,7 +30,7 @@ const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockServ
  * Manages the visibility of all blocks by using the {@link VisibilityContext}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 0.0.2
  */
 export class VisibilityManagedBlockService implements BlockService {
 
@@ -37,6 +40,20 @@ export class VisibilityManagedBlockService implements BlockService {
   ) {}
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
-    throw new Error("This method is not implemented yet");
+
+    const learnplace: LearnplaceEnity = (await this.learnplaceRepository.find(learnplaceId))
+      .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${learnplaceId}`));
+
+    return learnplace.textBlocks.map(block => {
+
+      const model: TextBlockModel = new TextBlockModel(block.id, block.sequence, block.content);
+
+      const visibilityContext: VisibilityContext = this.contextFactory.create(VisibilityStrategyType[block.visibility.value]);
+
+      visibilityContext.use(model);
+
+      return model;
+
+    }).sort((a, b) => a.sequence - b.sequence);
   }
 }

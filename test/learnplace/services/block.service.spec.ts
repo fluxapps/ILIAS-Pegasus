@@ -11,6 +11,11 @@ import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
 import {VisibilityStrategyType} from "../../../src/learnplace/services/visibility/visibility.strategy";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
 import {BlockModel, TextBlockModel} from "../../../src/learnplace/page.model";
+import {Optional} from "../../../src/util/util.optional";
+import * as chaiAsPromised from "chai-as-promised";
+import {NoSuchElementError} from "../../../src/error/errors";
+
+chai.use(chaiAsPromised);
 
 describe("a block service", () => {
 
@@ -46,18 +51,16 @@ describe("a block service", () => {
         learplaceEntity.textBlocks = [textBlock2, textBlock1];
 
         sandbox.stub(mockLearnplaceRepo, "find")
-          .resolves(learplaceEntity);
+          .resolves(Optional.of(learplaceEntity));
 
         const alwaysStub: SinonStub = stub();
         const neverStub: SinonStub = stub();
         sandbox.stub(mockContextFactory, "create")
-          .withArgs(VisibilityStrategyType.ALWAYS)
-          .onFirstCall()
+          .withArgs(VisibilityStrategyType.NEVER)
           .returns(<VisibilityContext>{
             use: alwaysStub
           })
-          .withArgs(VisibilityStrategyType.NEVER)
-          .onSecondCall()
+          .withArgs(VisibilityStrategyType.ALWAYS)
           .returns(<VisibilityContext>{
             use: neverStub
           });
@@ -76,6 +79,20 @@ describe("a block service", () => {
         chai.expect(result)
           .to.be.deep.equal(expected);
 			});
+		});
+
+		context("on no learnplace available", () => {
+
+			it("should throw a no such element error", (done) => {
+
+				sandbox.stub(mockLearnplaceRepo, "find")
+          .resolves(Optional.empty());
+
+				chai.expect(blockService.getBlocks(1))
+          .rejectedWith(NoSuchElementError)
+          .and.eventually.to.have.property("message", "No learnplace found: id=1")
+          .notify(done);
+			})
 		});
 	});
 });
