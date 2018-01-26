@@ -8,16 +8,12 @@ import {VisibilityAware} from "./services/visibility/visibility.context";
  */
 export class MapModel implements VisibilityAware {
 
-  visible: boolean;
-
   constructor(
     readonly title: string,
     readonly latitude: number,
     readonly longitude: number,
-    visible: boolean = false
-  ) {
-    this.visible = visible;
-  }
+    public visible: boolean = false
+  ) {}
 }
 
 /**
@@ -41,17 +37,32 @@ export enum BlockType {
 }
 
 /**
- * Base class for all specific block types. Shares commen attributes over all blocks.
+ * Base class for all specific block types. Shares common attributes over all blocks.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
- export class Block {
+export class Block implements VisibilityAware {
 
-   constructor(
-     readonly id: number,
-     readonly sequence: number,
-     public visible: boolean,
-     readonly type: BlockType
-   ) {}
- }
+ constructor(
+   readonly id: number,
+   readonly sequence: number,
+   public visible: boolean = false,
+   readonly type: BlockType
+ ) {}
+}
+
+/**
+ * Model class for a text block.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class TextBlockModel extends Block {
+
+  constructor(
+    id: number,
+    sequence: number,
+    readonly content: string,
+  ) {super(id, sequence, false, BlockType.RICHTEXT)}
+}
