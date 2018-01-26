@@ -42,7 +42,7 @@ export enum BlockType {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class Block implements VisibilityAware {
+export class BlockModel implements VisibilityAware {
 
  constructor(
    readonly id: number,
@@ -58,7 +58,7 @@ export class Block implements VisibilityAware {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class TextBlockModel extends Block {
+export class TextBlockModel extends BlockModel {
 
   constructor(
     id: number,
