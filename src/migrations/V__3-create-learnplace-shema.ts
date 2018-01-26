@@ -5,7 +5,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm";
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.2
+ * @version 0.0.3
  */
 export class CreateLearnplace implements Migration {
 
@@ -39,7 +39,8 @@ export class CreateLearnplace implements Migration {
     const textBlock: Table = new Table("TextBlock", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
-      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
     await queryRunner.createTable(learnplace);
