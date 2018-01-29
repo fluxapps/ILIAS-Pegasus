@@ -4,6 +4,8 @@
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+import {isDefined} from "ionic-angular/es2015/util/util";
+
 export interface Logger {
 
   /**
@@ -125,6 +127,7 @@ export abstract class LogBuffer implements LogAppender {
 
 /**
  * A log level appender does only log the specific log levels or lower.
+ * The buffer of this appender will always be 1, if the app runs is dev server.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
@@ -135,7 +138,7 @@ export abstract class LogLevelAppender extends LogBuffer {
     private readonly level: LogLevel,
     buffer: number = 10
   ) {
-    super(buffer);
+    super((isDefined(window["IonicDevServer"]))? 1 : buffer);
   }
 
   /**
