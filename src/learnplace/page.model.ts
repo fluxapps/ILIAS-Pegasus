@@ -47,8 +47,10 @@ export class BlockModel implements VisibilityAware {
  constructor(
    readonly sequence: number,
    public visible: boolean = false,
-   readonly type: BlockType
+   private readonly type: BlockType
  ) {}
+
+ isRichtext(): boolean {return this.type === BlockType.RICHTEXT}
 }
 
 /**

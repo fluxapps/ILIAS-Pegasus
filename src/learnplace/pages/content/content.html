@@ -13,8 +13,12 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content padding color="nobg-w">
+<ion-content color="nobg-w">
 
+  <div *ngFor="let block of blockList">
 
+    <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
+
+  </div>
 
 </ion-content>
