@@ -13,7 +13,7 @@ export class LocationFallbackScreen {
   ) {}
 
   async switchToLocation(): Promise<void> {
-    this.diagnostic.switchToLocationSettings();
+    this.diagnostic.switchToSettings();
     await this.close();
   }
 
