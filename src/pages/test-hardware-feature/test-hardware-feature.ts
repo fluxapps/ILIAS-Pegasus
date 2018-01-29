@@ -1,29 +1,27 @@
 import {Component} from "@angular/core";
-import {RequireAll, RequireAny, RequireLocation, RequireWifi} from "../../services/device/hardware-features/decorators";
-import {HardwareFeature} from "../../services/device/hardware-features/diagnostics.util";
+import {NavController} from "ionic-angular";
+import {Hardware} from "../../services/device/hardware-features/hardware-feature.service";
 
 @Component({
   templateUrl: "test-hardware-feature.html"
 })
 export class HardwareFeaturePage {
 
-  @RequireWifi
-  wifi(): Promise<void> {
+  constructor(
+    private readonly nav: NavController,
+    private readonly hardware: Hardware
+  ) {}
+
+  locationWithCallback(): Promise<void> {
+    this.hardware.requireLocation()
+      .onFailure(() => this.nav.pop())
+      .check();
     return Promise.resolve();
   }
 
-  @RequireLocation
   location(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  @RequireAll(HardwareFeature.WIFI, HardwareFeature.LOCATION)
-  all(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  @RequireAny(HardwareFeature.LOCATION, HardwareFeature.WIFI)
-  any(): Promise<void> {
+    this.hardware.requireLocation()
+      .check();
     return Promise.resolve();
   }
 }

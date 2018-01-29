@@ -3,7 +3,7 @@
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
-    <content original-src="index.html" src="http://192.168.99.44:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -93,8 +93,6 @@
     <allow-navigation href="http://192.168.99.47:8100" />
     <allow-navigation href="http://192.168.1.105:8100" />
     <allow-navigation href="http://192.168.99.44:8100" />
-    <engine name="android" spec="^6.3.0" />
-    <engine name="ios" spec="^4.5.2" />
     <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
@@ -122,4 +120,6 @@
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
     </plugin>
     <plugin name="cordova.plugins.diagnostic" spec="~3.9.0" />
+    <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="^4.5.2" />
 </widget>
