@@ -45,7 +45,6 @@ export enum BlockType {
 export class BlockModel implements VisibilityAware {
 
  constructor(
-   readonly id: number,
    readonly sequence: number,
    public visible: boolean = false,
    readonly type: BlockType
@@ -61,8 +60,7 @@ export class BlockModel implements VisibilityAware {
 export class TextBlockModel extends BlockModel {
 
   constructor(
-    id: number,
     sequence: number,
     readonly content: string,
-  ) {super(id, sequence, false, BlockType.RICHTEXT)}
+  ) {super(sequence, false, BlockType.RICHTEXT)}
 }

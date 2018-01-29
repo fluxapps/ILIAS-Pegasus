@@ -47,7 +47,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
     return learnplace.textBlocks.map(block => {
 
-      const model: TextBlockModel = new TextBlockModel(block.id, block.sequence, block.content);
+      const model: TextBlockModel = new TextBlockModel(block.sequence, block.content);
 
       const visibilityContext: VisibilityContext = this.contextFactory.create(VisibilityStrategyType[block.visibility.value]);
 

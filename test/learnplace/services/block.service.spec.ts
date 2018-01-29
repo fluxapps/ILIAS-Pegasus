@@ -73,8 +73,8 @@ describe("a block service", () => {
         assert.calledOnce(neverStub);
 
         const expected: Array<BlockModel> = [
-          new TextBlockModel(1, 1, "some text"),
-          new TextBlockModel(2, 2, "other text")
+          new TextBlockModel(1, "some text"),
+          new TextBlockModel(2, "other text")
         ];
         chai.expect(result)
           .to.be.deep.equal(expected);
