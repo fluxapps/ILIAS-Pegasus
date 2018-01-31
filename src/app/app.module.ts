@@ -69,6 +69,7 @@ import {PegasusErrorHandler} from "./error-handler";
 import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handler";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {NewsPage} from "../pages/news/news";
+import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -157,6 +158,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: ILIAS_REST,
       useClass: ILIASRestImpl
+    },
+
+    /* from  src/providers/ilias/news.rest*/
+    {
+      provide: NEWS_REST,
+      useClass: NewsRestImpl
     },
 
     /* from src/config/ilias.rest-config */
