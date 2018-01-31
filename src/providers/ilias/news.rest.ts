@@ -6,7 +6,9 @@
  * @author nschaefli <ns@studer-raimann.ch>
  *
  * @property {number} newsId      - The unique news identifier.
- * @property {number} newsContext - Ref id of the context object of the news object. For example an uploaded file to within a course would have the course as context object.
+ * @property {number} newsContext - Ref id of the context object of the news object.
+ * For example an uploaded file to within a course would have the course as context object.
+ *
  * @property {string} title       - The title of the news.
  * @property {string} subtitle    - The subtitle of the news.
  * @property {string} content     - The content of the news.
