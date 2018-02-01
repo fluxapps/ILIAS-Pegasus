@@ -33,11 +33,17 @@ export class HttpClient {
   async get(url: string, options?: RequestOptionsArgs): Promise<HttpResponse> {
 
     this.log.info(() => `Http GET request to: ${url}`);
-    const response: Response = await this.http.get(url, options)
-      .timeout(DEFAULT_TIMEOUT)
-      .toPromise();
+    try {
+      const response: Response = await this.http.get(url, options)
+        .timeout(DEFAULT_TIMEOUT)
+        .toPromise();
 
-    return new HttpResponse(response);
+      return new HttpResponse(response);
+    }
+    catch (error) {
+      return new HttpResponse(<Response>error);
+    }
+
   }
 
   /**
