@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from "@angular/core";
 import {ILIASObject} from "../models/ilias-object";
 import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
@@ -10,34 +10,37 @@ import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
 import {Job} from "./footer-toolbar.service";
 import {FileData} from "../models/file-data";
+import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
+import {Reject, Resolve} from "../declarations";
 
 @Injectable()
 export class SynchronizationService {
 
-    protected db:SQLiteDatabaseService;
+    protected db: SQLiteDatabaseService;
 
     /**
      * File ILIASObject that should be downloaded
      * @type {Array}
      */
-    protected downloads:ILIASObject[] = [];
+    protected downloads: Array<ILIASObject> = [];
 
-    protected user:User;
+    protected user: User;
 
 
-    protected syncQueue:{object:ILIASObject, resolver, rejecter}[] = [];
+    protected syncQueue: {object:ILIASObject, resolver, rejecter}[] = [];
 
     public lastSync: Date;
     public lastSyncString: string;
 
-    public constructor(protected dataProvider:DataProvider,
-                       protected events:Events,
-                       protected fileService:FileService,
-                       protected footerToolbar:FooterToolbarService,
-                       protected translate:TranslateService) {
+    public constructor(private readonly dataProvider: DataProvider,
+                       private readonly events: Events,
+                       private readonly fileService: FileService,
+                       private readonly footerToolbar: FooterToolbarService,
+                       private readonly translate: TranslateService,
+                       @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization) {
     }
 
-    protected _isRunning:boolean = false;
+    protected _isRunning: boolean = false;
 
     /**
      * Execute synchronization
@@ -205,16 +208,16 @@ export class SynchronizationService {
      * on the user's settings
      * @param iliasObjects
      */
-    protected checkForFileDownloads(iliasObjects:ILIASObject[]):Promise<SyncResults> {
-        return new Promise((resolve, reject) => {
+    protected checkForFileDownloads(iliasObjects: Array<ILIASObject>): Promise<SyncResults> {
+        return new Promise((resolve: Resolve<SyncResults>, reject: Reject<Error>) => {
             this.user.settings.then(settings => {
                 FileData.getTotalDiskSpace().then(space => {
 
                     // We split the objects in different categories.
-                    let downloads:ILIASObject[] = [];
-                    let filesTooBig:{object: ILIASObject, reason:LeftOutReason}[] = [];
-                    let noMoreSpace:{object: ILIASObject, reason:LeftOutReason}[] = [];
-                    let filesAlreadySynced:ILIASObject[] = [];
+                    const downloads: Array<ILIASObject> = [];
+                    const filesTooBig: { object: ILIASObject, reason: LeftOutReason}[] = [];
+                    const noMoreSpace: { object: ILIASObject, reason: LeftOutReason}[] = [];
+                    const filesAlreadySynced: Array<ILIASObject> = [];
 
                     // Furthermore we need some infos
                     let availableSpace:number = settings.quotaSize * 1000 * 1000;
@@ -249,10 +252,10 @@ export class SynchronizationService {
                     let allDownloads = downloads.slice(0); // This is the javascript's clone function....
 
                     // We set the job to downloading and add a listener to track the progress.
-                    this.footerToolbar.addJob(Job.FileDownload, this.translate.instant("sync.download") + " 0/" + totalDownloads);
-                    let progressListener = (outstandingDownloads:number) => {
+                    this.footerToolbar.addJob(Job.FileDownload, `${this.translate.instant("sync.download")} 0/${totalDownloads}`);
+                    const progressListener = (outstandingDownloads: number) => {
                         this.footerToolbar.addJob(Job.FileDownload, this.translate.instant("sync.download") + " " + (totalDownloads - outstandingDownloads) + "/" + totalDownloads);
-                    }
+                    };
 
                     // we execute the file downloads and afterwards
                     this.executeFileDownloads(downloads, progressListener).then(() => {
@@ -312,8 +315,8 @@ export class SynchronizationService {
 
     private executeGlobalSync(fetchAllMetaData = true):Promise<SyncResults> {
         // Run sync for all objects marked as "offline available"
-        Log.write(this, "Fetching offline available objects.")
-
+        Log.write(this, "Fetching offline available objects.");
+        this.newsSynchronization.synchronize();
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
 				// console.log('desktopObjects:');
@@ -322,7 +325,7 @@ export class SynchronizationService {
                 let promises = Promise.resolve();
                 for (let iliasObject of desktopObjects) {
                     promises = promises.then(() => {
-                        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata") + ": " + iliasObject.title)
+                        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata") + ": " + iliasObject.title);
                         Log.write(this, "Fetching offline available objects for " + iliasObject.title);
                        return this.dataProvider.getObjectData(iliasObject, this.user, true);
                     }).then(() => {
