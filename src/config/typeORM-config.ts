@@ -3,7 +3,7 @@ import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../servi
 import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
 import {LocationEntity} from "../learnplace/entity/location.entity";
 import {MapEntity} from "../learnplace/entity/map.entity";
-import {LearnplaceEnity} from "../learnplace/entity/learnplace.enity";
+import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../learnplace/entity/textblock.entity";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
@@ -30,7 +30,7 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
             .setLocation("default")
             .enableLogging(false)
             .addEntity(
-              LearnplaceEnity,
+              LearnplaceEntity,
               LocationEntity,
               MapEntity,
               VisibilityEntity,

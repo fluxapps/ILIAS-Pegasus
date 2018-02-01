@@ -6,7 +6,7 @@ import {
   VisibilityContextFactory
 } from "../../../src/learnplace/services/visibility/visibility.context";
 import {stubInstance} from "../../SinonUtils";
-import {LearnplaceEnity} from "../../../src/learnplace/entity/learnplace.enity";
+import {LearnplaceEntity} from "../../../src/learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
 import {VisibilityStrategyType} from "../../../src/learnplace/services/visibility/visibility.strategy";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
@@ -47,7 +47,7 @@ describe("a block service", () => {
 			  const textBlock1: TextblockEntity = createTextblockEntity(1, "some text", 1, VisibilityStrategyType.ALWAYS);
 			  const textBlock2: TextblockEntity = createTextblockEntity(2, "other text", 2, VisibilityStrategyType.NEVER);
 
-        const learplaceEntity: LearnplaceEnity = new LearnplaceEnity();
+        const learplaceEntity: LearnplaceEntity = new LearnplaceEntity();
         learplaceEntity.textBlocks = [textBlock2, textBlock1];
 
         sandbox.stub(mockLearnplaceRepo, "find")

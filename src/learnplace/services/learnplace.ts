@@ -1,7 +1,7 @@
 import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnPlace} from "../providers/rest/learnplace.pojo";
-import {LearnplaceEnity} from "../entity/learnplace.enity";
+import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {LocationEntity} from "../entity/location.entity";
 import {MapEntity} from "../entity/map.entity";
 import {Logging} from "../../services/logging/logging.service";
@@ -146,7 +146,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
       this.log.info(() => `Load learnplace with id: ${id}`);
 
-      const learnplace: LearnplaceEnity = await this.getLearnplace(id);
+      const learnplace: LearnplaceEntity = await this.getLearnplace(id);
 
       await this.learnplaceRepository.save(learnplace);
 
@@ -164,13 +164,13 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
    *
    * @param {number} id - the id to use
    *
-   * @returns {Promise<LearnplaceEnity>} the resulting entity
+   * @returns {Promise<LearnplaceEntity>} the resulting entity
    */
-  private async getLearnplace(id: number): Promise<LearnplaceEnity> {
+  private async getLearnplace(id: number): Promise<LearnplaceEntity> {
 
     const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
 
-    const learnplaceOptional: Optional<LearnplaceEnity> = await this.learnplaceRepository.find(id);
+    const learnplaceOptional: Optional<LearnplaceEntity> = await this.learnplaceRepository.find(id);
 
     if (learnplaceOptional.isPresent()) {
       return this.fillEntity(learnplaceOptional.get(), learnplace);
@@ -182,12 +182,12 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
    * Fills the given {@code entity} with the data of the given {@code source}, assuming there are non-null / non-undefined values.
    * This method does not modify any ids of the given {@code entity} and its relations.
    *
-   * @param {LearnplaceEnity} entity - the entity to fill in the data
+   * @param {LearnplaceEntity} entity - the entity to fill in the data
    * @param {LearnPlace} source - the source data to fill into the entity
    *
-   * @returns {LearnplaceEnity} - the given entity with the filled data
+   * @returns {LearnplaceEntity} - the given entity with the filled data
    */
-  private fillEntity(entity: LearnplaceEnity, source: LearnPlace): LearnplaceEnity {
+  private fillEntity(entity: LearnplaceEntity, source: LearnPlace): LearnplaceEntity {
 
     entity.map.visibility.value = source.map.visibility;
     entity.location.latitude = source.location.latitude;
@@ -199,15 +199,15 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
   }
 
   /**
-   * Creates a {@link LearnplaceEnity} and ensures that there are only non-null / non-undefined values,
+   * Creates a {@link LearnplaceEntity} and ensures that there are only non-null / non-undefined values,
    * in order to use the {@link fillEntity} method.
    *
    * @param {LearnPlace} learnplace - the learnplace data to use
    *
-   * @returns {LearnplaceEnity} the new learnplace entity filled with the data of the learnplace
+   * @returns {LearnplaceEntity} the new learnplace entity filled with the data of the learnplace
    */
-  private createLearnplace(learnplace: LearnPlace): LearnplaceEnity {
-    const learnplaceEntity: LearnplaceEnity = new LearnplaceEnity();
+  private createLearnplace(learnplace: LearnPlace): LearnplaceEntity {
+    const learnplaceEntity: LearnplaceEntity = new LearnplaceEntity();
 
     learnplaceEntity.objectId = learnplace.objectId;
     learnplaceEntity.location = new LocationEntity();

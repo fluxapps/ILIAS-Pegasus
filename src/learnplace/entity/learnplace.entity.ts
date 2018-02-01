@@ -4,7 +4,7 @@ import {Entity, OneToMany, OneToOne, PrimaryColumn, RelationOptions} from "typeo
 import {TextblockEntity} from "./textblock.entity";
 
 @Entity("Learnplace")
-export class LearnplaceEnity {
+export class LearnplaceEntity {
 
   @PrimaryColumn()
   objectId: number;

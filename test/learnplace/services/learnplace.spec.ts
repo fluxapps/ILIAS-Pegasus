@@ -3,7 +3,7 @@ import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {LearnplaceAPI} from "../../../src/learnplace/providers/rest/learnplace.api";
 import {BlockObject, JournalEntry, LearnPlace} from "../../../src/learnplace/providers/rest/learnplace.pojo";
 import {LearnplaceRepository} from "../../../src/learnplace/providers/repository/learnplace.repository";
-import {LearnplaceEnity} from "../../../src/learnplace/entity/learnplace.enity";
+import {LearnplaceEntity} from "../../../src/learnplace/entity/learnplace.entity";
 import {Optional} from "../../../src/util/util.optional";
 import * as chaiAsPromised from "chai-as-promised";
 import {MapEntity} from "../../../src/learnplace/entity/map.entity";
@@ -22,8 +22,8 @@ describe("a learnplace loader", () => {
       getLearnPlace: (): Promise<LearnPlace> => undefined
     };
     const mockLearnplaceRepository: LearnplaceRepository = <LearnplaceRepository>{
-      save: (): Promise<LearnplaceEnity> => undefined,
-      find: (): Promise<Optional<LearnplaceEnity>> => undefined,
+      save: (): Promise<LearnplaceEntity> => undefined,
+      find: (): Promise<Optional<LearnplaceEntity>> => undefined,
       delete: (): Promise<void> => undefined
     };
 
@@ -62,13 +62,13 @@ describe("a learnplace loader", () => {
           .resolves(Optional.empty());
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
-          .resolves(new LearnplaceEnity()); // return value is not used, therefore an empty entity is enough
+          .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
 
 
         await loader.load(1);
 
 
-        const expected: LearnplaceEnity = createLearnplace(learnplace);
+        const expected: LearnplaceEntity = createLearnplace(learnplace);
         assert.calledWith(saveStub, expected)
 			});
 		});
@@ -96,22 +96,22 @@ describe("a learnplace loader", () => {
           .resolves(Optional.of(getExistingLearnplace()));
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
-          .resolves(new LearnplaceEnity()); // return value is not used, therefore an empty entity is enough
+          .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
 
 
         await loader.load(1);
 
 
-        const expected: LearnplaceEnity = updateLearnplace(getExistingLearnplace(), learnplace);
+        const expected: LearnplaceEntity = updateLearnplace(getExistingLearnplace(), learnplace);
         assert.calledWith(saveStub, expected)
 			})
 		});
 	});
 });
 
-function createLearnplace(learnplace: LearnPlace): LearnplaceEnity {
+function createLearnplace(learnplace: LearnPlace): LearnplaceEntity {
 
-  const learnplaceEnity: LearnplaceEnity = new LearnplaceEnity();
+  const learnplaceEnity: LearnplaceEntity = new LearnplaceEntity();
   learnplaceEnity.objectId = learnplace.objectId;
 
   const visibilityEntity: VisibilityEntity = new VisibilityEntity();
@@ -132,9 +132,9 @@ function createLearnplace(learnplace: LearnPlace): LearnplaceEnity {
   return learnplaceEnity;
 }
 
-function getExistingLearnplace(): LearnplaceEnity {
+function getExistingLearnplace(): LearnplaceEntity {
 
-  const learnplaceEnity: LearnplaceEnity = new LearnplaceEnity();
+  const learnplaceEnity: LearnplaceEntity = new LearnplaceEntity();
   learnplaceEnity.objectId = 1;
 
   const visibilityEntity: VisibilityEntity = new VisibilityEntity();
@@ -157,7 +157,7 @@ function getExistingLearnplace(): LearnplaceEnity {
   return learnplaceEnity;
 }
 
-function updateLearnplace(entity: LearnplaceEnity, learnplace: LearnPlace): LearnplaceEnity {
+function updateLearnplace(entity: LearnplaceEntity, learnplace: LearnPlace): LearnplaceEntity {
 
   entity.map.visibility.value = learnplace.map.visibility;
 

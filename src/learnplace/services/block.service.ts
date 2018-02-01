@@ -2,7 +2,7 @@ import {BlockModel, TextBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
-import {LearnplaceEnity} from "../entity/learnplace.enity";
+import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {NoSuchElementError} from "../../error/errors";
 
@@ -42,7 +42,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
 
-    const learnplace: LearnplaceEnity = (await this.learnplaceRepository.find(learnplaceId))
+    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${learnplaceId}`));
 
     return learnplace.textBlocks.map(block => {
