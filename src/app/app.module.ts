@@ -17,8 +17,7 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
 import {TranslateModule} from "ng2-translate/ng2-translate";
-import {TranslateLoader} from "ng2-translate/src/translate.service";
-import {TranslateStaticLoader} from "ng2-translate/src/translate.service";
+import {TranslateLoader, TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
@@ -99,7 +98,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     TabsPage,
     ContentPage,
 
-    TextBlock
+    TextBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -134,7 +133,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LearnplacePage,
     MapPage,
     TabsPage,
-    ContentPage
+    ContentPage,
 
     /* fallback screens */
     WifiFallbackScreen,
