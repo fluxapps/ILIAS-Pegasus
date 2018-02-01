@@ -26,6 +26,7 @@ import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
+import {ContentPage} from "../learnplace/pages/content/content.component";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 
 @Component({

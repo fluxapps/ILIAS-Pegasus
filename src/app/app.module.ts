@@ -62,6 +62,9 @@ import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/l
 import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/visibility.strategy";
 import {VisibilityContextFactory} from "../learnplace/services/visibility/visibility.context";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
+import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
+import {ContentPage} from "../learnplace/pages/content/content.component";
+import {TextBlock} from "../learnplace/directives/textblock/textblock.directive";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
@@ -94,6 +97,9 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LearnplacePage,
     MapPage,
     TabsPage,
+    ContentPage,
+
+    TextBlock
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -128,6 +134,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LearnplacePage,
     MapPage,
     TabsPage,
+    ContentPage
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -216,6 +223,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: MAP_SERVICE,
       useClass: VisibilityManagedMapService
+    },
+    {
+      provide: BLOCK_SERVICE,
+      useClass: VisibilityManagedBlockService
     },
     AlwaysStrategy,
     NeverStrategy,

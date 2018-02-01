@@ -54,6 +54,7 @@ export class Database {
 
     this.log.info(() => `Create database connection: name=${connectionName}`);
     await createConnection(connection.getOptions());
+    this.log.debug(() => `Created database connection over typeORM: name=${connectionName}`);
 
     this.readyConnections.push(connectionName);
   }

@@ -5,7 +5,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm";
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.2
+ * @version 0.0.3
  */
 export class CreateLearnplace implements Migration {
 
@@ -36,10 +36,19 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
+    const textBlock: Table = new Table("TextBlock", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "content", type: "string", length: "5000", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
     await queryRunner.createTable(learnplace);
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
+    await queryRunner.createTable(textBlock);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -52,5 +61,6 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Location");
     await queryRunner.dropTable("Visibility");
     await queryRunner.dropTable("Learnplace");
+    await queryRunner.dropTable("TextBlock");
   }
 }
