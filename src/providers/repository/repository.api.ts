@@ -54,16 +54,17 @@ export interface CRUDRepository<T, K> {
  */
 export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, K> {
 
-  protected connection: Connection;
+  protected _connection: Connection;
+  get connection(): Connection {
+    return getConnection(this.connectionName);
+  }
 
   private readonly log: Logger = Logging.getLogger(AbstractCRUDRepository.name);
 
   constructor(
     protected readonly database: Database,
     private readonly connectionName: string = DEFAULT_CONNECTION_NAME
-  ) {
-    this.connection = getConnection(connectionName);
-  }
+  ) {}
 
   /**
    * Saves the given {@code entity} and returns the stored entity.
