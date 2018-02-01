@@ -1,4 +1,4 @@
-import {VisibilityAware} from "./services/visibility/visibility.context";
+import {VisibilityAware} from "./visibility/visibility.context";
 
 /**
  * Contains information to display a map.

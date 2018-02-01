@@ -1,5 +1,5 @@
 import {Component, Input} from "@angular/core";
-import {TextBlockModel} from "../../page.model";
+import {TextBlockModel} from "../../services/block.model";
 
 @Component({
   selector: "text-block",

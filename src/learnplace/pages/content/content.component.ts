@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
 import {LEARNPLACE, LearnplaceData} from "../../services/learnplace";
-import {BlockModel, TextBlockModel} from "../../page.model";
+import {BlockModel} from "../../services/block.model";
 import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
 
 @Component({

@@ -1,4 +1,4 @@
-import {BlockModel, TextBlockModel} from "../page.model";
+import {BlockModel, TextBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";

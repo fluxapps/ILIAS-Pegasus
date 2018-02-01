@@ -2,7 +2,7 @@ import {AfterViewInit, Component, Inject} from "@angular/core";
 import {GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {Platform} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
-import {MapModel} from "../../page.model";
+import {MapModel} from "../../services/block.model";
 import {LEARNPLACE, LearnplaceData} from "../../services/learnplace";
 
 /**

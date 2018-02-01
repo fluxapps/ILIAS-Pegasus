@@ -1,4 +1,4 @@
-import {MapModel} from "../page.model";
+import {MapModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";

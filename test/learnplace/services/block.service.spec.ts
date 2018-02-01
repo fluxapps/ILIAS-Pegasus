@@ -10,7 +10,7 @@ import {LearnplaceEnity} from "../../../src/learnplace/entity/learnplace.enity";
 import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
 import {VisibilityStrategyType} from "../../../src/learnplace/services/visibility/visibility.strategy";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
-import {BlockModel, TextBlockModel} from "../../../src/learnplace/page.model";
+import {BlockModel, TextBlockModel} from "../../../src/learnplace/services/block.model";
 import {Optional} from "../../../src/util/util.optional";
 import * as chaiAsPromised from "chai-as-promised";
 import {NoSuchElementError} from "../../../src/error/errors";
