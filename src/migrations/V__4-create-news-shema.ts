@@ -23,11 +23,18 @@ export class CreateNews implements Migration {
       new TableColumn({name: "updateDate", type: "integer", isNullable: false}),
     ]);
 
+    const usersNewsJunctionTable: Table = new Table("users_news__news", [
+      new TableColumn({name: "usersId", type: "integer", isPrimary: true,  isGenerated: false, isNullable: false}),
+      new TableColumn({name: "newsNewsId", type: "integer", isPrimary: true,  isGenerated: false, isNullable: false})
+    ]);
+
     await queryRunner.createTable(news);
+    await queryRunner.createTable(usersNewsJunctionTable);
 
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropTable("News");
+    await queryRunner.dropTable("users_news__news");
   }
 }
