@@ -70,6 +70,7 @@ import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handle
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {NewsPage} from "../pages/news/news";
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
+import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/repository.user";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -195,6 +196,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     DatabaseConnectionRegistry,
     Database,
+
+    /* from  src/providers/repository/repository.user*/
+    {
+      provide: USER_REPOSITORY,
+      useClass: UserTypeORMRepository
+    },
 
     /* from src/learnplace */
     {
