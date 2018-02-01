@@ -1,4 +1,4 @@
-import {Inject, InjectionToken} from "@angular/core";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
@@ -40,6 +40,7 @@ export class NewsItemModel {
  *
  * @author nschaefli <ns@studer-raimann.ch>
  */
+@Injectable()
 export class NewsFeedImpl implements NewsFeed {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
