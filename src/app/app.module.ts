@@ -72,6 +72,7 @@ import {NewsPage} from "../pages/news/news";
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
 import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/repository.user";
 import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
+import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from "../services/news/news.synchronization";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -202,6 +203,11 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: NEWS_FEED,
       useClass: NewsFeedImpl
+    },
+    /* from src/services/news/news.synchronization */
+    {
+      provide: NEWS_SYNCHRONIZATION,
+      useClass: NewsSynchronizationImpl
     },
 
     /* from  src/providers/repository/repository.user*/
