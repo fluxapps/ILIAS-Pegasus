@@ -1,6 +1,8 @@
 import {AbstractCRUDRepository, CRUDRepository} from "./repository.api";
 import {UserEntity} from "../../entity/user.entity";
 import {Injectable, InjectionToken} from "@angular/core";
+import {Database} from "../../services/database/database";
+import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
 
 /**
  * Provides CRUD operations to manipulate {@link UserEntity}.
@@ -20,6 +22,12 @@ export class UserTypeORMRepository extends AbstractCRUDRepository<UserEntity, nu
 
   private static readonly ENTITY_NAME: string = "users";
   private static readonly ENTITY_ID_NAME: string = "id";
+
+  constructor(
+    database: Database
+  ) {
+    super(database, PEGASUS_CONNECTION_NAME);
+  }
 
   protected getEntityName(): string {
     return UserTypeORMRepository.ENTITY_NAME;
