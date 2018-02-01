@@ -149,7 +149,7 @@ export class ILIASObject extends ActiveRecord {
      * Returns additional data as object
      * @returns {object}
      */
-    get data(): {} {
+    get data(): any {
         if (this._data) {
             try {
                 return JSON.parse(this._data);
