@@ -71,6 +71,7 @@ import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-
 import {NewsPage} from "../pages/news/news";
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
 import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/repository.user";
+import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -196,6 +197,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     DatabaseConnectionRegistry,
     Database,
+
+    /* from src/services/news/news.feed */
+    {
+      provide: NEWS_FEED,
+      useClass: NewsFeedImpl
+    },
 
     /* from  src/providers/repository/repository.user*/
     {
