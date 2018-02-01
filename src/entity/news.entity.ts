@@ -24,7 +24,4 @@ export class NewsEntity {
 
   @Column()
   updateDate: number;
-
-  @ManyToMany(type => UserEntity, user => user.news, <RelationOptions>{cascadeAll: true, eager: true})
-  users: Array<UserEntity>;
 }

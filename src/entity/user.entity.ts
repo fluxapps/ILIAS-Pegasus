@@ -1,4 +1,4 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryColumn, RelationOptions} from "typeorm";
+import {Column, Entity, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, PrimaryColumn, RelationOptions} from "typeorm";
 import {NewsEntity} from "./news.entity";
 
 @Entity("users")
@@ -25,7 +25,7 @@ export class UserEntity {
   @Column()
   lastTokenUpdate: number;
 
-  @ManyToMany(type => NewsEntity, news => news.users, <RelationOptions>{cascadeAll: true, eager: true})
+  @ManyToMany(type => NewsEntity, <RelationOptions>{cascadeAll: true, eager: true})
   @JoinTable()
   news: Array<NewsEntity>;
 
