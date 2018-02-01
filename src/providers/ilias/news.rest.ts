@@ -25,8 +25,8 @@ export interface NewsItem {
   readonly title: string;
   readonly subtitle: string;
   readonly content: string;
-  readonly createDate: string;
-  readonly updateDate: string;
+  readonly createDate: number;
+  readonly updateDate: number;
 }
 
 /**
