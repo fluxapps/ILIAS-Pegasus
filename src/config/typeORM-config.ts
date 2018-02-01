@@ -4,6 +4,8 @@ import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
 import {LocationEntity} from "../learnplace/entity/location.entity";
 import {MapEntity} from "../learnplace/entity/map.entity";
 import {LearnplaceEnity} from "../learnplace/entity/learnplace.enity";
+import {UserEntity} from "../entity/user.entity";
+import {NewsEntity} from "../entity/news.entity";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
 
@@ -27,12 +29,14 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
           it.cordova()
             .setDatabase("ilias_app")
             .setLocation("default")
-            .enableLogging(false)
+            .enableLogging(true)
             .addEntity(
               LearnplaceEnity,
               LocationEntity,
               MapEntity,
-              VisibilityEntity
+              VisibilityEntity,
+              UserEntity,
+              NewsEntity
             )
     );
   }
