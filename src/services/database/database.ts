@@ -25,6 +25,7 @@ export class Database {
     @Inject(DATABASE_CONFIGURATION_ADAPTER) private readonly configurationAdapter: DatabaseConfigurationAdapter,
     private readonly registry: DatabaseConnectionRegistry
   ) {
+    this.configurationAdapter.addConnections(this.registry);
   }
 
   /**
@@ -49,7 +50,6 @@ export class Database {
       return Promise.resolve();
     }
 
-    this.configurationAdapter.addConnections(this.registry);
     const connection: DatabaseOptions = this.registry.getConnection(connectionName);
 
     this.log.info(() => `Create database connection: name=${connectionName}`);

@@ -11,4 +11,18 @@
  For more info on type definition files, check out the Typescript docs here:
  https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
  */
-// declare module '*';
+
+// wildcard module
+declare module "*";
+
+/**
+ * For easier type def in a Promise constructor.
+ *
+ * @example new Promise((resolve: Resolve<string>, reject: Reject<Error>) => {...);
+ *
+ * The {@code Reject} type requires an Error type to be more consistent in the javascript error handling
+ */
+declare type Resolve<T> = (value?: T) => void
+declare type Reject<T extends Error> = (reason: T) => void
+
+declare type Consumer<T> = (item: T) => void

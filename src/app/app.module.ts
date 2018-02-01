@@ -65,6 +65,14 @@ import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/m
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
 import {ContentPage} from "../learnplace/pages/content/content.component";
 import {TextBlock} from "../learnplace/directives/textblock/textblock.directive";
+import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
+import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
+import {PegasusErrorHandler} from "./error-handler";
+import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {Diagnostic} from "@ionic-native/diagnostic";
+import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.util";
+import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -92,6 +100,13 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ContentPage,
 
     TextBlock
+
+    /* fallback screens */
+    WifiFallbackScreen,
+    LocationFallbackScreen,
+    RoamingFallbackScreen,
+
+    HardwareFeaturePage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -120,6 +135,13 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     MapPage,
     TabsPage,
     ContentPage
+
+    /* fallback screens */
+    WifiFallbackScreen,
+    LocationFallbackScreen,
+    RoamingFallbackScreen,
+
+    HardwareFeaturePage
   ],
   providers: [
     {
@@ -227,7 +249,14 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     Toast,
     HttpClient,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+
+    /* from src/services/device/hardware-features */
+    Diagnostic,
+    DiagnosticUtil,
+    Hardware,
+
+    IonicErrorHandler,
+    {provide: ErrorHandler, useClass: PegasusErrorHandler}
   ],
   exports: [
     TranslateModule

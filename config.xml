@@ -93,9 +93,6 @@
     <allow-navigation href="http://192.168.99.47:8100" />
     <allow-navigation href="http://192.168.1.105:8100" />
     <allow-navigation href="http://192.168.99.44:8100" />
-    <allow-navigation href="http://192.168.99.52:8100" />
-    <engine name="android" spec="^6.3.0" />
-    <engine name="ios" spec="^4.5.2" />
     <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
@@ -122,4 +119,7 @@
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
     </plugin>
+    <plugin name="cordova.plugins.diagnostic" spec="~3.9.0" />
+    <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="^4.5.2" />
 </widget>
