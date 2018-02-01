@@ -18,6 +18,8 @@
 import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "./ilias.rest";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {HttpResponse} from "../http";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 
 export interface NewsItem {
   readonly newsId: number;
@@ -55,6 +57,7 @@ export const NEWS_REST: InjectionToken<NewsRest> = new InjectionToken("token for
 export class NewsRestImpl implements NewsRest {
 
   private readonly REST_PATH: string = "/v2/ilias-app/news";
+  private readonly log: Logger = Logging.getLogger("NewsRestImpl");
 
   constructor(
     @Inject(ILIAS_REST) private readonly rest: ILIASRest
@@ -68,11 +71,14 @@ export class NewsRestImpl implements NewsRest {
    * @returns {Promise<Array<NewsItem>>}
    */
   async getNews(): Promise<Array<NewsItem>> {
+    this.log.info(() => "Download news for authenticated user.");
     const result: HttpResponse = await this.rest.get(this.REST_PATH, <ILIASRequestOptions>{
       accept: "application/json",
     });
 
+    this.log.info(() => "Handle news response");
     return result.handle<Array<NewsItem>>(async(it) => {
+      this.log.info(() => "Validate news response");
       return it.json<Array<NewsItem>>(jsonSchema);
     });
   }
@@ -81,7 +87,7 @@ export class NewsRestImpl implements NewsRest {
 /**
  * The json schema as described in the api blue blueprints.
  */
-const jsonSchema: {} = {
+const jsonSchema: {} = [{
   "title": "News",
   "type": "object",
   "properties": {
@@ -90,14 +96,10 @@ const jsonSchema: {} = {
       "type": "integer",
       "minimum": 1
     },
-    "refId": {
-      "description": "The ILIAS object reference identifier.",
+    "newsContext": {
+      "description": "The ref id of the news context.",
       "type": "integer",
       "minimum": 1
-    },
-    "userRead": {
-      "description": "True if the user has red the news content, otherwise false.",
-      "type": "boolean"
     },
     "title": {
       "description": "The title of the news entry.",
@@ -123,5 +125,5 @@ const jsonSchema: {} = {
       "minimum": 1
     }
   },
-  "required": [ "newsId", "refId", "userRead", "title", "content", "subtitle", "createDate", "updateDate" ]
-};
+  "required": [ "newsId", "newsContext", "title", "content", "subtitle", "createDate", "updateDate" ]
+}];
