@@ -43,11 +43,12 @@ export class TypeOrmDbMigration implements DBMigration {
       await migrationTable.up(queryRunner);
 
       const migrations: Array<Migration> = await this.migrationSupplier.get();
-      migrations.sort((first, second) => this.sort(first.version, second.version));
+      migrations.sort((first, second) => first.version.getVersion() - second.version.getVersion());
 
       for(const it of migrations) {
 
         const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
+        this.log.debug(() => `Migrations Table result: ${JSON.stringify(result)}`);
         if (result.length < 1) {
 
           this.log.info(() => `Run database migration: version=${it.version.getVersion()}`);
@@ -56,7 +57,7 @@ export class TypeOrmDbMigration implements DBMigration {
           await queryRunner.query("INSERT INTO migrations (id) VALUES (?)", [it.version.getVersion()])
         }
       }
-      
+
       this.log.info(() => "Successfully migrate database");
 
     } catch (error) {
@@ -96,31 +97,6 @@ export class TypeOrmDbMigration implements DBMigration {
     } catch (error) {
       throw new MigrationError(`Could not revert step ${currentStep}`);
     }
-  }
-
-  /**
-   * Comparator for {@link MigrationVersion}.
-   *
-   * Returns negative number if {@code first} is before {@code second}.
-   * Returns positive number if {@code first} is after {@code second}.
-   * Returns 0 if {@code first} is equal to {@code second}.
-   *
-   * @param {MigrationVersion} first - migration to compare with
-   * @param {MigrationVersion} second - other migration
-   *
-   * @returns {number} the resulting number
-   */
-  private sort(first: MigrationVersion, second: MigrationVersion): number {
-
-    if (first.getVersion() < second.getVersion()) {
-      return -1;
-    }
-
-    if (first.getVersion() > second.getVersion()) {
-      return 1;
-    }
-
-    return 0;
   }
 }
 
