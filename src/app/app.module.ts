@@ -72,6 +72,7 @@ import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-
 import {Diagnostic} from "@ionic-native/diagnostic";
 import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.util";
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
+import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -99,6 +100,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ContentPage,
 
     TextBlock,
+    PictureBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
