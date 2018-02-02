@@ -12,7 +12,7 @@ export class PictureBlockModal {
     private readonly viewController: ViewController,
     navParams: NavParams
   ) {
-    this.imageUrl = navParams.get(NAV_PARAM_IMG_URL);
+    this.imageUrl = navParams.get("imgUrl");
   }
 
   close(): void {
@@ -20,4 +20,6 @@ export class PictureBlockModal {
   }
 }
 
-export const NAV_PARAM_IMG_URL: string = "imgUrl";
+export interface PictureBlockModalParams {
+  readonly imgUrl: string
+}

@@ -1,6 +1,6 @@
 <ion-card>
   <ion-card-content>
-    <img src="{{picture.thumbnail}}"/>
+    <img (click)="show()" src="{{picture.thumbnail}}"/>
     <ion-card-title *ngIf="picture.title">
       {{picture.title}}
     </ion-card-title>
