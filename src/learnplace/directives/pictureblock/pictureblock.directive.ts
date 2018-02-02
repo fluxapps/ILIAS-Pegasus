@@ -8,5 +8,9 @@ import {PictureBlockModel} from "../../services/block.model";
 export class PictureBlock {
 
   @Input("value")
-  readonly picture: PictureBlockModel
+  readonly picture: PictureBlockModel;
+
+  show(): void {
+
+  }
 }
