@@ -5,6 +5,7 @@ import {LocationEntity} from "../learnplace/entity/location.entity";
 import {MapEntity} from "../learnplace/entity/map.entity";
 import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../learnplace/entity/textblock.entity";
+import {PictureBlockEntity} from "../learnplace/entity/pictureBlock.entity";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
 
@@ -34,7 +35,8 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
               LocationEntity,
               MapEntity,
               VisibilityEntity,
-              TextblockEntity
+              TextblockEntity,
+              PictureBlockEntity
             )
     );
   }
