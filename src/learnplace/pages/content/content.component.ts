@@ -16,15 +16,7 @@ export class ContentPage implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.init();
+    this.blockService.getBlocks(this.learnplace.getId())
+      .then(blocks => this.blockList.push(...blocks));
   }
-
-  async init(): Promise<void> {
-
-    // TODO: Show error page on try/catch
-
-    (await this.blockService.getBlocks(this.learnplace.getId()))
-      .forEach(it => this.blockList.push(it));
-  }
-
 }
