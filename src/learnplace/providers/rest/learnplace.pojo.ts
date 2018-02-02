@@ -44,17 +44,17 @@ export interface ILIASLinkBlock extends Block {
   readonly refId: number
 }
 
-export interface AccorionBlock extends Block {
-  readonly text: TextBlock
-  readonly picture: PictureBlock
-  readonly video: VideoBlock
-  readonly iliasLink: ILIASLinkBlock
+export interface AccordionBlock extends Block {
+  readonly text: Array<TextBlock>
+  readonly picture: Array<PictureBlock>
+  readonly video: Array<VideoBlock>
+  readonly iliasLink: Array<ILIASLinkBlock>
 }
 
 export interface BlockObject {
-  readonly text: TextBlock
-  readonly picture: PictureBlock
-  readonly video: VideoBlock
-  readonly iliasLink: ILIASLinkBlock
-  readonly accordion: AccorionBlock
+  readonly text: Array<TextBlock>
+  readonly picture: Array<PictureBlock>
+  readonly video: Array<VideoBlock>
+  readonly iliasLink: Array<ILIASLinkBlock>
+  readonly accordion: Array<AccordionBlock>
 }
