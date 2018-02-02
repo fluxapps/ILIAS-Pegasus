@@ -11,7 +11,7 @@ import {Logger} from "../../services/logging/logging.api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../util/util.optional";
 import {addArgv} from "@ionic/app-scripts";
-import {apply} from "../../util/util.function";
+import {apply, withIt} from "../../util/util.function";
 import {TextblockEntity} from "../entity/textblock.entity";
 import {isNullOrUndefined} from "util";
 
@@ -123,7 +123,7 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnplaceLoader {
@@ -155,25 +155,33 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
       const learnplaceEntity: LearnplaceEntity = (await this.learnplaceRepository.find(id)).orElse(new LearnplaceEntity());
 
-      learnplaceEntity.objectId = learnplace.objectId;
+      withIt(learnplaceEntity, it => {
 
-      learnplaceEntity.map = Optional.ofNullable(learnplaceEntity.map).orElse(new MapEntity());
-      learnplaceEntity.map.visibility = this.getVisibilityEntity(learnplace.map.visibility);
+        it.objectId = learnplace.objectId;
 
-      learnplaceEntity.location = Optional.ofNullable(learnplaceEntity.location).orElse(new LocationEntity());
-      learnplaceEntity.location.latitude = learnplace.location.latitude;
-      learnplaceEntity.location.longitude = learnplace.location.longitude;
-      learnplaceEntity.location.radius = learnplace.location.radius;
-      learnplaceEntity.location.elevation = learnplace.location.elevation;
+        it.map = apply(Optional.ofNullable(it.map).orElse(new MapEntity()), it => {
+          it.visibility = this.getVisibilityEntity(learnplace.map.visibility);
+        });
 
-      learnplaceEntity.textBlocks = blocks.text.map(textBlock => {
-        return apply(this.findIn(learnplaceEntity.textBlocks, textBlock, (entity, block) => entity.content == block.content).orElse(new TextblockEntity()), et => {
-          et.sequence = textBlock.sequence;
-          et.content = textBlock.content;
-          et.visibility = this.getVisibilityEntity(textBlock.visibility);
-        })
+        it.location = apply(Optional.ofNullable(learnplaceEntity.location).orElse(new LocationEntity()), it => {
+          it.latitude = learnplace.location.latitude;
+          it.longitude = learnplace.location.longitude;
+          it.radius = learnplace.location.radius;
+          it.elevation = learnplace.location.elevation;
+        });
+
+        it.textBlocks = blocks.text.map(textBlock => {
+          return apply(this.findIn(learnplaceEntity.textBlocks, textBlock,
+            (entity, block) => entity.content == block.content) // TODO: use unique identifier to compare
+            .orElse(new TextblockEntity()), it => {
+              it.sequence = textBlock.sequence;
+              it.content = textBlock.content;
+              it.visibility = this.getVisibilityEntity(textBlock.visibility);
+          })
+        });
+
+        it.pictureBlocks = [];
       });
-      learnplaceEntity.pictureBlocks = [];
 
       await this.learnplaceRepository.save(learnplaceEntity);
 
