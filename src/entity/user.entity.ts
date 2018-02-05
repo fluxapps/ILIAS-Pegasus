@@ -25,8 +25,22 @@ export class UserEntity {
   @Column()
   lastTokenUpdate: number;
 
-  @ManyToMany(type => NewsEntity, <RelationOptions>{cascadeAll: true, eager: true})
-  @JoinTable()
+  @ManyToMany(type => NewsEntity, <RelationOptions>{
+    cascadeInsert: true,
+    cascadeUpdate: true,
+    eager: true
+  })
+  @JoinTable(<JoinTableOptions>{
+    name: "users_news",
+    joinColumn: <JoinColumnOptions> {
+      name: "usersId",
+      referencedColumnName: "id"
+    },
+    inverseJoinColumn: <JoinColumnOptions> {
+      name: "newsId",
+      referencedColumnName: "newsId"
+    }
+  })
   news: Array<NewsEntity>;
 
 }
