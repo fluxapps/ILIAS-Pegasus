@@ -14,36 +14,26 @@
 </ion-header>
 <ion-content>
 
+  <ion-refresher
+    (ionRefresh)="startSync($event)"
+    [closeDuration]="400"
+    [pullMin]="150">
+    <ion-refresher-content id="refresher-content"
+                           pullingIcon="arrow-down"
+                           pullingText="{{ 'sync.pull_to_sync' | translate:[] }}">
+    </ion-refresher-content>
+  </ion-refresher>
 
   <!-- <ion-list> -->
-  <ion-item>
-    <ion-icon name="mail" item-left class="badge-container"></ion-icon>
+  <div *ngFor="let newsItem of news">
+    <ion-item>
+      <ion-icon name="mail" item-left class="badge-container"></ion-icon>
 
-    <h2 class="news-title">Kurs: Sozialpsychologie</h2>
-    <p class="info-text">Es wurde eine Datei hinzugefügt.</p>
-    <ion-note item-end>Heute, 13:30</ion-note>
-  </ion-item>
-  <ion-item >
-    <ion-icon name="mail" item-left class="badge-container"></ion-icon>
-
-    <h2 class="news-title">Kurs: Hunde im alten Orient</h2>
-    <p class="info-text">Es wurde ein Link hinzugefügt.</p>
-    <ion-note item-end>Gestern, 02:30</ion-note>
-  </ion-item>
-  <ion-item >
-    <ion-icon name="mail" item-left class="badge-container"></ion-icon>
-
-    <h2 class="news-title">Kurs: Bratwurstbratgerät im kommerziellen Einsatz</h2>
-    <p class="info-text">Es wurde ein Ordner hinzugefügt.</p>
-    <ion-note item-end>24. Dez 2017, 02:30</ion-note>
-  </ion-item>
-  <ion-item >
-    <ion-icon name="mail" item-left class="badge-container"></ion-icon>
-
-    <h2 class="news-title">Kurs: Sozialpsychologie</h2>
-    <p class="info-text">Es wurde ein Forum angelegt.</p>
-    <ion-note item-end>24. Sept 2017, 09:30</ion-note>
-  </ion-item>
+      <h2 class="news-title">{{newsItem.title}}</h2>
+      <p class="info-text">{{newsItem.content}}</p>
+      <ion-note item-end>{{newsItem.updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
+    </ion-item>
+  </div>
   <!-- </ion-list> -->
 
 </ion-content>
