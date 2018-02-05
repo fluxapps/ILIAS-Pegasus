@@ -42,6 +42,9 @@ export class NewsItemModel {
  */
 @Injectable()
 export class NewsFeedImpl implements NewsFeed {
+
+  private static readonly UNIX_TIME_MULTIPLIER_MILIS: number = 1000;
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
   ) {}
@@ -60,8 +63,8 @@ export class NewsFeedImpl implements NewsFeed {
       entity.title,
       entity.subtitle,
       entity.content,
-      new Date(entity.createDate),
-      new Date(entity.updateDate)
+      new Date(entity.createDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS),
+      new Date(entity.updateDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS)
     );
   }
 }
