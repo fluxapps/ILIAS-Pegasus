@@ -16,31 +16,23 @@ import {Reject, Resolve} from "../declarations";
 @Injectable()
 export class SynchronizationService {
 
-    protected db: SQLiteDatabaseService;
-
-    /**
-     * File ILIASObject that should be downloaded
-     * @type {Array}
-     */
-    protected downloads: Array<ILIASObject> = [];
-
-    protected user: User;
+    private user: User;
 
 
-    protected syncQueue: {object:ILIASObject, resolver, rejecter}[] = [];
+    private syncQueue: { object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }[] = [];
 
-    public lastSync: Date;
-    public lastSyncString: string;
+    lastSync: Date;
+    lastSyncString: string;
 
-    public constructor(private readonly dataProvider: DataProvider,
+    private _isRunning: boolean = false;
+
+    constructor(private readonly dataProvider: DataProvider,
                        private readonly events: Events,
                        private readonly fileService: FileService,
                        private readonly footerToolbar: FooterToolbarService,
                        private readonly translate: TranslateService,
                        @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization) {
     }
-
-    protected _isRunning: boolean = false;
 
     /**
      * Execute synchronization
@@ -49,7 +41,7 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns {any}
      */
-    public execute(iliasObject:ILIASObject = null):Promise<SyncResults> {
+    execute(iliasObject: ILIASObject = undefined): Promise<SyncResults> {
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == null) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
@@ -86,7 +78,7 @@ export class SynchronizationService {
                 if(this.syncQueue.length > 0) {
                     let sync = this.syncQueue.pop();
                     this.execute(sync.object)
-                        .then(syncResult => {
+                        .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
                         }).catch(error => {
                             sync.rejecter(error);
@@ -301,10 +293,11 @@ export class SynchronizationService {
         });
     }
 
-    private executeContainerSync(container:ILIASObject):Promise<SyncResults> {
+    private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
+        await this.newsSynchronization.synchronize();
         return this.dataProvider.getObjectData(container, this.user, true)
             .then( (iliasObjects) => {
-                iliasObjects.push(container)
+                iliasObjects.push(container);
                 return this.checkForFileDownloads(iliasObjects);
 
             })
@@ -313,17 +306,17 @@ export class SynchronizationService {
             );
     }
 
-    private executeGlobalSync(fetchAllMetaData = true):Promise<SyncResults> {
+    private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {
         // Run sync for all objects marked as "offline available"
         Log.write(this, "Fetching offline available objects.");
-        this.newsSynchronization.synchronize();
+        await this.newsSynchronization.synchronize();
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
 				// console.log('desktopObjects:');
 				// console.log(desktopObjects);
 				this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
                 let promises = Promise.resolve();
-                for (let iliasObject of desktopObjects) {
+                for (const iliasObject of desktopObjects) {
                     promises = promises.then(() => {
                         this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata") + ": " + iliasObject.title);
                         Log.write(this, "Fetching offline available objects for " + iliasObject.title);
@@ -366,10 +359,10 @@ export class SynchronizationService {
 }
 
 export class SyncResults {
-    constructor(public totalObjects:ILIASObject[],
-                public objectsDownloaded:ILIASObject[],
-                public objectsUnchanged:ILIASObject[],
-                public objectsLeftOut:{object:ILIASObject, reason:LeftOutReason}[]) {
+    constructor(public totalObjects: Array<ILIASObject>,
+                public objectsDownloaded: Array<ILIASObject>,
+                public objectsUnchanged: Array<ILIASObject>,
+                public objectsLeftOut: {object: ILIASObject, reason: LeftOutReason}[]) {
     }
 }
 
