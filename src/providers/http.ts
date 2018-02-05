@@ -41,7 +41,10 @@ export class HttpClient {
       return new HttpResponse(response);
     }
     catch (error) {
-      return new HttpResponse(<Response>error);
+      if(error instanceof Response)
+        return new HttpResponse(<Response>error);
+
+      throw error;
     }
 
   }
