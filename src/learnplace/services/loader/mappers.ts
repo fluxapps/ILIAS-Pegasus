@@ -12,6 +12,10 @@
 import {TextblockEntity} from "../../entity/textblock.entity";
 import {PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
+import {isNullOrUndefined} from "util";
+import {VisibilityEntity} from "../../entity/visibility.entity";
+import {apply} from "../../../util/util.function";
+import {Optional} from "../../../util/util.optional";
 
 export interface BlockMapper<K, T> {
 
@@ -41,7 +45,29 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
 
 
   map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Array<TextblockEntity> {
-    throw new Error("This method is not implemented yet");
+
+    return remote.map(textBlock => {
+      // TODO: use unique identifier to compare
+      return apply(this.findIn(local, textBlock, (entity, block) => entity.content == block.content)
+        .orElse(new TextblockEntity()), it => {
+        it.sequence = textBlock.sequence;
+        it.content = textBlock.content;
+        it.visibility = this.getVisibilityEntity(textBlock.visibility);
+      })
+    });
+  }
+
+  private findIn<K, T>(source: Array<K>, target: T, comparator: (source: K, target: T) => boolean): Optional<K> {
+    if (isNullOrUndefined(source)) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(source.find(it => comparator(it, target)));
+  }
+
+  private getVisibilityEntity(visibility: string): VisibilityEntity {
+    return apply(new VisibilityEntity(), it => {
+      it.value = visibility;
+    })
   }
 }
 
