@@ -169,7 +169,7 @@ export abstract class LogLevelAppender extends LogBuffer {
 
     switch (this.level) {
       case LogLevel.TRACE:
-        return false;
+        return true;
       case LogLevel.DEBUG:
         return this.isDebug(logEntry.level);
       case LogLevel.INFO:
@@ -179,7 +179,7 @@ export abstract class LogLevelAppender extends LogBuffer {
       case LogLevel.ERROR:
         return this.isError(logEntry.level);
       default:
-        return true;
+        return false;
     }
   }
 
