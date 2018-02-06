@@ -20,7 +20,8 @@
     [pullMin]="150">
     <ion-refresher-content id="refresher-content"
                            pullingIcon="arrow-down"
-                           pullingText="{{ 'sync.pull_to_sync' | translate:[] }}">
+                           pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+                           refreshingText="{{ footerToolbar.loadingText }}">
     </ion-refresher-content>
   </ion-refresher>
 
@@ -37,3 +38,4 @@
   <!-- </ion-list> -->
 
 </ion-content>
+
