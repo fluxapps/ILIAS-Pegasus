@@ -1,20 +1,21 @@
-import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {BlockObject, LearnPlace} from "../providers/rest/learnplace.pojo";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
-import {LocationEntity} from "../entity/location.entity";
-import {MapEntity} from "../entity/map.entity";
-import {Logging} from "../../services/logging/logging.service";
+import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
+import {BlockObject, LearnPlace} from "../../providers/rest/learnplace.pojo";
+import {LearnplaceEntity} from "../../entity/learnplace.entity";
+import {LocationEntity} from "../../entity/location.entity";
+import {MapEntity} from "../../entity/map.entity";
+import {Logging} from "../../../services/logging/logging.service";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {VisibilityEntity} from "../entity/visibility.entity";
-import {Logger} from "../../services/logging/logging.api";
+import {VisibilityEntity} from "../../entity/visibility.entity";
+import {Logger} from "../../../services/logging/logging.api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
-import {Optional} from "../../util/util.optional";
+import {Optional} from "../../../util/util.optional";
 import {addArgv} from "@ionic/app-scripts";
-import {apply, withIt} from "../../util/util.function";
-import {TextblockEntity} from "../entity/textblock.entity";
+import {apply, withIt} from "../../../util/util.function";
+import {TextblockEntity} from "../../entity/textblock.entity";
 import {isNullOrUndefined} from "util";
-import {HttpRequestError} from "../../providers/http";
+import {HttpRequestError} from "../../../providers/http";
+import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -183,7 +184,17 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
           })
         });
 
-        it.pictureBlocks = [];
+        it.pictureBlocks = blocks.picture.map(pictureBlock => {
+          return apply(this.findIn(learnplaceEntity.pictureBlocks, pictureBlock, (entity, block) => entity.title == block.title)
+            .orElse(new PictureBlockEntity()), it => {
+            it.sequence = pictureBlock.sequence;
+            it.title = pictureBlock.title;
+            it.description = pictureBlock.description;
+            it.thumbnail = pictureBlock.thumbnail;
+            it.url = pictureBlock.url;
+            it.visibility = this.getVisibilityEntity(pictureBlock.visibility);
+          })
+        });
       });
 
       await this.learnplaceRepository.save(learnplaceEntity);

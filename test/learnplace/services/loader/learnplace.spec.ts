@@ -1,20 +1,21 @@
-import {LearnplaceLoadingError, RestLearnplaceLoader} from "../../../src/learnplace/services/learnplace";
+import {LearnplaceLoadingError, RestLearnplaceLoader} from "../../../../src/learnplace/services/loader/learnplace";
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
-import {LearnplaceAPI} from "../../../src/learnplace/providers/rest/learnplace.api";
+import {LearnplaceAPI} from "../../../../src/learnplace/providers/rest/learnplace.api";
 import {
   Block, BlockObject, JournalEntry, LearnPlace, PictureBlock,
   TextBlock
-} from "../../../src/learnplace/providers/rest/learnplace.pojo";
-import {LearnplaceRepository} from "../../../src/learnplace/providers/repository/learnplace.repository";
-import {LearnplaceEntity} from "../../../src/learnplace/entity/learnplace.entity";
-import {Optional} from "../../../src/util/util.optional";
+} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {LearnplaceRepository} from "../../../../src/learnplace/providers/repository/learnplace.repository";
+import {LearnplaceEntity} from "../../../../src/learnplace/entity/learnplace.entity";
+import {Optional} from "../../../../src/util/util.optional";
 import * as chaiAsPromised from "chai-as-promised";
-import {MapEntity} from "../../../src/learnplace/entity/map.entity";
-import {LocationEntity} from "../../../src/learnplace/entity/location.entity";
-import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
-import {apply} from "../../../src/util/util.function";
-import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
-import {HttpRequestError} from "../../../src/providers/http";
+import {MapEntity} from "../../../../src/learnplace/entity/map.entity";
+import {LocationEntity} from "../../../../src/learnplace/entity/location.entity";
+import {VisibilityEntity} from "../../../../src/learnplace/entity/visibility.entity";
+import {apply} from "../../../../src/util/util.function";
+import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
+import {HttpRequestError} from "../../../../src/providers/http";
+import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 
 chai.use(chaiAsPromised);
 
@@ -92,7 +93,16 @@ describe("a learnplace loader", () => {
               it.visibility = getVisibilityEntity("NEVER");
             })
           ];
-          it.pictureBlocks = [];
+          it.pictureBlocks = [
+            apply(new PictureBlockEntity(), it => {
+              it.sequence = 3;
+              it.title = "title";
+              it.description = "";
+              it.thumbnail = "";
+              it.url = "get/picture/1";
+              it.visibility = getVisibilityEntity("ALWAYS")
+            })
+          ];
         });
         assert.calledWith(saveStub, expected)
 			});
@@ -148,7 +158,16 @@ describe("a learnplace loader", () => {
               it.visibility = getVisibilityEntity("NEVER");
             })
           ];
-          it.pictureBlocks = [];
+          it.pictureBlocks = [
+            apply(new PictureBlockEntity(), it => {
+              it.sequence = 3;
+              it.title = "title";
+              it.description = "";
+              it.thumbnail = "";
+              it.url = "get/picture/1";
+              it.visibility = getVisibilityEntity("ALWAYS")
+            })
+          ];
         });
         assert.calledWith(saveStub, expected)
 			})
