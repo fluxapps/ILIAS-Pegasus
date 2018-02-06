@@ -1,8 +1,8 @@
-import {RestLearnplaceLoader} from "../../../src/learnplace/services/learnplace";
+import {LearnplaceLoadingError, RestLearnplaceLoader} from "../../../src/learnplace/services/learnplace";
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {LearnplaceAPI} from "../../../src/learnplace/providers/rest/learnplace.api";
 import {
-  Block, BlockObject, JournalEntry, LearnPlace,
+  Block, BlockObject, JournalEntry, LearnPlace, PictureBlock,
   TextBlock
 } from "../../../src/learnplace/providers/rest/learnplace.pojo";
 import {LearnplaceRepository} from "../../../src/learnplace/providers/repository/learnplace.repository";
@@ -14,6 +14,7 @@ import {LocationEntity} from "../../../src/learnplace/entity/location.entity";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
 import {apply} from "../../../src/util/util.function";
 import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
+import {HttpRequestError} from "../../../src/providers/http";
 
 chai.use(chaiAsPromised);
 
@@ -152,6 +153,43 @@ describe("a learnplace loader", () => {
         assert.calledWith(saveStub, expected)
 			})
 		});
+
+		context("on http request error", () => {
+
+			it("it should throw an learnplace loading error", async() => {
+
+        sandbox.stub(mockLearnplaceAPI, "getLearnPlace")
+          .callsFake(() => Promise.reject(new HttpRequestError(500, "")));
+
+        sandbox.stub(mockLearnplaceRepository, "exists")
+          .resolves(false);
+
+
+        await chai.expect(loader.load(1))
+          .to.be.rejectedWith(LearnplaceLoadingError)
+          .and.eventually.have.property("message", 'Could not load learnplace with id "1" over http connection');
+			})
+		});
+
+		context("on http request error with existing learnplace", () => {
+
+			it("should not save any learnplace data", async() => {
+
+        sandbox.stub(mockLearnplaceAPI, "getLearnPlace")
+          .callsFake(() => Promise.reject(new HttpRequestError(500, "")));
+
+        sandbox.stub(mockLearnplaceRepository, "exists")
+          .resolves(true);
+
+        const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save");
+
+
+        await loader.load(1);
+
+
+        assert.notCalled(saveStub);
+			})
+		});
 	});
 });
 
@@ -177,7 +215,9 @@ function createBlocks(): BlockObject {
       <TextBlock>{sequence: 1, visibility: "ALWAYS",  content: "some text"},
       <TextBlock>{sequence: 2, visibility: "NEVER", content: "new text"}
     ],
-    picture: [],
+    picture: [
+      <PictureBlock>{sequence: 3, visibility: "ALWAYS", title: "title", description: "", thumbnail: "", url: "get/picture/1"}
+    ],
     video: [],
     iliasLink: [],
     accordion: []

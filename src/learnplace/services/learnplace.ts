@@ -14,6 +14,7 @@ import {addArgv} from "@ionic/app-scripts";
 import {apply, withIt} from "../../util/util.function";
 import {TextblockEntity} from "../entity/textblock.entity";
 import {isNullOrUndefined} from "util";
+import {HttpRequestError} from "../../providers/http";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -123,7 +124,7 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.1.0
+ * @version 1.2.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnplaceLoader {
@@ -140,9 +141,11 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
    * the given {@code id} and stores them.
    * If the learnplace is already stored, it will be updated.
    *
+   * Images and videos of an learnplace are only loaded if necessary.
+   *
    * @param {number} id - the id to use
    *
-   * @throws {InvalidLearnplaceError} if the learnplace could not be loaded
+   * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
    */
   async load(id: number): Promise<void> {
 
@@ -171,12 +174,12 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         });
 
         it.textBlocks = blocks.text.map(textBlock => {
-          return apply(this.findIn(learnplaceEntity.textBlocks, textBlock,
-            (entity, block) => entity.content == block.content) // TODO: use unique identifier to compare
+          // TODO: use unique identifier to compare
+          return apply(this.findIn(learnplaceEntity.textBlocks, textBlock, (entity, block) => entity.content == block.content)
             .orElse(new TextblockEntity()), it => {
-              it.sequence = textBlock.sequence;
-              it.content = textBlock.content;
-              it.visibility = this.getVisibilityEntity(textBlock.visibility);
+            it.sequence = textBlock.sequence;
+            it.content = textBlock.content;
+            it.visibility = this.getVisibilityEntity(textBlock.visibility);
           })
         });
 
@@ -186,7 +189,17 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
       await this.learnplaceRepository.save(learnplaceEntity);
 
     } catch (error) {
-      throw new InvalidLearnplaceError(Logging.getMessage(error, "Could not load learnplace"));
+
+      if (error instanceof HttpRequestError) {
+
+        if (!(await this.learnplaceRepository.exists(id))) {
+          throw new LearnplaceLoadingError(`Could not load learnplace with id "${id}" over http connection`);
+        }
+        this.log.debug(() => `Learnplace with id "${id} could bot be loaded, but is available from local storage"`);
+        // At the moment nothing needs to be done here
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -215,5 +228,19 @@ export class InvalidLearnplaceError extends Error {
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, InvalidLearnplaceError.prototype);
+  }
+}
+
+/**
+ * Indicates, that a learnplace could not be loaded.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class LearnplaceLoadingError extends InvalidLearnplaceError {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, LearnplaceLoadingError.prototype);
   }
 }
