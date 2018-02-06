@@ -127,6 +127,7 @@
     "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
     "last_sync": "Letzte Synchronisation",
     "fetching_metadata": "Metadaten werden aktualisiert",
+    "fetching_news": "News werden aktualisiert",
     "title": "Synchronisation",
     "sync_incomplete": "Etwas ist schiefgelaufen, die Synchronisation ist unter Umständen unvollständig.",
     "stopped_no_wlan": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da Sie zur Zeit nicht mit dem WLAN verbunden sind.",

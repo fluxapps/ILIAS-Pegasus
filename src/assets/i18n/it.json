@@ -121,6 +121,7 @@
   "sync": {
     "last_sync": "Ultima sincronizzazione",
     "fetching_metadata": "Recupero dei metadati",
+    "fetching_news": "Recupero dei notizie",
     "title": "Sincronizzazione",
     "sync_incomplete": "Qualcosa č andato storto: La sincronizzazione potrebbe essere incompleta.",
     "stopped_no_wlan": "I file nuovi o aggiornati non possono essere sincronizzati. Per favore, connettiti al WiFi",

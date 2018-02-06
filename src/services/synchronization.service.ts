@@ -309,17 +309,19 @@ export class SynchronizationService {
     private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {
         // Run sync for all objects marked as "offline available"
         Log.write(this, "Fetching offline available objects.");
+
+        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
         await this.newsSynchronization.synchronize();
+        this.footerToolbar.removeJob(Job.MetaDataFetch);
+
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
-				// console.log('desktopObjects:');
-				// console.log(desktopObjects);
-				this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
+				        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
                 let promises = Promise.resolve();
                 for (const iliasObject of desktopObjects) {
                     promises = promises.then(() => {
                         this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata") + ": " + iliasObject.title);
-                        Log.write(this, "Fetching offline available objects for " + iliasObject.title);
+                        Log.write(this, `Fetching offline available objects for ${iliasObject.title}`);
                        return this.dataProvider.getObjectData(iliasObject, this.user, true);
                     }).then(() => {
                         Log.write(this, "Fetching finished.")
