@@ -1,5 +1,5 @@
 import {TextblockEntity} from "../../entity/textblock.entity";
-import {PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
+import {ILIASLinkBlock, PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
@@ -11,6 +11,7 @@ import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
 import {User} from "../../../models/user";
 import {Injectable} from "@angular/core";
+import {LinkblockEntity} from "../../entity/linkblock.entity";
 
 /**
  * Describes a mapper for a specific block type.
@@ -53,16 +54,16 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
 
   map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Array<TextblockEntity> {
 
-    return remote.map(textBlock => {
+    return remote.map(textBlock =>
       // TODO: use unique identifier to compare
-      return apply(findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
+      apply(findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new TextblockEntity()), it => {
         it.iliasId = textBlock.id;
         it.sequence = textBlock.sequence;
         it.content = textBlock.content;
         it.visibility = getVisibilityEntity(textBlock.visibility);
       })
-    });
+    );
   }
 }
 
@@ -76,8 +77,8 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
 export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, PictureBlock> {
 
   map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
-    return remote.map(pictureBlock => {
-      return apply(findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
+    return remote.map(pictureBlock =>
+      apply(findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new PictureBlockEntity()), it => {
         it.iliasId = pictureBlock.id;
         it.sequence = pictureBlock.sequence;
@@ -87,7 +88,40 @@ export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, Pictu
         it.url = pictureBlock.url;
         it.visibility = getVisibilityEntity(pictureBlock.visibility);
       })
-    });
+    );
+  }
+}
+
+/**
+ * Maps {@link ILIASLinkBlock} to {@link LinkBlockEntity}.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class LinkBlockMapper implements BlockMapper<LinkblockEntity, ILIASLinkBlock> {
+
+  /**
+   * Maps the given {@code remote} link blocks to {@link LinkblockEntity}
+   * by considering the given {@code local} entity array to find existing link blocks.
+   *
+   * If the {@code LinkblockEntity#iliasId} property matches the {@code ILIASLinkBlock#id} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * @param {Array<LinkblockEntity>} local - the entities to search in for existing link blocks
+   * @param {Array<ILIASLinkBlock>} remote - the link blocks to save / update
+   *
+   * @returns {Array<LinkblockEntity>} the resulting mapped entity array
+   */
+  map(local: Array<LinkblockEntity>, remote: Array<ILIASLinkBlock>): Array<LinkblockEntity> {
+    return remote.map(linkBlock =>
+      apply(findIn(local, linkBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new LinkblockEntity()), it => {
+        it.iliasId = linkBlock.id;
+        it.sequence = linkBlock.sequence;
+        it.refId = linkBlock.refId;
+        it.visibility = getVisibilityEntity(linkBlock.visibility);
+      })
+    );
   }
 }
 

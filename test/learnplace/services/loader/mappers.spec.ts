@@ -1,9 +1,10 @@
 import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {
+  LinkBlockMapper,
   PictureBlockMapper, SimpleStorageLocation,
   TextBlockMapper
 } from "../../../../src/learnplace/services/loader/mappers";
-import {PictureBlock, TextBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {ILIASLinkBlock, PictureBlock, TextBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {apply} from "../../../../src/util/util.function";
 import {getVisibilityEntity} from "./learnplace.spec";
@@ -12,6 +13,7 @@ import {FileTransfer} from "@ionic-native/file-transfer";
 import {LearnplaceData, LearnplaceObject} from "../../../../src/learnplace/services/loader/learnplace";
 import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
+import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
 
 describe("a text block mapper", () => {
 
@@ -220,6 +222,101 @@ describe("a picture block mapper", () => {
             it.thumbnail = "=2e";
             it.url = "get/picture/2";
             it.visibility = getVisibilityEntity("NEVER")
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a link block mapper", () => {
+
+    const sandbox: SinonSandbox = createSandbox();
+
+    let mapper: LinkBlockMapper = new LinkBlockMapper();
+
+	beforeEach(() => {
+		mapper = new LinkBlockMapper();
+	});
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe("mapping link blocks", () => {
+
+		context("on new link blocks", () => {
+
+			it("should create link block entities", () => {
+
+				const local: Array<LinkblockEntity> = [];
+
+				const remote: Array<ILIASLinkBlock> = [
+				  <ILIASLinkBlock>{id: 1, sequence: 1, refId: 255, visibility: "ALWAYS"},
+          <ILIASLinkBlock>{id: 2, sequence: 2, refId: 87, visibility: "NEVER"}
+        ];
+
+
+        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<LinkblockEntity> = [
+          apply(new LinkblockEntity(), it => {
+            it.iliasId = 1;
+            it.sequence = 1;
+            it.refId = 255;
+            it.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          apply(new LinkblockEntity(), it => {
+            it.iliasId = 2;
+            it.sequence = 2;
+            it.refId = 87;
+            it.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing link blocks", () => {
+
+			it("should update the existing ones", () => {
+
+        const local: Array<LinkblockEntity> = [
+          apply(new LinkblockEntity(), it => {
+            it.id = 1;
+            it.iliasId = 1;
+            it.sequence = 1;
+            it.refId = 5;
+            it.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+
+        const remote: Array<ILIASLinkBlock> = [
+          <ILIASLinkBlock>{id: 1, sequence: 1, refId: 255, visibility: "ALWAYS"},
+          <ILIASLinkBlock>{id: 2, sequence: 2, refId: 87, visibility: "NEVER"}
+        ];
+
+
+        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<LinkblockEntity> = [
+          apply(new LinkblockEntity(), it => {
+            it.id = 1;
+            it.iliasId = 1;
+            it.sequence = 1;
+            it.refId = 255;
+            it.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          apply(new LinkblockEntity(), it => {
+            it.iliasId = 2;
+            it.sequence = 2;
+            it.refId = 87;
+            it.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
