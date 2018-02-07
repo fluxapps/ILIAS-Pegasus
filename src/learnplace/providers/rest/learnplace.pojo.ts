@@ -21,6 +21,7 @@ export interface LearnPlace {
 }
 
 export interface Block {
+  readonly id: number
   readonly sequence: number
   readonly visibility: string
 }
@@ -33,11 +34,13 @@ export interface PictureBlock extends Block {
   readonly title: string
   readonly description: string
   readonly thumbnail: string
-  readonly url: string
+  readonly url: string,
+  readonly hash: string
 }
 
 export interface VideoBlock extends Block {
-  readonly url: string
+  readonly url: string,
+  readonly hash: string
 }
 
 export interface ILIASLinkBlock extends Block {
