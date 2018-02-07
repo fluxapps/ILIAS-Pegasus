@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
 import {Nav, NavParams, ViewController} from "ionic-angular";
-import {LEARNPLACE_LOADER, LearnplaceLoader, MUT_LEARNPLACE, MutableLearnplaceData} from "../../services/learnplace";
+import {LEARNPLACE_LOADER, LearnplaceLoader, MUT_LEARNPLACE, MutableLearnplaceData} from "../../services/loader/learnplace";
 import {TabsPage} from "../tabs/tabs.component";
 
 
