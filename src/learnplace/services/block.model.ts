@@ -85,3 +85,17 @@ export class PictureBlockModel extends BlockModel {
     readonly url: string
   ) {super(sequence, false, BlockType.PICTURE)}
 }
+
+/**
+ * Model class for link block.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export class LinkBlockModel extends BlockModel {
+
+  constructor(
+    sequence: number,
+    readonly refId: number
+  ) {super(sequence, false, BlockType.ILIAS_LINK)}
+}
