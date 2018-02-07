@@ -50,7 +50,7 @@ import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration
 import {
   LEARNPLACE, LEARNPLACE_LOADER, LearnplaceObject, MUT_LEARNPLACE,
   RestLearnplaceLoader
-} from "../learnplace/services/learnplace";
+} from "../learnplace/services/loader/learnplace";
 import {
   LEARNPLACE_REPOSITORY,
   TypeORMLearnplaceRepository
@@ -72,6 +72,9 @@ import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-
 import {Diagnostic} from "@ionic-native/diagnostic";
 import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.util";
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
+import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
+import {PictureBlockModal} from "../learnplace/directives/pictureblock/pictureblock.modal";
+import {PictureBlockMapper, TextBlockMapper} from "../learnplace/services/loader/mappers";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -99,6 +102,8 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ContentPage,
 
     TextBlock,
+    PictureBlock,
+    PictureBlockModal,
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -134,6 +139,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     MapPage,
     TabsPage,
     ContentPage,
+    PictureBlockModal,
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -215,6 +221,8 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       provide: LEARNPLACE_LOADER,
       useClass: RestLearnplaceLoader
     },
+    TextBlockMapper,
+    PictureBlockMapper,
     {
       provide: LEARNPLACE_API,
       useClass: ILIASLearnplaceAPI

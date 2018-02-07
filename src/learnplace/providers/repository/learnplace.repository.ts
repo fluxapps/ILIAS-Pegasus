@@ -1,25 +1,25 @@
-import {LearnplaceEnity} from "../../entity/learnplace.enity";
+import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {Injectable, InjectionToken} from "@angular/core";
 import {AbstractCRUDRepository, CRUDRepository} from "../../../providers/repository/repository.api";
 import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 
 /**
- * Describes a CRUD repository for {@link LearnplaceEnity}.
+ * Describes a CRUD repository for {@link LearnplaceEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export interface LearnplaceRepository extends CRUDRepository<LearnplaceEnity, number> {}
+export interface LearnplaceRepository extends CRUDRepository<LearnplaceEntity, number> {}
 
 /**
- * Uses TypeORM for CRUD operations of the {@link LearnplaceEnity}.
+ * Uses TypeORM for CRUD operations of the {@link LearnplaceEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.1
  */
 @Injectable()
-export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEnity, number> implements LearnplaceRepository {
+export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEntity, number> implements LearnplaceRepository {
 
   constructor(database: Database) {
     super(database, PEGASUS_CONNECTION_NAME);

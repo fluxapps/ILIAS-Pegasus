@@ -1,4 +1,4 @@
-import {VisibilityAware} from "./services/visibility/visibility.context";
+import {VisibilityAware} from "./visibility/visibility.context";
 
 /**
  * Contains information to display a map.
@@ -51,6 +51,8 @@ export class BlockModel implements VisibilityAware {
  ) {}
 
  isRichtext(): boolean {return this.type === BlockType.RICHTEXT}
+
+ isPicture(): boolean {return this.type === BlockType.PICTURE}
 }
 
 /**
@@ -65,4 +67,21 @@ export class TextBlockModel extends BlockModel {
     sequence: number,
     readonly content: string,
   ) {super(sequence, false, BlockType.RICHTEXT)}
+}
+
+/**
+ * Model class for a picture block.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export class PictureBlockModel extends BlockModel {
+
+  constructor(
+    sequence: number,
+    readonly title: string,
+    readonly description: string,
+    readonly thumbnail: string,
+    readonly url: string
+  ) {super(sequence, false, BlockType.PICTURE)}
 }

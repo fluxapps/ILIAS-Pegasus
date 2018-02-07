@@ -38,8 +38,21 @@ export class CreateLearnplace implements Migration {
 
     const textBlock: Table = new Table("TextBlock", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
       new TableColumn({name: "content", type: "string", length: "5000", isNullable: false}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
+    const pictureBlock: Table = new Table("PictureBlock", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "title", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "description", type: "string", length: "2000", isNullable: false}),
+      new TableColumn({name: "thumbnail", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
@@ -49,6 +62,7 @@ export class CreateLearnplace implements Migration {
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
     await queryRunner.createTable(textBlock);
+    await queryRunner.createTable(pictureBlock);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -62,5 +76,6 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Visibility");
     await queryRunner.dropTable("Learnplace");
     await queryRunner.dropTable("TextBlock");
+    await queryRunner.dropTable("PictureBlock");
   }
 }

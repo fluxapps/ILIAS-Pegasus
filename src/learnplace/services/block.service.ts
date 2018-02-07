@@ -1,8 +1,8 @@
-import {BlockModel, TextBlockModel} from "../page.model";
+import {BlockModel, PictureBlockModel, TextBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
-import {LearnplaceEnity} from "../entity/learnplace.enity";
+import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {NoSuchElementError} from "../../error/errors";
 
@@ -30,7 +30,7 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * Manages the visibility of all blocks by using the {@link VisibilityContext}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.2
+ * @version 0.0.3
  */
 @Injectable()
 export class VisibilityManagedBlockService implements BlockService {
@@ -42,19 +42,28 @@ export class VisibilityManagedBlockService implements BlockService {
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
 
-    const learnplace: LearnplaceEnity = (await this.learnplaceRepository.find(learnplaceId))
+    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${learnplaceId}`));
 
+    return [
+      ...this.mapTextblocks(learnplace),
+      ...this.mapPictureBlocks(learnplace)
+    ].sort((a, b) => a.sequence - b.sequence);
+  }
+
+  private mapTextblocks(learnplace: LearnplaceEntity): Array<BlockModel> {
     return learnplace.textBlocks.map(block => {
-
       const model: TextBlockModel = new TextBlockModel(block.sequence, block.content);
-
-      const visibilityContext: VisibilityContext = this.contextFactory.create(VisibilityStrategyType[block.visibility.value]);
-
-      visibilityContext.use(model);
-
+      this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
       return model;
+    });
+  }
 
-    }).sort((a, b) => a.sequence - b.sequence);
+  private mapPictureBlocks(learnplace: LearnplaceEntity): Array<BlockModel> {
+    return learnplace.pictureBlocks.map(block => {
+      const model: PictureBlockModel = new PictureBlockModel(block.sequence, block.title, block.description, block.thumbnail, block.url);
+      this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
+      return model;
+    });
   }
 }

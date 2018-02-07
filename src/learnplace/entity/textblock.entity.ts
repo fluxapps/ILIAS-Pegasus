@@ -1,5 +1,5 @@
 import {VisibilityEntity} from "./visibility.entity";
-import {LearnplaceEnity} from "./learnplace.enity";
+import {LearnplaceEntity} from "./learnplace.entity";
 import {
   Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
   RelationOptions
@@ -12,6 +12,9 @@ export class TextblockEntity {
   id: number;
 
   @Column()
+  iliasId: number;
+
+  @Column()
   sequence: number;
 
   @Column()
@@ -21,7 +24,7 @@ export class TextblockEntity {
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;
 
-  @OneToOne(type => LearnplaceEnity, learnplace => learnplace.map)
+  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.map)
   @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
-  learnplace: LearnplaceEnity;
+  learnplace: LearnplaceEntity;
 }

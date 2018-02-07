@@ -6,14 +6,15 @@ import {
   VisibilityContextFactory
 } from "../../../src/learnplace/services/visibility/visibility.context";
 import {stubInstance} from "../../SinonUtils";
-import {LearnplaceEnity} from "../../../src/learnplace/entity/learnplace.enity";
+import {LearnplaceEntity} from "../../../src/learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
 import {VisibilityStrategyType} from "../../../src/learnplace/services/visibility/visibility.strategy";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
-import {BlockModel, TextBlockModel} from "../../../src/learnplace/page.model";
+import {BlockModel, PictureBlockModel, TextBlockModel} from "../../../src/learnplace/services/block.model";
 import {Optional} from "../../../src/util/util.optional";
 import * as chaiAsPromised from "chai-as-promised";
 import {NoSuchElementError} from "../../../src/error/errors";
+import {PictureBlockEntity} from "../../../src/learnplace/entity/pictureBlock.entity";
 
 chai.use(chaiAsPromised);
 
@@ -47,8 +48,16 @@ describe("a block service", () => {
 			  const textBlock1: TextblockEntity = createTextblockEntity(1, "some text", 1, VisibilityStrategyType.ALWAYS);
 			  const textBlock2: TextblockEntity = createTextblockEntity(2, "other text", 2, VisibilityStrategyType.NEVER);
 
-        const learplaceEntity: LearnplaceEnity = new LearnplaceEnity();
+			  const pictureBlock1: PictureBlockEntity = createPictureblockEntity(
+			    1, 3, "title", "description",
+          "thumbnail", "url", VisibilityStrategyType.NEVER);
+        const pictureBlock2: PictureBlockEntity = createPictureblockEntity(
+          1, 4, "other title", "other description",
+          "other thumbnail", "other url", VisibilityStrategyType.NEVER);
+
+        const learplaceEntity: LearnplaceEntity = new LearnplaceEntity();
         learplaceEntity.textBlocks = [textBlock2, textBlock1];
+        learplaceEntity.pictureBlocks = [pictureBlock1, pictureBlock2];
 
         sandbox.stub(mockLearnplaceRepo, "find")
           .resolves(Optional.of(learplaceEntity));
@@ -58,11 +67,11 @@ describe("a block service", () => {
         sandbox.stub(mockContextFactory, "create")
           .withArgs(VisibilityStrategyType.NEVER)
           .returns(<VisibilityContext>{
-            use: alwaysStub
+            use: neverStub
           })
           .withArgs(VisibilityStrategyType.ALWAYS)
           .returns(<VisibilityContext>{
-            use: neverStub
+            use: alwaysStub
           });
 
 
@@ -70,11 +79,13 @@ describe("a block service", () => {
 
 
         assert.calledOnce(alwaysStub);
-        assert.calledOnce(neverStub);
+        assert.calledThrice(neverStub);
 
         const expected: Array<BlockModel> = [
           new TextBlockModel(1, "some text"),
-          new TextBlockModel(2, "other text")
+          new TextBlockModel(2, "other text"),
+          new PictureBlockModel(3, "title", "description", "thumbnail", "url"),
+          new PictureBlockModel(4, "other title", "other description", "other thumbnail", "other url")
         ];
         chai.expect(result)
           .to.be.deep.equal(expected);
@@ -103,6 +114,28 @@ function createTextblockEntity(id: number, content: string, sequence: number, vi
   block.id = id;
   block.content = content;
   block.sequence = sequence;
+  block.visibility = createVisibilityEntity(visibility);
+
+  return block;
+}
+
+function createPictureblockEntity(
+  id: number,
+  sequence: number,
+  title: string,
+  description: string,
+  thumbnail: string,
+  url: string,
+  visibility: VisibilityStrategyType
+): PictureBlockEntity {
+
+  const block: PictureBlockEntity = new PictureBlockEntity();
+  block.id = id;
+  block.sequence = sequence;
+  block.title = title;
+  block.description = description;
+  block.thumbnail = thumbnail;
+  block.url = url;
   block.visibility = createVisibilityEntity(visibility);
 
   return block;

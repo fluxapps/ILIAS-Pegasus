@@ -1,4 +1,4 @@
-import {Connection, getConnection} from "typeorm";
+import {Connection, FindManyOptions, getConnection} from "typeorm";
 import {DEFAULT_CONNECTION_NAME} from "../../services/database/database.api";
 import {Database} from "../../services/database/database";
 import {Logger} from "../../services/logging/logging.api";
@@ -9,7 +9,7 @@ import {Optional} from "../../util/util.optional";
  * Describes a repository with basic CRUD operations.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 2.0.1
+ * @version 2.1.0
  */
 export interface CRUDRepository<T, K> {
 
@@ -42,6 +42,16 @@ export interface CRUDRepository<T, K> {
    * @throws {RepositoryError} if an error occurs during this operation
    */
   delete(entity: T): Promise<void>
+
+  /**
+   * Returns true if an entity matching the given {@code primaryKey} exists,
+   * otherwise false.
+   *
+   * @param {K} primaryKey - primary key to check
+   *
+   * @returns {Promise<boolean>} true if it exists, otherwise false
+   */
+  exists(primaryKey: K): Promise<boolean>
 }
 
 /**
@@ -50,7 +60,7 @@ export interface CRUDRepository<T, K> {
  * on your specific repository.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 2.0.1
+ * @version 2.1.0
  */
 export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, K> {
 
@@ -145,6 +155,20 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
     } catch (error) {
       throw new RepositoryError(Logging.getMessage(error, `Could not delete entity "${this.getEntityName()}"`));
     }
+  }
+
+  /**
+   * Returns true if an entity matching the given {@code primaryKey} exists,
+   * otherwise false.
+   *
+   * Uses the {@link AbstractCRUDRepository#find} method to check the existence of the entity.
+   *
+   * @param {K} primaryKey - primary key to check
+   *
+   * @returns {Promise<boolean>} true if it exists, otherwise false
+   */
+  async exists(primaryKey: K): Promise<boolean> {
+      return (await this.find(primaryKey)).isPresent();
   }
 
   /**

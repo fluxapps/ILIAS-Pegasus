@@ -4,6 +4,10 @@ const textBlockJsonSchema: object = {
   "items": {
     "type": "object",
     "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1
+      },
       "sequence": {
         "description": "Position of the block ordering",
         "type": "integer",
@@ -18,7 +22,7 @@ const textBlockJsonSchema: object = {
         "type": "string"
       }
     },
-    "required": ["sequence", "visibility", "content"]
+    "required": ["id", "sequence", "visibility", "content"]
   }
 };
 
@@ -28,6 +32,10 @@ const pictureBlockJsonSchema: object = {
   "items": {
     "type": "object",
     "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1
+      },
       "sequence": {
         "description": "Position of the block ordering",
         "type": "integer",
@@ -51,9 +59,13 @@ const pictureBlockJsonSchema: object = {
         "description": "Relative path of the file",
         "type": "string",
         "pattern": "^(.*?\/){2,}.*?\.(jpg|png)$"
+      },
+      "hash": {
+        "description": "sha256 hash of the image returned by the url property of this object",
+        "type": "string"
       }
     },
-    "required": ["sequence", "visibility", "title", "description", "thumbnail", "url"]
+    "required": ["id", "sequence", "visibility", "title", "description", "thumbnail", "url", "hash"]
   }
 };
 
@@ -63,6 +75,10 @@ const videoBlockJsonSchema: object = {
   "items": {
     "type": "object",
     "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1
+      },
       "sequence": {
         "description": "Position of the block ordering",
         "type": "integer",
@@ -76,9 +92,13 @@ const videoBlockJsonSchema: object = {
         "description": "Relative path of the file",
         "type": "string",
         "pattern": "^(.*?\/){2,}.*?\.mp4$"
+      },
+      "hash": {
+        "description": "sha256 hash of the image returned by the url property of this object",
+        "type": "string"
       }
     },
-    "required": ["sequence", "visibility", "url"]
+    "required": ["id", "sequence", "visibility", "url", "hash"]
   }
 };
 
@@ -88,6 +108,10 @@ const iliasLinkJsonSchema: object = {
   "items": {
     "type": "object",
     "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1
+      },
       "sequence": {
         "description": "Position of the block ordering",
         "type": "integer",
@@ -103,7 +127,7 @@ const iliasLinkJsonSchema: object = {
         "minimum": 1
       }
     },
-    "required": ["sequence", "visibility", "refId"]
+    "required": ["id", "sequence", "visibility", "refId"]
   }
 };
 

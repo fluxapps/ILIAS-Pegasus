@@ -2,9 +2,10 @@ import {LocationEntity} from "./location.entity";
 import {MapEntity} from "./map.entity";
 import {Entity, OneToMany, OneToOne, PrimaryColumn, RelationOptions} from "typeorm";
 import {TextblockEntity} from "./textblock.entity";
+import {PictureBlockEntity} from "./pictureBlock.entity";
 
 @Entity("Learnplace")
-export class LearnplaceEnity {
+export class LearnplaceEntity {
 
   @PrimaryColumn()
   objectId: number;
@@ -17,4 +18,7 @@ export class LearnplaceEnity {
 
   @OneToMany(type => TextblockEntity, textBlock => textBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   textBlocks: Array<TextblockEntity>;
+
+  @OneToMany(type => PictureBlockEntity, pictureBlock => pictureBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+  pictureBlocks: Array<PictureBlockEntity>;
 }

@@ -1,9 +1,9 @@
-import {MapModel} from "../page.model";
+import {MapModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {LearnplaceEnity} from "../entity/learnplace.enity";
+import {LearnplaceEntity} from "../entity/learnplace.entity";
 
 /**
  * Describes a service to operate with Maps.
@@ -50,7 +50,7 @@ export class VisibilityManagedMapService implements MapService {
    */
   async getMap(learnplaceId: number): Promise<MapModel> {
 
-    const learnplace: LearnplaceEnity = (await this.learnplaceRepository.find(learnplaceId)).get();
+    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId)).get();
 
     const map: MapModel = new MapModel(
       "title", // TODO: what title do we want
