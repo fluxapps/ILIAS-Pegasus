@@ -12,6 +12,9 @@ import {NoWLANException} from "../../exceptions/noWLANException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
+import {ILIASObjectPresenter} from "../../presenters/object-presenter";
+import {ILIASObject} from "../../models/ilias-object";
+import {User} from "../../models/user";
 
 /**
  * Generated class for the NewsComponent component.
@@ -20,12 +23,12 @@ import {AlertButton} from "ionic-angular/components/alert/alert-options";
  * Components.
  */
 @Component({
-  selector: "news",
+  selector: "newsPresenters",
   templateUrl: "news.html"
 })
 export class NewsPage implements AfterViewInit {
 
-  news: Array<NewsItemModel>;
+  newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
   private readonly log: Logger = Logging.getLogger(NewsPage.name);
 
 
@@ -40,7 +43,9 @@ export class NewsPage implements AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    this.newsFeed.fetchAllForCurrentUser().then((newsItems: Array<NewsItemModel>) => this.news = newsItems);
+    this.log.debug(() => "News view initialized.");
+    this.fetchPresenterNewsTuples().then(
+      (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
   }
 
   // ------------------- object-list duplicate----------------------------
@@ -85,7 +90,7 @@ export class NewsPage implements AfterViewInit {
       this.footerToolbar.removeJob(Job.Synchronize);
 
       if (error instanceof NoWLANException) {
-        this.log.warn(() => "Unable to sync news no wlan active.");
+        this.log.warn(() => "Unable to sync newsPresenters no wlan active.");
         this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
         return;
       }
@@ -103,7 +108,7 @@ export class NewsPage implements AfterViewInit {
       }
 
       if(error instanceof TimeoutError) {
-        this.log.warn(() => "Unable to sync news due to request timeout.");
+        this.log.warn(() => "Unable to sync newsPresenters due to request timeout.");
         this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
         return;
       }
@@ -126,11 +131,25 @@ export class NewsPage implements AfterViewInit {
         <AlertButton>{
           text: "Ok",
           handler: ( _: boolean): void => {
-            alert.dismiss().then(() => this.log.debug(() => `Alert with title "${title}" dismissed.`));
+            this.log.debug(() => `Alert with title "${title}" dismissed.`);
           }
         }
       ]
     });
     alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
+  }
+
+  private async fetchPresenterByRefId(refId: number): Promise<ILIASObjectPresenter> {
+    const userId: number = (await User.currentUser()).id;
+    return (await ILIASObject.findByRefId(refId, userId)).presenter;
+  }
+
+  private async fetchPresenterNewsTuples(): Promise<Array<[NewsItemModel, ILIASObjectPresenter]>> {
+    const news: Array<NewsItemModel> = await this.newsFeed.fetchAllForCurrentUser();
+    const mappedNews: Array<[NewsItemModel, ILIASObjectPresenter]> = [];
+    for(const newsItem of news) {
+      mappedNews.push([newsItem, await this.fetchPresenterByRefId(newsItem.newsContext)])
+    }
+    return mappedNews;
   }
 }

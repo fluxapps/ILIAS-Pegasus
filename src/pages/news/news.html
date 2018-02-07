@@ -26,13 +26,13 @@
   </ion-refresher>
 
   <!-- <ion-list> -->
-  <div *ngFor="let newsItem of news">
+  <div *ngFor="let newsPresenter of newsPresenters">
     <ion-item>
-      <ion-icon name="mail" item-left class="badge-container"></ion-icon>
+      <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon>
 
-      <h2 class="news-title">{{newsItem.title}}</h2>
-      <p class="info-text">{{newsItem.content}}</p>
-      <ion-note item-end>{{newsItem.updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
+      <h2 class="news-title">{{newsPresenter[0].title}}</h2>
+      <p class="info-text">{{newsPresenter[0].content}}</p>
+      <ion-note item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
     </ion-item>
   </div>
   <!-- </ion-list> -->
