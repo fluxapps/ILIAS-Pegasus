@@ -27,6 +27,7 @@ import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {NewsPage} from "../pages/news/news";
 
 @Component({
   templateUrl: "app.html"
@@ -43,6 +44,7 @@ export class MyApp {
   settingsPage: object = SettingsPage;
   infoPage: object = InfoPage;
   loginPage: object = LoginPage;
+  newsPage: object = NewsPage;
   loggedIn: boolean = false;
   /**
    * The current logged in user
