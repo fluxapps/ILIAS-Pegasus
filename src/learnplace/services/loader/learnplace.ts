@@ -12,7 +12,7 @@ import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../../util/util.optional";
 import {apply, withIt} from "../../../util/util.function";
 import {HttpRequestError} from "../../../providers/http";
-import {PictureBlockMapper, TextBlockMapper} from "./mappers";
+import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper} from "./mappers";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -122,7 +122,7 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.3.0
+ * @version 1.4.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnplaceLoader {
@@ -133,7 +133,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     private readonly textBlockMapper: TextBlockMapper,
-    private readonly pictureBlockMapper: PictureBlockMapper
+    private readonly pictureBlockMapper: PictureBlockMapper,
+    private readonly linkBlockMapper: LinkBlockMapper
   ) {}
 
   /**
@@ -177,6 +178,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
         it.textBlocks = this.textBlockMapper.map(it.textBlocks, blocks.text);
         it.pictureBlocks = this.pictureBlockMapper.map(it.pictureBlocks, blocks.picture);
+        it.linkBlocks = this.linkBlockMapper.map(it.linkBlocks, blocks.iliasLink);
       });
 
       await this.learnplaceRepository.save(learnplaceEntity);
