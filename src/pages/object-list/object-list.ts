@@ -36,6 +36,10 @@ import {Exception} from "../../exceptions/Exception";
 import {TimeLine} from "../../models/timeline";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
+import {TimeoutError} from "rxjs/Rx";
+import {HttpRequestError} from "../../providers/http";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 
 
 @Component({
@@ -55,6 +59,8 @@ export class ObjectListPage {
 	public pageTitle: string;
 	public user: User;
 	public actionSheetActive = false;
+
+	private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
 	readonly pageLayout: PageLayout;
 	readonly timeline: TimeLine;
@@ -332,19 +338,34 @@ export class ObjectListPage {
 			this.footerToolbar.removeJob(Job.Synchronize);
 
 			if (error instanceof NoWLANException) {
+        this.log.warn(() => "Unable to sync newsPresenters no wlan active.");
 				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
 				return Promise.resolve();
 			}
 
 			if (error instanceof RESTAPIException) {
+        this.log.warn(() => "Unable to sync server not reachable.");
 				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
 				return Promise.resolve();
 			}
 
 			if (this.sync.isRunning) {
+        this.log.warn(() => "Unable to sync because sync is already running.");
 				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_already_running"));
 				return Promise.resolve();
 			}
+
+      if(error instanceof TimeoutError) {
+        this.log.warn(() => "Unable to sync newsPresenters due to request timeout.");
+        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
+        return;
+      }
+
+      if(error instanceof HttpRequestError) {
+        this.log.warn(() => `Unable to sync news due to http request error "${error.statuscode}".`);
+        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
+        return;
+      }
 
 			return Promise.reject(error);
 		}
@@ -356,10 +377,7 @@ export class ObjectListPage {
 			message: message,
       buttons: [
         <AlertButton>{
-			    text: "Ok",
-          handler: () => {
-			      alert.dismiss();
-          }
+			    text: "Ok"
         }
       ]
 		});
