@@ -122,11 +122,14 @@ export class MyApp {
       await this.nav.setRoot(page);
     } else {
 
+      //check if we navigating the object list
       if (this.nav.last().component == ObjectListPage) {
+        //preserve history
         await this.nav.push(page);
       } else {
-        await this.nav.pop();
-        await this.nav.push(page)
+        //we are navigating over the menu remove history
+        await this.nav.push(page);
+        await this.nav.remove(1);
       }
     }
   }
