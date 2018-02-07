@@ -120,10 +120,10 @@ describe("a picture block mapper", () => {
   const mockFile: File = stubInstance(File);
   const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
 
-  let mapper: PictureBlockMapper = new PictureBlockMapper(mockFileTransfer, learnplace, mockFile, mockStorageLocation);
+  let mapper: PictureBlockMapper = new PictureBlockMapper();
 
 	beforeEach(() => {
-		mapper = new PictureBlockMapper(mockFileTransfer, learnplace, mockFile, mockStorageLocation);
+		mapper = new PictureBlockMapper();
 	});
 
 	afterEach(() => {

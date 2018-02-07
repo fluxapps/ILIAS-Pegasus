@@ -10,6 +10,7 @@ import {LearnplaceData} from "./learnplace";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
 import {User} from "../../../models/user";
+import {Injectable} from "@angular/core";
 
 /**
  * Describes a mapper for a specific block type.
@@ -46,6 +47,7 @@ export interface BlockMapper<K, T> {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.2
  */
+@Injectable()
 export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> {
 
 
@@ -70,14 +72,8 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
+@Injectable()
 export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, PictureBlock> {
-
-  constructor(
-    private readonly fileTrasfer: FileTransfer,
-    private readonly learnplace: LearnplaceData,
-    private readonly file: File,
-    private readonly storageLocation: SimpleStorageLocation
-  ) {}
 
   map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
     return remote.map(pictureBlock => {

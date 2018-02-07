@@ -50,7 +50,7 @@ import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration
 import {
   LEARNPLACE, LEARNPLACE_LOADER, LearnplaceObject, MUT_LEARNPLACE,
   RestLearnplaceLoader
-} from "../learnplace/services/learnplace";
+} from "../learnplace/services/loader/learnplace";
 import {
   LEARNPLACE_REPOSITORY,
   TypeORMLearnplaceRepository
@@ -74,6 +74,7 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
 import {PictureBlockModal} from "../learnplace/directives/pictureblock/pictureblock.modal";
+import {PictureBlockMapper, TextBlockMapper} from "../learnplace/services/loader/mappers";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -220,6 +221,8 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       provide: LEARNPLACE_LOADER,
       useClass: RestLearnplaceLoader
     },
+    TextBlockMapper,
+    PictureBlockMapper,
     {
       provide: LEARNPLACE_API,
       useClass: ILIASLearnplaceAPI
