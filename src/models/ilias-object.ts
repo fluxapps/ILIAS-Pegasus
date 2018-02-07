@@ -375,7 +375,7 @@ export class ILIASObject extends ActiveRecord {
     protected static queryDatabase(sql: string, parameters: Array<{}>): Promise<Array<ILIASObject>> {
         return SQLiteDatabaseService.instance()
             .then(db => db.query(sql, parameters))
-            .then((response: {}) => {
+            .then((response: any) => {
                 const promises = [];
                 for (let i = 0; i < response.rows.length; i++) {
                     promises.push(ILIASObject.find(response.rows.item(i).id));
