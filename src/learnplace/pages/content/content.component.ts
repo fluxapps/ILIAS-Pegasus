@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
-import {LEARNPLACE, LearnplaceData} from "../../services/learnplace";
 import {BlockModel} from "../../services/block.model";
 import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
+import {LEARNPLACE, LearnplaceData} from "../../services/loader/learnplace";
 
 @Component({
   templateUrl: "content.html"
