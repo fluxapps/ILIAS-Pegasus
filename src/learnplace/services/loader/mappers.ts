@@ -1,3 +1,16 @@
+import {TextblockEntity} from "../../entity/textblock.entity";
+import {PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
+import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
+import {isNullOrUndefined} from "util";
+import {VisibilityEntity} from "../../entity/visibility.entity";
+import {apply} from "../../../util/util.function";
+import {Optional} from "../../../util/util.optional";
+import {FileTransfer} from "@ionic-native/file-transfer";
+import {LearnplaceData} from "./learnplace";
+import {Platform} from "ionic-angular";
+import {File} from "@ionic-native/file";
+import {User} from "../../../models/user";
+
 /**
  * Describes a mapper for a specific block type.
  *
@@ -9,14 +22,6 @@
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-import {TextblockEntity} from "../../entity/textblock.entity";
-import {PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
-import {isNullOrUndefined} from "util";
-import {VisibilityEntity} from "../../entity/visibility.entity";
-import {apply} from "../../../util/util.function";
-import {Optional} from "../../../util/util.optional";
-
 export interface BlockMapper<K, T> {
 
   /**
@@ -39,7 +44,7 @@ export interface BlockMapper<K, T> {
  * Maps a {@link TextBlock} to {@link TextBlockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 0.0.2
  */
 export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> {
 
@@ -48,26 +53,14 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
 
     return remote.map(textBlock => {
       // TODO: use unique identifier to compare
-      return apply(this.findIn(local, textBlock, (entity, block) => entity.content == block.content)
+      return apply(findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new TextblockEntity()), it => {
+        it.iliasId = textBlock.id;
         it.sequence = textBlock.sequence;
         it.content = textBlock.content;
-        it.visibility = this.getVisibilityEntity(textBlock.visibility);
+        it.visibility = getVisibilityEntity(textBlock.visibility);
       })
     });
-  }
-
-  private findIn<K, T>(source: Array<K>, target: T, comparator: (source: K, target: T) => boolean): Optional<K> {
-    if (isNullOrUndefined(source)) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(source.find(it => comparator(it, target)));
-  }
-
-  private getVisibilityEntity(visibility: string): VisibilityEntity {
-    return apply(new VisibilityEntity(), it => {
-      it.value = visibility;
-    })
   }
 }
 
@@ -79,8 +72,63 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
  */
 export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, PictureBlock> {
 
+  constructor(
+    private readonly fileTrasfer: FileTransfer,
+    private readonly learnplace: LearnplaceData,
+    private readonly file: File,
+    private readonly storageLocation: SimpleStorageLocation
+  ) {}
 
   map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
-    throw new Error("This method is not implemented yet");
+    return remote.map(pictureBlock => {
+      return apply(findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new PictureBlockEntity()), it => {
+        it.iliasId = pictureBlock.id;
+        it.sequence = pictureBlock.sequence;
+        it.title = pictureBlock.title;
+        it.description = pictureBlock.description;
+        it.thumbnail = pictureBlock.thumbnail;
+        it.url = pictureBlock.url;
+        it.visibility = getVisibilityEntity(pictureBlock.visibility);
+      })
+    });
   }
+}
+
+/**
+ * DO NOT USE.
+ * This class was created only and only for the purpose of finishing a feature in time.
+ * Do never use this class everywhere else that in this file.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export class SimpleStorageLocation {
+
+  constructor(
+    private readonly platform: Platform,
+    private readonly file: File
+  ) {}
+
+  async getUserStorageLocation(): Promise<string> {
+    const user: User = await User.currentUser();
+    if (this.platform.is("android")) {
+      return `${this.file.externalApplicationStorageDirectory}ilias-app/${user.id}/`;
+    } else if (this.platform.is("ios")) {
+      return `${this.file.dataDirectory}${user.id}/`;
+    }
+  }
+}
+
+function findIn<K, T>(source: Array<K>, target: T, comparator: (source: K, target: T) => boolean): Optional<K> {
+  if (isNullOrUndefined(source)) {
+    return Optional.empty();
+  }
+  return Optional.ofNullable(source.find(it => comparator(it, target)));
+}
+
+function getVisibilityEntity(visibility: string): VisibilityEntity {
+  return apply(new VisibilityEntity(), it => {
+    it.value = visibility;
+  })
 }
