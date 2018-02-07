@@ -12,6 +12,9 @@ export class PictureBlockEntity {
   id: number;
 
   @Column()
+  iliasId: number;
+
+  @Column()
   sequence: number;
 
   @Column()

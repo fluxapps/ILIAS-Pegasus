@@ -12,6 +12,9 @@ export class TextblockEntity {
   id: number;
 
   @Column()
+  iliasId: number;
+
+  @Column()
   sequence: number;
 
   @Column()
