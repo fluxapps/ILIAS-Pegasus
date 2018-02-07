@@ -310,9 +310,14 @@ export class SynchronizationService {
         // Run sync for all objects marked as "offline available"
         Log.write(this, "Fetching offline available objects.");
 
-        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
-        await this.newsSynchronization.synchronize();
-        this.footerToolbar.removeJob(Job.MetaDataFetch);
+        try {
+          this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
+          await this.newsSynchronization.synchronize();
+        }
+        finally {
+          this.footerToolbar.removeJob(Job.MetaDataFetch);
+        }
+
 
         return this.dataProvider.getDesktopData(this.user)
             .then(desktopObjects => {
