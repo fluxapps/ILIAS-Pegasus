@@ -1,10 +1,7 @@
 import {LearnplaceLoadingError, RestLearnplaceLoader} from "../../../../src/learnplace/services/loader/learnplace";
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {LearnplaceAPI} from "../../../../src/learnplace/providers/rest/learnplace.api";
-import {
-  Block, BlockObject, JournalEntry, LearnPlace, PictureBlock,
-  TextBlock
-} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {BlockObject, JournalEntry, LearnPlace} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {LearnplaceRepository} from "../../../../src/learnplace/providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../../../../src/learnplace/entity/learnplace.entity";
 import {Optional} from "../../../../src/util/util.optional";
@@ -13,9 +10,9 @@ import {MapEntity} from "../../../../src/learnplace/entity/map.entity";
 import {LocationEntity} from "../../../../src/learnplace/entity/location.entity";
 import {VisibilityEntity} from "../../../../src/learnplace/entity/visibility.entity";
 import {apply} from "../../../../src/util/util.function";
-import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {HttpRequestError} from "../../../../src/providers/http";
-import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
+import {PictureBlockMapper, TextBlockMapper} from "../../../../src/learnplace/services/loader/mappers";
+import {stubInstance} from "../../../SinonUtils";
 
 chai.use(chaiAsPromised);
 
@@ -34,11 +31,23 @@ describe("a learnplace loader", () => {
       delete: (): Promise<void> => undefined,
       exists: (): Promise<boolean> => undefined
     };
+    const mockTextBlockMapper: TextBlockMapper = stubInstance(TextBlockMapper);
+    const mockPictureBlockMapper: PictureBlockMapper = stubInstance(PictureBlockMapper);
 
-    let loader: RestLearnplaceLoader = new RestLearnplaceLoader(mockLearnplaceAPI, mockLearnplaceRepository);
+    let loader: RestLearnplaceLoader = new RestLearnplaceLoader(
+      mockLearnplaceAPI,
+      mockLearnplaceRepository,
+      mockTextBlockMapper,
+      mockPictureBlockMapper
+    );
 
 	beforeEach(() => {
-		loader = new RestLearnplaceLoader(mockLearnplaceAPI, mockLearnplaceRepository)
+		loader = new RestLearnplaceLoader(
+		  mockLearnplaceAPI,
+      mockLearnplaceRepository,
+      mockTextBlockMapper,
+      mockPictureBlockMapper
+    );
 	});
 
 	afterEach(() => {
@@ -55,7 +64,7 @@ describe("a learnplace loader", () => {
         sandbox.stub(mockLearnplaceAPI, "getLearnPlace")
           .resolves(learnplace);
 
-        const blocks: BlockObject = createBlocks();
+        const blocks: BlockObject = createEmptyBlocks(); // we don't care about the blocks in this class
         sandbox.stub(mockLearnplaceAPI, "getBlocks")
           .resolves(blocks);
 
@@ -64,6 +73,12 @@ describe("a learnplace loader", () => {
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
           .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
+
+        // again, we don't care about the blocks, therefore we return empty arrays
+        const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
+          .returns([]);
+        const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
+          .returns([]);
 
 
         await loader.load(1);
@@ -81,30 +96,13 @@ describe("a learnplace loader", () => {
             location.radius = learnplace.location.radius;
             location.elevation = learnplace.location.elevation;
           });
-          it.textBlocks = [
-            apply(new TextblockEntity(), it => {
-              it.sequence = 1;
-              it.content = "some text";
-              it.visibility = getVisibilityEntity("ALWAYS");
-            }),
-            apply(new TextblockEntity(), it => {
-              it.sequence = 2;
-              it.content = "new text";
-              it.visibility = getVisibilityEntity("NEVER");
-            })
-          ];
-          it.pictureBlocks = [
-            apply(new PictureBlockEntity(), it => {
-              it.sequence = 3;
-              it.title = "title";
-              it.description = "";
-              it.thumbnail = "";
-              it.url = "get/picture/1";
-              it.visibility = getVisibilityEntity("ALWAYS")
-            })
-          ];
+          it.textBlocks = [];
+          it.pictureBlocks = [];
         });
-        assert.calledWith(saveStub, expected)
+        assert.calledWith(saveStub, expected);
+
+        assert.calledOnce(textBlockMapperStub);
+        assert.calledOnce(pictureBlockMapperStub);
 			});
 		});
 
@@ -116,7 +114,7 @@ describe("a learnplace loader", () => {
         sandbox.stub(mockLearnplaceAPI, "getLearnPlace")
           .resolves(learnplace);
 
-        const blocks: BlockObject = createBlocks();
+        const blocks: BlockObject = createEmptyBlocks(); // we don't care about the blocks in this class
         sandbox.stub(mockLearnplaceAPI, "getBlocks")
           .resolves(blocks);
 
@@ -125,6 +123,12 @@ describe("a learnplace loader", () => {
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
           .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
+
+        // again, we don't care about the blocks, therefore we return empty arrays
+        const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
+          .returns([]);
+        const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
+          .returns([]);
 
 
         await loader.load(1);
@@ -145,31 +149,13 @@ describe("a learnplace loader", () => {
             it.radius = learnplace.location.radius;
             it.elevation = learnplace.location.elevation;
           });
-          it.textBlocks = [
-            apply(new TextblockEntity(), it => {
-              it.id = 1;
-              it.sequence = 1;
-              it.content = "some text";
-              it.visibility = getVisibilityEntity("ALWAYS");
-            }),
-            apply(new TextblockEntity(), it => {
-              it.sequence = 2;
-              it.content = "new text";
-              it.visibility = getVisibilityEntity("NEVER");
-            })
-          ];
-          it.pictureBlocks = [
-            apply(new PictureBlockEntity(), it => {
-              it.sequence = 3;
-              it.title = "title";
-              it.description = "";
-              it.thumbnail = "";
-              it.url = "get/picture/1";
-              it.visibility = getVisibilityEntity("ALWAYS")
-            })
-          ];
+          it.textBlocks = [];
+          it.pictureBlocks = [];
         });
-        assert.calledWith(saveStub, expected)
+        assert.calledWith(saveStub, expected);
+
+        assert.calledOnce(textBlockMapperStub);
+        assert.calledOnce(pictureBlockMapperStub);
 			})
 		});
 
@@ -228,15 +214,10 @@ function createLearnPlace(): LearnPlace {
   };
 }
 
-function createBlocks(): BlockObject {
+function createEmptyBlocks(): BlockObject {
   return <BlockObject>{
-    text: [
-      <TextBlock>{sequence: 1, visibility: "ALWAYS",  content: "some text"},
-      <TextBlock>{sequence: 2, visibility: "NEVER", content: "new text"}
-    ],
-    picture: [
-      <PictureBlock>{sequence: 3, visibility: "ALWAYS", title: "title", description: "", thumbnail: "", url: "get/picture/1"}
-    ],
+    text: [],
+    picture: [],
     video: [],
     iliasLink: [],
     accordion: []
@@ -262,20 +243,12 @@ function getExistingLearnplace(): LearnplaceEntity {
       it.elevation = 15.54;
     });
 
-    it.textBlocks = [
-      apply(new TextblockEntity(), it => {
-        it.id = 1;
-        it.sequence = 1;
-        it.content = "some text";
-        it.visibility = getVisibilityEntity("NEVER");
-      })
-    ];
-
+    it.textBlocks = [];
     it.pictureBlocks = [];
   });
 }
 
-function getVisibilityEntity(visibility: string): VisibilityEntity {
+export function getVisibilityEntity(visibility: string): VisibilityEntity {
   return apply(new VisibilityEntity(), it => {
     it.value = visibility;
   });

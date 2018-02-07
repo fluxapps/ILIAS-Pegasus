@@ -10,12 +10,9 @@ import {VisibilityEntity} from "../../entity/visibility.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../../util/util.optional";
-import {addArgv} from "@ionic/app-scripts";
 import {apply, withIt} from "../../../util/util.function";
-import {TextblockEntity} from "../../entity/textblock.entity";
-import {isNullOrUndefined} from "util";
 import {HttpRequestError} from "../../../providers/http";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
+import {PictureBlockMapper, TextBlockMapper} from "./mappers";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -125,7 +122,7 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.2.0
+ * @version 1.3.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnplaceLoader {
@@ -134,7 +131,9 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
   constructor(
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
+    private readonly textBlockMapper: TextBlockMapper,
+    private readonly pictureBlockMapper: PictureBlockMapper
   ) {}
 
   /**
@@ -142,7 +141,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
    * the given {@code id} and stores them.
    * If the learnplace is already stored, it will be updated.
    *
-   * Images and videos of an learnplace are only loaded if necessary.
+   * Blocks of an learnplace will be delegated to its according mapper class.
    *
    * @param {number} id - the id to use
    *
@@ -164,7 +163,9 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         it.objectId = learnplace.objectId;
 
         it.map = apply(Optional.ofNullable(it.map).orElse(new MapEntity()), it => {
-          it.visibility = this.getVisibilityEntity(learnplace.map.visibility);
+          it.visibility = apply(new VisibilityEntity(), it => {
+            it.value = learnplace.map.visibility;
+          })
         });
 
         it.location = apply(Optional.ofNullable(learnplaceEntity.location).orElse(new LocationEntity()), it => {
@@ -174,27 +175,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
           it.elevation = learnplace.location.elevation;
         });
 
-        it.textBlocks = blocks.text.map(textBlock => {
-          // TODO: use unique identifier to compare
-          return apply(this.findIn(learnplaceEntity.textBlocks, textBlock, (entity, block) => entity.content == block.content)
-            .orElse(new TextblockEntity()), it => {
-            it.sequence = textBlock.sequence;
-            it.content = textBlock.content;
-            it.visibility = this.getVisibilityEntity(textBlock.visibility);
-          })
-        });
-
-        it.pictureBlocks = blocks.picture.map(pictureBlock => {
-          return apply(this.findIn(learnplaceEntity.pictureBlocks, pictureBlock, (entity, block) => entity.title == block.title)
-            .orElse(new PictureBlockEntity()), it => {
-            it.sequence = pictureBlock.sequence;
-            it.title = pictureBlock.title;
-            it.description = pictureBlock.description;
-            it.thumbnail = pictureBlock.thumbnail;
-            it.url = pictureBlock.url;
-            it.visibility = this.getVisibilityEntity(pictureBlock.visibility);
-          })
-        });
+        it.textBlocks = this.textBlockMapper.map(it.textBlocks, blocks.text);
+        it.pictureBlocks = this.pictureBlockMapper.map(it.pictureBlocks, blocks.picture);
       });
 
       await this.learnplaceRepository.save(learnplaceEntity);
@@ -212,19 +194,6 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         throw error;
       }
     }
-  }
-
-  private findIn<K, T>(source: Array<K>, target: T, comparator: (source: K, target: T) => boolean): Optional<K> {
-    if (isNullOrUndefined(source)) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(source.find(it => comparator(it, target)));
-  }
-
-  private getVisibilityEntity(visibility: string): VisibilityEntity {
-    return apply(new VisibilityEntity(), it => {
-      it.value = visibility;
-    })
   }
 }
 
