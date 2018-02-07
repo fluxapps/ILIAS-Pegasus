@@ -40,6 +40,9 @@
   "favorites": {
     "title": "Favoriten"
   },
+  "news": {
+    "title": "Nachrichten"
+  },
   "new-objects": {
     "title": "Neue Inhalte",
     "no_new_items": "Keine neuen Inhalte verfügbar.",

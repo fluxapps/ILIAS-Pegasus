@@ -38,6 +38,9 @@
   "favorites": {
     "title": "Preferiti"
   },
+  "news": {
+    "title": "Notizie"
+  },
   "new-objects": {
     "title": "Nuovo",
     "no_new_items": "Non ci sono nuovi elementi.",

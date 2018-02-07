@@ -40,6 +40,9 @@
   "favorites": {
     "title": "Favorites"
   },
+  "news": {
+    "title": "News"
+  },
   "new-objects": {
     "title": "New Content",
     "no_new_items": "There is no new content.",
