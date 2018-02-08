@@ -8,15 +8,15 @@ import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-nati
 export class OpenObjectInILIASAction extends ILIASObjectAction {
 
   constructor(
-      public title:string,
+      public title: string,
       public linkBuilder: ILIASLinkBuilder,
       private readonly urlConverter: TokenUrlConverter,
       private readonly browser: InAppBrowser
   ) { super() }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
 
-      return new Promise((resolve, reject) => {
+      return new Promise<ILIASObjectActionResult>((resolve, reject): void => {
 
         try {
 
@@ -30,19 +30,19 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
           };
           const browser: InAppBrowserObject = this.browser.create(loginPageLink, "_blank", options);
 
-          const subscription: Subscription = browser.on("loadstart").subscribe(() => {
+          const subscription: Subscription = browser.on("loadstart").subscribe(async() => {
             subscription.unsubscribe();
 
-            this.urlConverter.convert(ilasLink)
-              .then(url => {
-                // the promise may not be executed depending on the hosts security settings
-                browser.executeScript({code: `window.open('${url}')`});
-                resolve(new ILIASObjectActionNoMessage())
-              })
-              .catch(error => {
-                browser.close();
-                reject(error)
-              })
+            try {
+              const url: string = await this.urlConverter.convert(ilasLink);
+              await browser.executeScript({code: `window.open('${url}')`});
+              resolve(new ILIASObjectActionNoMessage());
+            }
+            catch (error) {
+              browser.close();
+              reject(error);
+            }
+
           })
 
         } catch (error) {
@@ -51,7 +51,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
       });
     }
 
-    public alert():ILIASObjectActionAlert|any {
-        return null;
+    alert(): ILIASObjectActionAlert|any {
+        return undefined;
     }
 }
