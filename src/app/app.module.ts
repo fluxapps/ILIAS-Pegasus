@@ -73,6 +73,7 @@ import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
 import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/repository.user";
 import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from "../services/news/news.synchronization";
+import {INSTALLATION_LINK_PROVIDER, InstallationLinkSupplierImpl} from "../services/link/link-builder.supplier";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -244,6 +245,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: MAP_SERVICE,
       useClass: VisibilityManagedMapService
+    },
+
+    /* Link service */
+    {
+      provide: INSTALLATION_LINK_PROVIDER,
+      useClass: InstallationLinkSupplierImpl
     },
     AlwaysStrategy,
     NeverStrategy,
