@@ -1,6 +1,6 @@
 import {MapModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
+import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
@@ -25,7 +25,7 @@ export interface MapService {
 export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token for map service");
 
 /**
- * Manages the visibility of a map by using the {@link VisibilityContext}.
+ * Manages the visibility of a map by using the {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
@@ -34,14 +34,14 @@ export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token
 export class VisibilityManagedMapService implements MapService {
 
   constructor(
-    private readonly visibilityContextFactory: VisibilityContextFactory,
+    private readonly visibilityStrategyApplier: VisibilityStrategyApplier,
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
   ) {}
 
   /**
    * Creates a map by the given {@code learnplaceId}.
    *
-   * The returned maps visibility is managed by the {@link VisibilityContext}.
+   * The returned maps visibility is managed by the {@link VisibilityStrategy}.
    *
    * @param {number} learnplaceId - the id of the learnplace to find the according map
    *
@@ -58,9 +58,7 @@ export class VisibilityManagedMapService implements MapService {
       learnplace.location.longitude
     );
 
-    const visibilityType: VisibilityStrategyType = VisibilityStrategyType[learnplace.map.visibility.value]
-    const visibilityContext: VisibilityContext = this.visibilityContextFactory.create(visibilityType);
-    visibilityContext.use(map);
+    this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
 
     return map;
   }

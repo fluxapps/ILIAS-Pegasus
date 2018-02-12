@@ -1,10 +1,10 @@
 import {BlockModel, LinkBlockModel, PictureBlockModel, TextBlockModel, VideoBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
+import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
-import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {NoSuchElementError} from "../../error/errors";
+import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
@@ -27,7 +27,7 @@ export interface BlockService {
 export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockService>("token for block service");
 
 /**
- * Manages the visibility of all blocks by using the {@link VisibilityContext}.
+ * Manages the visibility of all blocks by using a {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.4
@@ -37,7 +37,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    private readonly contextFactory: VisibilityContextFactory
+    private readonly contextFactory: VisibilityStrategyApplier
   ) {}
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
@@ -56,7 +56,7 @@ export class VisibilityManagedBlockService implements BlockService {
   private mapTextblocks(learnplace: LearnplaceEntity): Array<BlockModel> {
     return learnplace.textBlocks.map(it => {
       const model: TextBlockModel = new TextBlockModel(it.sequence, it.content);
-      this.contextFactory.create(VisibilityStrategyType[it.visibility.value]).use(model);
+      this.contextFactory.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     });
   }
@@ -64,7 +64,7 @@ export class VisibilityManagedBlockService implements BlockService {
   private mapPictureBlocks(learnplace: LearnplaceEntity): Array<BlockModel> {
     return learnplace.pictureBlocks.map(it => {
       const model: PictureBlockModel = new PictureBlockModel(it.sequence, it.title, it.description, it.thumbnail, it.url);
-      this.contextFactory.create(VisibilityStrategyType[it.visibility.value]).use(model);
+      this.contextFactory.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     });
   }
@@ -72,15 +72,15 @@ export class VisibilityManagedBlockService implements BlockService {
   private mapLinkBlocks(learnplace: LearnplaceEntity): Array<LinkBlockModel> {
     return learnplace.linkBlocks.map(it => {
       const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
-      this.contextFactory.create(VisibilityStrategyType[it.visibility.value]).use(model);
+      this.contextFactory.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     })
   }
 
   private mapVideoBlocks(learnplace: LearnplaceEntity): Array<BlockModel> {
-    return learnplace.videoBlocks.map(block => {
-      const model: VideoBlockModel = new VideoBlockModel(block.sequence, block.url);
-      this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
+    return learnplace.videoBlocks.map(it => {
+      const model: VideoBlockModel = new VideoBlockModel(it.sequence, it.url);
+      this.contextFactory.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     })
   }
