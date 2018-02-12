@@ -33,6 +33,7 @@
     "@ionic-native/diagnostic": "^4.5.2",
     "@ionic-native/file": "^4.3.0",
     "@ionic-native/file-transfer": "^4.3.0",
+    "@ionic-native/geolocation": "^4.5.3",
     "@ionic-native/google-maps": "^4.4.0",
     "@ionic-native/in-app-browser": "^4.3.0",
     "@ionic-native/network": "^4.3.0",
@@ -51,6 +52,7 @@
     "cordova-plugin-file": "^4.3.3",
     "cordova-plugin-file-opener2": "^2.0.19",
     "cordova-plugin-file-transfer": "^1.6.3",
+    "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-googlemaps": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git",
     "cordova-plugin-inappbrowser": "^1.7.1",
@@ -158,7 +160,9 @@
         "API_KEY_FOR_ANDROID": "YOUR_API_KEY_FOR_ANDROID",
         "API_KEY_FOR_IOS": "YOUR_API_KEY_FOR_IOS"
       },
-      "cordova.plugins.diagnostic": {}
+      "cordova.plugins.diagnostic": {
+        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
+      }
     }
   }
 }

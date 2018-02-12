@@ -3,7 +3,7 @@
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
-    <content original-src="index.html" src="http://192.168.99.52:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -119,7 +119,9 @@
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
     </plugin>
-    <plugin name="cordova.plugins.diagnostic" spec="~3.9.0" />
     <engine name="android" spec="^6.3.0" />
     <engine name="ios" spec="^4.5.2" />
+    <plugin name="cordova.plugins.diagnostic" spec="~3.9.0">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
+    </plugin>
 </widget>
