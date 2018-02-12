@@ -10,11 +10,17 @@ import {LearnplaceEntity} from "../../../src/learnplace/entity/learnplace.entity
 import {TextblockEntity} from "../../../src/learnplace/entity/textblock.entity";
 import {VisibilityStrategyType} from "../../../src/learnplace/services/visibility/visibility.strategy";
 import {VisibilityEntity} from "../../../src/learnplace/entity/visibility.entity";
-import {BlockModel, PictureBlockModel, TextBlockModel} from "../../../src/learnplace/services/block.model";
+import {
+  BlockModel, PictureBlockModel, TextBlockModel,
+  VideoBlockModel
+} from "../../../src/learnplace/services/block.model";
 import {Optional} from "../../../src/util/util.optional";
 import * as chaiAsPromised from "chai-as-promised";
 import {NoSuchElementError} from "../../../src/error/errors";
 import {PictureBlockEntity} from "../../../src/learnplace/entity/pictureBlock.entity";
+import {VideoBlockEntity} from "../../../src/learnplace/entity/videoblock.entity";
+import {apply} from "../../../src/util/util.function";
+import {getVisibilityEntity} from "./loader/learnplace.spec";
 
 chai.use(chaiAsPromised);
 
@@ -25,7 +31,8 @@ describe("a block service", () => {
   const mockLearnplaceRepo: LearnplaceRepository = <LearnplaceRepository>{
     save: () => undefined,
     find: () => undefined,
-    delete: () => undefined
+    delete: () => undefined,
+    exists: () => undefined
   };
   const mockContextFactory: VisibilityContextFactory = stubInstance(VisibilityContextFactory);
 
@@ -55,9 +62,19 @@ describe("a block service", () => {
           1, 4, "other title", "other description",
           "other thumbnail", "other url", VisibilityStrategyType.NEVER);
 
+        const videoBlock: VideoBlockEntity = apply(new VideoBlockEntity(), it => {
+          it.id = 1;
+          it.iliasId = 1;
+          it.sequence = 5;
+          it.url = "url";
+          it.hash = "4AC8";
+          it.visibility = getVisibilityEntity("ALWAYS");
+        });
+
         const learplaceEntity: LearnplaceEntity = new LearnplaceEntity();
         learplaceEntity.textBlocks = [textBlock2, textBlock1];
         learplaceEntity.pictureBlocks = [pictureBlock1, pictureBlock2];
+        learplaceEntity.videoBlocks = [videoBlock];
 
         sandbox.stub(mockLearnplaceRepo, "find")
           .resolves(Optional.of(learplaceEntity));
@@ -78,14 +95,15 @@ describe("a block service", () => {
         const result: Array<BlockModel> = await blockService.getBlocks(1);
 
 
-        assert.calledOnce(alwaysStub);
+        assert.calledTwice(alwaysStub);
         assert.calledThrice(neverStub);
 
         const expected: Array<BlockModel> = [
           new TextBlockModel(1, "some text"),
           new TextBlockModel(2, "other text"),
           new PictureBlockModel(3, "title", "description", "thumbnail", "url"),
-          new PictureBlockModel(4, "other title", "other description", "other thumbnail", "other url")
+          new PictureBlockModel(4, "other title", "other description", "other thumbnail", "other url"),
+          new VideoBlockModel(5, "url")
         ];
         chai.expect(result)
           .to.be.deep.equal(expected);

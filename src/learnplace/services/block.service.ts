@@ -1,4 +1,4 @@
-import {BlockModel, PictureBlockModel, TextBlockModel} from "./block.model";
+import {BlockModel, PictureBlockModel, TextBlockModel, VideoBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
@@ -30,7 +30,7 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * Manages the visibility of all blocks by using the {@link VisibilityContext}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.3
+ * @version 0.0.4
  */
 @Injectable()
 export class VisibilityManagedBlockService implements BlockService {
@@ -47,7 +47,8 @@ export class VisibilityManagedBlockService implements BlockService {
 
     return [
       ...this.mapTextblocks(learnplace),
-      ...this.mapPictureBlocks(learnplace)
+      ...this.mapPictureBlocks(learnplace),
+      ...this.mapVideoBlocks(learnplace)
     ].sort((a, b) => a.sequence - b.sequence);
   }
 
@@ -65,5 +66,13 @@ export class VisibilityManagedBlockService implements BlockService {
       this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
       return model;
     });
+  }
+
+  private mapVideoBlocks(learnplace: LearnplaceEntity): Array<BlockModel> {
+    return learnplace.videoBlocks.map(block => {
+      const model: VideoBlockModel = new VideoBlockModel(block.sequence, block.url);
+      this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
+      return model;
+    })
   }
 }
