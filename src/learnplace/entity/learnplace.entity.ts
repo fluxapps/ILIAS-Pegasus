@@ -3,6 +3,7 @@ import {MapEntity} from "./map.entity";
 import {Entity, OneToMany, OneToOne, PrimaryColumn, RelationOptions} from "typeorm";
 import {TextblockEntity} from "./textblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
+import {VideoBlockEntity} from "./videoblock.entity";
 
 @Entity("Learnplace")
 export class LearnplaceEntity {
@@ -21,4 +22,7 @@ export class LearnplaceEntity {
 
   @OneToMany(type => PictureBlockEntity, pictureBlock => pictureBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   pictureBlocks: Array<PictureBlockEntity>;
+
+  @OneToMany(type => VideoBlockEntity, videoBlock => videoBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+  videoBlocks: Array<VideoBlockEntity>;
 }
