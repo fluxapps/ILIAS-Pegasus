@@ -40,7 +40,7 @@ export enum BlockType {
  * Base class for all specific block types. Shares common attributes over all blocks.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export class BlockModel implements VisibilityAware {
 
@@ -53,6 +53,8 @@ export class BlockModel implements VisibilityAware {
  isRichtext(): boolean {return this.type === BlockType.RICHTEXT}
 
  isPicture(): boolean {return this.type === BlockType.PICTURE}
+
+ isVideo(): boolean {return this.type === BlockType.VIDEO}
 }
 
 /**
@@ -73,7 +75,7 @@ export class TextBlockModel extends BlockModel {
  * Model class for a picture block.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 export class PictureBlockModel extends BlockModel {
 
@@ -98,4 +100,18 @@ export class LinkBlockModel extends BlockModel {
     sequence: number,
     readonly refId: number
   ) {super(sequence, false, BlockType.ILIAS_LINK)}
+}
+
+/**
+ * Model class for a video block
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class VideoBlockModel extends BlockModel {
+
+  constructor(
+    sequence: number,
+    readonly url: string
+  ) {super(sequence, false, BlockType.VIDEO)}
 }

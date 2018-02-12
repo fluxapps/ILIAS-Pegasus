@@ -4,6 +4,7 @@ import {Entity, OneToMany, OneToOne, PrimaryColumn, RelationOptions} from "typeo
 import {TextblockEntity} from "./textblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
 import {LinkblockEntity} from "./linkblock.entity";
+import {VideoBlockEntity} from "./videoblock.entity";
 
 @Entity("Learnplace")
 export class LearnplaceEntity {
@@ -25,4 +26,7 @@ export class LearnplaceEntity {
 
   @OneToMany(type => LinkblockEntity, linkBlock => linkBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   linkBlocks: Array<LinkblockEntity>;
+
+  @OneToMany(type => VideoBlockEntity, videoBlock => videoBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+  videoBlocks: Array<VideoBlockEntity>;
 }

@@ -2,9 +2,9 @@ import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {
   LinkBlockMapper,
   PictureBlockMapper, SimpleStorageLocation,
-  TextBlockMapper
+  TextBlockMapper, VideoBlockMapper
 } from "../../../../src/learnplace/services/loader/mappers";
-import {ILIASLinkBlock, PictureBlock, TextBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {ILIASLinkBlock, PictureBlock, TextBlock, VideoBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {apply} from "../../../../src/util/util.function";
 import {getVisibilityEntity} from "./learnplace.spec";
@@ -14,6 +14,7 @@ import {LearnplaceData, LearnplaceObject} from "../../../../src/learnplace/servi
 import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
+import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
 
 describe("a text block mapper", () => {
 
@@ -316,6 +317,106 @@ describe("a link block mapper", () => {
             it.iliasId = 2;
             it.sequence = 2;
             it.refId = 87;
+            it.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a video block mapper", () => {
+
+    const sandbox: SinonSandbox = createSandbox();
+
+    let mapper: VideoBlockMapper = new VideoBlockMapper();
+
+	beforeEach(() => {
+		mapper = new VideoBlockMapper();
+	});
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe("on mapping video blocks", () => {
+
+		context("on new video blocks", () => {
+
+			it("should create new video block entities", () => {
+
+				const local: Array<VideoBlockEntity> = [];
+
+				const remote: Array<VideoBlock> = [
+				  <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"},
+          <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
+        ];
+
+
+				const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+
+
+				const expected: Array<VideoBlockEntity> = [
+				  apply(new VideoBlockEntity(), it => {
+				    it.iliasId = 1;
+				    it.sequence = 1;
+				    it.url = "/get/video/1";
+				    it.hash = "FB24";
+				    it.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          apply(new VideoBlockEntity(), it => {
+            it.iliasId = 2;
+            it.sequence = 2;
+            it.url = "/get/video/2";
+            it.hash = "4B8A";
+            it.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+				chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing video blocks", () => {
+
+			it("should update the existing ones", () => {
+
+        const local: Array<VideoBlockEntity> = [
+          apply(new VideoBlockEntity(), it => {
+            it.id = 1;
+            it.iliasId = 1;
+            it.sequence = 1;
+            it.url = "/get/video/1";
+            it.hash = "A68B";
+            it.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+
+        const remote: Array<VideoBlock> = [
+          <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"},
+          <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
+        ];
+
+
+        const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<VideoBlockEntity> = [
+          apply(new VideoBlockEntity(), it => {
+            it.id = 1;
+            it.iliasId = 1;
+            it.sequence = 1;
+            it.url = "/get/video/1";
+            it.hash = "FB24";
+            it.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          apply(new VideoBlockEntity(), it => {
+            it.iliasId = 2;
+            it.sequence = 2;
+            it.url = "/get/video/2";
+            it.hash = "4B8A";
             it.visibility = getVisibilityEntity("NEVER");
           })
         ];

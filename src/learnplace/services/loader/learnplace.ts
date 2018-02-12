@@ -12,7 +12,7 @@ import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../../util/util.optional";
 import {apply, withIt} from "../../../util/util.function";
 import {HttpRequestError} from "../../../providers/http";
-import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper} from "./mappers";
+import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper} from "./mappers";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -134,7 +134,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     private readonly textBlockMapper: TextBlockMapper,
     private readonly pictureBlockMapper: PictureBlockMapper,
-    private readonly linkBlockMapper: LinkBlockMapper
+    private readonly linkBlockMapper: LinkBlockMapper,
+    private readonly videoBlockMapper: VideoBlockMapper
   ) {}
 
   /**
@@ -179,6 +180,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         it.textBlocks = this.textBlockMapper.map(it.textBlocks, blocks.text);
         it.pictureBlocks = this.pictureBlockMapper.map(it.pictureBlocks, blocks.picture);
         it.linkBlocks = this.linkBlockMapper.map(it.linkBlocks, blocks.iliasLink);
+        it.videoBlocks = this.videoBlockMapper.map(it.videoBlocks, blocks.video);
       });
 
       await this.learnplaceRepository.save(learnplaceEntity);

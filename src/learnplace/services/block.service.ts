@@ -1,4 +1,4 @@
-import {BlockModel, LinkBlockModel, PictureBlockModel, TextBlockModel} from "./block.model";
+import {BlockModel, LinkBlockModel, PictureBlockModel, TextBlockModel, VideoBlockModel} from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {VisibilityContext, VisibilityContextFactory} from "./visibility/visibility.context";
@@ -48,7 +48,8 @@ export class VisibilityManagedBlockService implements BlockService {
     return [
       ...this.mapTextblocks(learnplace),
       ...this.mapPictureBlocks(learnplace),
-      ...this.mapLinkBlocks(learnplace)
+      ...this.mapLinkBlocks(learnplace),
+      ...this.mapVideoBlocks(learnplace)
     ].sort((a, b) => a.sequence - b.sequence);
   }
 
@@ -72,6 +73,14 @@ export class VisibilityManagedBlockService implements BlockService {
     return learnplace.linkBlocks.map(it => {
       const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
       this.contextFactory.create(VisibilityStrategyType[it.visibility.value]).use(model);
+      return model;
+    })
+  }
+
+  private mapVideoBlocks(learnplace: LearnplaceEntity): Array<BlockModel> {
+    return learnplace.videoBlocks.map(block => {
+      const model: VideoBlockModel = new VideoBlockModel(block.sequence, block.url);
+      this.contextFactory.create(VisibilityStrategyType[block.visibility.value]).use(model);
       return model;
     })
   }

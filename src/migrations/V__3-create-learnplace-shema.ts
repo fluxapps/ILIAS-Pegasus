@@ -5,7 +5,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm";
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.3
+ * @version 0.0.4
  */
 export class CreateLearnplace implements Migration {
 
@@ -66,6 +66,16 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
+    const videoBlock: Table = new Table("VideoBlock", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "hash", type: "string", length: "64", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
     await queryRunner.createTable(learnplace);
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
@@ -73,6 +83,7 @@ export class CreateLearnplace implements Migration {
     await queryRunner.createTable(textBlock);
     await queryRunner.createTable(pictureBlock);
     await queryRunner.createTable(linkBlock);
+    await queryRunner.createTable(videoBlock);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -88,5 +99,6 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("TextBlock");
     await queryRunner.dropTable("PictureBlock");
     await queryRunner.dropTable("LinkBLock");
+    await queryRunner.dropTable("VideoBlock");
   }
 }

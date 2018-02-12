@@ -1,5 +1,5 @@
 import {TextblockEntity} from "../../entity/textblock.entity";
-import {ILIASLinkBlock, PictureBlock, TextBlock} from "../../providers/rest/learnplace.pojo";
+import {ILIASLinkBlock, PictureBlock, TextBlock, VideoBlock} from "../../providers/rest/learnplace.pojo";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
@@ -12,6 +12,7 @@ import {File} from "@ionic-native/file";
 import {User} from "../../../models/user";
 import {Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
+import {VideoBlockEntity} from "../../entity/videoblock.entity";
 
 /**
  * Describes a mapper for a specific block type.
@@ -122,6 +123,27 @@ export class LinkBlockMapper implements BlockMapper<LinkblockEntity, ILIASLinkBl
         it.visibility = getVisibilityEntity(linkBlock.visibility);
       })
     );
+  }
+}
+
+/**
+ * Maps {@link VideoBlock} to {@link VideoBlockEntity}.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+export class VideoBlockMapper implements BlockMapper<VideoBlockEntity, VideoBlock> {
+
+  map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Array<VideoBlockEntity> {
+    return remote.map(videoBlock =>
+      apply(findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new VideoBlockEntity()), it => {
+        it.iliasId = videoBlock.id;
+        it.sequence = videoBlock.sequence;
+        it.url = videoBlock.url;
+        it.hash = videoBlock.hash;
+        it.visibility = getVisibilityEntity(videoBlock.visibility);
+      }));
   }
 }
 
