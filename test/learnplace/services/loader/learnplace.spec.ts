@@ -11,7 +11,10 @@ import {LocationEntity} from "../../../../src/learnplace/entity/location.entity"
 import {VisibilityEntity} from "../../../../src/learnplace/entity/visibility.entity";
 import {apply} from "../../../../src/util/util.function";
 import {HttpRequestError} from "../../../../src/providers/http";
-import {PictureBlockMapper, TextBlockMapper} from "../../../../src/learnplace/services/loader/mappers";
+import {
+  PictureBlockMapper, TextBlockMapper,
+  VideoBlockMapper
+} from "../../../../src/learnplace/services/loader/mappers";
 import {stubInstance} from "../../../SinonUtils";
 
 chai.use(chaiAsPromised);
@@ -33,12 +36,14 @@ describe("a learnplace loader", () => {
     };
     const mockTextBlockMapper: TextBlockMapper = stubInstance(TextBlockMapper);
     const mockPictureBlockMapper: PictureBlockMapper = stubInstance(PictureBlockMapper);
+    const mockVideoBlockMapper: VideoBlockMapper = stubInstance(VideoBlockMapper);
 
     let loader: RestLearnplaceLoader = new RestLearnplaceLoader(
       mockLearnplaceAPI,
       mockLearnplaceRepository,
       mockTextBlockMapper,
-      mockPictureBlockMapper
+      mockPictureBlockMapper,
+      mockVideoBlockMapper
     );
 
 	beforeEach(() => {
@@ -46,7 +51,8 @@ describe("a learnplace loader", () => {
 		  mockLearnplaceAPI,
       mockLearnplaceRepository,
       mockTextBlockMapper,
-      mockPictureBlockMapper
+      mockPictureBlockMapper,
+      mockVideoBlockMapper
     );
 	});
 
@@ -79,6 +85,8 @@ describe("a learnplace loader", () => {
           .returns([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
           .returns([]);
+        const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
+          .returns([]);
 
 
         await loader.load(1);
@@ -98,11 +106,13 @@ describe("a learnplace loader", () => {
           });
           it.textBlocks = [];
           it.pictureBlocks = [];
+          it.videoBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
         assert.calledOnce(textBlockMapperStub);
         assert.calledOnce(pictureBlockMapperStub);
+        assert.calledOnce(videoBlockMapperStub);
 			});
 		});
 
@@ -129,6 +139,8 @@ describe("a learnplace loader", () => {
           .returns([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
           .returns([]);
+        const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
+          .returns([]);
 
 
         await loader.load(1);
@@ -151,11 +163,13 @@ describe("a learnplace loader", () => {
           });
           it.textBlocks = [];
           it.pictureBlocks = [];
+          it.videoBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
         assert.calledOnce(textBlockMapperStub);
         assert.calledOnce(pictureBlockMapperStub);
+        assert.calledOnce(videoBlockMapperStub);
 			})
 		});
 
