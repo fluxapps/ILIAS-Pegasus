@@ -55,11 +55,17 @@ export function withIt<T, R>(thisArg: T, block: () => R): R {
   return block.apply(this);
 }
 
-export function takeIf<T>(predicate: (it: T) => boolean): T | undefined {
-  return (predicate(this) ? this : undefined);
-}
+Object.defineProperty(Object.prototype, "applies", {
+  value: function <T>(block: Function): T {
+    block.apply(this);
+    return this;
+  },
+  writable: true
+});
 
-Object.prototype.applies = function <T>(block: Function): T {
-  block.apply(this);
-  return this;
-};
+Object.defineProperty(Object.prototype, "takeIf", {
+  value: function<T>(predicate: (it: T) => boolean): T | undefined {
+    return (predicate(this) ? this : undefined);
+  },
+  writable: true
+});
