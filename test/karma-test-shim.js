@@ -3,6 +3,11 @@
  * Is needed to load dependencies that AngularJS needs as well as our own spec files.
  */
 
+import {useStandard} from "../src/standard";
+
+// load standard.ts to enable its global declarations
+useStandard();
+
 Error.stackTraceLimit = Infinity;
 
 require('core-js/es6');
