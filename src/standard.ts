@@ -12,19 +12,21 @@ export function useStandard(): void {
   console.debug("Standard is loaded");
 }
 
+/**
+ * Calls the specified function {@code block} with 'this' value as thisArg
+ * of the apply function {@code Function#apply(thisArg)} and returns its result.
+ *
+ * @param {T} thisArg - the 'this' value
+ * @param {() => R} block - the function to call
+ *
+ * @returns {R} the result of the called function
+ */
+export function withIt<T, R>(thisArg: T, block: () => R): R {
+  return block.apply(thisArg);
+}
+
 // Global declaration, so an import statement is not needed.
 declare global {
-
-  /**
-   * Calls the specified function {@code block} with 'this' value as thisArg
-   * of the apply function {@code Function#apply(thisArg)} and returns its result.
-   *
-   * @param {T} thisArg - the 'this' value
-   * @param {() => R} block - the function to call
-   *
-   * @returns {R} the result of the called function
-   */
-  export function withIt<T, R>(thisArg: T, block: () => R): R;
 
   // extend the Object types
   export interface Object {
@@ -50,10 +52,6 @@ declare global {
 }
 
 // implementation for the global declarations
-
-export function withIt<T, R>(thisArg: T, block: () => R): R {
-  return block.apply(this);
-}
 
 Object.defineProperty(Object.prototype, "applies", {
   value: function <T>(block: Function): T {
