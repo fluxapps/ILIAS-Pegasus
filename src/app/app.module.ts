@@ -74,6 +74,7 @@ import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/re
 import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from "../services/news/news.synchronization";
 import {AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplierImpl, TOKEN_SUPPLIER} from "../services/link/link-builder.supplier";
+import {TIMELINE_LINK_BUILDER, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -255,6 +256,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: TOKEN_SUPPLIER,
       useClass: AuthTokenSupplier
+    },
+    {
+      provide: TIMELINE_LINK_BUILDER,
+      useClass: TimelineLinkBuilderImpl
     },
     AlwaysStrategy,
     NeverStrategy,

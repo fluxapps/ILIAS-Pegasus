@@ -87,6 +87,7 @@ export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
  *
  * @author Nicolas Schäfli <ns@studer-raimann.ch>
  */
+@Injectable()
 export class AuthTokenSupplier implements TokenSupplier {
 
   private static readonly REQUEST_TIMEOUT: number = 6000; //six seconds.
