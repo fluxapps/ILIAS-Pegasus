@@ -16,6 +16,11 @@ export interface TimelineLinkBuilder extends Builder<Promise<string>> {
 
 export const TIMELINE_LINK_BUILDER: InjectionToken<TimelineLinkBuilder> = new InjectionToken("token for timeline link builder");
 
+/**
+ * The time-line link builder, creates a link to an arbitrary ILIAS time-line enabled container object, for example a course.
+ *
+ * @author Nicolas Schäfli <ns@studer-raimann.ch>
+ */
 @Injectable()
 export class TimelineLinkBuilderImpl implements TimelineLinkBuilder {
 
@@ -40,6 +45,13 @@ export class TimelineLinkBuilderImpl implements TimelineLinkBuilder {
   }
 
 
+  /**
+   * Build the timeline ILIAS link.
+   *
+   * @returns {Promise<string>} The ILIAS timeline link.
+   *
+   * @throws IllegalStateError  Thrown if the builder is not ready to build the link.
+   */
   async build(): Promise<string> {
 
     this.validateBuilderState();
