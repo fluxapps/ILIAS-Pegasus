@@ -89,10 +89,12 @@ export class NeverStrategy implements VisibilityStrategy {
 
 /**
  * Strategy, that will set the block visibility to visible,
+ * if the current position matches the learnplace position.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
+@Injectable()
 export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
 
   private membershipId: number = -1;
@@ -102,15 +104,35 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
     private readonly geolocation: Geolocation
   ) {}
 
+  /**
+   * Sets the membership of the object used in this strategy.
+   *
+   * @param {number} id
+   * @returns {VisibilityStrategy}
+   */
   membership(id: number): VisibilityStrategy {
     this.membershipId = id;
     return this;
   }
 
+  /**
+   * Watches the current position and sets the visibility of the given {@code object}
+   * to true, if its 'near' to the learnplace with the matching membership specified by {@link OnlyAtPlaceStrategy#membership} method.
+   *
+   * The current position is considered as 'near', if the distance of the current position
+   * to the learnplace position is in the learnplace radius.
+   *
+   * This method is executed asynchronously and can not be used with await or Promise#then.
+   *
+   * @param {VisibilityAware} object the block to use in this strategy
+   */
   on(object: VisibilityAware): void {
     this.execute(object);
   }
 
+  /**
+   * Helper method to enable async/await.
+   */
   private async execute(object: VisibilityAware): Promise<void> {
 
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))

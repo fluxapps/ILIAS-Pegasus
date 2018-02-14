@@ -58,7 +58,10 @@ import {
 import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
 import {LearnplacePage} from "../learnplace/pages/learnplace/learnplace.component";
 import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
-import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/visibility.strategy";
+import {
+  AlwaysStrategy, NeverStrategy,
+  OnlyAtPlaceStrategy
+} from "../learnplace/services/visibility/visibility.strategy";
 import {VisibilityStrategyApplier} from "../learnplace/services/visibility/visibility.context";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
@@ -237,6 +240,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     AlwaysStrategy,
     NeverStrategy,
+    OnlyAtPlaceStrategy,
     VisibilityStrategyApplier,
 
     ConnectionService,
