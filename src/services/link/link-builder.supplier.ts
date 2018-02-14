@@ -4,6 +4,9 @@ import {USER_REPOSITORY, UserRepository} from "../../providers/repository/reposi
 import {UserEntity} from "../../entity/user.entity";
 import {Optional} from "../../util/util.optional";
 import {NoSuchElementError} from "../../error/errors";
+import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
+import {User} from "../../models/user";
+import {RESTAPIException} from "../../exceptions/RESTAPIException";
 
 /**
  * The installation news supplier, supplies the currently used ILIAS installation
@@ -38,6 +41,8 @@ export interface TokenSupplier {
    * Requests a valid authentication token.
    *
    * @returns {Promise<string>} Valid token for authentication.
+   *
+   * @throws RESTAPIException   Thrown if the auth token request failed.
    */
   get(): Promise<string>;
 }
@@ -74,4 +79,31 @@ export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
     else
       throw new NoSuchElementError("No authenticated user found.");
   }
+}
+
+/**
+ * Supplies short living ILIAS SOO auth tokens.
+ * Which are used for a onetime authentication of a user.
+ *
+ * @author Nicolas Schäfli <ns@studer-raimann.ch>
+ */
+export class AuthTokenSupplier implements TokenSupplier {
+
+  private static readonly REQUEST_TIMEOUT: number = 6000; //six seconds.
+
+  constructor(private readonly restProvider: ILIASRestProvider
+  ) {}
+
+
+  /**
+   * Supplies a short living ILIAS SSO token.
+   *
+   * @returns {Promise<string>} The auth token which can be used to authenticate the user.
+   *
+   * @throws RESTAPIException   Thrown if the auth token request failed.
+   */
+  async get(): Promise<string> {
+    return this.restProvider.getAuthToken(await User.currentUser(), AuthTokenSupplier.REQUEST_TIMEOUT);
+  }
+
 }
