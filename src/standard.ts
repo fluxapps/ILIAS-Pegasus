@@ -9,7 +9,7 @@
  * e.g. your main.ts
  */
 export function useStandard(): void {
-  console.log("Standard is loaded");
+  console.debug("Standard is loaded");
 }
 
 // Global declaration, so an import statement is not needed.
