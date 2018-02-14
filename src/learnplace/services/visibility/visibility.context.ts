@@ -1,6 +1,8 @@
-import {AlwaysStrategy, NeverStrategy, VisibilityStrategy, VisibilityStrategyType} from "./visibility.strategy";
+import {
+  AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy, VisibilityStrategy,
+  VisibilityStrategyType
+} from "./visibility.strategy";
 import {Injectable} from "@angular/core";
-import {withIt} from "../../../util/util.function";
 
 /**
  * Describes an object that can be visible or not.
@@ -16,7 +18,7 @@ export interface VisibilityAware {
  * Helper class to apply a {@link VisibilityStrategy} on a {@link VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Injectable()
 export class VisibilityStrategyApplier {
@@ -25,12 +27,12 @@ export class VisibilityStrategyApplier {
 
  constructor(
    alwaysStrategy: AlwaysStrategy,
-   neverStrategy: NeverStrategy
+   neverStrategy: NeverStrategy,
+   onlyAtPlaceStrategy: OnlyAtPlaceStrategy
  ) {
-   withIt(this.strategies, it => {
-     it.set(VisibilityStrategyType.ALWAYS, alwaysStrategy);
-     it.set(VisibilityStrategyType.NEVER, neverStrategy);
-   });
+   this.strategies.set(VisibilityStrategyType.ALWAYS, alwaysStrategy);
+   this.strategies.set(VisibilityStrategyType.NEVER, neverStrategy);
+   this.strategies.set(VisibilityStrategyType.ONLY_AT_PLACE, onlyAtPlaceStrategy);
  }
 
 /**
