@@ -76,6 +76,7 @@ import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from
 import {AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplierImpl, TOKEN_SUPPLIER} from "../services/link/link-builder.supplier";
 import {TIMELINE_LINK_BUILDER, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilderImpl} from "../services/link/default.builder";
+import {NEWS_LINK_BUILDER, NewsLinkBuilderImpl} from "../services/link/news.builder";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -265,6 +266,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: DEFAULT_LINK_BUILDER,
       useClass: DefaultLinkBuilderImpl
+    },
+    {
+      provide: NEWS_LINK_BUILDER,
+      useClass: NewsLinkBuilderImpl
     },
     AlwaysStrategy,
     NeverStrategy,
