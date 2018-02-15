@@ -5,6 +5,10 @@ import {Geolocation} from "@ionic-native/geolocation";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {NoSuchElementError} from "../../../error/errors";
 import {Coordinates} from "../../../services/geodesy";
+import {LearnplaceAPI} from "../../providers/rest/learnplace.api";
+import {isDefined} from "ionic-angular/es2015/util/util";
+import {Subscription} from "rxjs/Subscription";
+import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 
 /**
  * Enumerator for available strategies.
@@ -124,7 +128,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
    *
    * This method is executed asynchronously and can not be used with await or Promise#then.
    *
-   * @param {VisibilityAware} object the block to use in this strategy
+   * @param {VisibilityAware} object - the object to use in this strategy
    */
   on(object: VisibilityAware): void {
     this.execute(object);
@@ -157,11 +161,88 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
  */
 export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
 
+  private membershipId: number = -1;
+
+  constructor(
+    private readonly learnplaceRepository: LearnplaceRepository,
+    private readonly learnplaceAPI: LearnplaceAPI,
+    private readonly geolocation: Geolocation
+    // TODO: Add UserRepository
+  ) {}
+
+  /**
+   * Sets the membership of the object used in this strategy.
+   *
+   * @param {number} id
+   * @returns {VisibilityStrategy}
+   */
   membership(id: number): VisibilityStrategy {
-    throw new Error("This method is not implemented yet");
+    this.membershipId = id;
+    return this;
   }
 
+  /**
+   * Checks if the current user is in the journal entry of the learnplace matching the {@code AfterVisitPlaceStrategy#membership} id.
+   * If the user exists in the journal, the visibility of the given {@code object} is set to true.
+   *
+   * Otherwise, the current position is watched and sets the visibility of the given {@code object}
+   * to true, if its 'near' to the learnplace. In addition a new journal entry will be added to the learnplace.
+   * If the post request to add a journal entry fails, it will be retried with the next synchronization.
+   *
+   * The current position is considered as 'near', if the distance of the current position
+   * to the learnplace position is in the learnplace radius. Once the current position is 'near' to
+   * the learnplace, it will stop watching the current position.
+   *
+   * This method is executed asynchronously and can not be used with await or Promise#then.
+   *
+   * @param {VisibilityAware} object - the object to use in this strategy
+   */
   on(object: VisibilityAware): void {
-    throw new Error("This method is not implemented yet");
+    this.execute(object);
+  }
+
+  /**
+   * Helper method to enable async/await.
+   */
+  private async execute(object: VisibilityAware): Promise<void> {
+
+    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
+      .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
+
+    // TODO: Use username of active user
+    if (isDefined(learnplace.visitJournal.find(it => it.username == "Username"))) {
+      object.visible = true;
+      return;
+    }
+
+    const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
+
+    const watch: Subscription = this.geolocation.watchPosition().subscribe(async(location) => {
+
+      const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
+
+      if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
+        watch.unsubscribe();
+
+        object.visible = true;
+
+        const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
+          this.username = "Username"; // TODO: Use username of active user
+          this.time = Date.now() / 1000; // unix time in seconds
+          this.synchronized = false;
+        });
+
+        learnplace.visitJournal.push(visitJournalEntity);
+
+        try {
+
+          await this.learnplaceAPI.addJournalEntry(this.membershipId, visitJournalEntity.time);
+
+          visitJournalEntity.synchronized = true;
+        } finally {
+          await this.learnplaceRepository.save(learnplace);
+        }
+      }
+    });
   }
 }

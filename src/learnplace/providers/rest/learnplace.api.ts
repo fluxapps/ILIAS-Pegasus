@@ -38,13 +38,13 @@ export interface LearnplaceAPI {
 
   /**
    * Posts a new journal entry to the learnplace matching the given {@code learnplaceObjectId}.
-   * The body to post is managed by this method, therefore only the learnplace must be specified.
    *
    * @param {number} learnplaceObjectId - the learnplace objet id
+   * @param {number} time - the unix time in seconds to use as the timestamp
    *
    * @throws {HttpRequestError} if the request fails
    */
-  addJournalEntry(learnplaceObjectId: number): Promise<void>
+  addJournalEntry(learnplaceObjectId: number, time: number): Promise<void>
 
   /**
    * Get all blocks of a learnplace.
@@ -112,14 +112,15 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    * The body to post is managed by this method, therefore only the learnplace must be specified.
    *
    * @param {number} learnplaceObjectId - the learnplace objet id
+   * @param {number} time - the unix time in seconds to use as the timestamp
    *
    * @throws {HttpRequestError} if the request fails
    */
-  async addJournalEntry(learnplaceObjectId: number): Promise<void> {
+  async addJournalEntry(learnplaceObjectId: number, time: number): Promise<void> {
 
     const response: HttpResponse = await this.iliasRest.post(
       `/v2/learnplace/${learnplaceObjectId}/journal-entries`,
-      {time: Date.now() / 1000}, // Unix time in seconds
+      {time: time},
       DEFAULT_REQUEST_OPTIONS
     );
 
