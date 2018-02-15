@@ -51,7 +51,7 @@ export const TOKEN_MANAGER: InjectionToken<TokenManager> = new InjectionToken("t
  * by the implementation as well.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export interface ILIASRest {
 
@@ -65,6 +65,19 @@ export interface ILIASRest {
    * @throws {TokenExpiredError} if the access token is expired and could not be refreshed
    */
   get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>;
+
+  /**
+   * Performs a post request to the given {@code path} with the given {@code body}
+   * as the http request body.
+   *
+   * @param {string} path - the endpoint without host and specific path
+   * @param {object} body - the request body
+   * @param {ILIASRequestOptions} options - ILIAS specific request options
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   * @throw {TokenExpiredError} if the access token is expired and could not be refreshed
+   */
+  post(path: string, body: object, options: ILIASRequestOptions): Promise<HttpResponse>;
 }
 export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token for ILIAS rest");
 
@@ -221,6 +234,38 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
      };
 
      return this.httpClient.get(url, requestOptions);
+  }
+
+  /**
+   * Performs a post request to the given {@code path} with the given {@code body}
+   * as the http request body.
+   *
+   * The path MUST start with a '/' character.
+   * The api version MUST be part of the path.
+   *
+   * @param {string} path - the endpoint without host and specific path
+   * @param {object} body - the request body
+   * @param {ILIASRequestOptions} options - ILIAS specific request options
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   * @throw {TokenExpiredError} if the access token is expired and could not be refreshed
+   */
+  async post(path: string, body: object, options: ILIASRequestOptions): Promise<HttpResponse> {
+
+    const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
+
+    const url: string = `${credentials.apiURL}${path}`;
+    const headers: Headers = new Headers().applies(function(): void {
+      this.append("Accept", options.accept);
+      this.append("Authorization", `${credentials.token.type} ${this.tokenManager.getAccessToken()}`);
+    });
+
+    const requestOptions: RequestOptionsArgs = <RequestOptionsArgs>{
+      headers: headers,
+      search: options.urlParams
+    };
+
+    return this.httpClient.post(url, JSON.stringify(body), requestOptions);
   }
 }
 

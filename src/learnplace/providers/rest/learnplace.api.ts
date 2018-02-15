@@ -3,6 +3,8 @@ import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "../../../providers/ili
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {HttpResponse} from "../../../providers/http";
 import {blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema} from "./json.schema";
+import {Logger} from "../../../services/logging/logging.api";
+import {Logging} from "../../../services/logging/logging.service";
 
 const DEFAULT_REQUEST_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
@@ -10,7 +12,7 @@ const DEFAULT_REQUEST_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accep
  * Describes an API abstraction for ILIAS Lernorte 2.0
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export interface LearnplaceAPI {
 
@@ -20,6 +22,7 @@ export interface LearnplaceAPI {
    * @param {number} objectId - the learnplace object id
    *
    * @returns {Promise<LearnPlace>} the resulting learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   getLearnPlace(objectId: number): Promise<LearnPlace>
 
@@ -29,8 +32,19 @@ export interface LearnplaceAPI {
    * @param {number} learnplaceObjectId - the learnplace object id
    *
    * @returns {Promise<Array<JournalEntry>>} all visit journal entries matching the learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   getJournalEntries(learnplaceObjectId: number): Promise<Array<JournalEntry>>
+
+  /**
+   * Posts a new journal entry to the learnplace matching the given {@code learnplaceObjectId}.
+   * The body to post is managed by this method, therefore only the learnplace must be specified.
+   *
+   * @param {number} learnplaceObjectId - the learnplace objet id
+   *
+   * @throws {HttpRequestError} if the request fails
+   */
+  addJournalEntry(learnplaceObjectId: number): Promise<void>
 
   /**
    * Get all blocks of a learnplace.
@@ -38,6 +52,7 @@ export interface LearnplaceAPI {
    * @param {number} learnplaceObjectId - the learnplace object id
    *
    * @returns {Promise<BlockObject>} contains all blocks of the matching learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   getBlocks(learnplaceObjectId: number): Promise<BlockObject>
 }
@@ -47,10 +62,12 @@ export const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken(
  * {@link LearnplaceAPI} implementation for ILIAS.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class ILIASLearnplaceAPI implements LearnplaceAPI {
+
+  private log: Logger = Logging.getLogger(ILIASLearnplaceAPI.name);
 
   constructor(
     @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest
@@ -62,10 +79,11 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    * @param {number} objectId - the learnplace object id
    *
    * @returns {Promise<LearnPlace>} the resulting learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   async getLearnPlace(objectId: number): Promise<LearnPlace> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v1/learnplace/${objectId}`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${objectId}`, DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<LearnPlace>(async(it) =>
       it.json<LearnPlace>(learnplaceJsonSchema)
@@ -78,14 +96,36 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    * @param {number} learnplaceObjectId - the learnplace object id
    *
    * @returns {Promise<Array<JournalEntry>>} all visit journal entries matching the learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   async getJournalEntries(learnplaceObjectId: number): Promise<Array<JournalEntry>> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v1/learnplace/${learnplaceObjectId}/journal-entries`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/journal-entries`, DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<Array<JournalEntry>>(async(it) =>
       it.json<Array<JournalEntry>>(journalEntriesJsonSchema)
     );
+  }
+
+  /**
+   * Posts a new journal entry to the learnplace matching the given {@code learnplaceObjectId}.
+   * The body to post is managed by this method, therefore only the learnplace must be specified.
+   *
+   * @param {number} learnplaceObjectId - the learnplace objet id
+   *
+   * @throws {HttpRequestError} if the request fails
+   */
+  async addJournalEntry(learnplaceObjectId: number): Promise<void> {
+
+    const response: HttpResponse = await this.iliasRest.post(
+      `/v2/learnplace/${learnplaceObjectId}/journal-entries`,
+      {time: Date.now() / 1000}, // Unix time in seconds
+      DEFAULT_REQUEST_OPTIONS
+    );
+
+    return response.handle<void>(async(_) => {
+      this.log.info(() => "Successful post journal entry to ILIAS");
+    });
   }
 
   /**
@@ -94,10 +134,11 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    * @param {number} learnplaceObjectId - the learnplace object id
    *
    * @returns {Promise<BlockObject>} contains all blocks of the matching learnplace
+   * @throws {HttpRequestError} if the request fails
    */
   async getBlocks(learnplaceObjectId: number): Promise<BlockObject> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v1/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<BlockObject>(async(it) =>
       it.json<BlockObject>(blocksJsonSchema)

@@ -44,12 +44,12 @@ export class HttpClient {
    * Wraps the {@link Http#post} method uses a timeout and returns a promise instead of an observable.
    *
    * @param {string} url the url to perform the request
-   * @param {object} body the request body to post
+   * @param {string} body the request body to post
    * @param {RequestOptionsArgs} options options used for the request
    *
    * @returns {Promise<HttpResponse>} the resulting response
    */
-  async post(url: string, body?: object, options?: RequestOptionsArgs): Promise<HttpResponse> {
+  async post(url: string, body?: string, options?: RequestOptionsArgs): Promise<HttpResponse> {
 
     this.log.info(() => `Http POST request to: ${url}`);
     const response: Response = await this.http.post(url, body, options)
