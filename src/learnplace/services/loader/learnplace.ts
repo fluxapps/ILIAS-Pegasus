@@ -1,6 +1,6 @@
 import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {BlockObject, LearnPlace} from "../../providers/rest/learnplace.pojo";
+import {BlockObject, JournalEntry, LearnPlace} from "../../providers/rest/learnplace.pojo";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {LocationEntity} from "../../entity/location.entity";
 import {MapEntity} from "../../entity/map.entity";
@@ -12,7 +12,7 @@ import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../../util/util.optional";
 import {apply, withIt} from "../../../util/util.function";
 import {HttpRequestError} from "../../../providers/http";
-import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper} from "./mappers";
+import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper, VisitJournalMapper} from "./mappers";
 
 /**
  * A readonly instance of the currently opened learnplace.
@@ -135,7 +135,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     private readonly textBlockMapper: TextBlockMapper,
     private readonly pictureBlockMapper: PictureBlockMapper,
     private readonly linkBlockMapper: LinkBlockMapper,
-    private readonly videoBlockMapper: VideoBlockMapper
+    private readonly videoBlockMapper: VideoBlockMapper,
+    private readonly visitJournalMapper: VisitJournalMapper
   ) {}
 
   /**
@@ -143,7 +144,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
    * the given {@code id} and stores them.
    * If the learnplace is already stored, it will be updated.
    *
-   * Blocks of an learnplace will be delegated to its according mapper class.
+   * Blocks and visit journal entries of a learnplace will be delegated to its according mapper class.
    *
    * @param {number} id - the id to use
    *
@@ -157,6 +158,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
       const learnplace: LearnPlace = await this.learnplaceAPI.getLearnPlace(id);
       const blocks: BlockObject = await this.learnplaceAPI.getBlocks(id);
+      const journalEntries: Array<JournalEntry> = await this.learnplaceAPI.getJournalEntries(id);
 
       const learnplaceEntity: LearnplaceEntity = (await this.learnplaceRepository.find(id)).orElse(new LearnplaceEntity());
 
@@ -177,6 +179,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
           it.elevation = learnplace.location.elevation;
         });
 
+        it.visitJournal = this.visitJournalMapper.map(it.visitJournal, journalEntries);
         it.textBlocks = this.textBlockMapper.map(it.textBlocks, blocks.text);
         it.pictureBlocks = this.pictureBlockMapper.map(it.pictureBlocks, blocks.picture);
         it.linkBlocks = this.linkBlockMapper.map(it.linkBlocks, blocks.iliasLink);
