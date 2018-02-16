@@ -9,7 +9,6 @@ import {
   VideoBlock
 } from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
-import {apply} from "../../../../src/util/util.function";
 import {getVisibilityEntity} from "./learnplace.spec";
 import {stubInstance} from "../../../SinonUtils";
 import {FileTransfer} from "@ionic-native/file-transfer";
@@ -22,16 +21,10 @@ import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journa
 
 describe("a text block mapper", () => {
 
-  const sandbox: SinonSandbox = createSandbox();
-
   let mapper: TextBlockMapper = new TextBlockMapper();
 
 	beforeEach(() => {
 		mapper = new TextBlockMapper();
-	});
-
-	afterEach(() => {
-		sandbox.restore();
 	});
 
 	describe("on mapping text blocks", () => {
@@ -52,17 +45,17 @@ describe("a text block mapper", () => {
 
 
         const expected: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.sequence = 1;
-            it.iliasId = 1;
-            it.content = "some text";
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new TextblockEntity().applies( function(): void {
+            this.sequence = 1;
+            this.iliasId = 1;
+            this.content = "some text";
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new TextblockEntity(), it => {
-            it.sequence = 2;
-            it.iliasId = 2;
-            it.content = "new text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.sequence = 2;
+            this.iliasId = 2;
+            this.content = "new text";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -75,12 +68,12 @@ describe("a text block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.content = "some old text";
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new TextblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.content = "some old text";
+            this.visibility = getVisibilityEntity("ALWAYS");
           })
         ];
 
@@ -94,18 +87,18 @@ describe("a text block mapper", () => {
 
 
         const expected: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.content = "some text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.content = "some text";
+            this.visibility = getVisibilityEntity("NEVER");
           }),
-          apply(new TextblockEntity(), it => {
-            it.sequence = 2;
-            it.iliasId = 2;
-            it.content = "new text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.sequence = 2;
+            this.iliasId = 2;
+            this.content = "new text";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -120,9 +113,9 @@ describe("a picture block mapper", () => {
 
   const sandbox: SinonSandbox = createSandbox();
   const mockFileTransfer: FileTransfer = stubInstance(FileTransfer);
-  const learnplace: LearnplaceData = apply(new LearnplaceObject(), it => {
-    it.setId(1);
-    it.setName("Learnplace xy");
+  const learnplace: LearnplaceData = new LearnplaceObject().applies(function(): void {
+    this.setId(1);
+    this.setName("Learnplace xy");
   });
   const mockFile: File = stubInstance(File);
   const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
@@ -155,23 +148,23 @@ describe("a picture block mapper", () => {
 
 
 			  const expected: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.sequence = 3;
-            it.iliasId = 1;
-            it.title = "title";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.sequence = 3;
+            this.iliasId = 1;
+            this.title = "title";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           }),
-          apply(new PictureBlockEntity(), it => {
-            it.sequence = 4;
-            it.iliasId = 2;
-            it.title = "title 2";
-            it.description = "";
-            it.thumbnail = "=2e";
-            it.url = "get/picture/2";
-            it.visibility = getVisibilityEntity("NEVER")
+          new PictureBlockEntity().applies(function(): void {
+            this.sequence = 4;
+            this.iliasId = 2;
+            this.title = "title 2";
+            this.description = "";
+            this.thumbnail = "=2e";
+            this.url = "get/picture/2";
+            this.visibility = getVisibilityEntity("NEVER")
           })
         ];
 			  chai.expect(result)
@@ -184,15 +177,15 @@ describe("a picture block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 3;
-            it.title = "title old";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 3;
+            this.title = "title old";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           })
         ];
 
@@ -209,24 +202,24 @@ describe("a picture block mapper", () => {
 
 
         const expected: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 3;
-            it.title = "title";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 3;
+            this.title = "title";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           }),
-          apply(new PictureBlockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 4;
-            it.title = "title 2";
-            it.description = "";
-            it.thumbnail = "=2e";
-            it.url = "get/picture/2";
-            it.visibility = getVisibilityEntity("NEVER")
+          new PictureBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 4;
+            this.title = "title 2";
+            this.description = "";
+            this.thumbnail = "=2e";
+            this.url = "get/picture/2";
+            this.visibility = getVisibilityEntity("NEVER")
           })
         ];
         chai.expect(result)
@@ -238,16 +231,10 @@ describe("a picture block mapper", () => {
 
 describe("a link block mapper", () => {
 
-    const sandbox: SinonSandbox = createSandbox();
-
-    let mapper: LinkBlockMapper = new LinkBlockMapper();
+  let mapper: LinkBlockMapper = new LinkBlockMapper();
 
 	beforeEach(() => {
 		mapper = new LinkBlockMapper();
-	});
-
-	afterEach(() => {
-		sandbox.restore();
 	});
 
 	describe("mapping link blocks", () => {
@@ -268,17 +255,17 @@ describe("a link block mapper", () => {
 
 
         const expected: Array<LinkblockEntity> = [
-          apply(new LinkblockEntity(), it => {
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.refId = 255;
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 255;
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new LinkblockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 2;
-            it.refId = 87;
-            it.visibility = getVisibilityEntity("NEVER");
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.refId = 87;
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -291,12 +278,12 @@ describe("a link block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<LinkblockEntity> = [
-          apply(new LinkblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.refId = 5;
-            it.visibility = getVisibilityEntity("NEVER");
+          new LinkblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 5;
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
 
@@ -310,18 +297,18 @@ describe("a link block mapper", () => {
 
 
         const expected: Array<LinkblockEntity> = [
-          apply(new LinkblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.refId = 255;
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new LinkblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 255;
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new LinkblockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 2;
-            it.refId = 87;
-            it.visibility = getVisibilityEntity("NEVER");
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.refId = 87;
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -363,19 +350,19 @@ describe("a video block mapper", () => {
 
 
 				const expected: Array<VideoBlockEntity> = [
-				  apply(new VideoBlockEntity(), it => {
-				    it.iliasId = 1;
-				    it.sequence = 1;
-				    it.url = "/get/video/1";
-				    it.hash = "FB24";
-				    it.visibility = getVisibilityEntity("ALWAYS");
+				  new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "FB24";
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new VideoBlockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 2;
-            it.url = "/get/video/2";
-            it.hash = "4B8A";
-            it.visibility = getVisibilityEntity("NEVER");
+          new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.url = "/get/video/2";
+            this.hash = "4B8A";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
 				chai.expect(result)
@@ -388,13 +375,13 @@ describe("a video block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<VideoBlockEntity> = [
-          apply(new VideoBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.url = "/get/video/1";
-            it.hash = "A68B";
-            it.visibility = getVisibilityEntity("NEVER");
+          new VideoBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "A68B";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
 
@@ -408,20 +395,20 @@ describe("a video block mapper", () => {
 
 
         const expected: Array<VideoBlockEntity> = [
-          apply(new VideoBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.url = "/get/video/1";
-            it.hash = "FB24";
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new VideoBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "FB24";
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new VideoBlockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 2;
-            it.url = "/get/video/2";
-            it.hash = "4B8A";
-            it.visibility = getVisibilityEntity("NEVER");
+          new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.url = "/get/video/2";
+            this.hash = "4B8A";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -433,16 +420,10 @@ describe("a video block mapper", () => {
 
 describe("a visit journal mapper", () => {
 
-    const sandbox: SinonSandbox = createSandbox();
-
-    let mapper: VisitJournalMapper = new VisitJournalMapper();
+  let mapper: VisitJournalMapper = new VisitJournalMapper();
 
 	beforeEach(() => {
 		mapper = new VisitJournalMapper();
-	});
-
-	afterEach(() => {
-		sandbox.restore();
 	});
 
 	describe("on mapping journal entries", () => {
