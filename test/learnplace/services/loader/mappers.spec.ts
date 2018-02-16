@@ -2,9 +2,12 @@ import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {
   LinkBlockMapper,
   PictureBlockMapper, SimpleStorageLocation,
-  TextBlockMapper, VideoBlockMapper
+  TextBlockMapper, VideoBlockMapper, VisitJournalMapper
 } from "../../../../src/learnplace/services/loader/mappers";
-import {ILIASLinkBlock, PictureBlock, TextBlock, VideoBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {
+  ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
+  VideoBlock
+} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {apply} from "../../../../src/util/util.function";
 import {getVisibilityEntity} from "./learnplace.spec";
@@ -15,6 +18,7 @@ import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
 import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
+import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journal.entity";
 
 describe("a text block mapper", () => {
 
@@ -420,6 +424,115 @@ describe("a video block mapper", () => {
             it.visibility = getVisibilityEntity("NEVER");
           })
         ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a visit journal mapper", () => {
+
+    const sandbox: SinonSandbox = createSandbox();
+
+    let mapper: VisitJournalMapper = new VisitJournalMapper();
+
+	beforeEach(() => {
+		mapper = new VisitJournalMapper();
+	});
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe("on mapping journal entries", () => {
+
+		context("on new journal entries", () => {
+
+			it("should create new journal entities", () => {
+
+				const local: Array<VisitJournalEntity> = [];
+
+				const remote: Array<JournalEntry> = [
+				  <JournalEntry>{
+				    username: "mmuster",
+            timestamp: 0
+          },
+          <JournalEntry>{
+				    username: "ssuster",
+            timestamp: 0
+          }
+        ];
+
+
+				const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+
+
+				const expected: Array<VisitJournalEntity> = [
+				  new VisitJournalEntity().applies(function(): void {
+				    this.username = "mmuster";
+				    this.time = 0;
+				    this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
+				chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing journal entries", () => {
+
+			it("should update the existing journal entities", () => {
+
+        const local: Array<VisitJournalEntity> = [
+          new VisitJournalEntity().applies(function(): void {
+            this.id = 1;
+            this.username = "mmuster";
+            this.time = 0;
+            this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
+        const remote: Array<JournalEntry> = [
+          <JournalEntry>{
+            username: "mmuster",
+            timestamp: 0
+          },
+          <JournalEntry>{
+            username: "ssuster",
+            timestamp: 0
+          }
+        ];
+
+
+        const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<VisitJournalEntity> = [
+          new VisitJournalEntity().applies(function(): void {
+            this.id = 1;
+            this.username = "mmuster";
+            this.time = 0;
+            this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
         chai.expect(result)
           .to.be.deep.equal(expected);
 			})

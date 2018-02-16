@@ -1,5 +1,5 @@
 import {TextblockEntity} from "../../entity/textblock.entity";
-import {ILIASLinkBlock, PictureBlock, TextBlock, VideoBlock} from "../../providers/rest/learnplace.pojo";
+import {ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock, VideoBlock} from "../../providers/rest/learnplace.pojo";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
@@ -13,9 +13,10 @@ import {User} from "../../../models/user";
 import {Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
+import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 
 /**
- * Describes a mapper for a specific block type.
+ * Describes a mapper for an array.
  *
  * The mapper must ensure, that already existing local data is updated.
  * Therefore the mapper needs two sources.
@@ -25,7 +26,7 @@ import {VideoBlockEntity} from "../../entity/videoblock.entity";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export interface BlockMapper<K, T> {
+export interface ArrayMapper<K, T> {
 
   /**
    * Maps the given {@code remote} array to
@@ -50,7 +51,7 @@ export interface BlockMapper<K, T> {
  * @version 0.0.2
  */
 @Injectable()
-export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> {
+export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> {
 
 
   map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Array<TextblockEntity> {
@@ -75,7 +76,7 @@ export class TextBlockMapper implements BlockMapper<TextblockEntity, TextBlock> 
  * @version 0.0.1
  */
 @Injectable()
-export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, PictureBlock> {
+export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
 
   map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
     return remote.map(pictureBlock =>
@@ -99,7 +100,7 @@ export class PictureBlockMapper implements BlockMapper<PictureBlockEntity, Pictu
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class LinkBlockMapper implements BlockMapper<LinkblockEntity, ILIASLinkBlock> {
+export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBlock> {
 
   /**
    * Maps the given {@code remote} link blocks to {@link LinkblockEntity}
@@ -132,7 +133,7 @@ export class LinkBlockMapper implements BlockMapper<LinkblockEntity, ILIASLinkBl
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
-export class VideoBlockMapper implements BlockMapper<VideoBlockEntity, VideoBlock> {
+export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBlock> {
 
   map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Array<VideoBlockEntity> {
     return remote.map(videoBlock =>
@@ -144,6 +145,38 @@ export class VideoBlockMapper implements BlockMapper<VideoBlockEntity, VideoBloc
         it.hash = videoBlock.hash;
         it.visibility = getVisibilityEntity(videoBlock.visibility);
       }));
+  }
+}
+
+/**
+ * Maps {@link JournalEntry} to {@link VisitJournalEntity}.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, JournalEntry> {
+
+  /**
+   * Maps the given {@code remote} journal entries to {@link VisitJournalEntity}
+   * by considering the given {@code local} entity array to find existing journal entries.
+   *
+   * If the {@code VisitJournalEntity#username} property matches the {@code JournalEntry#username} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * @param {Array<VisitJournalEntity>} local - the entities to search for existing journal entries
+   * @param {Array<JournalEntry>} remote - the journal entries to create / update
+   *
+   * @returns {Array<VisitJournalEntity>} the resulting mapped entity array
+   */
+  map(local: Array<VisitJournalEntity>, remote: Array<JournalEntry>): Array<VisitJournalEntity> {
+    return remote.map(journalEntry =>
+      findIn(local, journalEntry, (entity, journal) => entity.username == journal.username)
+        .orElse(new VisitJournalEntity()).applies(function(): void {
+        this.username = journalEntry.username;
+        this.time = journalEntry.timestamp;
+        this.synchronized = true;
+      })
+    );
   }
 }
 
