@@ -4,9 +4,7 @@ import {UserEntity} from "../../../src/entity/user.entity";
 import {InstallationLinkSupplier, TokenSupplier} from "../../../src/services/link/link-builder.supplier";
 import {Optional} from "../../../src/util/util.optional";
 import {UserRepository} from "../../../src/providers/repository/repository.user";
-import {TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../../../src/services/link/timeline.builder";
 import {IllegalStateError, NoSuchElementError} from "../../../src/error/errors";
-import {DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../../../src/services/link/default.builder";
 import {NewsLinkBuilder, NewsLinkBuilderImpl} from "../../../src/services/link/news.builder";
 
 chai.use(chaiAsPromised);
@@ -41,7 +39,7 @@ describe("A news link builder ", () => {
 
     context("without a news id", () => {
 
-      it("should throw an illegal state error.", async () => {
+      it("should throw an illegal state error.", async() => {
 
         await chai.expect(subject.build())
           .to.be.rejectedWith(IllegalStateError)
@@ -51,7 +49,7 @@ describe("A news link builder ", () => {
 
     context("without a news context id", () => {
 
-      it("should throw an illegal state error.", async () => {
+      it("should throw an illegal state error.", async() => {
 
         const id: number = 15;
         subject.newsId(id);
@@ -64,7 +62,7 @@ describe("A news link builder ", () => {
 
     context("without an authenticated user", () => {
 
-      it("should throw a no such element error.", async () => {
+      it("should throw a no such element error.", async() => {
 
         const id: number = 15;
         const context: number = 15;
@@ -82,7 +80,7 @@ describe("A news link builder ", () => {
 
     context("with an authenticated user and a valid news id and context", () => {
 
-      it("should build the ILIAS default object link.", async () => {
+      it("should build the ILIAS default object link.", async() => {
 
         const token: string = "auth token";
         const installation: string = "http://ilias.de";
