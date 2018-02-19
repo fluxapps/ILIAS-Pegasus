@@ -24,7 +24,7 @@ export class LoadingLinkBuilderImpl implements LoadingLinkBuilder {
   /**
    * Build the loading page link for the pegasus redirects.
    *
-   * @returns {Promise<string>} The login link which points to the selected installation.
+   * @returns {Promise<string>} The loading link which points to the selected installation.
    */
   async build(): Promise<string> {
     const installation: string = await this.installationLinkSupplier.get();
