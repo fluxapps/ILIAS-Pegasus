@@ -4,7 +4,6 @@ import {UserEntity} from "../../../src/entity/user.entity";
 import {InstallationLinkSupplier, TokenSupplier} from "../../../src/services/link/link-builder.supplier";
 import {Optional} from "../../../src/util/util.optional";
 import {UserRepository} from "../../../src/providers/repository/repository.user";
-import {TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../../../src/services/link/timeline.builder";
 import {IllegalStateError, NoSuchElementError} from "../../../src/error/errors";
 import {DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../../../src/services/link/default.builder";
 
@@ -40,7 +39,7 @@ describe("A default link builder ", () => {
 
     context("without a ref id", () => {
 
-      it("should throw an illegal state error.", async () => {
+      it("should throw an illegal state error.", async() => {
 
         await chai.expect(subject.build())
           .to.be.rejectedWith(IllegalStateError)
@@ -50,7 +49,7 @@ describe("A default link builder ", () => {
 
     context("without an authenticated user", () => {
 
-      it("should throw a no such element error.", async () => {
+      it("should throw a no such element error.", async() => {
 
         const refId: number = 15;
         subject.target(refId);
@@ -66,7 +65,7 @@ describe("A default link builder ", () => {
 
     context("with an authenticated user and a valid ref id", () => {
 
-      it("should build the ILIAS default object link.", async () => {
+      it("should build the ILIAS default object link.", async() => {
 
         const token: string = "auth token";
         const installation: string = "http://ilias.de";
