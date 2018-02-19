@@ -78,6 +78,7 @@ import {TIMELINE_LINK_BUILDER, TimelineLinkBuilderImpl} from "../services/link/t
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilderImpl} from "../services/link/default.builder";
 import {NEWS_LINK_BUILDER, NewsLinkBuilderImpl} from "../services/link/news.builder";
 import {LOADING_LINK_BUILDER, LoadingLinkBuilderImpl} from "../services/link/loading.builder";
+import {LOGIN_LINK_BUILDER, LoginLinkBuilderImpl} from "../services/link/login.builder";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -275,6 +276,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: LOADING_LINK_BUILDER,
       useClass: LoadingLinkBuilderImpl
+    },
+    {
+      provide: LOGIN_LINK_BUILDER,
+      useClass: LoginLinkBuilderImpl
     },
     AlwaysStrategy,
     NeverStrategy,
