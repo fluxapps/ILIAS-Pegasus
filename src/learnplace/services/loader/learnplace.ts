@@ -10,7 +10,6 @@ import {VisibilityEntity} from "../../entity/visibility.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
 import {Optional} from "../../../util/util.optional";
-import {apply, withIt} from "../../../util/util.function";
 import {HttpRequestError} from "../../../providers/http";
 import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper, VisitJournalMapper} from "./mappers";
 
@@ -162,29 +161,26 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
       const learnplaceEntity: LearnplaceEntity = (await this.learnplaceRepository.find(id)).orElse(new LearnplaceEntity());
 
-      withIt(learnplaceEntity, it => {
+      learnplaceEntity.objectId = learnplace.objectId;
 
-        it.objectId = learnplace.objectId;
-
-        it.map = apply(Optional.ofNullable(it.map).orElse(new MapEntity()), it => {
-          it.visibility = apply(new VisibilityEntity(), it => {
-            it.value = learnplace.map.visibility;
-          })
-        });
-
-        it.location = apply(Optional.ofNullable(learnplaceEntity.location).orElse(new LocationEntity()), it => {
-          it.latitude = learnplace.location.latitude;
-          it.longitude = learnplace.location.longitude;
-          it.radius = learnplace.location.radius;
-          it.elevation = learnplace.location.elevation;
-        });
-
-        it.visitJournal = this.visitJournalMapper.map(it.visitJournal, journalEntries);
-        it.textBlocks = this.textBlockMapper.map(it.textBlocks, blocks.text);
-        it.pictureBlocks = this.pictureBlockMapper.map(it.pictureBlocks, blocks.picture);
-        it.linkBlocks = this.linkBlockMapper.map(it.linkBlocks, blocks.iliasLink);
-        it.videoBlocks = this.videoBlockMapper.map(it.videoBlocks, blocks.video);
+      learnplaceEntity.map = Optional.ofNullable(learnplaceEntity.map).orElse(new MapEntity()).applies(function (): void {
+        this.visibility = new VisibilityEntity().applies(function (): void {
+          this.value = learnplace.map.visibility;
+        })
       });
+
+      learnplaceEntity.location = Optional.ofNullable(learnplaceEntity.location).orElse(new LocationEntity()).applies(function (): void {
+        this.latitude = learnplace.location.latitude;
+        this.longitude = learnplace.location.longitude;
+        this.radius = learnplace.location.radius;
+        this.elevation = learnplace.location.elevation;
+      });
+
+      learnplaceEntity.visitJournal = this.visitJournalMapper.map(learnplaceEntity.visitJournal, journalEntries);
+      learnplaceEntity.textBlocks = this.textBlockMapper.map(learnplaceEntity.textBlocks, blocks.text);
+      learnplaceEntity.pictureBlocks = this.pictureBlockMapper.map(learnplaceEntity.pictureBlocks, blocks.picture);
+      learnplaceEntity.linkBlocks = this.linkBlockMapper.map(learnplaceEntity.linkBlocks, blocks.iliasLink);
+      learnplaceEntity.videoBlocks = this.videoBlockMapper.map(learnplaceEntity.videoBlocks, blocks.video);
 
       await this.learnplaceRepository.save(learnplaceEntity);
 
