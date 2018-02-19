@@ -57,13 +57,13 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
   map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Array<TextblockEntity> {
 
     return remote.map(textBlock =>
-      // TODO: use unique identifier to compare
-      apply(findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new TextblockEntity()), it => {
-        it.iliasId = textBlock.id;
-        it.sequence = textBlock.sequence;
-        it.content = textBlock.content;
-        it.visibility = getVisibilityEntity(textBlock.visibility);
+      findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new TextblockEntity())
+        .applies(function(): void {
+          this.iliasId = textBlock.id;
+          this.sequence = textBlock.sequence;
+          this.content = textBlock.content;
+          this.visibility = getVisibilityEntity(textBlock.visibility);
       })
     );
   }
@@ -80,26 +80,28 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
 
   map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
     return remote.map(pictureBlock =>
-      apply(findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new PictureBlockEntity()), it => {
-        it.iliasId = pictureBlock.id;
-        it.sequence = pictureBlock.sequence;
-        it.title = pictureBlock.title;
-        it.description = pictureBlock.description;
-        it.thumbnail = pictureBlock.thumbnail;
-        it.url = pictureBlock.url;
-        it.visibility = getVisibilityEntity(pictureBlock.visibility);
+      findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new PictureBlockEntity())
+        .applies(function(): void {
+          this.iliasId = pictureBlock.id;
+          this.sequence = pictureBlock.sequence;
+          this.title = pictureBlock.title;
+          this.description = pictureBlock.description;
+          this.thumbnail = pictureBlock.thumbnail;
+          this.url = pictureBlock.url;
+          this.visibility = getVisibilityEntity(pictureBlock.visibility);
       })
     );
   }
 }
 
 /**
- * Maps {@link ILIASLinkBlock} to {@link LinkBlockEntity}.
+ * Maps {@link ILIASLinkBlock} to {@link LinkblockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+@Injectable()
 export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBlock> {
 
   /**
@@ -116,12 +118,13 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
    */
   map(local: Array<LinkblockEntity>, remote: Array<ILIASLinkBlock>): Array<LinkblockEntity> {
     return remote.map(linkBlock =>
-      apply(findIn(local, linkBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new LinkblockEntity()), it => {
-        it.iliasId = linkBlock.id;
-        it.sequence = linkBlock.sequence;
-        it.refId = linkBlock.refId;
-        it.visibility = getVisibilityEntity(linkBlock.visibility);
+      findIn(local, linkBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new LinkblockEntity())
+        .applies(function(): void {
+          this.iliasId = linkBlock.id;
+          this.sequence = linkBlock.sequence;
+          this.refId = linkBlock.refId;
+          this.visibility = getVisibilityEntity(linkBlock.visibility);
       })
     );
   }
@@ -131,19 +134,33 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
  * Maps {@link VideoBlock} to {@link VideoBlockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
+@Injectable()
 export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBlock> {
 
+  /**
+   * Maps the given {@code remote} video blocks to {@link VideoBlockEntity}
+   * by considering the given {@code local} entity array to find existing video blocks.
+   *
+   * If the {@code VideoBlockEntity#iliasId} property matches the {@code VideoBlock#id} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * @param {Array<VideoBlockEntity>} local - the entities to search for existing video blocks
+   * @param {Array<VideoBlock>} remote - the video blocks to update / create
+   *
+   * @returns {Array<VideoBlockEntity>} the resulting mapped entity array
+   */
   map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Array<VideoBlockEntity> {
     return remote.map(videoBlock =>
-      apply(findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new VideoBlockEntity()), it => {
-        it.iliasId = videoBlock.id;
-        it.sequence = videoBlock.sequence;
-        it.url = videoBlock.url;
-        it.hash = videoBlock.hash;
-        it.visibility = getVisibilityEntity(videoBlock.visibility);
+      findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new VideoBlockEntity())
+        .applies(function(): void {
+          this.iliasId = videoBlock.id;
+          this.sequence = videoBlock.sequence;
+          this.url = videoBlock.url;
+          this.hash = videoBlock.hash;
+          this.visibility = getVisibilityEntity(videoBlock.visibility);
       }));
   }
 }
@@ -154,6 +171,7 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+@Injectable()
 export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, JournalEntry> {
 
   /**
@@ -171,10 +189,11 @@ export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, Journ
   map(local: Array<VisitJournalEntity>, remote: Array<JournalEntry>): Array<VisitJournalEntity> {
     return remote.map(journalEntry =>
       findIn(local, journalEntry, (entity, journal) => entity.username == journal.username)
-        .orElse(new VisitJournalEntity()).applies(function(): void {
-        this.username = journalEntry.username;
-        this.time = journalEntry.timestamp;
-        this.synchronized = true;
+        .orElse(new VisitJournalEntity())
+        .applies(function(): void {
+          this.username = journalEntry.username;
+          this.time = journalEntry.timestamp;
+          this.synchronized = true;
       })
     );
   }

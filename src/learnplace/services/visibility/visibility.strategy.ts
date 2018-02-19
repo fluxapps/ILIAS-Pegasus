@@ -159,6 +159,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
+@Injectable()
 export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
 
   private membershipId: number = -1;

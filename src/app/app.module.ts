@@ -59,6 +59,7 @@ import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repo
 import {LearnplacePage} from "../learnplace/pages/learnplace/learnplace.component";
 import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
 import {
+  AfterVisitPlaceStrategy,
   AlwaysStrategy, NeverStrategy,
   OnlyAtPlaceStrategy
 } from "../learnplace/services/visibility/visibility.strategy";
@@ -77,7 +78,10 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
 import {PictureBlockModal} from "../learnplace/directives/pictureblock/pictureblock.modal";
-import {PictureBlockMapper, TextBlockMapper} from "../learnplace/services/loader/mappers";
+import {
+  LinkBlockMapper, PictureBlockMapper, TextBlockMapper,
+  VideoBlockMapper, VisitJournalMapper
+} from "../learnplace/services/loader/mappers";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -224,8 +228,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       provide: LEARNPLACE_LOADER,
       useClass: RestLearnplaceLoader
     },
-    TextBlockMapper,
-    PictureBlockMapper,
     {
       provide: LEARNPLACE_API,
       useClass: ILIASLearnplaceAPI
@@ -241,7 +243,15 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     AlwaysStrategy,
     NeverStrategy,
     OnlyAtPlaceStrategy,
+    AfterVisitPlaceStrategy,
     VisibilityStrategyApplier,
+
+    // from src/learnplace/services/loader/mappers
+    TextBlockMapper,
+    PictureBlockMapper,
+    LinkBlockMapper,
+    VideoBlockMapper,
+    VisitJournalMapper,
 
     ConnectionService,
     ILIASRestProvider,
