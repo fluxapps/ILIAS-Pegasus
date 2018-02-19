@@ -82,6 +82,14 @@ import {
   LinkBlockMapper, PictureBlockMapper, TextBlockMapper,
   VideoBlockMapper, VisitJournalMapper
 } from "../learnplace/services/loader/mappers";
+import {
+  TypeORMVisitJournalRepository,
+  VISIT_JOURNAL_REPOSITORY
+} from "../learnplace/providers/repository/visitjournal.repository";
+import {
+  VISIT_JOURNAL_SYNCHRONIZATION,
+  VisitJournalSynchronizationImpl
+} from "../learnplace/services/visitjournal.synchronize";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -215,6 +223,14 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: MAP_REPOSITORY,
       useClass: TypeORMMapRepository
+    },
+    {
+      provide: VISIT_JOURNAL_REPOSITORY,
+      useClass: TypeORMVisitJournalRepository
+    },
+    {
+      provide: VISIT_JOURNAL_SYNCHRONIZATION,
+      useClass: VisitJournalSynchronizationImpl
     },
     {
       provide: LEARNPLACE,
