@@ -21,7 +21,6 @@
     ],
     "no-any": true,
     "no-import-side-effect": true,
-    "no-magic-numbers": true,
     "no-non-null-assertion": true,
     "no-reference": true,
     "no-unnecessary-type-assertion": true,
