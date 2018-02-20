@@ -19,7 +19,7 @@ export class LearnplaceEntity {
   @OneToOne(type => MapEntity, map => map.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   map: MapEntity;
 
-  @OneToMany(type => VideoBlockEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+  @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   visitJournal: Array<VisitJournalEntity>;
 
   @OneToMany(type => TextblockEntity, textBlock => textBlock.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
