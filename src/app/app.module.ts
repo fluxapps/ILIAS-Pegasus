@@ -1,5 +1,5 @@
-import {NgModule, ErrorHandler} from "@angular/core";
-import {IonicApp, IonicModule, IonicErrorHandler} from "ionic-angular";
+import {NgModule, ErrorHandler, FactoryProvider} from "@angular/core";
+import {IonicApp, IonicModule, IonicErrorHandler, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
@@ -48,7 +48,7 @@ import {Database} from "../services/database/database";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 import {
-  LEARNPLACE_LOADER,
+  LEARNPLACE_LOADER, LearnplaceLoader,
   RestLearnplaceLoader
 } from "../learnplace/services/loader/learnplace";
 import {
@@ -89,6 +89,7 @@ import {
   VISIT_JOURNAL_SYNCHRONIZATION,
   VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.synchronize";
+import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -257,6 +258,15 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LinkBlockMapper,
     VideoBlockMapper,
     VisitJournalMapper,
+
+    <FactoryProvider>{
+      provide: OpenLearnplaceAction,
+      useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
+        (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction =>
+          new OpenLearnplaceAction(loader, nav, learnplaceId, learnplaceName)
+      ,
+      deps: [LEARNPLACE_LOADER]
+    },
 
     ConnectionService,
     ILIASRestProvider,
