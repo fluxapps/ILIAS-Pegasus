@@ -21,7 +21,7 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isGenerated: true, isNullable: false}),
       new TableColumn({name: "username", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "time", type: "integer", isNullable: false}),
-      new TableColumn({name: "synchronized", type: "boolean", isNullable: false, default: false}),
+      new TableColumn({name: "synchronized", type: "boolean", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
