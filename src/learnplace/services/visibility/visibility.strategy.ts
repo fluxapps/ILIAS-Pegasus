@@ -1,11 +1,11 @@
 import {VisibilityAware} from "./visibility.context";
-import {Injectable} from "@angular/core";
-import {LearnplaceRepository} from "../../providers/repository/learnplace.repository";
+import {Inject, Injectable} from "@angular/core";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
 import {Geolocation} from "@ionic-native/geolocation";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {NoSuchElementError} from "../../../error/errors";
 import {Coordinates} from "../../../services/geodesy";
-import {LearnplaceAPI} from "../../providers/rest/learnplace.api";
+import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {isDefined} from "ionic-angular/es2015/util/util";
 import {Subscription} from "rxjs/Subscription";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
@@ -104,7 +104,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
   private membershipId: number = -1;
 
   constructor(
-    private readonly learnplaceRepository: LearnplaceRepository,
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     private readonly geolocation: Geolocation
   ) {}
 
@@ -165,8 +165,8 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
   private membershipId: number = -1;
 
   constructor(
-    private readonly learnplaceRepository: LearnplaceRepository,
-    private readonly learnplaceAPI: LearnplaceAPI,
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
+    @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
     private readonly geolocation: Geolocation
     // TODO: Add UserRepository
   ) {}
