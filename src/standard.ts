@@ -49,37 +49,37 @@ Object.defineProperties(Object.prototype, {
 
   applies: {
     value: function<T>(block: () => void): T {
-      block.apply(this);
-      return this;
+      block.apply(<T>this);
+      return <T>this;
     },
     writable: true
   },
 
   also: {
     value: function<T>(block: (it: T) => void): T {
-      block(this);
-      return this;
+      block(<T>this);
+      return <T>this;
     },
     writable: true
   },
 
   letIt: {
     value: function<T, R>(block: (it: T) => R): R {
-      return block(this);
+      return block(<T>this);
     },
     writable: true
   },
 
   takeIf: {
     value: function<T>(predicate: (it: T) => boolean): T | undefined {
-      return (predicate(this)? this : undefined);
+      return (predicate(<T>this)? <T>this : undefined);
     },
     writable: true
   },
 
   takeUnless: {
     value: function<T>(predicate: (it: T) => boolean): T | undefined {
-      return (predicate(this)? undefined : this);
+      return (predicate(<T>this)? undefined : <T>this);
     },
     writable: true
   }
