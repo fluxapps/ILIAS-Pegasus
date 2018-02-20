@@ -90,6 +90,8 @@ import {
   VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.synchronize";
 import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
+import {Geolocation} from "@ionic-native/geolocation";
+import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -118,6 +120,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     TextBlock,
     PictureBlock,
     PictureBlockModal,
+    VideoBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -285,6 +288,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     Toast,
     HttpClient,
     SplashScreen,
+    Geolocation,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
