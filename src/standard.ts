@@ -1,3 +1,5 @@
+import {Logging} from "./services/logging/logging.service";
+
 /**
  * Needs to be executed somewhere during the bootstrap process
  * in order to load the declarations in this module.
@@ -9,61 +11,76 @@
  * e.g. your main.ts
  */
 export function useStandard(): void {
-  console.debug("Standard is loaded");
+  Logging.getLogger("useStandard").debug(() => "standard.ts loaded");
 }
 
-/**
- * Calls the specified function {@code block} with 'this' value as thisArg
- * of the apply function {@code Function#apply(thisArg)} and returns its result.
- *
- * @param {T} thisArg - the 'this' value
- * @param {() => R} block - the function to call
- *
- * @returns {R} the result of the called function
- */
-export function withIt<T, R>(thisArg: T, block: () => R): R {
-  return block.apply(thisArg);
-}
-
-// Global declaration, so an import statement is not needed.
 declare global {
 
-  // extend the Object types
-  export interface Object {
+  interface Object {
 
     /**
-     * Calls the specified function {@code block} with 'this' value as thisArg
-     * of the apply function {@code Function#apply(thisArg)} and returns this value.
-     *
-     * @param {Function} block - the function to call
-     * @returns {T} the this value
+     * Calls the specified function {@code block} with 'this' value and returns 'this' value.
      */
     applies<T>(block: () => void): T;
 
     /**
-     * Returns `this` value if its satisfies the given {@code predicate} or 'undefined', if it doesn't.
-     *
-     * @param {(it: T) => boolean} predicate - the condition to return `this` value
-     *
-     * @returns {T | undefined} `this` value or undefined
+     * Calls the specified function {@code block} with 'this' value as its argument and returns 'this' value.
+     */
+    also<T>(block: (it: T) => void): T;
+
+    /**
+     * Calls the specified function {@code block} with 'this' value is its argument and returns its value.
+     */
+    letIt<T, R>(block: (it: T) => R): R;
+
+    /**
+     * Returns 'this' value if it satisfies the given {@code predicate} or 'undefined', if it doesn't.
      */
     takeIf<T>(predicate: (it: T) => boolean): T | undefined;
+
+    /**
+     * Returns 'this' value if it does not satisfy the given {@code predicate} or 'undefined', if it does.
+     */
+    takeUnless<T>(predicate: (it: T) => boolean): T | undefined;
   }
 }
 
-// implementation for the global declarations
+Object.defineProperties(Object.prototype, {
 
-Object.defineProperty(Object.prototype, "applies", {
-  value: function <T>(block: Function): T {
-    block.apply(this);
-    return this;
+  applies: {
+    value: function<T>(block: () => void): T {
+      block.apply(this);
+      return this;
+    },
+    writable: true
   },
-  writable: true
-});
 
-Object.defineProperty(Object.prototype, "takeIf", {
-  value: function<T>(predicate: (it: T) => boolean): T | undefined {
-    return (predicate(this) ? this : undefined);
+  also: {
+    value: function<T>(block: (it: T) => void): T {
+      block(this);
+      return this;
+    },
+    writable: true
   },
-  writable: true
+
+  letIt: {
+    value: function<T, R>(block: (it: T) => R): R {
+      return block(this);
+    },
+    writable: true
+  },
+
+  takeIf: {
+    value: function<T>(predicate: (it: T) => boolean): T | undefined {
+      return (predicate(this)? this : undefined);
+    },
+    writable: true
+  },
+
+  takeUnless: {
+    value: function<T>(predicate: (it: T) => boolean): T | undefined {
+      return (predicate(this)? undefined : this);
+    },
+    writable: true
+  }
 });
