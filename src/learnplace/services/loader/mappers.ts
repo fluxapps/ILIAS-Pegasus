@@ -5,8 +5,6 @@ import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
 import {apply} from "../../../util/util.function";
 import {Optional} from "../../../util/util.optional";
-import {FileTransfer} from "@ionic-native/file-transfer";
-import {LearnplaceData} from "./learnplace";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
 import {User} from "../../../models/user";

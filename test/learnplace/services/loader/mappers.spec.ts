@@ -1,4 +1,4 @@
-import {SinonSandbox, createSandbox, SinonStub} from "sinon";
+import {SinonSandbox, createSandbox} from "sinon";
 import {
   LinkBlockMapper,
   PictureBlockMapper, SimpleStorageLocation,
@@ -12,7 +12,6 @@ import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entit
 import {getVisibilityEntity} from "./learnplace.spec";
 import {stubInstance} from "../../../SinonUtils";
 import {FileTransfer} from "@ionic-native/file-transfer";
-import {LearnplaceData, LearnplaceObject} from "../../../../src/learnplace/services/loader/learnplace";
 import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
@@ -113,10 +112,6 @@ describe("a picture block mapper", () => {
 
   const sandbox: SinonSandbox = createSandbox();
   const mockFileTransfer: FileTransfer = stubInstance(FileTransfer);
-  const learnplace: LearnplaceData = new LearnplaceObject().applies(function(): void {
-    this.setId(1);
-    this.setName("Learnplace xy");
-  });
   const mockFile: File = stubInstance(File);
   const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
 

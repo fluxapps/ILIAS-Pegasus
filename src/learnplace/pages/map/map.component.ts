@@ -1,15 +1,14 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
 import {GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
-import {Platform} from "ionic-angular";
+import {NavParams, Platform} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {MapModel} from "../../services/block.model";
-import {LEARNPLACE, LearnplaceData} from "../../services/loader/learnplace";
 
 /**
  * Component to display a map view.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.3
+ * @version 1.0.0
  */
 @Component({
     selector: "map",
@@ -17,20 +16,25 @@ import {LEARNPLACE, LearnplaceData} from "../../services/loader/learnplace";
 })
 export class MapPage implements AfterViewInit{
 
+  private readonly learnplaceId: number;
+  readonly title: string;
+
   constructor(
     private readonly platform: Platform,
     @Inject(MAP_SERVICE) private readonly mapService: MapService,
-    @Inject(LEARNPLACE) private readonly learnplace: LearnplaceData
-  ) {}
+    params: NavParams
+  ) {
+    this.learnplaceId = params.get("learnplaceId");
+    this.title = params.get("learnplaceName")
+  }
 
   ngAfterViewInit(): void {
-
     this.platform.ready().then((): void => {this.init()})
   }
 
   async init(): Promise<void> {
 
-    const map: MapModel = await this.mapService.getMap(this.learnplace.getId());
+    const map: MapModel = await this.mapService.getMap(this.learnplaceId);
 
     const builder: MapBuilder = new MapBuilder();
 
@@ -52,4 +56,9 @@ export class MapPage implements AfterViewInit{
       .bind("map")
       .build();
   }
+}
+
+export interface MapPageParams {
+  readonly learnplaceId: number;
+  readonly learnplaceName: string;
 }

@@ -48,7 +48,7 @@ import {Database} from "../services/database/database";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 import {
-  LEARNPLACE, LEARNPLACE_LOADER, LearnplaceObject, MUT_LEARNPLACE,
+  LEARNPLACE_LOADER,
   RestLearnplaceLoader
 } from "../learnplace/services/loader/learnplace";
 import {
@@ -56,7 +56,6 @@ import {
   TypeORMLearnplaceRepository
 } from "../learnplace/providers/repository/learnplace.repository";
 import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
-import {LearnplacePage} from "../learnplace/pages/learnplace/learnplace.component";
 import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
 import {
   AfterVisitPlaceStrategy,
@@ -111,7 +110,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     ModalPage,
 
     /* from src/learnplace */
-    LearnplacePage,
     MapPage,
     TabsPage,
     ContentPage,
@@ -150,7 +148,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     SyncFinishedModal,
 
     /* from src/learnplace */
-    LearnplacePage,
     MapPage,
     TabsPage,
     ContentPage,
@@ -231,14 +228,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     {
       provide: VISIT_JOURNAL_SYNCHRONIZATION,
       useClass: VisitJournalSynchronizationImpl
-    },
-    {
-      provide: LEARNPLACE,
-      useClass: LearnplaceObject
-    },
-    {
-      provide: MUT_LEARNPLACE,
-      useExisting: LEARNPLACE
     },
     {
       provide: LEARNPLACE_LOADER,
