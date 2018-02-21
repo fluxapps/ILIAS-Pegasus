@@ -67,8 +67,8 @@ export class HttpClient {
  * @version 1.0.0
  */
 export interface RequestOptions {
-    readonly headers: Array<[string, string]>;
-    readonly urlParams: Array<[string, string]>;
+    readonly headers?: Array<[string, string]>;
+    readonly urlParams?: Array<[string, string]>;
 }
 
 /**
