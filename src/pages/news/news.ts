@@ -1,4 +1,7 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {Builder} from "../../services/builder.base";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
 import {Alert, AlertController, AlertOptions, Modal, ModalController, Refresher} from "ionic-angular";
 import {TimeoutError} from "rxjs/Rx";
@@ -39,6 +42,9 @@ export class NewsPage implements AfterViewInit {
     private readonly alert: AlertController,
     private readonly footerToolbar: FooterToolbarService,
     private readonly modal: ModalController,
+    @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+    private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+    @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
   ) {}
 
 
@@ -46,6 +52,14 @@ export class NewsPage implements AfterViewInit {
     this.log.debug(() => "News view initialized.");
     this.fetchPresenterNewsTuples().then(
       (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
+  }
+
+  openNews(id: number, context: number): void {
+    this.log.debug(() => `open news with id ${id}, context id ${context}`);
+    this.openInIliasActionFactory(
+      this.translate.instant("actions.view_in_ilias"),
+      this.linkBuilder.news().newsId(id).context(context)
+    ).execute().catch(() => "Open news action failed with error");
   }
 
   // ------------------- object-list duplicate----------------------------

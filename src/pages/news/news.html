@@ -27,7 +27,7 @@
 
   <!-- <ion-list> -->
   <div *ngFor="let newsPresenter of newsPresenters">
-    <ion-item>
+    <ion-item (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)">
       <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon>
 
       <h2 class="news-title">{{newsPresenter[0].title}}</h2>
