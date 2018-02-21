@@ -1,23 +1,7 @@
-import {createSandbox, SinonSandbox} from "sinon";
 import {HttpResponse, JsonValidationError} from "../../src/providers/http";
-import {Response} from "@angular/http";
-import {stubInstance} from "../SinonUtils";
+import {HttpResponse as Response} from "@angular/common/http";
 
 describe("a http response", () => {
-
-  const sandbox: SinonSandbox = createSandbox();
-
-  const mockResponse: Response = stubInstance(Response);
-
-  let httpResponse: HttpResponse = new HttpResponse(mockResponse);
-
-	beforeEach(() => {
-    httpResponse = new HttpResponse(mockResponse);
-	});
-
-	afterEach(() => {
-    sandbox.restore();
-	});
 
 	describe("a json schema to validate", () => {
 
@@ -40,20 +24,16 @@ describe("a http response", () => {
 
 			it("should return the json as object", () => {
 
-				// Arrange
-        const object: object = {
-          "id": 1,
-          "name": "a test"
-        };
-        sandbox.stub(mockResponse, "json")
-          .returns(object);
+        const text: string = '{"id": 1, "name": "a test"}';
+        const mockResponse: Response<ArrayBuffer> = new Response({body: strToBuffer(text)});
 
-				// Act
+
+        const httpResponse: HttpResponse = new HttpResponse(mockResponse);
         const json: object = httpResponse.json(schema);
 
-				// Assert
+
         chai.expect(json)
-          .to.be.deep.equal(object);
+          .to.be.deep.equal(JSON.parse(text));
 			});
 		});
 
@@ -61,17 +41,15 @@ describe("a http response", () => {
 
 			it("should throw a json validation error", () => {
 
-				// Arrange
-        const object: object = {
-          "foo": 1
-        };
-        sandbox.stub(mockResponse, "json")
-          .returns(object);
+        const text: string = '{"foo": 1}';
+        const mockResponse: Response<ArrayBuffer> = new Response({body: strToBuffer(text)});
 
-				// Assert
+
+        const httpResponse: HttpResponse = new HttpResponse(mockResponse);
+
         chai.expect((): void => { httpResponse.json(schema) })
           .to.throw(JsonValidationError)
-          .to.have.property("message", 'requires property "id"')
+          .to.have.property("message", 'requires property "id"');
 			})
 		});
 
@@ -79,15 +57,42 @@ describe("a http response", () => {
 
 			it("should throw a json validation error", () => {
 
-				// Arrange
-        sandbox.stub(mockResponse, "json")
-          .throws(Error);
+        const text: string = "this is not json @: 4";
+        const mockResponse: Response<ArrayBuffer> = new Response({body: strToBuffer(text)});
 
-				// Assert
+
+        const httpResponse: HttpResponse = new HttpResponse(mockResponse);
+
         chai.expect((): void => { httpResponse.json(schema) })
           .to.throw(JsonValidationError)
           .to.have.property("message", "Could not parse response body to json")
 			})
 		});
 	});
+
+  describe("an array buffer to text", () => {
+
+    context("on UTF-8 encoded text", () => {
+
+      it("should return the text representation of the array buffer", () => {
+
+        const text: string = "text to read";
+        const mockResponse: Response<ArrayBuffer> = new Response({body: strToBuffer(text)});
+
+
+        const httpResponse: HttpResponse = new HttpResponse(mockResponse);
+        chai.expect(httpResponse.text())
+          .to.be.equal(text);
+      });
+    });
+  });
 });
+
+function strToBuffer(value: string): ArrayBuffer {
+  const buffer: ArrayBuffer = new ArrayBuffer(value.length); // 1 byte for each character
+  const bufferView: Uint8Array = new Uint8Array(buffer);
+  for (let i: number = 0; i < value.length; i++) {
+    bufferView[i] = value.charCodeAt(i);
+  }
+  return buffer;
+}
