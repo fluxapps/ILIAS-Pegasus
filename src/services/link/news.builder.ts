@@ -4,6 +4,8 @@ import {INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, TOKEN_SUPPLIER, To
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {IllegalStateError, NoSuchElementError} from "../../error/errors";
 import {UserEntity} from "../../entity/user.entity";
+import {Logging} from "../logging/logging.service";
+import {Logger} from "../logging/logging.api";
 
 /**
  * News link builder, builds links to personal ILIAS news pages.
@@ -33,10 +35,12 @@ export interface NewsLinkBuilder extends Builder<Promise<string>> {
   context(context: number): NewsLinkBuilder;
 }
 
-export const NEWS_LINK_BUILDER: InjectionToken<NewsLinkBuilder> = new InjectionToken("token for news link builder");
+export const NEWS_LINK_BUILDER: InjectionToken<() => NewsLinkBuilder> = new InjectionToken("token for news link builder factory");
 
 @Injectable()
 export class NewsLinkBuilderImpl implements NewsLinkBuilder {
+
+  private readonly log: Logger = Logging.getLogger(NewsLinkBuilderImpl.name);
 
   private id: number = -1;
   private contextId: number = -1;
@@ -80,6 +84,8 @@ export class NewsLinkBuilderImpl implements NewsLinkBuilder {
    */
   async build(): Promise<string> {
     this.validateBuilderState();
+
+    this.log.debug(() => JSON.stringify(this.userRepository));
 
     const user: UserEntity = (await this.userRepository.findAuthenticatedUser())
       .orElseThrow(() => new NoSuchElementError("No authenticated user found, unable to build news ILIAS link."));

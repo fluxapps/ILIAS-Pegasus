@@ -22,7 +22,7 @@ export interface ResourceLinkBuilder extends Builder<Promise<string>>{
   resource(path: string): ResourceLinkBuilder;
 }
 
-export const RESOURCE_LINK_BUILDER: InjectionToken<ResourceLinkBuilder> = new InjectionToken("token for the resource link builder");
+export const RESOURCE_LINK_BUILDER: InjectionToken<() => ResourceLinkBuilder> = new InjectionToken("token for the resource link builder factory");
 
 @Injectable()
 export class ResourceLinkBuilderImpl implements ResourceLinkBuilder {
@@ -61,7 +61,7 @@ export class ResourceLinkBuilderImpl implements ResourceLinkBuilder {
 
     const token: string = await this.tokenSupplier.get();
     const installation: string = await this.installationLinkSupplier.get();
-    return `${installation}/${this.path}?user=${user.iliasUserId}&token=${token}`;
+    return `${installation}/${this.path}?user=${user.iliasUserId}&token=${token}&target=ilias_app_resource`;
   }
 
   /**

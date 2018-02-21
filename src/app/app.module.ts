@@ -1,4 +1,4 @@
-import {NgModule, ErrorHandler} from "@angular/core";
+import {NgModule, ErrorHandler, Provider, FactoryProvider} from "@angular/core";
 import {IonicApp, IonicModule, IonicErrorHandler} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {HttpModule, Http} from "@angular/http";
@@ -70,16 +70,20 @@ import {FallbackscreenErrorHandler} from "./fallback/fallbackscreen.error-handle
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {NewsPage} from "../pages/news/news";
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
-import {USER_REPOSITORY, UserTypeORMRepository} from "../providers/repository/repository.user";
+import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "../providers/repository/repository.user";
 import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from "../services/news/news.synchronization";
-import {AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplierImpl, TOKEN_SUPPLIER} from "../services/link/link-builder.supplier";
-import {TIMELINE_LINK_BUILDER, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
-import {DEFAULT_LINK_BUILDER, DefaultLinkBuilderImpl} from "../services/link/default.builder";
-import {NEWS_LINK_BUILDER, NewsLinkBuilderImpl} from "../services/link/news.builder";
-import {LOADING_LINK_BUILDER, LoadingLinkBuilderImpl} from "../services/link/loading.builder";
-import {LOGIN_LINK_BUILDER, LoginLinkBuilderImpl} from "../services/link/login.builder";
-import {RESOURCE_LINK_BUILDER, ResourceLinkBuilderImpl} from "../services/link/resource.builder";
+import {
+  AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, InstallationLinkSupplierImpl,
+  TOKEN_SUPPLIER, TokenSupplier
+} from "../services/link/link-builder.supplier";
+import {TIMELINE_LINK_BUILDER, TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
+import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../services/link/default.builder";
+import {NEWS_LINK_BUILDER, NewsLinkBuilder, NewsLinkBuilderImpl} from "../services/link/news.builder";
+import {LOADING_LINK_BUILDER, LoadingLinkBuilder, LoadingLinkBuilderImpl} from "../services/link/loading.builder";
+import {LOGIN_LINK_BUILDER, LoginLinkBuilder, LoginLinkBuilderImpl} from "../services/link/login.builder";
+import {RESOURCE_LINK_BUILDER, ResourceLinkBuilder, ResourceLinkBuilderImpl} from "../services/link/resource.builder";
+import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -262,29 +266,63 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       provide: TOKEN_SUPPLIER,
       useClass: AuthTokenSupplier
     },
-    {
-      provide: TIMELINE_LINK_BUILDER,
-      useClass: TimelineLinkBuilderImpl
-    },
-    {
+    <FactoryProvider>{
       provide: DEFAULT_LINK_BUILDER,
-      useClass: DefaultLinkBuilderImpl
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => DefaultLinkBuilder => {
+        return (): DefaultLinkBuilder => new DefaultLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
     },
-    {
+    <FactoryProvider>{
       provide: NEWS_LINK_BUILDER,
-      useClass: NewsLinkBuilderImpl
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => NewsLinkBuilder => {
+        return (): NewsLinkBuilder => new NewsLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
     },
-    {
+    <FactoryProvider>{
       provide: LOADING_LINK_BUILDER,
-      useClass: LoadingLinkBuilderImpl
+      useFactory: (installationLink: InstallationLinkSupplier): () => LoadingLinkBuilder => {
+        return (): LoadingLinkBuilder => new LoadingLinkBuilderImpl(installationLink);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER]
     },
-    {
+    <FactoryProvider>{
       provide: LOGIN_LINK_BUILDER,
-      useClass: LoginLinkBuilderImpl
+      useFactory: (): () => LoginLinkBuilder => {
+        return (): LoginLinkBuilder => new LoginLinkBuilderImpl();
+      },
+      deps: []
+    },
+    <FactoryProvider>{
+      provide: RESOURCE_LINK_BUILDER,
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => ResourceLinkBuilder => {
+        return (): ResourceLinkBuilder => new ResourceLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
+    },
+    <FactoryProvider>{
+      provide: TIMELINE_LINK_BUILDER,
+      useFactory: (installationLink: InstallationLinkSupplier, tokenSupplier: TokenSupplier, userRepository: UserRepository): TimelineLinkBuilder => {
+        return new TimelineLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
     },
     {
-      provide: RESOURCE_LINK_BUILDER,
-      useClass: ResourceLinkBuilderImpl
+      provide: LINK_BUILDER,
+      useClass: LinkBuilderImpl
     },
     AlwaysStrategy,
     NeverStrategy,

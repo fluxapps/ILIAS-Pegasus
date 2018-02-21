@@ -14,7 +14,7 @@ export interface TimelineLinkBuilder extends Builder<Promise<string>> {
   target(refId: number): TimelineLinkBuilder;
 }
 
-export const TIMELINE_LINK_BUILDER: InjectionToken<TimelineLinkBuilder> = new InjectionToken("token for timeline link builder");
+export const TIMELINE_LINK_BUILDER: InjectionToken<() => TimelineLinkBuilder> = new InjectionToken("token for timeline link builder factory");
 
 /**
  * The time-line link builder, creates a link to an arbitrary ILIAS time-line enabled container object, for example a course.

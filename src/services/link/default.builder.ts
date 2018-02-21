@@ -21,7 +21,7 @@ export interface DefaultLinkBuilder extends Builder<Promise<string>>{
   target(refId: number): DefaultLinkBuilder;
 }
 
-export const DEFAULT_LINK_BUILDER: InjectionToken<DefaultLinkBuilder> = new InjectionToken("token for the default link builder");
+export const DEFAULT_LINK_BUILDER: InjectionToken<() => DefaultLinkBuilder> = new InjectionToken("token for the default link builder factory");
 
 @Injectable()
 export class DefaultLinkBuilderImpl implements DefaultLinkBuilder {

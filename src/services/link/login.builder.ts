@@ -28,7 +28,7 @@ export interface LoginLinkBuilder extends Builder<string> {
 
 }
 
-export const LOGIN_LINK_BUILDER: InjectionToken<LoginLinkBuilder> = new InjectionToken("token for login link builder");
+export const LOGIN_LINK_BUILDER: InjectionToken<() => LoginLinkBuilder> = new InjectionToken("token for login link builder factory");
 
 @Injectable()
 export class LoginLinkBuilderImpl implements LoginLinkBuilder {

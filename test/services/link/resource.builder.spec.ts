@@ -85,7 +85,7 @@ describe("A resource link builder ", () => {
           .resolves("http://ilias.de");
 
         await chai.expect(subject.build())
-          .to.be.eventually.equal(`${installation}/${path}?user=${user.iliasUserId}&token=${token}`);
+          .to.be.eventually.equal(`${installation}/${path}?user=${user.iliasUserId}&token=${token}&target=ilias_app_resource`);
       });
     });
   })

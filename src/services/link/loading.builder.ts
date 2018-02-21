@@ -12,7 +12,7 @@ export interface LoadingLinkBuilder extends Builder<Promise<string>> {
 
 }
 
-export const LOADING_LINK_BUILDER: InjectionToken<LoadingLinkBuilder> = new InjectionToken("token for loading link builder");
+export const LOADING_LINK_BUILDER: InjectionToken<() => LoadingLinkBuilder> = new InjectionToken("token for loading link builder factory");
 
 @Injectable()
 export class LoadingLinkBuilderImpl implements LoadingLinkBuilder {
