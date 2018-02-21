@@ -233,7 +233,7 @@ export class ILIASObject extends ActiveRecord {
             .then(chain => Promise.resolve(chain[0]));
     }
 
-    get rootParent(): Promise<String> {
+    get rootParent(): Promise<string> {
         return this.getRootParent().then(object => object.title);
     }
 

@@ -1,16 +1,18 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from "@angular/core";
 import {
   NavController, NavParams, ActionSheetController, AlertController,
-  ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher, AlertOptions
-} from 'ionic-angular';
+  ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher, AlertOptions, ActionSheet, Toast, Alert
+} from "ionic-angular";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ILIASObject} from "../../models/ilias-object";
+import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {User} from "../../models/user";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
-import {ILIASObjectAction, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
-import {OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
@@ -43,22 +45,22 @@ import {Logging} from "../../services/logging/logging.service";
 
 
 @Component({
-	templateUrl: 'object-list.html',
+	templateUrl: "object-list.html",
 })
 export class ObjectListPage {
 
 	/**
 	 * Objects under the given parent object
 	 */
-	public objects: ILIASObject[] = [];
+	objects: Array<ILIASObject> = [];
 
 	/**
 	 * The parent container object that was clicked to display the current objects
 	 */
-	public parent: ILIASObject;
-	public pageTitle: string;
-	public user: User;
-	public actionSheetActive = false;
+	parent: ILIASObject;
+	pageTitle: string;
+	user: User;
+	actionSheetActive: boolean = false;
 
 	private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
@@ -78,16 +80,19 @@ export class ObjectListPage {
 				readonly footerToolbar: FooterToolbarService,
 				private readonly events: Events,
 				private readonly urlConverter: TokenUrlConverter,
-				private readonly browser: InAppBrowser
+				private readonly browser: InAppBrowser,
+        @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+              private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+        @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
 	) {
-		this.parent = params.get('parent');
+		this.parent = params.get("parent");
 
 		if (this.parent) {
 			this.pageTitle = this.parent.title;
 			this.pageLayout = new PageLayout(this.parent.type);
 			this.timeline = new TimeLine(this.parent.type);
 		} else {
-			this.pageTitle = ''; // will be updated by the observer
+			this.pageTitle = ""; // will be updated by the observer
 			this.pageLayout = new PageLayout();
 			this.timeline = new TimeLine();
 			translate.get("object-list.title").subscribe((lng) => {
@@ -100,18 +105,24 @@ export class ObjectListPage {
 	/**
 	 * Opens the parent object in ILIAS.
 	 */
-	openPageLayout() {
+	openPageLayout(): void {
 		this.checkParent();
-		const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.parent.link), this.urlConverter, this.browser);
+		const action: ILIASObjectAction = this.openInIliasActionFactory(
+		  this.translate.instant("actions.view_in_ilias"),
+      this.linkBuilder.default().target(this.parent.refId)
+    );
 		this.executeAction(action);
 	}
 
 	/**
 	 * Opens the timeline of the parent object in ILIAS.
 	 */
-	openTimeline() {
+	openTimeline(): void {
 		this.checkParent();
-		const action = new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.parent.link, ILIASLinkView.TIMELINE), this.urlConverter, this.browser);
+		const action: ILIASObjectAction = this.openInIliasActionFactory(
+		  this.translate.instant("actions.view_in_ilias"),
+      this.linkBuilder.timeline().target(this.parent.refId)
+    );
 		this.executeAction(action);
 	}
 
@@ -120,18 +131,18 @@ export class ObjectListPage {
 	 *
 	 * @throws Exception if the parent is null
 	 */
-	private checkParent() {
-		if (this.parent == null) {
+	private checkParent(): void {
+		if (this.parent == undefined) {
 			throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
 		}
 	}
 
-	public ionViewDidEnter() {
+	ionViewDidEnter(): void {
 		Log.write(this, "Did enter.");
-		return this.calculateChildrenMarkedAsNew();
+		this.calculateChildrenMarkedAsNew();
 	}
 
-	public ionViewDidLoad() {
+	ionViewDidLoad(): void {
 		Log.write(this, "Did load page object list.");
 
 		User.currentUser()
@@ -142,7 +153,7 @@ export class ObjectListPage {
       })
       .then(() => {
 
-		    if (this.objects.length == 0 && this.parent == null) {
+		    if (this.objects.length == 0 && this.parent == undefined) {
 		      return this.executeSync();
         }
       });
@@ -152,7 +163,7 @@ export class ObjectListPage {
 
 	  this.user = await User.currentUser();
 
-    if (this.parent == null) {
+    if (this.parent == undefined) {
       await this.loadCachedDesktopData();
     } else {
       await this.loadCachedObjectData();
@@ -166,7 +177,7 @@ export class ObjectListPage {
 
     this.user = await User.currentUser();
 
-    if (this.parent == null) {
+    if (this.parent == undefined) {
       await this.loadOnlineDesktopData();
     } else {
       await this.loadOnlineObjectData();
@@ -276,10 +287,10 @@ export class ObjectListPage {
 		this.objects.forEach(iliasObject => {
 			if (iliasObject.isContainer()) {
 				ILIASObject.findByParentRefIdRecursive(iliasObject.refId, iliasObject.userId).then(iliasObjects => {
-					let newObjects = iliasObjects.filter(iliasObject => {
+					const newObjects: Array<ILIASObject> = iliasObjects.filter((iliasObject: ILIASObject) => {
 						return iliasObject.isNew || iliasObject.isUpdated;
 					});
-					let n = newObjects.length;
+					const n: number = newObjects.length;
 					Log.describe(this, "Object:", iliasObject);
 					Log.describe(this, "Objects marked as new: ", n);
 					iliasObject.newSubItems = n;
@@ -388,7 +399,7 @@ export class ObjectListPage {
 	 * Execute primary action of given object
 	 * @param iliasObject
 	 */
-	public onClick(iliasObject: ILIASObject): void {
+	onClick(iliasObject: ILIASObject): void {
 		if (this.actionSheetActive) return;
 		const primaryAction = this.getPrimaryAction(iliasObject);
 		this.executeAction(primaryAction);
@@ -408,29 +419,35 @@ export class ObjectListPage {
 	protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
 
 		if (iliasObject.isLinked()) {
-			return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
+			return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
 		}
 
 		if (iliasObject.isContainer()) {
 			return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
 		}
-		if (iliasObject.type == 'file') {
-			return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
+		if (iliasObject.type == "file") {
+			return new DownloadAndOpenFileExternalAction(
+			  this.translate.instant("actions.download_and_open_in_external_app"),
+        iliasObject,
+        this.file,
+        this.translate,
+        this.alert
+      );
 		}
 
-		return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
+    return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
 	}
 
 	/**
 	 * Show the action sheet for the given object
 	 * @param iliasObject
 	 */
-	public showActions(iliasObject: ILIASObject) {
+	showActions(iliasObject: ILIASObject): void {
 		this.actionSheetActive = true;
 		// let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
-		const actions: ILIASObjectAction[] = [
+		const actions: Array<ILIASObjectAction> = [
 			new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-			new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser)
+      this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
 		];
 		if (!iliasObject.isFavorite) {
 			actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
@@ -438,9 +455,15 @@ export class ObjectListPage {
 			actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
 		}
 
-		if (iliasObject.isContainer() && !iliasObject.isLinked() || iliasObject.type == 'file') {
+		if (iliasObject.isContainer() && !iliasObject.isLinked() || iliasObject.type == "file") {
 			if (!iliasObject.isOfflineAvailable) {
-				actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), iliasObject, this.dataProvider, this.sync, this.modal));
+				actions.push(new MarkAsOfflineAvailableAction(
+				  this.translate.instant("actions.mark_as_offline_available"),
+          iliasObject,
+          this.dataProvider,
+          this.sync,
+          this.modal)
+        );
 			} else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
 				actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
 				actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
@@ -456,16 +479,16 @@ export class ObjectListPage {
 					this.actionSheetActive = false;
 					// This action displays an alert before it gets executed
 					if (action.alert()) {
-						let alert = this.alert.create({
+						const alert = this.alert.create({
 							title: action.alert().title,
 							subTitle: action.alert().subTitle,
 							buttons: [
 								{
 									text: this.translate.instant("cancel"),
-									role: 'cancel'
+									role: "cancel"
 								},
 								{
-									text: 'Ok',
+									text: "Ok",
 									handler: () => {
 										this.executeAction(action);
 									}
@@ -483,17 +506,17 @@ export class ObjectListPage {
 
 		buttons.push(<ActionSheetButton>{
 			text: this.translate.instant("cancel"),
-			role: 'cancel',
-			handler: () => {
+			role: "cancel",
+			handler: (): void => {
 				this.actionSheetActive = false;
 			}
 		});
 
-		let options: ActionSheetOptions = {
+		const options: ActionSheetOptions = {
 			title: iliasObject.title,
 			buttons: buttons
 		};
-		let actionSheet = this.actionSheet.create(options);
+		const actionSheet: ActionSheet = this.actionSheet.create(options);
 		actionSheet.onDidDismiss(() => {
 			this.actionSheetActive = false;
 		});
@@ -501,11 +524,11 @@ export class ObjectListPage {
 	}
 
 
-	protected handleActionResult(result) {
+	private handleActionResult(result: ILIASObjectActionResult): void {
 		if (!result) return;
 		if (result instanceof ILIASObjectActionSuccess) {
 			if (result.message) {
-				let toast = this.toast.create({
+				const toast: Toast = this.toast.create({
 					message: result.message,
 					duration: 3000
 				});
@@ -514,15 +537,15 @@ export class ObjectListPage {
 		}
 	}
 
-	public initEventListeners(): void {
+	initEventListeners(): void {
 		// We want to refresh after a synchronization.
 		this.events.subscribe("sync:complete", () => {
 			this.loadCachedObjects();
 		});
 	}
 
-	public executeAction(action: ILIASObjectAction): void {
-		const hash = action.instanceId();
+	executeAction(action: ILIASObjectAction): void {
+		const hash: number = action.instanceId();
 		this.footerToolbar.addJob(hash, "");
 		action.execute().then((result) => {
 			this.handleActionResult(result);
@@ -568,13 +591,13 @@ export class ObjectListPage {
 		});
 	}
 
-	protected showAlert(message) {
-		const alert = this.alert.create(<AlertOptions>{
+	private showAlert(message: string): void {
+		const alert: Alert = this.alert.create(<AlertOptions>{
 			title: message,
 			buttons: [
 				<AlertButton>{
 					text: this.translate.instant("close"),
-					role: 'cancel'
+					role: "cancel"
 				}
 			]
 		});

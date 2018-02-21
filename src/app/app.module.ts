@@ -1,5 +1,5 @@
 import {NgModule, ErrorHandler, Provider, FactoryProvider} from "@angular/core";
-import {IonicApp, IonicModule, IonicErrorHandler} from "ionic-angular";
+import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {HttpModule, Http} from "@angular/http";
 import {ConnectionService} from "../services/ilias-app.service";
@@ -84,6 +84,9 @@ import {LOADING_LINK_BUILDER, LoadingLinkBuilder, LoadingLinkBuilderImpl} from "
 import {LOGIN_LINK_BUILDER, LoginLinkBuilder, LoginLinkBuilderImpl} from "../services/link/login.builder";
 import {RESOURCE_LINK_BUILDER, ResourceLinkBuilder, ResourceLinkBuilderImpl} from "../services/link/resource.builder";
 import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
+import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
+import {Builder} from "../services/builder.base";
 
 
 export function createTranslateLoader(http: Http): TranslateStaticLoader {
@@ -114,6 +117,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     WifiFallbackScreen,
     LocationFallbackScreen,
     RoamingFallbackScreen,
+    LeaveAppDialog,
 
     HardwareFeaturePage
   ],
@@ -139,16 +143,17 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LoginPage,
     SyncFinishedModal,
     NewsPage,
+    LearnplacePage,
 
     /* from src/learnplace */
-    LearnplacePage,
     MapPage,
     TabsPage,
+    WifiFallbackScreen,
 
     /* fallback screens */
-    WifiFallbackScreen,
     LocationFallbackScreen,
     RoamingFallbackScreen,
+    LeaveAppDialog,
 
     HardwareFeaturePage
   ],
@@ -315,14 +320,31 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     <FactoryProvider>{
       provide: TIMELINE_LINK_BUILDER,
-      useFactory: (installationLink: InstallationLinkSupplier, tokenSupplier: TokenSupplier, userRepository: UserRepository): TimelineLinkBuilder => {
-        return new TimelineLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => TimelineLinkBuilder => {
+        return (): TimelineLinkBuilder => new TimelineLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
       },
       deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
     },
     {
       provide: LINK_BUILDER,
       useClass: LinkBuilderImpl
+    },
+
+    /* Actions */
+    <FactoryProvider>{
+      provide: OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
+      useFactory: (browser: InAppBrowser, platform: Platform, modal: ModalController):
+        (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction => {
+        return (
+            title: string,
+            urlBuilder: Builder<Promise<string>>
+        ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal);
+      },
+      deps: [InAppBrowser, Platform, ModalController]
     },
     AlwaysStrategy,
     NeverStrategy,

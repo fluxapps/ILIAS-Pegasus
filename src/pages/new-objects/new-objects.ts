@@ -1,16 +1,19 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from "@angular/core";
 import {
-    NavController, NavParams, ActionSheetController, LoadingController, AlertController,
-    ToastController
-} from 'ionic-angular';
+  NavController, NavParams, ActionSheetController, LoadingController, AlertController,
+  ToastController, ActionSheetButton, Alert, ActionSheet, Toast
+} from "ionic-angular";
+import {ActiveRecord} from "../../models/active-record";
 import {ILIASObject} from "../../models/ilias-object";
+import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {User} from "../../models/user";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {LoginPage} from "../login/login";
-import {ILIASObjectAction, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
-import {OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
@@ -29,29 +32,29 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLinkBuilder, TokenUrlConverter} from "../../services/url-converter.service";
+import {TokenUrlConverter} from "../../services/url-converter.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
-    templateUrl: 'new-objects.html',
+    templateUrl: "new-objects.html",
 })
 export class NewObjectsPage {
 
     /**
      * Objects under the given parent object
      */
-    public objects: {[containerId: number]: ILIASObject[]} = {};
+    public objects: {[containerId: number]: Array<ILIASObject>} = {};
 
     /**
      * The parent container object that was clicked to display the current objects
      */
-    public parent: ILIASObject;
-    public pageTitle: string;
-    public user: User;
-    public actionSheetActive = false;
-    public desktopItems: ILIASObject[] = null;
-    public allObjects: ILIASObject[] = [];
+    parent: ILIASObject;
+    pageTitle: string;
+    user: User;
+    actionSheetActive: boolean = false;
+    desktopItems: Array<ILIASObject> = [];
+    allObjects: Array<ILIASObject> = [];
 
     constructor(public nav: NavController,
                 params: NavParams,
@@ -66,21 +69,24 @@ export class NewObjectsPage {
                 public modal: ModalController,
                 public dataProvider: DataProvider,
                 private readonly urlConverter: TokenUrlConverter,
-                private readonly browser: InAppBrowser) {
-        this.parent = params.get('parent');
-        this.pageTitle = 'New Content';
+                private readonly browser: InAppBrowser,
+                @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+                private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) {
+        this.parent = params.get("parent");
+        this.pageTitle = "New Content";
     }
 
 
     /**
      * Only called if page is newly loaded
      */
-    public ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.loadObjects();
     }
 
 
-    protected loadObjects() {
+    private loadObjects(): void {
         User.currentUser().then(user => {
             this.user = user;
             this.loadObjectData();
@@ -93,7 +99,7 @@ export class NewObjectsPage {
     /**
      * Loads objects from local DB and then from remote
      */
-    protected loadObjectData() {
+    private loadObjectData(): void {
         Log.write(this, "Collecting new items from Database");
         this.footerToolbar.addJob(Job.LoadNewObjects, "");
 
@@ -102,7 +108,7 @@ export class NewObjectsPage {
             this.desktopItems = [];
             this.objects = {};
             this.allObjects = [];
-            let promises = [];
+            const promises: Array<Promise<void>> = [];
 
             desktopItems.forEach(desktopItem => {
                 if (desktopItem.isContainer()) {
@@ -110,7 +116,7 @@ export class NewObjectsPage {
                     promises.push(ILIASObject.findByParentRefIdRecursive(desktopItem.refId, this.user.id).then(objects => {
 
                         //filter out the new ones.
-                        let newObjects = objects.filter(iliasObject => {
+                        const newObjects: Array<ILIASObject> = objects.filter(iliasObject => {
                             // return true;
                             return (iliasObject.isNew || iliasObject.isUpdated);
                         });
@@ -132,7 +138,7 @@ export class NewObjectsPage {
                         // only add course if there are new items in there.
                         if (this.objects[desktopItem.refId] || desktopItem.isNew || desktopItem.isUpdated) {
                             Log.describe(this, "Desktop items ", this.desktopItems);
-                            Log.write(this, "adding desktop item.")
+                            Log.write(this, "adding desktop item.");
                             this.desktopItems.push(desktopItem);
                             this.objects[desktopItem.refId].sort(ILIASObject.compare);
                         }
@@ -147,7 +153,7 @@ export class NewObjectsPage {
                 this.footerToolbar.removeJob(Job.LoadNewObjects);
             });
         }).catch((error) => {
-            Log.write(this, 'Collecting new items failed', error);
+            Log.write(this, "Collecting new items failed", error);
             this.footerToolbar.removeJob(Job.LoadNewObjects);
         });
     }
@@ -156,9 +162,9 @@ export class NewObjectsPage {
      * Execute primary action of given object
      * @param iliasObject
      */
-    public onClick(iliasObject: ILIASObject) {
+    onClick(iliasObject: ILIASObject): void {
         if (this.actionSheetActive) return;
-        let primaryAction = this.getPrimaryAction(iliasObject);
+        const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
 
         // When executing the primary action, we reset the isNew state
@@ -170,10 +176,10 @@ export class NewObjectsPage {
         }
     }
 
-    public markAllAsSeen() {
-        let promises = [];
+    markAllAsSeen(): void {
+        const promises: Array<Promise<void|ActiveRecord>> = [];
         this.desktopItems.forEach(deskItem => {
-            let promise = this.mark(deskItem.refId, this.objects[deskItem.refId]);
+            const promise: Promise<void> = this.mark(deskItem.refId, this.objects[deskItem.refId]);
             deskItem.isNew = false;
             deskItem.isUpdated = false;
             promises.push(promise);
@@ -186,8 +192,8 @@ export class NewObjectsPage {
         });
     }
 
-    public markItemAsSeen(desktopItem: ILIASObject, id) {
-        let obj = this.allObjects.filter((object) => {
+    markItemAsSeen(desktopItem: ILIASObject, id: number): Promise<[ActiveRecord, void]> {
+        const obj: Array<ILIASObject> = this.allObjects.filter((object) => {
             return object.id == id;
         });
         desktopItem.isNew = false;
@@ -196,10 +202,10 @@ export class NewObjectsPage {
         return Promise.all([desktopItem.save(), this.mark(desktopItem.refId, obj)]);
     }
 
-    public markDesktopItemAsSeen(desktopItem: ILIASObject) {
+    markDesktopItemAsSeen(desktopItem: ILIASObject): Promise<void> {
         return this.mark(desktopItem.refId, this.objects[desktopItem.refId]).then(() => {
             delete this.objects[desktopItem.refId];
-            Log.write(this, 'allObjects', this.allObjects);
+            Log.write(this, "allObjects", this.allObjects);
         });
     }
 
@@ -212,11 +218,20 @@ export class NewObjectsPage {
         if (iliasObject.isContainer()) {
             return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
         }
-        if (iliasObject.type == 'file') {
-            return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
+        if (iliasObject.type === "file") {
+            return new DownloadAndOpenFileExternalAction(
+              this.translate.instant("actions.download_and_open_in_external_app"),
+              iliasObject,
+              this.file,
+              this.translate,
+              this.alert
+            );
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
+        return this.openInIliasActionFactory(
+          this.translate.instant("actions.view_in_ilias"),
+          this.linkBuilder.default().target(iliasObject.refId)
+        );
     }
 
     /**
@@ -225,11 +240,11 @@ export class NewObjectsPage {
      */
     public showActions(iliasObject: ILIASObject) {
         this.actionSheetActive = true;
-        let actionButtons = [];
+        const actionButtons: Array<ActionSheetButton> = [];
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
-        let actions: ILIASObjectAction[] = [
+        const actions: Array<ILIASObjectAction> = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser),
+            this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId)),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
@@ -238,10 +253,22 @@ export class NewObjectsPage {
         }
         if (iliasObject.isContainer()) {
             if (!iliasObject.isOfflineAvailable) {
-                actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), iliasObject, this.dataProvider, this.sync, this.modal));
+                actions.push(
+                  new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"),
+                    iliasObject,
+                    this.dataProvider,
+                    this.sync,
+                    this.modal)
+                );
             } else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
-                actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
+                actions.push(
+                  new SynchronizeAction(this.translate.instant("actions.synchronize"),
+                    iliasObject,
+                    this.sync,
+                    this.modal,
+                    this.translate)
+                );
             }
             actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
         }
@@ -249,21 +276,21 @@ export class NewObjectsPage {
         actions.forEach(action => {
             actionButtons.push({
                 text: action.title,
-                handler: () => {
+                handler: (): void => {
                     this.actionSheetActive = false;
                     // This action displays an alert before it gets executed
                     if (action.alert()) {
-                        let alert = this.alert.create({
+                        const alert: Alert = this.alert.create({
                             title: action.alert().title,
                             subTitle: action.alert().subTitle,
                             buttons: [
                                 {
-                                    text: 'Cancel',
-                                    role: 'cancel'
+                                    text: "Cancel",
+                                    role: "cancel"
                                 },
                                 {
-                                    text: 'Ok',
-                                    handler: () => {
+                                    text: "Ok",
+                                    handler: (): void => {
                                         this.executeAction(action);
                                     }
                                 }
@@ -278,14 +305,14 @@ export class NewObjectsPage {
         });
         actionButtons.push({
             text: this.translate.instant("cancel"),
-            role: 'cancel',
-            handler: () => {
+            role: "cancel",
+            handler: (): void => {
                 this.actionSheetActive = false;
             }
         });
-        let actionSheet = this.actionSheet.create({
-            'title': iliasObject.title,
-            'buttons': actionButtons
+        const actionSheet: ActionSheet = this.actionSheet.create({
+            "title": iliasObject.title,
+            "buttons": actionButtons
         });
         actionSheet.onDidDismiss(() => {
             this.actionSheetActive = false;
@@ -298,11 +325,11 @@ export class NewObjectsPage {
      * @param objects
      * @returns {Promise<any>}
      */
-    public mark(desktopItemRefId: number, objects: ILIASObject[]) {
+    mark(desktopItemRefId: number, objects: Array<ILIASObject>): Promise<void> {
         if (!objects) {
             return;
         }
-        let promises = [];
+        const promises: Array<Promise<ActiveRecord>> = [];
         this.footerToolbar.addJob(Job.MarkFiles, "");
         objects.forEach((item: ILIASObject) => {
             item.isNew = false;
@@ -318,11 +345,11 @@ export class NewObjectsPage {
     }
 
 
-    protected handleActionResult(result) {
+    private handleActionResult(result: ILIASObjectActionResult): void {
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {
             if (result.message) {
-                let toast = this.toast.create({
+                const toast: Toast = this.toast.create({
                     message: result.message,
                     duration: 3000
                 });
@@ -331,8 +358,8 @@ export class NewObjectsPage {
         }
     }
 
-    public executeAction(action: ILIASObjectAction): void {
-        let hash = action.instanceId();
+    executeAction(action: ILIASObjectAction): void {
+        const hash: number = action.instanceId();
         this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
             this.handleActionResult(result);
@@ -368,34 +395,34 @@ export class NewObjectsPage {
         });
     }
 
-    protected showAlert(message) {
-        let alert = this.alert.create({
+    protected showAlert(message: string): void {
+        const alert: Alert = this.alert.create({
             title: message,
             buttons: [
                 {
                     text: this.translate.instant("close"),
-                    role: 'cancel'
+                    role: "cancel"
                 }
             ]
         });
         alert.present();
     }
 
-    public removeFromList(desktopItemRefId: number, item: ILIASObject): void {
+    removeFromList(desktopItemRefId: number, item: ILIASObject): void {
         this.extractFromArray(item, this.allObjects);
         this.extractFromArray(item, this.objects[desktopItemRefId]);
     }
 
-    public extractFromArray(item: ILIASObject, list: ILIASObject[]) {
-        let index = null;
-        for (let key in list) {
-            let object = list[key];
+    extractFromArray(item: ILIASObject, list: Array<ILIASObject>): void {
+        let index: string = "";
+        for (const key in list) {
+            const object: ILIASObject = list[key];
             if (object.id == item.id) {
                 index = key;
                 break;
             }
         }
-        if (index !== null) {
+        if (index !== "") {
             Log.describe(this, "deleting key: ", index);
             Log.describe(this, "element was: ", list[index]);
             delete list[index];
