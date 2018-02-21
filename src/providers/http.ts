@@ -29,15 +29,24 @@ export class HttpClient {
    * @param {RequestOptions} options - options used for the request
    *
    * @returns {Promise<HttpResponse>} the resulting response
+   * @throws {UnfinishedHttpRequestError} if the request fails
    */
   async get(url: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    this.log.trace(() => `Http GET request to: ${url}`);
-    const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
-      .timeout(DEFAULT_TIMEOUT)
-      .toPromise();
+    try {
 
-    return new HttpResponse(response);
+      this.log.trace(() => `Http GET request to: ${url}`);
+      const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
+        .timeout(DEFAULT_TIMEOUT)
+        .toPromise();
+
+      return new HttpResponse(response);
+
+    } catch(error) {
+      this.log.warn(() => `Http GET request failed: resource=${url}`);
+      this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
+      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
+    }
   }
 
   /**
@@ -48,15 +57,24 @@ export class HttpClient {
    * @param {RequestOptions} options - options used for the request
    *
    * @returns {Promise<HttpResponse>} the resulting response
+   * @throws {UnfinishedHttpRequestError} if the request fails
    */
   async post(url: string, body?: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    this.log.trace(() => `Http POST request to: ${url}`);
-    const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
-      .timeout(DEFAULT_TIMEOUT)
-      .toPromise();
+    try {
 
-    return new HttpResponse(response);
+      this.log.trace(() => `Http POST request to: ${url}`);
+      const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
+        .timeout(DEFAULT_TIMEOUT)
+        .toPromise();
+
+      return new HttpResponse(response);
+
+    } catch (error) {
+      this.log.warn(() => `Http GET request failed: resource=${url}`);
+      this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
+      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
+    }
   }
 }
 
@@ -180,7 +198,7 @@ export class HttpResponse {
    * @throws {NotFoundError} if the status code is 404
    * @throws {HttpRequestError} if no status code is not explicit handled and not ok
    */
-  async handle<T>(success: (response: HttpResponse) => Promise<T>): Promise<T> {
+  handle<T>(success: (response: HttpResponse) => T): T {
 
     switch (true) {
 
@@ -237,6 +255,20 @@ export class JsonValidationError extends TypeError {
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, JsonValidationError.prototype);
+  }
+}
+
+/**
+ * Indicates that an  http request could not be finished.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class UnfinishedHttpRequestError extends Error {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, UnfinishedHttpRequestError.prototype);
   }
 }
 
