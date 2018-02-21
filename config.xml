@@ -93,7 +93,8 @@
     <allow-navigation href="http://192.168.99.47:8100" />
     <allow-navigation href="http://192.168.1.105:8100" />
     <allow-navigation href="http://192.168.99.44:8100" />
-    <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
+    <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="4.5.4" />
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
     <plugin name="cordova-plugin-network-information" spec="^1.3.3" />
@@ -115,13 +116,17 @@
         <variable name="XWALK_MODE" value="embedded" />
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
-    <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps">
-        <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
-        <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
-    </plugin>
-    <engine name="android" spec="^6.3.0" />
-    <engine name="ios" spec="^4.5.2" />
     <plugin name="cordova.plugins.diagnostic" spec="~3.9.0">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
+    <plugin name="ch.ti8m.documenthandler" spec="git+https://github.com/studer-raimann/DocumentHandler.git" />
+    <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git">
+        <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
+        <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
+        <variable name="PLAY_SERVICES_VERSION" value="11.8.0" />
+        <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.0" />
+        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
+        <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
+    </plugin>
+    <allow-navigation href="http://192.168.99.52:8100" />
 </widget>
