@@ -85,7 +85,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
 
     const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${objectId}`, DEFAULT_REQUEST_OPTIONS);
 
-    return response.handle<LearnPlace>(async(it) =>
+    return response.handle<LearnPlace>(it =>
       it.json<LearnPlace>(learnplaceJsonSchema)
     );
   }
@@ -102,7 +102,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
 
     const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/journal-entries`, DEFAULT_REQUEST_OPTIONS);
 
-    return response.handle<Array<JournalEntry>>(async(it) =>
+    return response.handle<Array<JournalEntry>>(it =>
       it.json<Array<JournalEntry>>(journalEntriesJsonSchema)
     );
   }
@@ -124,7 +124,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
       DEFAULT_REQUEST_OPTIONS
     );
 
-    return response.handle<void>(async(_) => {
+    return response.handle<void>(_ => {
       this.log.info(() => "Successful post journal entry to ILIAS");
     });
   }
@@ -141,7 +141,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
 
     const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
 
-    return response.handle<BlockObject>(async(it) =>
+    return response.handle<BlockObject>(it =>
       it.json<BlockObject>(blocksJsonSchema)
     );
   }
