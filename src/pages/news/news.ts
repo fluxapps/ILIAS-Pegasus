@@ -1,7 +1,11 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
+import {ILIASObjectAction} from "../../actions/object-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
+import {OfflineException} from "../../exceptions/OfflineException";
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Log} from "../../services/log.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
 import {Alert, AlertController, AlertOptions, Modal, ModalController, Refresher} from "ionic-angular";
 import {TimeoutError} from "rxjs/Rx";
@@ -56,13 +60,72 @@ export class NewsPage implements AfterViewInit {
 
   openNews(id: number, context: number): void {
     this.log.debug(() => `open news with id ${id}, context id ${context}`);
-    this.openInIliasActionFactory(
+    const action: ILIASObjectAction = this.openInIliasActionFactory(
       this.translate.instant("actions.view_in_ilias"),
       this.linkBuilder.news().newsId(id).context(context)
-    ).execute().catch(() => "Open news action failed with error");
+    );
+
+    this.executeAction(action);
   }
 
   // ------------------- object-list duplicate----------------------------
+  private executeAction(action: ILIASObjectAction): void {
+    const hash: number = action.instanceId();
+    this.footerToolbar.addJob(hash, "");
+    action.execute().then(() => {
+      this.footerToolbar.removeJob(hash);
+    }).catch((error: CantOpenFileTypeException) => {
+      if (error instanceof CantOpenFileTypeException) {
+        this.showAlert(this.translate.instant("actions.cant_open_file"));
+        this.footerToolbar.removeJob(hash);
+        return Promise.resolve();
+      }
+      return Promise.reject(error);
+    }).catch((error) => {
+      if (error instanceof NoWLANException) {
+        this.footerToolbar.removeJob(Job.Synchronize);
+        this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
+        return Promise.resolve();
+      }
+      return Promise.reject(error);
+    }).catch(error => {
+      if (error instanceof OfflineException) {
+        this.showAlert(this.translate.instant("actions.offline_and_no_local_file"));
+        this.footerToolbar.removeJob(hash);
+        return Promise.resolve();
+      }
+      return Promise.reject(error);
+    }).catch(error => {
+      if (error instanceof RESTAPIException) {
+        this.showAlert(this.translate.instant("actions.server_not_reachable"));
+        this.footerToolbar.removeJob(hash);
+        return Promise.resolve();
+      }
+      return Promise.reject(error);
+
+    }).catch((message) => {
+      if (message) {
+        this.log.error(() => `action failed with message: ${message}`);
+      }
+
+      this.showAlert(this.translate.instant("something_went_wrong"));
+      this.footerToolbar.removeJob(hash);
+    });
+  }
+
+  private showAlert(message: string): void {
+    const alert: Alert = this.alert.create(<AlertOptions>{
+      title: message,
+      buttons: [
+        <AlertButton>{
+          text: this.translate.instant("close"),
+          role: "cancel"
+        }
+      ]
+    });
+    alert.present();
+  }
+
   /**
    * called by pull-to-refresh refresher
    *
