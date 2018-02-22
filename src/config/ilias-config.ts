@@ -3,7 +3,7 @@ import {isDefined} from "ionic-angular/es2015/util/util";
 import {Injectable, InjectionToken} from "@angular/core";
 import {HttpClient, HttpResponse} from "../providers/http";
 
-const CONFIG_FILE: string = "assets/config.json";
+const CONFIG_FILE: string = "./assets/config.json";
 
 export interface ILIASConfig {
   readonly installations: Array<ILIASInstallation>
