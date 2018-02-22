@@ -183,7 +183,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
      this.log.info(() => "Refresh access token by refresh token");
      const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptions>{headers: headers});
 
-     return response.handle<string>(async(it): Promise<string> => {
+     return response.handle<Promise<string>>(async(it): Promise<string> => {
        const data: OAuth2Token = it.json<OAuth2Token>(oAuthTokenSchema);
        await this.responseConsumer.accept(data);
 
