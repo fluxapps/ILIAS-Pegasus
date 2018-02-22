@@ -1,4 +1,5 @@
 import {Injectable} from "@angular/core";
+import {isDevMode} from "../app/devmode";
 import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";
 import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
 import {LocationEntity} from "../learnplace/entity/location.entity";
@@ -32,7 +33,7 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
           it.cordova()
             .setDatabase("ilias_app")
             .setLocation("default")
-            .enableLogging(false)
+            .enableLogging(isDevMode())
             .addEntity(
               LearnplaceEntity,
               LocationEntity,
