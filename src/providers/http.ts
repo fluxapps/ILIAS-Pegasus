@@ -5,6 +5,7 @@ import * as HttpStatus from "http-status-codes";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isDefined} from "ionic-angular/es2015/util/util";
+import {timeout} from "rxjs/operators";
 
 export const DEFAULT_TIMEOUT: number = 20000;
 
@@ -38,7 +39,7 @@ export class HttpClient {
 
       this.log.trace(() => `Http GET request to: ${url}`);
       const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
-        // .timeout(DEFAULT_TIMEOUT)
+        .pipe(timeout(DEFAULT_TIMEOUT))
         .toPromise();
 
       return new HttpResponse(response);
@@ -66,7 +67,7 @@ export class HttpClient {
 
       this.log.trace(() => `Http POST request to: ${url}`);
       const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
-        // .timeout(DEFAULT_TIMEOUT)
+        .pipe(timeout(DEFAULT_TIMEOUT))
         .toPromise();
 
       return new HttpResponse(response);
