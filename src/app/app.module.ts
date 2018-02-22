@@ -89,12 +89,8 @@ import {
 import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {Geolocation} from "@ionic-native/geolocation";
 import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
-import {HttpClient} from "@angular/common/http";
-
-
-export function createTranslateLoader(http: HttpClient): TranslateStaticLoader {
-  return new TranslateStaticLoader(http, "./assets/i18n", ".json");
-}
+import {Http, HttpModule} from "@angular/http";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -130,12 +126,12 @@ export function createTranslateLoader(http: HttpClient): TranslateStaticLoader {
   imports: [
     IonicModule.forRoot(MyApp),
     BrowserModule,
+    HttpModule,
+    HttpClientModule,
     TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+      provide: TranslateLoader,
+      useFactory: (http: Http): TranslateStaticLoader => new TranslateStaticLoader(http, "./assets/i18n", ".json"),
+      deps: [Http]
     })
   ],
   bootstrap: [IonicApp],
