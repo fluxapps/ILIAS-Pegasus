@@ -112,7 +112,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
        const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-       this.log.info(() => "Validate access token");
+       this.log.trace(() => "Validate access token");
        const token: string | undefined = await this.takeIf<string>(credentials.token.accessToken, (): boolean =>
          Date.now() / MILLISEC_TO_SEC - credentials.token.lastAccessTokenUpdate < credentials.token.accessTokenTTL
        );
