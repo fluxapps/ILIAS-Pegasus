@@ -213,7 +213,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
      const url: string = `${credentials.apiURL}${path}`;
      const headers: Headers = new Headers();
      headers.append("Accept", options.accept);
-     headers.append("Authorization", `${credentials.token.type} ${this.tokenManager.getAccessToken()}`);
+     headers.append("Authorization", `${credentials.token.type} ${await this.tokenManager.getAccessToken()}`);
 
      const requestOptions: RequestOptionsArgs = <RequestOptionsArgs>{
        headers:headers,

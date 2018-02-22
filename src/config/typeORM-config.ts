@@ -6,6 +6,9 @@ import {MapEntity} from "../learnplace/entity/map.entity";
 import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../learnplace/entity/textblock.entity";
 import {PictureBlockEntity} from "../learnplace/entity/pictureBlock.entity";
+import {LearnplaceEnity} from "../learnplace/entity/learnplace.enity";
+import {UserEntity} from "../entity/user.entity";
+import {NewsEntity} from "../entity/news.entity";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
 
@@ -36,7 +39,10 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
               MapEntity,
               VisibilityEntity,
               TextblockEntity,
-              PictureBlockEntity
+              PictureBlockEntity,
+              VisibilityEntity,
+              UserEntity,
+              NewsEntity
             )
     );
   }

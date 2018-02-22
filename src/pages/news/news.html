@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-navbar color="nobg-blue">
+      <ion-buttons left>
+      </ion-buttons>
+        <ion-title>
+          News
+        </ion-title>
+        <ion-buttons end>
+            <button ion-button menuToggle>
+                <ion-icon name="menu"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+
+  <ion-refresher
+    (ionRefresh)="startSync($event)"
+    [closeDuration]="400"
+    [pullMin]="150">
+    <ion-refresher-content id="refresher-content"
+                           pullingIcon="arrow-down"
+                           pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+                           refreshingText="{{ footerToolbar.loadingText }}">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- <ion-list> -->
+  <div *ngFor="let newsPresenter of newsPresenters">
+    <ion-item (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)">
+      <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon>
+
+      <h2 class="news-title">{{newsPresenter[0].title}}</h2>
+      <p class="info-text">{{newsPresenter[0].content}}</p>
+      <ion-note item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
+    </ion-item>
+  </div>
+  <!-- </ion-list> -->
+
+</ion-content>
+
