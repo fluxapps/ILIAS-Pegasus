@@ -24,7 +24,6 @@ import {TokenUrlConverter} from "../services/url-converter.service";
 import {BrowserModule} from "@angular/platform-browser";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {StatusBar} from "@ionic-native/status-bar";
-import {FileTransfer} from "@ionic-native/file-transfer";
 import {Network} from "@ionic-native/network";
 import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
@@ -272,7 +271,6 @@ import {HttpClientModule} from "@angular/common/http";
     StatusBar,
     InAppBrowser,
     File,
-    FileTransfer,
     Network,
     SQLite,
     Toast,

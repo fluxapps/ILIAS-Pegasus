@@ -11,8 +11,6 @@ import {
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {getVisibilityEntity} from "./learnplace.spec";
 import {stubInstance} from "../../../SinonUtils";
-import {FileTransfer} from "@ionic-native/file-transfer";
-import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
 import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
@@ -111,8 +109,6 @@ describe("a text block mapper", () => {
 describe("a picture block mapper", () => {
 
   const sandbox: SinonSandbox = createSandbox();
-  const mockFileTransfer: FileTransfer = stubInstance(FileTransfer);
-  const mockFile: File = stubInstance(File);
   const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
 
   let mapper: PictureBlockMapper = new PictureBlockMapper();
