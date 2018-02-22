@@ -227,6 +227,9 @@ export class NewsPage implements AfterViewInit {
     for(const newsItem of news) {
       mappedNews.push([newsItem, await this.fetchPresenterByRefId(newsItem.newsContext)])
     }
+    mappedNews.sort((a: [NewsItemModel, ILIASObjectPresenter], b: [NewsItemModel, ILIASObjectPresenter]): number => {
+      return b[0].updateDate.getTime() - a[0].updateDate.getTime();
+    });
     return mappedNews;
   }
 }
