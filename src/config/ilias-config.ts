@@ -1,7 +1,7 @@
 import {ILIASConfig} from "./ilias-config";
-import {Http, Response} from "@angular/http";
 import {isDefined} from "ionic-angular/es2015/util/util";
 import {Injectable, InjectionToken} from "@angular/core";
+import {HttpClient, HttpResponse} from "../providers/http";
 
 const CONFIG_FILE: string = "assets/config.json";
 
@@ -61,7 +61,7 @@ export interface ConfigProvider {
   private readonly config: Promise<ILIASConfig>;
 
    constructor(
-     private readonly http: Http
+     private readonly http: HttpClient
    ) {
       this.config = this.loadFile();
    }
@@ -83,8 +83,35 @@ export interface ConfigProvider {
   }
 
   private async loadFile(): Promise<ILIASConfig> {
-    const response: Response = await this.http.get(CONFIG_FILE).toPromise();
+    const response: HttpResponse = await this.http.get(CONFIG_FILE);
 
-    return response.json();
+    return response.json<ILIASConfig>(configSchema);
   }
 }
+
+const configSchema: object = {
+  "title": "config",
+  "type": "object",
+  "properties": {
+    "installations": {
+      "type": "array",
+      "items:": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "min": 1
+          },
+          "title": {"type": "string"},
+          "url": {"type": "string"},
+          "clientId": {"type": "string"},
+          "apiKey": {"type": "string"},
+          "apiSecret": {"type": "string"},
+          "accessTokenTTL": {"type": "number"}
+        },
+        "required": ["id", "title", "url", "clientId", "apiKey", "apiSecret", "accessTokenTTL"]
+      }
+    }
+  },
+  "required": ["installations"]
+};

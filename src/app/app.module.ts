@@ -1,8 +1,6 @@
 import {NgModule, ErrorHandler, FactoryProvider} from "@angular/core";
 import {IonicApp, IonicModule, IonicErrorHandler, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
-import {HttpModule, Http} from "@angular/http";
-import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
@@ -31,8 +29,7 @@ import {Network} from "@ionic-native/network";
 import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
-import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
-import {HttpClient} from "../providers/http";
+import {HttpClient as PegasusHttpClient} from "../providers/http";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {
   ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
@@ -92,9 +89,10 @@ import {
 import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {Geolocation} from "@ionic-native/geolocation";
 import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
+import {HttpClient} from "@angular/common/http";
 
 
-export function createTranslateLoader(http: Http): TranslateStaticLoader {
+export function createTranslateLoader(http: HttpClient): TranslateStaticLoader {
   return new TranslateStaticLoader(http, "./assets/i18n", ".json");
 }
 
@@ -132,11 +130,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
   imports: [
     IonicModule.forRoot(MyApp),
     BrowserModule,
-    HttpModule,
     TranslateModule.forRoot({
-      provide: TranslateLoader,
-      useFactory: (createTranslateLoader),
-      deps: [Http]
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
     })
   ],
   bootstrap: [IonicApp],
@@ -165,10 +164,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     HardwareFeaturePage
   ],
   providers: [
-    {
-      provide: ILIAS_CONFIG_FACTORY,
-      useClass: HttpILIASConfigFactory
-    },
 
     /* from src/config/ilias-config */
     {
@@ -271,7 +266,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       deps: [LEARNPLACE_LOADER]
     },
 
-    ConnectionService,
     ILIASRestProvider,
     FooterToolbarService,
     DataProvider,
@@ -286,7 +280,7 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     Network,
     SQLite,
     Toast,
-    HttpClient,
+    PegasusHttpClient,
     SplashScreen,
     Geolocation,
 
