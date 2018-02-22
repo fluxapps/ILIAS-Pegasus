@@ -5,13 +5,11 @@ import {User} from "../models/user";
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {Events} from "ionic-angular";
-import {FooterToolbarService} from "./footer-toolbar.service";
+import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
-import {Job} from "./footer-toolbar.service";
 import {FileData} from "../models/file-data";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
-import {Reject, Resolve} from "../declarations";
 
 @Injectable()
 export class SynchronizationService {
