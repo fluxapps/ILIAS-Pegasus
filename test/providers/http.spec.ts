@@ -1,5 +1,54 @@
-import {HttpResponse, JsonValidationError} from "../../src/providers/http";
-import {HttpResponse as Response} from "@angular/common/http";
+import {AngularRequestOptions, HttpResponse, JsonValidationError, RequestOptions, toAngularOptions} from "../../src/providers/http";
+import {HttpHeaders, HttpParams, HttpResponse as Response} from "@angular/common/http";
+
+describe("request options to angular options", () => {
+
+  context("on defined headers and params", () => {
+
+    it("should create angular request options with headers and params", () => {
+
+      const opt: RequestOptions = <RequestOptions>{
+        headers: [["Some-Header", "with its value"]],
+        urlParams: [["some-param", "and its value"]]
+      };
+
+
+      const result: AngularRequestOptions = toAngularOptions(opt);
+
+
+      const expected: AngularRequestOptions = <AngularRequestOptions>{
+        observe: "response",
+        responseType: "arraybuffer",
+        withCredentials: false,
+        reportProgress: false,
+        headers: new HttpHeaders().set("Some-Header", "with its value"),
+        params: new HttpParams().set("some-param", "and its value")
+      };
+      chai.expect(result)
+        .to.be.deep.equal(expected);
+    });
+  });
+
+  context("on undefined headers and params", () => {
+
+  	it("should create angular request options without headers and params", () => {
+
+      const result: AngularRequestOptions = toAngularOptions(<RequestOptions>{});
+
+
+      const expected: AngularRequestOptions = <AngularRequestOptions>{
+        observe: "response",
+        responseType: "arraybuffer",
+        withCredentials: false,
+        reportProgress: false,
+        headers: new HttpHeaders(),
+        params: new HttpParams()
+      };
+      chai.expect(result)
+        .to.be.deep.equal(expected);
+  	})
+  });
+});
 
 describe("a http response", () => {
 

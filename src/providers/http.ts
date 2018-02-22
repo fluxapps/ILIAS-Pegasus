@@ -4,6 +4,7 @@ import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 export const DEFAULT_TIMEOUT: number = 20000;
 
@@ -37,7 +38,7 @@ export class HttpClient {
 
       this.log.trace(() => `Http GET request to: ${url}`);
       const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
-        .timeout(DEFAULT_TIMEOUT)
+        // .timeout(DEFAULT_TIMEOUT)
         .toPromise();
 
       return new HttpResponse(response);
@@ -65,14 +66,14 @@ export class HttpClient {
 
       this.log.trace(() => `Http POST request to: ${url}`);
       const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
-        .timeout(DEFAULT_TIMEOUT)
+        // .timeout(DEFAULT_TIMEOUT)
         .toPromise();
 
       return new HttpResponse(response);
 
     } catch (error) {
       this.log.warn(() => `Http GET request failed: resource=${url}`);
-      this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
+      this.log.debug(() => `Http GET request error: ${error}`);
       throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
     }
   }
@@ -93,7 +94,7 @@ export interface RequestOptions {
  * Defines the angular http module request options as an interface instead of an object literal.
  * Furthermore, only the 'arraybuffer' response type is set, because its everything we need for this module.
  */
-interface AngularRequestOptions {
+export interface AngularRequestOptions {
   readonly headers?: HttpHeaders | {[header: string]: string | Array<string>};
   readonly observe: "response";
   readonly params?: HttpParams | {[param: string]: string | Array<string>};
@@ -109,15 +110,27 @@ interface AngularRequestOptions {
  *
  * @returns {AngularRequestOptions} the converted options
  */
-function toAngularOptions(opt: RequestOptions): AngularRequestOptions {
+export function toAngularOptions(opt?: RequestOptions): AngularRequestOptions {
+
+  let headers: HttpHeaders = new HttpHeaders();
+  if (isDefined(opt) && isDefined(opt.headers))
+    opt.headers.forEach(it => {
+      headers = headers.set(it[0], it[1])
+    });
+
+  let params: HttpParams = new HttpParams();
+  if (isDefined(opt) && isDefined(opt.urlParams))
+    opt.urlParams.forEach(it => {
+      params = params.set(it[0], it[1])
+    });
+
   return <AngularRequestOptions>{
-    headers: new HttpHeaders().applies(function(): void {
-      opt.headers.forEach(it => this.set(it[0], it[1]))
-    }),
-    params: new HttpParams().applies(function(): void {
-      opt.urlParams.forEach(it => this.set(it[0], it[1]))
-    }),
-    responseType: "arraybuffer"
+    headers: headers,
+    params: params,
+    responseType: "arraybuffer",
+    observe: "response",
+    withCredentials: false,
+    reportProgress: false
   }
 }
 
@@ -153,9 +166,11 @@ export class HttpResponse {
    */
   json<T>(schema: object): T {
 
-    const json: {} = this.tryJson(this.response, (): Error =>
-      new JsonValidationError("Could not parse response body to json")
-    );
+    const json: {} = this.tryJson(this.response, (): Error => {
+      this.log.warn(() => "Could not parse response body to json");
+      this.log.debug(() => `Request Body: ${this.response.body}`);
+      return new JsonValidationError("Could not parse response body to json");
+    });
 
     const result: ValidatorResult = this.validator.validate(json, schema);
 
