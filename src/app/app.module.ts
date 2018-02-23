@@ -90,6 +90,7 @@ import {Geolocation} from "@ionic-native/geolocation";
 import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
 import {Http, HttpModule} from "@angular/http";
 import {HttpClientModule} from "@angular/common/http";
+import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import {HttpClientModule} from "@angular/common/http";
     PictureBlock,
     PictureBlockModal,
     VideoBlock,
+    LinkBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
