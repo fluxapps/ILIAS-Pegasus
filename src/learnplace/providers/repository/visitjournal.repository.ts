@@ -52,7 +52,7 @@ export class TypeORMVisitJournalRepository extends AbstractCRUDRepository<VisitJ
       return await this.connection
         .getRepository(this.getEntityName())
         .createQueryBuilder("entry")
-        .where("entry.synchronized == false")
+        .where("entry.synchronized == 0")
         .getMany() as Array<VisitJournalEntity>;
 
     } catch (error) {
