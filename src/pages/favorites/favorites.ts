@@ -21,6 +21,7 @@ import {TokenUrlConverter} from "../../services/url-converter.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 
 
 @Component({
@@ -45,6 +46,8 @@ export class FavoritesPage {
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
+                private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
@@ -172,19 +175,29 @@ export class FavoritesPage {
     }
 
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
-        if (iliasObject.isContainer()) {
-            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
-        }
-        if (iliasObject.type == "file") {
-            return new DownloadAndOpenFileExternalAction(
-              this.translate.instant("actions.download_and_open_in_external_app"),
-              iliasObject,
-              this.file,
-              this.translate,
-              this.alert
-            );
-        }
+      if (iliasObject.isLinked()) {
         return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
+      }
+
+      if (iliasObject.isContainer()) {
+        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+      }
+
+      if (iliasObject.isLearnplace()) {
+        return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title);
+      }
+
+      if (iliasObject.type == "file") {
+        return new DownloadAndOpenFileExternalAction(
+          this.translate.instant("actions.download_and_open_in_external_app"),
+          iliasObject,
+          this.file,
+          this.translate,
+          this.alert
+        );
+      }
+
+      return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
     }
 
     protected loadFavorites(): void {

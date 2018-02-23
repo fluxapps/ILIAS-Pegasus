@@ -42,6 +42,7 @@ import {TimeoutError} from "rxjs/Rx";
 import {HttpRequestError} from "../../providers/http";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 
 
 @Component({
@@ -82,7 +83,9 @@ export class ObjectListPage {
 				private readonly urlConverter: TokenUrlConverter,
 				private readonly browser: InAppBrowser,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
-              private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+        private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+        @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
+        private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
 	) {
 		this.parent = params.get("parent");
@@ -401,7 +404,7 @@ export class ObjectListPage {
 	 */
 	onClick(iliasObject: ILIASObject): void {
 		if (this.actionSheetActive) return;
-		const primaryAction = this.getPrimaryAction(iliasObject);
+		const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
 		this.executeAction(primaryAction);
 		// When executing the primary action, we reset the isNew state
 		if (iliasObject.isNew || iliasObject.isUpdated) {
@@ -425,6 +428,11 @@ export class ObjectListPage {
 		if (iliasObject.isContainer()) {
 			return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
 		}
+
+		if (iliasObject.isLearnplace()) {
+		  return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title);
+    }
+
 		if (iliasObject.type == "file") {
 			return new DownloadAndOpenFileExternalAction(
 			  this.translate.instant("actions.download_and_open_in_external_app"),
@@ -582,10 +590,8 @@ export class ObjectListPage {
 			return Promise.reject(error);
 
 		}).catch((message) => {
-			if (message) {
-				Log.describe(this, "action gone wrong: ", message);
-			}
 
+			this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(message)}`);
 			this.showAlert(this.translate.instant("something_went_wrong"));
 			this.footerToolbar.removeJob(hash);
 		});
