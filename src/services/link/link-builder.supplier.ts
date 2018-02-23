@@ -90,8 +90,6 @@ export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
 @Injectable()
 export class AuthTokenSupplier implements TokenSupplier {
 
-  private static readonly REQUEST_TIMEOUT: number = 6000; //six seconds.
-
   constructor(private readonly restProvider: ILIASRestProvider
   ) {}
 
@@ -104,7 +102,7 @@ export class AuthTokenSupplier implements TokenSupplier {
    * @throws RESTAPIException   Thrown if the auth token request failed.
    */
   async get(): Promise<string> {
-    return this.restProvider.getAuthToken(await User.currentUser(), AuthTokenSupplier.REQUEST_TIMEOUT);
+    return this.restProvider.getAuthToken(await User.currentUser());
   }
 
 }

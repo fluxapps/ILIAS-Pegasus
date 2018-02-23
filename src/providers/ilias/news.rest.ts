@@ -77,7 +77,7 @@ export class NewsRestImpl implements NewsRest {
     });
 
     this.log.info(() => "Handle news response");
-    return result.handle<Array<NewsItem>>(async(it) => {
+    return result.handle<Array<NewsItem>>(it => {
       this.log.info(() => "Validate news response");
       return it.json<Array<NewsItem>>(jsonSchema);
     });

@@ -45,7 +45,7 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
               PictureBlockEntity,
               VideoBlockEntity,
               LinkblockEntity,
-              VisitJournalEntity
+              VisitJournalEntity,
               UserEntity,
               NewsEntity
             )

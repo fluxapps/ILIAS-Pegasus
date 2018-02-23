@@ -168,7 +168,6 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     LoginPage,
     SyncFinishedModal,
     NewsPage,
-    LearnplacePage,
 
     /* from src/learnplace */
     MapPage,
