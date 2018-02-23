@@ -266,6 +266,7 @@ export class HttpResponse {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+// TODO: Seems, that this error can not be initialized in JS
 export class JsonValidationError extends TypeError {
 
   constructor(message: string) {
