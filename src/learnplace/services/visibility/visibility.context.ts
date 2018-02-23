@@ -1,4 +1,5 @@
 import {
+  AfterVisitPlaceStrategy,
   AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy, VisibilityStrategy,
   VisibilityStrategyType
 } from "./visibility.strategy";
@@ -28,11 +29,13 @@ export class VisibilityStrategyApplier {
  constructor(
    alwaysStrategy: AlwaysStrategy,
    neverStrategy: NeverStrategy,
-   onlyAtPlaceStrategy: OnlyAtPlaceStrategy
+   onlyAtPlaceStrategy: OnlyAtPlaceStrategy,
+   afterVisitPlace: AfterVisitPlaceStrategy
  ) {
    this.strategies.set(VisibilityStrategyType.ALWAYS, alwaysStrategy);
    this.strategies.set(VisibilityStrategyType.NEVER, neverStrategy);
    this.strategies.set(VisibilityStrategyType.ONLY_AT_PLACE, onlyAtPlaceStrategy);
+   this.strategies.set(VisibilityStrategyType.AFTER_VISIT_PLACE, afterVisitPlace);
  }
 
 /**

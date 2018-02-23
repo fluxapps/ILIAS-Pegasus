@@ -140,7 +140,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
   private async execute(object: VisibilityAware): Promise<void> {
 
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
-      .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
+      .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`));
 
     const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
