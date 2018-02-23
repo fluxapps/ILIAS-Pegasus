@@ -24,7 +24,7 @@ export class TextblockEntity {
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;
 
-  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.map)
+  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.textBlocks)
   @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
   learnplace: LearnplaceEntity;
 }

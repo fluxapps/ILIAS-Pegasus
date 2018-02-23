@@ -33,7 +33,7 @@ export class PictureBlockEntity {
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;
 
-  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.map)
+  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.pictureBlocks)
   @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
   learnplace: LearnplaceEntity;
 }

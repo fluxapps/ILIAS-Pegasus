@@ -16,7 +16,7 @@ export class VisitJournalEntity {
   @Column()
   synchronized: boolean;
 
-  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.map)
+  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.visitJournal)
   @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
   learnplace: LearnplaceEntity;
 }
