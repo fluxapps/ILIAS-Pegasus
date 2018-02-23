@@ -15,7 +15,7 @@ const textBlockJsonSchema: object = {
       },
       "visibility": {
         "type": "string",
-        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_PLACE_VISIT$"
+        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
       },
       "content": {
         "description": "The text blocks content as html format",
@@ -43,7 +43,7 @@ const pictureBlockJsonSchema: object = {
       },
       "visibility": {
         "type": "string",
-        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_PLACE_VISIT$"
+        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
       },
       "title": {
         "type": "string"
@@ -86,7 +86,7 @@ const videoBlockJsonSchema: object = {
       },
       "visibility": {
         "type": "string",
-        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_PLACE_VISIT$"
+        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
       },
       "url": {
         "description": "Relative path of the file",
@@ -119,7 +119,7 @@ const iliasLinkJsonSchema: object = {
       },
       "visibility": {
         "type": "string",
-        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_PLACE_VISIT$"
+        "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
       },
       "refId": {
         "description": "The ref id used in ILIAS",
@@ -190,7 +190,7 @@ export const learnplaceJsonSchema: object = {
       "properties": {
         "visibility": {
           "type": "string",
-          "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_PLACE_VISIT$"
+          "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
         }
       },
       "required": ["visibility"]
