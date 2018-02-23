@@ -5,6 +5,9 @@ import {
 import {LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {NavController} from "ionic-angular";
 import {TabsPage, TabsPageParams} from "../learnplace/pages/tabs/tabs.component";
+import {InjectionToken} from "@angular/core";
+import {Builder} from "../services/builder.base";
+import {OpenObjectInILIASAction} from "./open-object-in-ilias-action";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -35,8 +38,5 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
   }
 }
 
-export interface OpenLearnplaceActionFunction {
-
-  (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction
-}
-
+export interface OpenLearnplaceActionFunction { (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction }
+export const OPEN_LEARNPLACE_ACTION_FACTORY: InjectionToken<OpenLearnplaceAction> = new InjectionToken("token for open learnplace action factory");
