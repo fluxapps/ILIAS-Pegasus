@@ -77,12 +77,12 @@ export class FileService {
                 }
 
                 Log.write(this, "Resolving storage location");
-                let storageLocation = this.getStorageLocation(user, fileObject) + fileObject.data.fileName;
+                let storageLocation = this.getStorageLocation(user, fileObject);
 
                 // Provide a general listener that throws an event
                 Log.write(this, "start DL");
                 let fileEntry;
-                return this.rest.downloadFile(fileObject.refId, storageLocation, user)
+                return this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName)
                     .then(aFileEntry => {
                         Log.describe(this, "Download Complete: ", fileEntry);
                         fileEntry = aFileEntry;

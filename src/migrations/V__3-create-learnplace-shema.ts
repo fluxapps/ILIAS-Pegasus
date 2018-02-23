@@ -5,7 +5,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm";
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.3
+ * @version 0.0.5
  */
 export class CreateLearnplace implements Migration {
 
@@ -15,6 +15,14 @@ export class CreateLearnplace implements Migration {
 
     const learnplace: Table = new Table("Learnplace", [
       new TableColumn({name: "objectId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
+    const visitJournal: Table = new Table("VisitJournal", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isGenerated: true, isNullable: false}),
+      new TableColumn({name: "username", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "time", type: "integer", isNullable: false}),
+      new TableColumn({name: "synchronized", type: "boolean", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
     const visibility: Table = new Table("Visibility", [
@@ -57,12 +65,34 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
+    const linkBlock: Table = new Table("LinkBlock",[
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "refId", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
+    const videoBlock: Table = new Table("VideoBlock", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "hash", type: "string", length: "64", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+    ]);
+
     await queryRunner.createTable(learnplace);
+    await queryRunner.createTable(visitJournal);
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
     await queryRunner.createTable(textBlock);
     await queryRunner.createTable(pictureBlock);
+    await queryRunner.createTable(linkBlock);
+    await queryRunner.createTable(videoBlock);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -74,8 +104,11 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Map");
     await queryRunner.dropTable("Location");
     await queryRunner.dropTable("Visibility");
-    await queryRunner.dropTable("Learnplace");
     await queryRunner.dropTable("TextBlock");
     await queryRunner.dropTable("PictureBlock");
+    await queryRunner.dropTable("LinkBLock");
+    await queryRunner.dropTable("VideoBlock");
+    await queryRunner.dropTable("VisitJournal");
+    await queryRunner.dropTable("Learnplace");
   }
 }

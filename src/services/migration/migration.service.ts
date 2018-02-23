@@ -62,6 +62,7 @@ export class TypeOrmDbMigration implements DBMigration {
       this.log.info(() => "Successfully migrate database");
 
     } catch (error) {
+      this.log.debug(() => `Database Migration Error: ${JSON.stringify(error)}`);
       throw new MigrationError("Could not finish database migration");
     }
   }

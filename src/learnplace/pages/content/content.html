@@ -2,7 +2,7 @@
   <ion-navbar color="primary">
     <ion-title>
       <ion-icon name="pin"></ion-icon>
-      {{learnplace.getName()}}
+      {{title}}
     </ion-title>
     <ion-buttons end>
       <button ion-button menuToggle>
@@ -17,6 +17,7 @@
 
     <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
     <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
+    <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
 
   </div>
 

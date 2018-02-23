@@ -13,6 +13,20 @@ export class NoSuchElementError extends Error {
 }
 
 /**
+ * Indicates an argument that is not valid.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class IllegalArgumentError extends Error {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, IllegalArgumentError.prototype);
+  }
+}
+  
+/*
  * Describes an illegal state of a class.
  *
  * For example a builder requires data like the ILIAS ref id to
@@ -29,5 +43,4 @@ export class IllegalStateError extends Error {
     super(message);
     Object.setPrototypeOf(this, IllegalStateError.prototype);
   }
-
 }

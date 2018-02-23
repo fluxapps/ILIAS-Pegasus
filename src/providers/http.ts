@@ -1,9 +1,11 @@
-import {Http, RequestOptionsArgs, Response} from "@angular/http";
+import {HttpClient as Http, HttpResponse as Response, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Validator, ValidatorResult} from "jsonschema";
 import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
+import {isDefined} from "ionic-angular/es2015/util/util";
+import {timeout} from "rxjs/operators";
 
 export const DEFAULT_TIMEOUT: number = 20000;
 
@@ -12,7 +14,7 @@ export const DEFAULT_TIMEOUT: number = 20000;
  * In addition, a smarter response type is used.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Injectable()
 export class HttpClient {
@@ -25,47 +27,111 @@ export class HttpClient {
   /**
    * Wraps the {@link Http#get} method uses a timeout and returns a promise instead of an observable.
    *
-   * @param {string} url the url to perform the request
-   * @param {RequestOptionsArgs} options options used for the request
+   * @param {string} url - the url to perform the request
+   * @param {RequestOptions} options - options used for the request
    *
    * @returns {Promise<HttpResponse>} the resulting response
+   * @throws {UnfinishedHttpRequestError} if the request fails
    */
-  async get(url: string, options?: RequestOptionsArgs): Promise<HttpResponse> {
+  async get(url: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    this.log.info(() => `Http GET request to: ${url}`);
     try {
-      const response: Response = await this.http.get(url, options)
-        .timeout(DEFAULT_TIMEOUT)
+
+      this.log.trace(() => `Http GET request to: ${url}`);
+      const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
+        .pipe(timeout(DEFAULT_TIMEOUT))
         .toPromise();
 
       return new HttpResponse(response);
-    }
-    catch (error) {
-      if(error instanceof Response)
-        return new HttpResponse(<Response>error);
 
-      throw error;
+    } catch(error) {
+      this.log.warn(() => `Http GET request failed: resource=${url}`);
+      this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
+      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
     }
-
   }
 
   /**
    * Wraps the {@link Http#post} method uses a timeout and returns a promise instead of an observable.
    *
-   * @param {string} url the url to perform the request
-   * @param {object} body the request body to post
-   * @param {RequestOptionsArgs} options options used for the request
+   * @param {string} url - the url to perform the request
+   * @param {string} body - the request body to post
+   * @param {RequestOptions} options - options used for the request
    *
    * @returns {Promise<HttpResponse>} the resulting response
+   * @throws {UnfinishedHttpRequestError} if the request fails
    */
-  async post(url: string, body?: object, options?: RequestOptionsArgs): Promise<HttpResponse> {
+  async post(url: string, body?: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    this.log.info(() => `Http POST request to: ${url}`);
-    const response: Response = await this.http.post(url, body, options)
-      .timeout(DEFAULT_TIMEOUT)
-      .toPromise();
+    try {
 
-    return new HttpResponse(response);
+      this.log.trace(() => `Http POST request to: ${url}`);
+      const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
+        .pipe(timeout(DEFAULT_TIMEOUT))
+        .toPromise();
+
+      return new HttpResponse(response);
+
+    } catch (error) {
+      this.log.warn(() => `Http GET request failed: resource=${url}`);
+      this.log.debug(() => `Http GET request error: ${error}`);
+      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
+    }
+  }
+}
+
+/**
+ * Contains http request options.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface RequestOptions {
+    readonly headers?: Array<[string, string]>;
+    readonly urlParams?: Array<[string, string]>;
+}
+
+/**
+ * Defines the angular http module request options as an interface instead of an object literal.
+ * Furthermore, only the 'arraybuffer' response type is set, because its everything we need for this module.
+ */
+export interface AngularRequestOptions {
+  readonly headers?: HttpHeaders | {[header: string]: string | Array<string>};
+  readonly observe: "response";
+  readonly params?: HttpParams | {[param: string]: string | Array<string>};
+  readonly reportProgress?: boolean;
+  readonly responseType: "arraybuffer";
+  readonly withCredentials?: boolean;
+}
+
+/**
+ * Convert the given {@code opt} to the angular http module request options type {@link AngularRequestOptions}.
+ *
+ * @param {RequestOptions} opt - the options to convert
+ *
+ * @returns {AngularRequestOptions} the converted options
+ */
+export function toAngularOptions(opt?: RequestOptions): AngularRequestOptions {
+
+  let headers: HttpHeaders = new HttpHeaders();
+  if (isDefined(opt) && isDefined(opt.headers))
+    opt.headers.forEach(it => {
+      headers = headers.set(it[0], it[1])
+    });
+
+  let params: HttpParams = new HttpParams();
+  if (isDefined(opt) && isDefined(opt.urlParams))
+    opt.urlParams.forEach(it => {
+      params = params.set(it[0], it[1])
+    });
+
+  return <AngularRequestOptions>{
+    headers: headers,
+    params: params,
+    responseType: "arraybuffer",
+    observe: "response",
+    withCredentials: false,
+    reportProgress: false
   }
 }
 
@@ -85,7 +151,7 @@ export class HttpResponse {
 
   private readonly log: Logger = Logging.getLogger(HttpResponse.name);
 
-  constructor(private readonly response: Response) {
+  constructor(private readonly response: Response<ArrayBuffer>) {
     this.ok = response.ok;
     this.status = response.status;
     this.statusText = response.statusText;
@@ -94,16 +160,18 @@ export class HttpResponse {
   /**
    * Parses the response into json with the given {@code schema}.
    *
-   * @param {Object} schema the json schema to validate the response
+   * @param {Object} schema - the json schema to validate the response
    *
    * @returns {Object} the valid json
    * @throws {JsonValidationError} if the body could not be parsed or does not match the schema
    */
   json<T>(schema: object): T {
 
-    const json: {} = this.tryJson(this.response, (): Error =>
-      new JsonValidationError("Could not parse response body to json")
-    );
+    const json: {} = this.tryJson(this.response, (): Error => {
+      this.log.warn(() => "Could not parse response body to json");
+      this.log.debug(() => `Request Body: ${this.response.body}`);
+      return new JsonValidationError("Could not parse response body to json");
+    });
 
     const result: ValidatorResult = this.validator.validate(json, schema);
 
@@ -116,39 +184,20 @@ export class HttpResponse {
 
   /**
    * /**
-   * Returns the body as a string, presuming `toString()` can be called on the response body.
-   *
-   * When decoding an `ArrayBuffer`, the optional `encodingHint` parameter determines how the
-   * bytes in the buffer will be interpreted. Valid values are:
-   *
-   * - `legacy` - incorrectly interpret the bytes as UTF-16 (technically, UCS-2). Only characters
-   *   in the Basic Multilingual Plane are supported, surrogate pairs are not handled correctly.
-   *   In addition, the endianness of the 16-bit octet pairs in the `ArrayBuffer` is not taken
-   *   into consideration. This is the default behavior to avoid breaking apps, but should be
-   *   considered deprecated.
-   *
-   * - `iso-8859` - interpret the bytes as ISO-8859 (which can be used for ASCII encoded text).
-   *
-   * @param {"legacy" | "iso-8859"} encodingHint the encoding hint to use
+   * Returns the body as a string, presuming its UTF-8 encoded.
    *
    * @returns {string} the resulting text
    */
-  text(encodingHint?: "legacy" | "iso-8859"): string {
-    return this.response.text(encodingHint)
+  text(): string {
+    return String.fromCharCode.apply(undefined, new Uint8Array(this.response.body));
+
   }
 
   /**
    * @returns {ArrayBuffer} the body as an array buffer
    */
   arrayBuffer(): ArrayBuffer {
-    return this.response.arrayBuffer()
-  }
-
-  /**
-   * @returns {Blob} the request's body as a Blob, assuming that body exists
-   */
-  blob(): Blob {
-    return this.response.blob()
+    return this.response.body;
   }
 
   /**
@@ -165,7 +214,7 @@ export class HttpResponse {
    * @throws {NotFoundError} if the status code is 404
    * @throws {HttpRequestError} if no status code is not explicit handled and not ok
    */
-  async handle<T>(success: (response: HttpResponse) => Promise<T>): Promise<T> {
+  handle<T>(success: (response: HttpResponse) => T): T {
 
     switch (true) {
 
@@ -174,17 +223,17 @@ export class HttpResponse {
 
       case this.status === HttpStatus.UNAUTHORIZED:
         this.log.warn(() => `Response handling with status code ${this.status}`);
-        this.log.trace(() => this.getErrorMessage());
+        this.log.debug(() => this.getErrorMessage());
         throw new AuthenticateError(this.getErrorMessage());
 
       case this.status === HttpStatus.NOT_FOUND:
         this.log.warn(() => `Response handling with status code ${this.status}`);
-        this.log.trace(() => this.getErrorMessage());
+        this.log.debug(() => this.getErrorMessage());
         throw new NotFoundError(this.getErrorMessage());
 
       default:
         this.log.warn(() => `Response handling with status code ${this.status}`);
-        this.log.trace(() => this.getErrorMessage());
+        this.log.debug(() => this.getErrorMessage());
         throw new HttpRequestError(this.status, this.getErrorMessage());
     }
   }
@@ -202,9 +251,9 @@ export class HttpResponse {
    *
    * @returns {object} the resulting json
    */
-  private tryJson(response: Response, errorSupplier: () => Error): object {
+  private tryJson(response: Response<ArrayBuffer>, errorSupplier: () => Error): object {
     try {
-      return response.json();
+      return JSON.parse(this.text());
     } catch (error) {
       throw errorSupplier();
     }
@@ -222,6 +271,20 @@ export class JsonValidationError extends TypeError {
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, JsonValidationError.prototype);
+  }
+}
+
+/**
+ * Indicates that an  http request could not be finished.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class UnfinishedHttpRequestError extends Error {
+
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, UnfinishedHttpRequestError.prototype);
   }
 }
 

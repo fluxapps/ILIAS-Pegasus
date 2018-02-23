@@ -1,30 +1,27 @@
-import {SinonSandbox, createSandbox, SinonStub} from "sinon";
+import {SinonSandbox, createSandbox} from "sinon";
 import {
+  LinkBlockMapper,
   PictureBlockMapper, SimpleStorageLocation,
-  TextBlockMapper
+  TextBlockMapper, VideoBlockMapper, VisitJournalMapper
 } from "../../../../src/learnplace/services/loader/mappers";
-import {PictureBlock, TextBlock} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
+import {
+  ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
+  VideoBlock
+} from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
-import {apply} from "../../../../src/util/util.function";
 import {getVisibilityEntity} from "./learnplace.spec";
 import {stubInstance} from "../../../SinonUtils";
-import {FileTransfer} from "@ionic-native/file-transfer";
-import {LearnplaceData, LearnplaceObject} from "../../../../src/learnplace/services/loader/learnplace";
-import {File} from "@ionic-native/file";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
+import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
+import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
+import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journal.entity";
 
 describe("a text block mapper", () => {
-
-  const sandbox: SinonSandbox = createSandbox();
 
   let mapper: TextBlockMapper = new TextBlockMapper();
 
 	beforeEach(() => {
 		mapper = new TextBlockMapper();
-	});
-
-	afterEach(() => {
-		sandbox.restore();
 	});
 
 	describe("on mapping text blocks", () => {
@@ -45,17 +42,17 @@ describe("a text block mapper", () => {
 
 
         const expected: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.sequence = 1;
-            it.iliasId = 1;
-            it.content = "some text";
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new TextblockEntity().applies( function(): void {
+            this.sequence = 1;
+            this.iliasId = 1;
+            this.content = "some text";
+            this.visibility = getVisibilityEntity("ALWAYS");
           }),
-          apply(new TextblockEntity(), it => {
-            it.sequence = 2;
-            it.iliasId = 2;
-            it.content = "new text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.sequence = 2;
+            this.iliasId = 2;
+            this.content = "new text";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -68,12 +65,12 @@ describe("a text block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.content = "some old text";
-            it.visibility = getVisibilityEntity("ALWAYS");
+          new TextblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.content = "some old text";
+            this.visibility = getVisibilityEntity("ALWAYS");
           })
         ];
 
@@ -87,18 +84,18 @@ describe("a text block mapper", () => {
 
 
         const expected: Array<TextblockEntity> = [
-          apply(new TextblockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 1;
-            it.content = "some text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.content = "some text";
+            this.visibility = getVisibilityEntity("NEVER");
           }),
-          apply(new TextblockEntity(), it => {
-            it.sequence = 2;
-            it.iliasId = 2;
-            it.content = "new text";
-            it.visibility = getVisibilityEntity("NEVER");
+          new TextblockEntity().applies(function(): void {
+            this.sequence = 2;
+            this.iliasId = 2;
+            this.content = "new text";
+            this.visibility = getVisibilityEntity("NEVER");
           })
         ];
         chai.expect(result)
@@ -112,12 +109,6 @@ describe("a text block mapper", () => {
 describe("a picture block mapper", () => {
 
   const sandbox: SinonSandbox = createSandbox();
-  const mockFileTransfer: FileTransfer = stubInstance(FileTransfer);
-  const learnplace: LearnplaceData = apply(new LearnplaceObject(), it => {
-    it.setId(1);
-    it.setName("Learnplace xy");
-  });
-  const mockFile: File = stubInstance(File);
   const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
 
   let mapper: PictureBlockMapper = new PictureBlockMapper();
@@ -148,23 +139,23 @@ describe("a picture block mapper", () => {
 
 
 			  const expected: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.sequence = 3;
-            it.iliasId = 1;
-            it.title = "title";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.sequence = 3;
+            this.iliasId = 1;
+            this.title = "title";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           }),
-          apply(new PictureBlockEntity(), it => {
-            it.sequence = 4;
-            it.iliasId = 2;
-            it.title = "title 2";
-            it.description = "";
-            it.thumbnail = "=2e";
-            it.url = "get/picture/2";
-            it.visibility = getVisibilityEntity("NEVER")
+          new PictureBlockEntity().applies(function(): void {
+            this.sequence = 4;
+            this.iliasId = 2;
+            this.title = "title 2";
+            this.description = "";
+            this.thumbnail = "=2e";
+            this.url = "get/picture/2";
+            this.visibility = getVisibilityEntity("NEVER")
           })
         ];
 			  chai.expect(result)
@@ -177,15 +168,15 @@ describe("a picture block mapper", () => {
 			it("should update the existing ones", () => {
 
         const local: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 3;
-            it.title = "title old";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 3;
+            this.title = "title old";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           })
         ];
 
@@ -202,26 +193,318 @@ describe("a picture block mapper", () => {
 
 
         const expected: Array<PictureBlockEntity> = [
-          apply(new PictureBlockEntity(), it => {
-            it.id = 1;
-            it.iliasId = 1;
-            it.sequence = 3;
-            it.title = "title";
-            it.description = "";
-            it.thumbnail = "=1e";
-            it.url = "get/picture/1";
-            it.visibility = getVisibilityEntity("ALWAYS")
+          new PictureBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 3;
+            this.title = "title";
+            this.description = "";
+            this.thumbnail = "=1e";
+            this.url = "get/picture/1";
+            this.visibility = getVisibilityEntity("ALWAYS")
           }),
-          apply(new PictureBlockEntity(), it => {
-            it.iliasId = 2;
-            it.sequence = 4;
-            it.title = "title 2";
-            it.description = "";
-            it.thumbnail = "=2e";
-            it.url = "get/picture/2";
-            it.visibility = getVisibilityEntity("NEVER")
+          new PictureBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 4;
+            this.title = "title 2";
+            this.description = "";
+            this.thumbnail = "=2e";
+            this.url = "get/picture/2";
+            this.visibility = getVisibilityEntity("NEVER")
           })
         ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a link block mapper", () => {
+
+  let mapper: LinkBlockMapper = new LinkBlockMapper();
+
+	beforeEach(() => {
+		mapper = new LinkBlockMapper();
+	});
+
+	describe("mapping link blocks", () => {
+
+		context("on new link blocks", () => {
+
+			it("should create link block entities", () => {
+
+				const local: Array<LinkblockEntity> = [];
+
+				const remote: Array<ILIASLinkBlock> = [
+				  <ILIASLinkBlock>{id: 1, sequence: 1, refId: 255, visibility: "ALWAYS"},
+          <ILIASLinkBlock>{id: 2, sequence: 2, refId: 87, visibility: "NEVER"}
+        ];
+
+
+        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<LinkblockEntity> = [
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 255;
+            this.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.refId = 87;
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing link blocks", () => {
+
+			it("should update the existing ones", () => {
+
+        const local: Array<LinkblockEntity> = [
+          new LinkblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 5;
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+
+        const remote: Array<ILIASLinkBlock> = [
+          <ILIASLinkBlock>{id: 1, sequence: 1, refId: 255, visibility: "ALWAYS"},
+          <ILIASLinkBlock>{id: 2, sequence: 2, refId: 87, visibility: "NEVER"}
+        ];
+
+
+        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<LinkblockEntity> = [
+          new LinkblockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.refId = 255;
+            this.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          new LinkblockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.refId = 87;
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a video block mapper", () => {
+
+    const sandbox: SinonSandbox = createSandbox();
+
+    let mapper: VideoBlockMapper = new VideoBlockMapper();
+
+	beforeEach(() => {
+		mapper = new VideoBlockMapper();
+	});
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe("on mapping video blocks", () => {
+
+		context("on new video blocks", () => {
+
+			it("should create new video block entities", () => {
+
+				const local: Array<VideoBlockEntity> = [];
+
+				const remote: Array<VideoBlock> = [
+				  <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"},
+          <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
+        ];
+
+
+				const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+
+
+				const expected: Array<VideoBlockEntity> = [
+				  new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "FB24";
+            this.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.url = "/get/video/2";
+            this.hash = "4B8A";
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+				chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing video blocks", () => {
+
+			it("should update the existing ones", () => {
+
+        const local: Array<VideoBlockEntity> = [
+          new VideoBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "A68B";
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+
+        const remote: Array<VideoBlock> = [
+          <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"},
+          <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
+        ];
+
+
+        const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<VideoBlockEntity> = [
+          new VideoBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "/get/video/1";
+            this.hash = "FB24";
+            this.visibility = getVisibilityEntity("ALWAYS");
+          }),
+          new VideoBlockEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.url = "/get/video/2";
+            this.hash = "4B8A";
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected);
+			})
+		});
+	});
+});
+
+describe("a visit journal mapper", () => {
+
+  let mapper: VisitJournalMapper = new VisitJournalMapper();
+
+	beforeEach(() => {
+		mapper = new VisitJournalMapper();
+	});
+
+	describe("on mapping journal entries", () => {
+
+		context("on new journal entries", () => {
+
+			it("should create new journal entities", () => {
+
+				const local: Array<VisitJournalEntity> = [];
+
+				const remote: Array<JournalEntry> = [
+				  <JournalEntry>{
+				    username: "mmuster",
+            timestamp: 0
+          },
+          <JournalEntry>{
+				    username: "ssuster",
+            timestamp: 0
+          }
+        ];
+
+
+				const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+
+
+				const expected: Array<VisitJournalEntity> = [
+				  new VisitJournalEntity().applies(function(): void {
+				    this.username = "mmuster";
+				    this.time = 0;
+				    this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
+				chai.expect(result)
+          .to.be.deep.equal(expected);
+			});
+		});
+
+		context("on existing journal entries", () => {
+
+			it("should update the existing journal entities", () => {
+
+        const local: Array<VisitJournalEntity> = [
+          new VisitJournalEntity().applies(function(): void {
+            this.id = 1;
+            this.username = "mmuster";
+            this.time = 0;
+            this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
+        const remote: Array<JournalEntry> = [
+          <JournalEntry>{
+            username: "mmuster",
+            timestamp: 0
+          },
+          <JournalEntry>{
+            username: "ssuster",
+            timestamp: 0
+          }
+        ];
+
+
+        const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+
+
+        const expected: Array<VisitJournalEntity> = [
+          new VisitJournalEntity().applies(function(): void {
+            this.id = 1;
+            this.username = "mmuster";
+            this.time = 0;
+            this.synchronized = true;
+          }),
+          new VisitJournalEntity().applies(function(): void {
+            this.username = "ssuster";
+            this.time = 0;
+            this.synchronized = true;
+          })
+        ];
+
         chai.expect(result)
           .to.be.deep.equal(expected);
 			})

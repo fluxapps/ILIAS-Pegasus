@@ -1,9 +1,8 @@
-import {HttpClient, HttpResponse} from "../http";
+import {HttpClient, HttpResponse, RequestOptions} from "../http";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {Headers, RequestOptionsArgs} from "@angular/http";
 import {
   ClientCredentials,
-  OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier, OAuth2Token, Token, TOKEN_RESPONSE_CONSUMER,
+  OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier, OAuth2Token, TOKEN_RESPONSE_CONSUMER,
   TokenResponseConsumer
 } from "./ilias.rest-api";
 import {isUndefined} from "ionic-angular/es2015/util/util";
@@ -51,7 +50,7 @@ export const TOKEN_MANAGER: InjectionToken<TokenManager> = new InjectionToken("t
  * by the implementation as well.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export interface ILIASRest {
 
@@ -65,6 +64,19 @@ export interface ILIASRest {
    * @throws {TokenExpiredError} if the access token is expired and could not be refreshed
    */
   get(path: string, options: ILIASRequestOptions): Promise<HttpResponse>;
+
+  /**
+   * Performs a post request to the given {@code path} with the given {@code body}
+   * as the http request body.
+   *
+   * @param {string} path - the endpoint without host and specific path
+   * @param {object} body - the request body
+   * @param {ILIASRequestOptions} options - ILIAS specific request options
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   * @throw {TokenExpiredError} if the access token is expired and could not be refreshed
+   */
+  post(path: string, body: object, options: ILIASRequestOptions): Promise<HttpResponse>;
 }
 export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token for ILIAS rest");
 
@@ -100,7 +112,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
        const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-       this.log.info(() => "Validate access token");
+       this.log.trace(() => "Validate access token");
        const token: string | undefined = await this.takeIf<string>(credentials.token.accessToken, (): boolean =>
          Date.now() / MILLISEC_TO_SEC - credentials.token.lastAccessTokenUpdate < credentials.token.accessTokenTTL
        );
@@ -161,16 +173,17 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    */
    private async updateAccessToken(credentials: ClientCredentials): Promise<string> {
 
-     const headers: Headers = new Headers();
-     headers.append("api_key", credentials.clientId);
-     headers.append("api_secret", credentials.clientSecret);
-     headers.append("grant_type", "refresh_token");
-     headers.append("refresh_token", credentials.token.refreshToken);
+     const headers: Array<[string, string]> = [
+       ["api_key", credentials.clientId],
+       ["api_secret", credentials.clientSecret],
+       ["grant_type", "refresh_token"],
+       ["refresh_token", credentials.token.refreshToken]
+     ];
 
      this.log.info(() => "Refresh access token by refresh token");
-     const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptionsArgs>{headers: headers});
+     const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptions>{headers: headers});
 
-     return response.handle<string>(async(it): Promise<string> => {
+     return response.handle<Promise<string>>(async(it): Promise<string> => {
        const data: OAuth2Token = it.json<OAuth2Token>(oAuthTokenSchema);
        await this.responseConsumer.accept(data);
 
@@ -183,7 +196,7 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
  * Implementation of {@link ILIASRest}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Injectable()
  export class ILIASRestImpl implements ILIASRest {
@@ -207,22 +220,57 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    * @throws {TokenExpiredError} if the access token is expired and could not be refreshed
    */
   async get(path: string, options: ILIASRequestOptions): Promise<HttpResponse> {
+    return this.request(path, options, (url: string, opt: RequestOptions) => this.httpClient.get(url, opt));
+  }
 
-     const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
+  /**
+   * Performs a post request to the given {@code path} with the given {@code body}
+   * as the http request body.
+   *
+   * The path MUST start with a '/' character.
+   * The api version MUST be part of the path.
+   *
+   * @param {string} path - the endpoint without host and specific path
+   * @param {object} body - the request body
+   * @param {ILIASRequestOptions} options - ILIAS specific request options
+   *
+   * @returns {Promise<HttpResponse>} the resulting response
+   * @throw {TokenExpiredError} if the access token is expired and could not be refreshed
+   */
+  async post(path: string, body: object, options: ILIASRequestOptions): Promise<HttpResponse> {
+    return this.request(path, options, (url: string, opt: RequestOptions) => this.httpClient.post(url, JSON.stringify(body), opt));
+  }
 
-     const url: string = `${credentials.apiURL}${path}`;
-     const headers: Headers = new Headers();
-     headers.append("Accept", options.accept);
-     headers.append("Authorization", `${credentials.token.type} ${await this.tokenManager.getAccessToken()}`);
+  /**
+   * Sets up a http request by creating the complete url and the requests options.
+   *
+   * @param {string} path - the path to create the url for
+   * @param {ILIASRequestOptions} options - the requests options to use
+   * @param {RequestExecutor} executor - function called with the complete url and the request options
+   *
+   * @returns {Promise<HttpResponse>} the return value of the given {@code executor}
+   */
+  private async request(path: string, options: ILIASRequestOptions, executor: RequestExecutor): Promise<HttpResponse> {
 
-     const requestOptions: RequestOptionsArgs = <RequestOptionsArgs>{
-       headers:headers,
-       search: options.urlParams
-     };
+    const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
 
-     return this.httpClient.get(url, requestOptions);
+    const url: string = `${credentials.apiURL}${path}`;
+    const headers: Array<[string, string]> = [
+      ["accept", options.accept],
+      ["Authorization", `${credentials.token.type} ${await this.tokenManager.getAccessToken()}`]
+    ];
+
+    const requestOptions: RequestOptions = <RequestOptions>{
+      headers:headers,
+      urlParams: options.urlParams
+    };
+
+    return executor(url, requestOptions);
   }
 }
+
+// type pointer for the private #request method of ILIASRestImpl
+interface RequestExecutor { (url: string, options: RequestOptions): Promise<HttpResponse> }
 
 const oAuthTokenSchema: object = {
   "title": "oauth2 token",
@@ -244,7 +292,7 @@ const oAuthTokenSchema: object = {
  */
 export interface ILIASRequestOptions {
   readonly accept: string,
-  readonly urlParams?: URLSearchParams
+  readonly urlParams?: Array<[string, string]>
 }
 
 /**

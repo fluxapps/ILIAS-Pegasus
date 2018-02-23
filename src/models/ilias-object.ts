@@ -119,7 +119,7 @@ export class ILIASObject extends ActiveRecord {
 
     protected _presenter: ILIASObjectPresenter;
 
-    constructor(id = 0) {
+    constructor(id: number = 0) {
         super(id, new SQLiteConnector("objects", [
             "userId",
             "objId",
@@ -161,7 +161,7 @@ export class ILIASObject extends ActiveRecord {
         return {};
     }
 
-    set data(data) {
+    set data(data: any) {
         if (typeof data === "string") {
             this._data = data;
         } else if (typeof data === "object" && data !== null) {
@@ -194,7 +194,7 @@ export class ILIASObject extends ActiveRecord {
         } else if ( path === null) {
             this._repoPath = null;
         }else {
-            Log.describe(this, "repo path is: ", path)
+            Log.describe(this, "repo path is: ", path);
             throw new Error("Please provide a string or a list of strings for repoPath in ilias-object.ts");
         }
     }
@@ -207,11 +207,15 @@ export class ILIASObject extends ActiveRecord {
         return (["crs", "grp", "fold"].indexOf(this.type) > -1);
     }
 
-  /**
-   * @returns {boolean} true if the object has permission visible, otherwise false
-   */
-  isLinked(): boolean {
+    /**
+     * @returns {boolean} true if the object has permission visible, otherwise false
+     */
+    isLinked(): boolean {
       return this.permissionType == "visible";
+    }
+
+    isLearnplace(): boolean {
+      return this.type == "xsrl";
     }
 
     /**

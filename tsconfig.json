@@ -5,6 +5,7 @@
     "alwaysStrict": true,             //emit use 'strict' in output js files
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "noEmitOnError": false,
     "typeRoots": ["node_modules/@types"],
 //    "strictNullChecks": true, -> can not be used yet, too much code will be invalid
     "lib": [

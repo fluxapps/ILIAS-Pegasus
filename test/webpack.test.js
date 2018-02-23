@@ -4,12 +4,15 @@
 
 let webpack = require("webpack");
 let path = require("path");
-
+console.log(__dirname);
 module.exports = {
+
+  bail: true,
+
   devtool: 'inline-source-map',
 
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
   },
 
   // rules for how to load specific file types

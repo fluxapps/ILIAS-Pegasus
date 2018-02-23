@@ -1,52 +1,48 @@
-import {Component, Inject} from '@angular/core';
-import {NavController, ToastController, ToastOptions} from 'ionic-angular';
+import {Component, Inject} from "@angular/core";
+import {NavController, ToastController, ToastOptions, AlertController} from "ionic-angular";
 import {Settings} from "../../models/settings";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Log} from "../../services/log.service";
 import {User} from "../../models/user";
 import {FileData} from "../../models/file-data";
-import {ILIASInstallation} from "../../config/ilias-config";
-import {AlertController} from "ionic-angular/index";
+import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {FileService} from "../../services/file.service";
 import {DesktopItem} from "../../models/desktop-item";
-import {Job} from "../../services/footer-toolbar.service";
-import {ILIAS_CONFIG_FACTORY, ILIASConfigFactory} from "../../services/ilias-config-factory";
 
 @Component({
-    templateUrl: 'settings.html'
+    templateUrl: "settings.html"
 })
 
 export class SettingsPage {
 
-    public settingsMode = 'general';
+    settingsMode: string = "general";
 
-    public settings: Settings;
+    settings: Settings;
 
-    public installationsWithUsers: ILIASInstallation[];
+    installationsWithUsers: Array<ILIASInstallation>;
 
-    public totalSize: number = 0;
+    totalSize: number = 0;
 
     /**
      * Stores the users per installation together with their used disk space on the device
      */
-    public usersPerInstallation: {[installationId: number]: {user: User, diskSpace: number}[]} = {};
+    usersPerInstallation: {[installationId: number]: Array<{user: User, diskSpace: number}>} = {};
 
-    public loggedInUser:User;
+    loggedInUser: User;
 
     constructor(public nav: NavController,
                 public toast: ToastController,
                 public footerToolbar: FooterToolbarService,
                 public translate: TranslateService,
-                @Inject(ILIAS_CONFIG_FACTORY)
-                private readonly configFactory: ILIASConfigFactory,
+                @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
                 public alert: AlertController,
                 public dataProvider: DataProvider,
                 public fileService: FileService) {
     }
 
-    public ionViewDidEnter() {
+    ionViewDidEnter() {
         this.init();
     }
 
@@ -67,20 +63,20 @@ export class SettingsPage {
         this.loadUsersAndDiskspace();
     }
 
-    private loadUsersAndDiskspace(): Promise<any> {
+    private loadUsersAndDiskspace(): Promise<{}> {
         this.usersPerInstallation = [];
         this.totalSize = 0;
         //Load installations
         Log.write(this, "loading users and diskspace");
-        return this.configFactory.get().then((config) => {
+        return this.configProvider.loadConfig().then((config) => {
             this.installationsWithUsers = config.installations;
             return User.findAllUsers().then(users => {
-                let diskSpacePromises = [];
+                const diskSpacePromises = [];
                 users.forEach(user => {
                     if (!this.usersPerInstallation[user.installationId]) {
                         this.usersPerInstallation[user.installationId] = [];
                     }
-                    let diskSpacePromise = FileData.getTotalDiskSpaceForUser(user).then(diskSpace => {
+                    const diskSpacePromise = FileData.getTotalDiskSpaceForUser(user).then(diskSpace => {
                         this.usersPerInstallation[user.installationId].push({
                             user: user,
                             diskSpace: diskSpace
@@ -98,14 +94,14 @@ export class SettingsPage {
         });
    }
 
-    public deleteLocalUserDataPrompt(user: User) {
-        let alert = this.alert.create({
-            title: this.translate.instant("settings.delete_user_local_data_title", {'username': user.iliasLogin}),
+    deleteLocalUserDataPrompt(user: User) {
+        const alert = this.alert.create({
+            title: this.translate.instant("settings.delete_user_local_data_title", {"username": user.iliasLogin}),
             subTitle: this.translate.instant("settings.delete_user_local_data_text"),
             buttons: [
                 {
                     text: this.translate.instant("cancel"),
-                    role: 'cancel',
+                    role: "cancel",
                     handler: () => {
                         // alert.dismiss();
                     }
@@ -121,7 +117,7 @@ export class SettingsPage {
         alert.present();
     }
 
-    public saveSettings() {
+    saveSettings() {
         this.settings.downloadSize = Math.min(this.settings.downloadSize, 9999);
         this.settings.quotaSize = Math.min(this.settings.quotaSize, 99999);
 
@@ -131,7 +127,7 @@ export class SettingsPage {
                 Log.write(this, "Settings saved successfully.");
                 this.translate.use(this.settings.language).subscribe(() => {
                     Log.write(this, "Switching language successful.");
-                    let toast = this.toast.create(<ToastOptions>{
+                    const toast = this.toast.create(<ToastOptions>{
                         message: this.translate.instant("settings.settings_saved"),
                         duration: 3000
                     });
@@ -141,7 +137,7 @@ export class SettingsPage {
         }
     }
 
-    protected deleteLocalUserData(user: User): Promise<any> {
+    protected deleteLocalUserData(user: User): Promise<void> {
         this.footerToolbar.addJob(Job.DeleteFilesSettings,this.translate.instant("settings.deleting_files"));
         return this.deleteFiles(user)
             .then(() => this.loadUsersAndDiskspace())
@@ -156,7 +152,7 @@ export class SettingsPage {
     }
 
     protected showFilesDeletedToast() {
-        let toast = this.toast.create({
+        const toast = this.toast.create({
             message: this.translate.instant("settings.files_deleted"),
             duration: 3000
         });
@@ -164,7 +160,7 @@ export class SettingsPage {
     }
 
     protected showFilesDeletingToast() {
-        let toast = this.toast.create({
+        const toast = this.toast.create({
             message: this.translate.instant("Deleting files"),
             duration: 2000
         });
@@ -173,7 +169,7 @@ export class SettingsPage {
 
     protected doDeleteAllFiles() {
         return User.findAllUsers().then(users => {
-            let promises = [];
+            const promises = [];
             users.forEach(user => {
                 promises.push(this.deleteFiles(user));
             });
@@ -183,14 +179,14 @@ export class SettingsPage {
 
     }
 
-    public deleteAllFilesPrompt() {
-        let alert = this.alert.create({
+    deleteAllFilesPrompt() {
+        const alert = this.alert.create({
             title: this.translate.instant("settings.delete_all_files"),
             subTitle: this.translate.instant("settings.delete_all_files_text"),
             buttons: [
                 {
                     text: this.translate.instant("cancel"),
-                    role: 'cancel',
+                    role: "cancel",
                     handler: () => {
                     }
                 },
@@ -212,9 +208,9 @@ export class SettingsPage {
         alert.present();
     }
 
-    protected deleteFiles(user: User): Promise<any> {
+    protected deleteFiles(user: User): Promise<{}> {
         return DesktopItem.findByUserId(user.id).then(iliasObjects => {
-            let promises = [];
+            const promises = [];
             iliasObjects.forEach(object => {
                 promises.push(this.fileService.removeRecursive(object));
             });

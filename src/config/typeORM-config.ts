@@ -7,7 +7,9 @@ import {MapEntity} from "../learnplace/entity/map.entity";
 import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
 import {TextblockEntity} from "../learnplace/entity/textblock.entity";
 import {PictureBlockEntity} from "../learnplace/entity/pictureBlock.entity";
-import {LearnplaceEnity} from "../learnplace/entity/learnplace.enity";
+import {VisitJournalEntity} from "../learnplace/entity/visit-journal.entity";
+import {LinkblockEntity} from "../learnplace/entity/linkblock.entity";
+import {VideoBlockEntity} from "../learnplace/entity/videoblock.entity";
 import {UserEntity} from "../entity/user.entity";
 import {NewsEntity} from "../entity/news.entity";
 
@@ -41,7 +43,9 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
               VisibilityEntity,
               TextblockEntity,
               PictureBlockEntity,
-              VisibilityEntity,
+              VideoBlockEntity,
+              LinkblockEntity,
+              VisitJournalEntity
               UserEntity,
               NewsEntity
             )

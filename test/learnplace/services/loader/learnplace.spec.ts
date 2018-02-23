@@ -9,9 +9,11 @@ import * as chaiAsPromised from "chai-as-promised";
 import {MapEntity} from "../../../../src/learnplace/entity/map.entity";
 import {LocationEntity} from "../../../../src/learnplace/entity/location.entity";
 import {VisibilityEntity} from "../../../../src/learnplace/entity/visibility.entity";
-import {apply} from "../../../../src/util/util.function";
 import {HttpRequestError} from "../../../../src/providers/http";
-import {PictureBlockMapper, TextBlockMapper} from "../../../../src/learnplace/services/loader/mappers";
+import {
+  LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper,
+  VisitJournalMapper
+} from "../../../../src/learnplace/services/loader/mappers";
 import {stubInstance} from "../../../SinonUtils";
 
 chai.use(chaiAsPromised);
@@ -23,7 +25,8 @@ describe("a learnplace loader", () => {
     const mockLearnplaceAPI: LearnplaceAPI = <LearnplaceAPI>{
       getBlocks: (): Promise<BlockObject> => undefined,
       getJournalEntries: (): Promise<Array<JournalEntry>> => undefined,
-      getLearnPlace: (): Promise<LearnPlace> => undefined
+      getLearnPlace: (): Promise<LearnPlace> => undefined,
+      addJournalEntry: (): Promise<void> => undefined
     };
     const mockLearnplaceRepository: LearnplaceRepository = <LearnplaceRepository>{
       save: (): Promise<LearnplaceEntity> => undefined,
@@ -33,12 +36,18 @@ describe("a learnplace loader", () => {
     };
     const mockTextBlockMapper: TextBlockMapper = stubInstance(TextBlockMapper);
     const mockPictureBlockMapper: PictureBlockMapper = stubInstance(PictureBlockMapper);
+    const mockLinkBlockMapper: LinkBlockMapper = stubInstance(LinkBlockMapper);
+    const mockVideoBlockMapper: VideoBlockMapper = stubInstance(VideoBlockMapper);
+    const mockJournalEntryMapper: VisitJournalMapper = stubInstance(VisitJournalMapper);
 
     let loader: RestLearnplaceLoader = new RestLearnplaceLoader(
       mockLearnplaceAPI,
       mockLearnplaceRepository,
       mockTextBlockMapper,
-      mockPictureBlockMapper
+      mockPictureBlockMapper,
+      mockLinkBlockMapper,
+      mockVideoBlockMapper,
+      mockJournalEntryMapper
     );
 
 	beforeEach(() => {
@@ -46,7 +55,10 @@ describe("a learnplace loader", () => {
 		  mockLearnplaceAPI,
       mockLearnplaceRepository,
       mockTextBlockMapper,
-      mockPictureBlockMapper
+      mockPictureBlockMapper,
+      mockLinkBlockMapper,
+      mockVideoBlockMapper,
+      mockJournalEntryMapper
     );
 	});
 
@@ -68,41 +80,57 @@ describe("a learnplace loader", () => {
         sandbox.stub(mockLearnplaceAPI, "getBlocks")
           .resolves(blocks);
 
+        sandbox.stub(mockLearnplaceAPI, "getJournalEntries") // we don't care about the visit journal in this class
+          .resolves([]);
+
         sandbox.stub(mockLearnplaceRepository, "find")
           .resolves(Optional.empty());
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
           .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
 
-        // again, we don't care about the blocks, therefore we return empty arrays
+        // again, we don't care about the blocks or visit journal, therefore we return empty arrays
         const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
           .returns([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
+          .returns([]);
+        const linkBlockMapperStub: SinonStub = sandbox.stub(mockLinkBlockMapper, "map")
+          .returns([]);
+        const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
+          .returns([]);
+        const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
           .returns([]);
 
 
         await loader.load(1);
 
 
-        const expected: LearnplaceEntity = apply(new LearnplaceEntity(), it => {
+        const expected: LearnplaceEntity = new LearnplaceEntity().applies( function(): void {
 
-          it.objectId = learnplace.objectId;
-          it.map = apply(new MapEntity(), map => {
-            map.visibility = getVisibilityEntity(learnplace.map.visibility);
+          this.objectId = learnplace.objectId;
+          this.map = new MapEntity().applies(function(): void {
+            this.visibility = getVisibilityEntity(learnplace.map.visibility);
           });
-          it.location = apply(new LocationEntity(), location => {
-            location.latitude = learnplace.location.latitude;
-            location.longitude = learnplace.location.longitude;
-            location.radius = learnplace.location.radius;
-            location.elevation = learnplace.location.elevation;
+          this.location = new LocationEntity().applies(function(): void {
+            this.latitude = learnplace.location.latitude;
+            this.longitude = learnplace.location.longitude;
+            this.radius = learnplace.location.radius;
+            this.elevation = learnplace.location.elevation;
           });
-          it.textBlocks = [];
-          it.pictureBlocks = [];
+
+          this.visitJournal = [];
+          this.textBlocks = [];
+          this.pictureBlocks = [];
+          this.linkBlocks = [];
+          this.videoBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
         assert.calledOnce(textBlockMapperStub);
         assert.calledOnce(pictureBlockMapperStub);
+        assert.calledOnce(linkBlockMapperStub);
+        assert.calledOnce(videoBlockMapperStub);
+        assert.calledOnce(visitJournalMapperStub);
 			});
 		});
 
@@ -118,16 +146,25 @@ describe("a learnplace loader", () => {
         sandbox.stub(mockLearnplaceAPI, "getBlocks")
           .resolves(blocks);
 
+        sandbox.stub(mockLearnplaceAPI, "getJournalEntries") // we don't care about the visit journal in this class
+          .resolves([]);
+
         sandbox.stub(mockLearnplaceRepository, "find")
           .resolves(Optional.of(getExistingLearnplace()));
 
         const saveStub: SinonStub = sandbox.stub(mockLearnplaceRepository, "save")
           .resolves(new LearnplaceEntity()); // return value is not used, therefore an empty entity is enough
 
-        // again, we don't care about the blocks, therefore we return empty arrays
+        // again, we don't care about the blocks or visit journal, therefore we return empty arrays
         const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
           .returns([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
+          .returns([]);
+        const linkBlockMapperStub: SinonStub = sandbox.stub(mockLinkBlockMapper, "map")
+          .returns([]);
+        const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
+          .returns([]);
+        const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
           .returns([]);
 
 
@@ -135,27 +172,34 @@ describe("a learnplace loader", () => {
 
 
         // we set now an id on the entities that exists already
-        const expected: LearnplaceEntity = apply(new LearnplaceEntity(), it => {
+        const expected: LearnplaceEntity = new LearnplaceEntity().applies(function(): void {
 
-          it.objectId = learnplace.objectId;
-          it.map = apply(new MapEntity(), it => {
-            it.id = 1;
-            it.visibility = getVisibilityEntity(learnplace.map.visibility);
+          this.objectId = learnplace.objectId;
+          this.map = new MapEntity().applies(function(): void {
+            this.id = 1;
+            this.visibility = getVisibilityEntity(learnplace.map.visibility);
           });
-          it.location = apply(new LocationEntity(), it => {
-            it.id = 1;
-            it.latitude = learnplace.location.latitude;
-            it.longitude = learnplace.location.longitude;
-            it.radius = learnplace.location.radius;
-            it.elevation = learnplace.location.elevation;
+          this.location = new LocationEntity().applies(function(): void {
+            this.id = 1;
+            this.latitude = learnplace.location.latitude;
+            this.longitude = learnplace.location.longitude;
+            this.radius = learnplace.location.radius;
+            this.elevation = learnplace.location.elevation;
           });
-          it.textBlocks = [];
-          it.pictureBlocks = [];
+
+          this.visitJournal = [];
+          this.textBlocks = [];
+          this.pictureBlocks = [];
+          this.linkBlocks = [];
+          this.videoBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
         assert.calledOnce(textBlockMapperStub);
         assert.calledOnce(pictureBlockMapperStub);
+        assert.calledOnce(linkBlockMapperStub);
+        assert.calledOnce(videoBlockMapperStub);
+        assert.calledOnce(visitJournalMapperStub);
 			})
 		});
 
@@ -214,6 +258,19 @@ function createLearnPlace(): LearnPlace {
   };
 }
 
+function createJournalEntries(): Array<JournalEntry> {
+  return [
+    <JournalEntry>{
+      username: "mmuster",
+      timestamp: 0
+    },
+    <JournalEntry>{
+      username: "ssuster",
+      timestamp: 0
+    }
+  ];
+}
+
 function createEmptyBlocks(): BlockObject {
   return <BlockObject>{
     text: [],
@@ -226,30 +283,33 @@ function createEmptyBlocks(): BlockObject {
 
 function getExistingLearnplace(): LearnplaceEntity {
 
-  return apply(new LearnplaceEntity(), it => {
+  return new LearnplaceEntity().applies(function(): void {
 
-    it.objectId = 1;
+    this.objectId = 1;
 
-    it.map = apply(new MapEntity(), it => {
-      it.id = 1;
-      it.visibility = getVisibilityEntity("ALWAYS")
+    this.map = new MapEntity().applies(function(): void {
+      this.id = 1;
+      this.visibility = getVisibilityEntity("ALWAYS")
     });
 
-    it.location = apply(new LocationEntity(), it => {
-      it.id = 1;
-      it.latitude = 40.054896;
-      it.longitude = 10.584896;
-      it.radius = 20;
-      it.elevation = 15.54;
+    this.location = new LocationEntity().applies(function(): void {
+      this.id = 1;
+      this.latitude = 40.054896;
+      this.longitude = 10.584896;
+      this.radius = 20;
+      this.elevation = 15.54;
     });
 
-    it.textBlocks = [];
-    it.pictureBlocks = [];
+    this.textBlocks = [];
+    this.pictureBlocks = [];
+    this.videoBlocks = [];
+    this.linkBlocks = [];
+    this.visitJournal = [];
   });
 }
 
 export function getVisibilityEntity(visibility: string): VisibilityEntity {
-  return apply(new VisibilityEntity(), it => {
-    it.value = visibility;
+  return new VisibilityEntity().applies(function(): void {
+    this.value = visibility;
   });
 }

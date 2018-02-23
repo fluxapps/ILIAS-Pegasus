@@ -1,8 +1,6 @@
 import {NgModule, ErrorHandler, Provider, FactoryProvider} from "@angular/core";
-import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController} from "ionic-angular";
+import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
-import {HttpModule, Http} from "@angular/http";
-import {ConnectionService} from "../services/ilias-app.service";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {FileService} from "../services/file.service";
@@ -26,13 +24,11 @@ import {TokenUrlConverter} from "../services/url-converter.service";
 import {BrowserModule} from "@angular/platform-browser";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {StatusBar} from "@ionic-native/status-bar";
-import {FileTransfer} from "@ionic-native/file-transfer";
 import {Network} from "@ionic-native/network";
 import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
-import {HttpILIASConfigFactory, ILIAS_CONFIG_FACTORY} from "../services/ilias-config-factory";
-import {HttpClient} from "../providers/http";
+import {HttpClient as PegasusHttpClient} from "../providers/http";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {
   ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
@@ -48,7 +44,7 @@ import {Database} from "../services/database/database";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 import {
-  LEARNPLACE, LEARNPLACE_LOADER, LearnplaceObject, MUT_LEARNPLACE,
+  LEARNPLACE_LOADER, LearnplaceLoader,
   RestLearnplaceLoader
 } from "../learnplace/services/loader/learnplace";
 import {
@@ -56,10 +52,13 @@ import {
   TypeORMLearnplaceRepository
 } from "../learnplace/providers/repository/learnplace.repository";
 import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
-import {LearnplacePage} from "../learnplace/pages/learnplace/learnplace.component";
 import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
-import {AlwaysStrategy, NeverStrategy} from "../learnplace/services/visibility/visibility.strategy";
-import {VisibilityContextFactory} from "../learnplace/services/visibility/visibility.context";
+import {
+  AfterVisitPlaceStrategy,
+  AlwaysStrategy, NeverStrategy,
+  OnlyAtPlaceStrategy
+} from "../learnplace/services/visibility/visibility.strategy";
+import {VisibilityStrategyApplier} from "../learnplace/services/visibility/visibility.context";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
 import {ContentPage} from "../learnplace/pages/content/content.component";
@@ -93,12 +92,24 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
 import {PictureBlockModal} from "../learnplace/directives/pictureblock/pictureblock.modal";
-import {PictureBlockMapper, TextBlockMapper} from "../learnplace/services/loader/mappers";
-
-
-export function createTranslateLoader(http: Http): TranslateStaticLoader {
-  return new TranslateStaticLoader(http, "./assets/i18n", ".json");
-}
+import {
+  LinkBlockMapper, PictureBlockMapper, TextBlockMapper,
+  VideoBlockMapper, VisitJournalMapper
+} from "../learnplace/services/loader/mappers";
+import {
+  TypeORMVisitJournalRepository,
+  VISIT_JOURNAL_REPOSITORY
+} from "../learnplace/providers/repository/visitjournal.repository";
+import {
+  VISIT_JOURNAL_SYNCHRONIZATION,
+  VisitJournalSynchronizationImpl
+} from "../learnplace/services/visitjournal.synchronize";
+import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
+import {Geolocation} from "@ionic-native/geolocation";
+import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
+import {Http, HttpModule} from "@angular/http";
+import {HttpClientModule} from "@angular/common/http";
+import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 
 @NgModule({
   declarations: [
@@ -116,7 +127,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     NewsPage,
 
     /* from src/learnplace */
-    LearnplacePage,
     MapPage,
     TabsPage,
     ContentPage,
@@ -124,6 +134,8 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     TextBlock,
     PictureBlock,
     PictureBlockModal,
+    VideoBlock,
+    LinkBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
@@ -137,9 +149,10 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     IonicModule.forRoot(MyApp),
     BrowserModule,
     HttpModule,
+    HttpClientModule,
     TranslateModule.forRoot({
       provide: TranslateLoader,
-      useFactory: (createTranslateLoader),
+      useFactory: (http: Http): TranslateStaticLoader => new TranslateStaticLoader(http, "./assets/i18n", ".json"),
       deps: [Http]
     })
   ],
@@ -158,7 +171,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     LearnplacePage,
 
     /* from src/learnplace */
-    LearnplacePage,
     MapPage,
     TabsPage,
     ContentPage,
@@ -175,10 +187,6 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     HardwareFeaturePage
   ],
   providers: [
-    {
-      provide: ILIAS_CONFIG_FACTORY,
-      useClass: HttpILIASConfigFactory
-    },
 
     /* from src/config/ilias-config */
     {
@@ -259,19 +267,17 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
       useClass: TypeORMMapRepository
     },
     {
-      provide: LEARNPLACE,
-      useClass: LearnplaceObject
+      provide: VISIT_JOURNAL_REPOSITORY,
+      useClass: TypeORMVisitJournalRepository
     },
     {
-      provide: MUT_LEARNPLACE,
-      useExisting: LEARNPLACE
+      provide: VISIT_JOURNAL_SYNCHRONIZATION,
+      useClass: VisitJournalSynchronizationImpl
     },
     {
       provide: LEARNPLACE_LOADER,
       useClass: RestLearnplaceLoader
     },
-    TextBlockMapper,
-    PictureBlockMapper,
     {
       provide: LEARNPLACE_API,
       useClass: ILIASLearnplaceAPI
@@ -371,9 +377,26 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     },
     AlwaysStrategy,
     NeverStrategy,
-    VisibilityContextFactory,
+    OnlyAtPlaceStrategy,
+    AfterVisitPlaceStrategy,
+    VisibilityStrategyApplier,
 
-    ConnectionService,
+    // from src/learnplace/services/loader/mappers
+    TextBlockMapper,
+    PictureBlockMapper,
+    LinkBlockMapper,
+    VideoBlockMapper,
+    VisitJournalMapper,
+
+    <FactoryProvider>{
+      provide: OpenLearnplaceAction,
+      useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
+        (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction =>
+          new OpenLearnplaceAction(loader, nav, learnplaceId, learnplaceName)
+      ,
+      deps: [LEARNPLACE_LOADER]
+    },
+
     ILIASRestProvider,
     FooterToolbarService,
     DataProvider,
@@ -384,12 +407,12 @@ export function createTranslateLoader(http: Http): TranslateStaticLoader {
     StatusBar,
     InAppBrowser,
     File,
-    FileTransfer,
     Network,
     SQLite,
     Toast,
-    HttpClient,
+    PegasusHttpClient,
     SplashScreen,
+    Geolocation,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
