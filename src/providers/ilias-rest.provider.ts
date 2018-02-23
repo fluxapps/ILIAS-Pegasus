@@ -56,7 +56,7 @@ export class ILIASRestProvider {
 
     async downloadFile(refId: number, storageLocation: string, fileName: string): Promise<FileEntry> {
 
-      const response: HttpResponse = await this.iliasRest.get(`/v1/files${refId}`, DEFAULT_OPTIONS);
+      const response: HttpResponse = await this.iliasRest.get(`/v1/files/${refId}`, DEFAULT_OPTIONS);
 
       return response.handle<Promise<FileEntry>>(async(it) =>
         this.file.writeFile(storageLocation, fileName, it.text(), <IWriteOptions>{replace: true})
