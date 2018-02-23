@@ -1,29 +1,29 @@
 export interface ILIASObjectActionAlert {
-    title:string,
-    subTitle:string
+    title: string,
+    subTitle: string
 }
 
 
 export abstract class ILIASObjectAction {
 
-    title:string;
+    static idCounter: number = 9999999;
 
-    public id:number;
+    title: string;
 
-    public static idCounter:number = 9999999;
+    id: number;
 
     /**
      * Resolves a promise if the action is completed, rejects if the action failed
      */
-    abstract execute():Promise<ILIASObjectActionResult>;
+    abstract execute(): Promise<ILIASObjectActionResult>;
 
     /**
      * Returns a object if this action needs an alert before it is executed
      */
-    abstract alert():ILIASObjectActionAlert;
+    abstract alert(): ILIASObjectActionAlert|undefined;
 
-    public instanceId():number {
-        if(this.id == null) {
+    instanceId(): number {
+        if(this.id === null) {
             this.id = ILIASObjectAction.idCounter;
             ILIASObjectAction.idCounter++;
         }
@@ -33,7 +33,7 @@ export abstract class ILIASObjectAction {
 }
 
 export abstract class ILIASObjectActionResult {
-    public constructor(public message:string ) {
+    constructor(public message: string ) {
     }
 }
 
@@ -50,7 +50,7 @@ export class ILIASObjectActionError extends ILIASObjectActionResult{
 }
 
 export class ILIASObjectActionNoMessage extends ILIASObjectActionResult {
-    public constructor() {
+    constructor() {
         super("");
     }
 }

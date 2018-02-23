@@ -1,5 +1,5 @@
-import {NgModule, ErrorHandler, FactoryProvider} from "@angular/core";
-import {IonicApp, IonicModule, IonicErrorHandler, NavController} from "ionic-angular";
+import {NgModule, ErrorHandler, Provider, FactoryProvider} from "@angular/core";
+import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
@@ -68,6 +68,25 @@ import {LocationFallbackScreen} from "./fallback/location/location-fallback.comp
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {PegasusErrorHandler} from "./error-handler";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {NewsPage} from "../pages/news/news";
+import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
+import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "../providers/repository/repository.user";
+import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
+import {NEWS_SYNCHRONIZATION, NewsSynchronization, NewsSynchronizationImpl} from "../services/news/news.synchronization";
+import {
+  AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, InstallationLinkSupplierImpl,
+  TOKEN_SUPPLIER, TokenSupplier
+} from "../services/link/link-builder.supplier";
+import {TIMELINE_LINK_BUILDER, TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
+import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../services/link/default.builder";
+import {NEWS_LINK_BUILDER, NewsLinkBuilder, NewsLinkBuilderImpl} from "../services/link/news.builder";
+import {LOADING_LINK_BUILDER, LoadingLinkBuilder, LoadingLinkBuilderImpl} from "../services/link/loading.builder";
+import {LOGIN_LINK_BUILDER, LoginLinkBuilder, LoginLinkBuilderImpl} from "../services/link/login.builder";
+import {RESOURCE_LINK_BUILDER, ResourceLinkBuilder, ResourceLinkBuilderImpl} from "../services/link/resource.builder";
+import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
+import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
+import {Builder} from "../services/builder.base";
 import {Diagnostic} from "@ionic-native/diagnostic";
 import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.util";
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
@@ -105,6 +124,7 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
+    NewsPage,
 
     /* from src/learnplace */
     MapPage,
@@ -121,6 +141,7 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     WifiFallbackScreen,
     LocationFallbackScreen,
     RoamingFallbackScreen,
+    LeaveAppDialog,
 
     HardwareFeaturePage
   ],
@@ -146,6 +167,8 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
+    NewsPage,
+    LearnplacePage,
 
     /* from src/learnplace */
     MapPage,
@@ -155,8 +178,11 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
 
     /* fallback screens */
     WifiFallbackScreen,
+
+    /* fallback screens */
     LocationFallbackScreen,
     RoamingFallbackScreen,
+    LeaveAppDialog,
 
     HardwareFeaturePage
   ],
@@ -176,6 +202,12 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     {
       provide: ILIAS_REST,
       useClass: ILIASRestImpl
+    },
+
+    /* from  src/providers/ilias/news.rest*/
+    {
+      provide: NEWS_REST,
+      useClass: NewsRestImpl
     },
 
     /* from src/config/ilias.rest-config */
@@ -207,6 +239,23 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     },
     DatabaseConnectionRegistry,
     Database,
+
+    /* from src/services/news/news.feed */
+    {
+      provide: NEWS_FEED,
+      useClass: NewsFeedImpl
+    },
+    /* from src/services/news/news.synchronization */
+    {
+      provide: NEWS_SYNCHRONIZATION,
+      useClass: NewsSynchronizationImpl
+    },
+
+    /* from  src/providers/repository/repository.user*/
+    {
+      provide: USER_REPOSITORY,
+      useClass: UserTypeORMRepository
+    },
 
     /* from src/learnplace */
     {
@@ -240,6 +289,91 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     {
       provide: BLOCK_SERVICE,
       useClass: VisibilityManagedBlockService
+    },
+
+    /* Link service */
+    {
+      provide: INSTALLATION_LINK_PROVIDER,
+      useClass: InstallationLinkSupplierImpl
+    },
+    {
+      provide: TOKEN_SUPPLIER,
+      useClass: AuthTokenSupplier
+    },
+    <FactoryProvider>{
+      provide: DEFAULT_LINK_BUILDER,
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => DefaultLinkBuilder => {
+        return (): DefaultLinkBuilder => new DefaultLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
+    },
+    <FactoryProvider>{
+      provide: NEWS_LINK_BUILDER,
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => NewsLinkBuilder => {
+        return (): NewsLinkBuilder => new NewsLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
+    },
+    <FactoryProvider>{
+      provide: LOADING_LINK_BUILDER,
+      useFactory: (installationLink: InstallationLinkSupplier): () => LoadingLinkBuilder => {
+        return (): LoadingLinkBuilder => new LoadingLinkBuilderImpl(installationLink);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER]
+    },
+    <FactoryProvider>{
+      provide: LOGIN_LINK_BUILDER,
+      useFactory: (): () => LoginLinkBuilder => {
+        return (): LoginLinkBuilder => new LoginLinkBuilderImpl();
+      },
+      deps: []
+    },
+    <FactoryProvider>{
+      provide: RESOURCE_LINK_BUILDER,
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => ResourceLinkBuilder => {
+        return (): ResourceLinkBuilder => new ResourceLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
+    },
+    <FactoryProvider>{
+      provide: TIMELINE_LINK_BUILDER,
+      useFactory: (
+        installationLink: InstallationLinkSupplier,
+        tokenSupplier: TokenSupplier,
+        userRepository: UserRepository
+      ): () => TimelineLinkBuilder => {
+        return (): TimelineLinkBuilder => new TimelineLinkBuilderImpl(installationLink, tokenSupplier, userRepository);
+      },
+      deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
+    },
+    {
+      provide: LINK_BUILDER,
+      useClass: LinkBuilderImpl
+    },
+
+    /* Actions */
+    <FactoryProvider>{
+      provide: OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
+      useFactory: (browser: InAppBrowser, platform: Platform, modal: ModalController):
+        (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction => {
+        return (
+            title: string,
+            urlBuilder: Builder<Promise<string>>
+        ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal);
+      },
+      deps: [InAppBrowser, Platform, ModalController]
     },
     AlwaysStrategy,
     NeverStrategy,

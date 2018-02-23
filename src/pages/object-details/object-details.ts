@@ -1,11 +1,13 @@
-import {Component} from '@angular/core';
-import {NavController, NavParams, AlertController, ToastController} from 'ionic-angular';
+import {Component, Inject} from "@angular/core";
+import {NavController, NavParams, AlertController, ToastController, ModalController, Alert, Toast} from "ionic-angular";
 import {ILIASObject} from "../../models/ilias-object";
 import {DataProvider} from "../../providers/data-provider.provider";
-import {ILIASObjectAction, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {ILIASObjectAction, ILIASObjectActionSuccess, ILIASObjectActionResult} from "../../actions/object-action";
+import {Builder} from "../../services/builder.base";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {FileService} from "../../services/file.service";
-import {OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
 import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
@@ -17,28 +19,26 @@ import {OpenFileExternalAction} from "../../actions/open-file-external-action";
 import {DownloadFileAction} from "../../actions/download-file-action";
 import {Log} from "../../services/log.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
-import {ILIASObjectActionResult} from "../../actions/object-action";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular/index";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLinkBuilder, TokenUrlConverter} from "../../services/url-converter.service";
+import {TokenUrlConverter} from "../../services/url-converter.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
-    templateUrl: 'object-details.html'
+    templateUrl: "object-details.html"
 })
 export class ObjectDetailsPage {
 
-    public iliasObject: ILIASObject;
+    iliasObject: ILIASObject;
 
-    public actions: ILIASObjectAction[];
+    actions: Array<ILIASObjectAction>;
 
     /**
      * Holds the details of the current displayed ILIASObject
      */
-    public details:Array<{label:string, value:string}>;
+    details: Array<{label: string, value: string}>;
 
     constructor(public nav: NavController,
                 public dataProvider: DataProvider,
@@ -51,32 +51,35 @@ export class ObjectDetailsPage {
                 public modal: ModalController,
                 private readonly urlConverter: TokenUrlConverter,
                 private readonly browser: InAppBrowser,
+                @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+                private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
                 params: NavParams) {
-        this.iliasObject = params.get('object');
+        this.iliasObject = params.get("object");
         Log.describe(this, "Showing details of: ", this.iliasObject);
     }
 
-    public ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.loadAvailableActions();
         this.loadObjectDetails();
     }
 
-    public executeAction(action: ILIASObjectAction) {
+    executeAction(action: ILIASObjectAction): void {
         if (action.alert()) {
-            let alert = this.alert.create({
+            const alert: Alert = this.alert.create({
                 title: action.alert().title,
                 subTitle: action.alert().subTitle,
                 buttons: [
                     {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        handler: () => {
+                        text: "Cancel",
+                        role: "cancel",
+                        handler: (): void => {
                             // alert.dismiss();
                         }
                     },
                     {
-                        text: 'Ok',
-                        handler: () => {
+                        text: "Ok",
+                        handler: (): void => {
                             this.executeAndHandleAction(action);
                         }
                     }
@@ -88,7 +91,7 @@ export class ObjectDetailsPage {
         }
     }
 
-    protected executeAndHandleAction(action: ILIASObjectAction) {
+    private executeAndHandleAction(action: ILIASObjectAction): void {
         Log.write(this, "executeAndHandleAction");
         Log.describe(this, "action: ", action);
         action.execute().then(result => {
@@ -112,32 +115,32 @@ export class ObjectDetailsPage {
         });
     }
 
-    protected showAlert(message) {
-        let alert = this.alert.create({
+    private showAlert(message: string): void {
+        const alert: Alert = this.alert.create({
             title: message,
             buttons: [
                 {
                     text: this.translate.instant("close"),
-                    role: 'cancel'
+                    role: "cancel"
                 }
             ]
         });
         alert.present();
     }
 
-    protected actionHandler(result: ILIASObjectActionResult) {
+    private actionHandler(result: ILIASObjectActionResult): void {
         Log.write(this, "actionHandler");
         this.handleActionResult(result);
         this.loadAvailableActions();
         this.loadObjectDetails();
     }
 
-    protected handleActionResult(result) {
+    protected handleActionResult(result: ILIASObjectActionResult): void {
         Log.write(this, "handleActionResult");
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {
             if (result.message) {
-                let toast = this.toast.create({
+                const toast: Toast = this.toast.create({
                     message: result.message,
                     duration: 3000
                 });
@@ -146,15 +149,17 @@ export class ObjectDetailsPage {
         }
     }
 
-    protected loadObjectDetails() {
+    private loadObjectDetails(): void {
         this.iliasObject.presenter.details().then(details => {
             Log.describe(this, "Details are displayed: ", details);
             this.details = details;
         });
     }
 
-    protected loadAvailableActions() {
-        this.actions = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(this.iliasObject.link), this.urlConverter, this.browser)];
+    private loadAvailableActions(): void {
+        this.actions = [
+          this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(this.iliasObject.refId))
+        ];
         if (!this.iliasObject.isFavorite) {
             this.actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), this.iliasObject));
         } else if (this.iliasObject.isFavorite) {
@@ -162,14 +167,34 @@ export class ObjectDetailsPage {
         }
         if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
             if (!this.iliasObject.isOfflineAvailable) {
-                this.actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), this.iliasObject, this.dataProvider, this.sync, this.modal));
+                this.actions.push(new MarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.mark_as_offline_available"),
+                  this.iliasObject,
+                  this.dataProvider,
+                  this.sync,
+                  this.modal)
+                );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), this.iliasObject));
-                this.actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), this.iliasObject, this.sync, this.modal, this.translate));
+                this.actions.push(new UnMarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.unmark_as_offline_available"),
+                  this.iliasObject)
+                );
+                this.actions.push(new SynchronizeAction(
+                  this.translate.instant("actions.synchronize"),
+                  this.iliasObject,
+                  this.sync,
+                  this.modal,
+                  this.translate)
+                );
             }
-            this.actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), this.iliasObject, this.file, this.translate));
+            this.actions.push(new RemoveLocalFilesAction(
+              this.translate.instant("actions.remove_local_files"),
+              this.iliasObject,
+              this.file,
+              this.translate)
+            );
         }
-        if (this.iliasObject.type == 'file') {
+        if (this.iliasObject.type == "file") {
             this.file.existsFile(this.iliasObject).then(() => {
                 this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.iliasObject, this.file));
                 this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.iliasObject, this.file));
@@ -177,12 +202,27 @@ export class ObjectDetailsPage {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
             if (!this.iliasObject.isOfflineAvailable) {
-                this.actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), this.iliasObject, this.dataProvider, this.sync, this.modal));
+                this.actions.push(new MarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.mark_as_offline_available"),
+                  this.iliasObject,
+                  this.dataProvider,
+                  this.sync,
+                  this.modal)
+                );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), this.iliasObject));
+                this.actions.push(new UnMarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.unmark_as_offline_available"),
+                  this.iliasObject)
+                );
             }
             if (this.iliasObject.needsDownload) {
-                this.actions.push(new DownloadFileAction(this.translate.instant("actions.download"), this.iliasObject, this.file, this.translate, this.alert));
+                this.actions.push(new DownloadFileAction(
+                  this.translate.instant("actions.download"),
+                  this.iliasObject,
+                  this.file,
+                  this.translate,
+                  this.alert)
+                );
             }
         }
     }

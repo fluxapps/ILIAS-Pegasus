@@ -333,34 +333,28 @@ export class ILIASObject extends ActiveRecord {
      * @param userId
      * @returns {Promise<ILIASObject>}
      */
-    static findByRefId(refId: number, userId: number): Promise<ILIASObject> {
-        return SQLiteDatabaseService.instance()
-            .then(db => db.query("SELECT * FROM objects WHERE refId = ? AND userId = ?", [refId, userId]))
-            .then((response: any) => {
-                if (response.rows.length == 0) {
-                    const object = new ILIASObject();
-                    object.userId = userId;
-                    return Promise.resolve(object);
-                } else if(response.rows.length == 1) {
-                    return ILIASObject.find(response.rows.item(0).id);
-                } else if(response.rows.length > 1) {
-                    // We find and save the object
-                    let object = null;
-                    const objectPromise =  ILIASObject.find(response.rows.item(0).id)
-                        .then(theObject => object = theObject);
-                    const allPromises = [objectPromise];
+    static async findByRefId(refId: number, userId: number): Promise<ILIASObject> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        const response: any = await db.query("SELECT * FROM objects WHERE refId = ? AND userId = ?", [refId, userId]);
+        if (response.rows.length == 0) {
+          const object: ILIASObject = new ILIASObject();
+          object.userId = userId;
+          return Promise.resolve(object);
+        } else if(response.rows.length == 1) {
+          return ILIASObject.find(response.rows.item(0).id);
+        } else if(response.rows.length > 1) {
 
-                    // We destroy all overdue instances.
-                    for (let i = 1; i < response.rows.length; i++) {
-                        allPromises.push(ILIASObject.find(response.rows.item(i).id)
-                            .then(object => object.destroy()));
-                    }
+          // We find and save the object
+          const object: ILIASObject = await ILIASObject.find(response.rows.item(0).id);
 
-                    // After finding and deletion we return the found object.
-                    return Promise.all(allPromises)
-                        .then(() => object);
-                }
-            });
+          // We destroy all overdue instances.
+          for (let i = 1; i < response.rows.length; i++) {
+            (await ILIASObject.find(response.rows.item(i).id)).destroy();
+          }
+
+          // After finding and deletion we return the found object.
+          return object;
+        }
     }
 
     /**
@@ -370,15 +364,15 @@ export class ILIASObject extends ActiveRecord {
      * @returns {Promise<ILIASObject[]>}
      */
     static findByParentRefId(parentRefId: number, userId: number): Promise<Array<ILIASObject>> {
-        const sql = "SELECT * FROM objects WHERE parentRefId = ? AND userId = ?";
-        const parameters = [parentRefId, userId];
+        const sql: string = "SELECT * FROM objects WHERE parentRefId = ? AND userId = ?";
+        const parameters: Array<number> = [parentRefId, userId];
         return ILIASObject.queryDatabase(sql, parameters);
 
     }
 
     static findNewObjects(userId: number): Promise<Array<ILIASObject>> {
-        const sql = "SELECT * FROM objects WHERE userId = ? AND (isNew = ? OR isUpdated = ?)";
-        const parameters = [userId, 1, 1];
+        const sql: string = "SELECT * FROM objects WHERE userId = ? AND (isNew = ? OR isUpdated = ?)";
+        const parameters: Array<number> = [userId, 1, 1];
         return ILIASObject.queryDatabase(sql, parameters);
     }
 
@@ -459,7 +453,7 @@ export class ILIASObject extends ActiveRecord {
      */
     protected saveAndEscalateNeedsDownload(newValue): Promise<Array<ILIASObject>> {
         if (newValue == this.needsDownload) {
-            Log.write(this, "Needs download stays the same for " + this.title + ". No need for escalation.");
+            Log.write(this, `Needs download stays the same for ${this.title}. No need for escalation.`);
             return Promise.resolve([this]);
         }
         this.needsDownload = newValue;
@@ -490,8 +484,9 @@ export class ILIASObject extends ActiveRecord {
      * @returns {number}
      */
     getOrderByType() {
+        const lastPlace: number = 9999;
         const a = this.order[this.type];
-        return a ? a : 9999;
+        return a ? a : lastPlace;
     }
 
     /**
@@ -500,7 +495,7 @@ export class ILIASObject extends ActiveRecord {
      * @param b ILIASObject
      * @returns {number}
      */
-    static compare(a, b) {
+    static compare(a: ILIASObject, b: ILIASObject): number {
         if (a.getOrderByType() != b.getOrderByType()) {
             return (a.getOrderByType() > b.getOrderByType()) ? 1 : -1;
         }
@@ -517,9 +512,7 @@ export class ILIASObject extends ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<any>}
      */
-    destroy(): Promise<any> {
-        const promise = super.destroy();
-
-        return promise;
+    destroy(): Promise<{}> {
+        return super.destroy();
     }
 }

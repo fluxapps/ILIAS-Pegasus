@@ -21,7 +21,7 @@ describe("an ILIAS link builder", () => {
       })
     });
 
-    context("on a invalid link", () => {
+    context("on an invalid link", () => {
 
       it("should throw an Error", () => {
 

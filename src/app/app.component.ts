@@ -28,6 +28,7 @@ import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
 import {ContentPage} from "../learnplace/pages/content/content.component";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {NewsPage} from "../pages/news/news";
 
 @Component({
   templateUrl: "app.html"
@@ -44,6 +45,7 @@ export class MyApp {
   settingsPage: object = SettingsPage;
   infoPage: object = InfoPage;
   loginPage: object = LoginPage;
+  newsPage: object = NewsPage;
   loggedIn: boolean = false;
   /**
    * The current logged in user
@@ -121,11 +123,14 @@ export class MyApp {
       await this.nav.setRoot(page);
     } else {
 
+      //check if we navigating the object list
       if (this.nav.last().component == ObjectListPage) {
+        //preserve history
         await this.nav.push(page);
       } else {
-        await this.nav.pop();
-        await this.nav.push(page)
+        //we are navigating over the menu remove history
+        await this.nav.push(page);
+        await this.nav.remove(1);
       }
     }
   }

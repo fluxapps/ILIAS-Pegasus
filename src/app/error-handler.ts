@@ -5,6 +5,7 @@ import {isDefined, isFunction} from "ionic-angular/es2015/util/util";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isNullOrUndefined} from "util";
+import {isDevMode} from "./devmode";
 
 /**
  * Error handler of ILIAS Pegasus
@@ -43,9 +44,9 @@ export class PegasusErrorHandler implements ErrorHandler {
         return;
       }
 
-      const monitor: any = window["IonicDevServer"];
+      this.log.error(() => `Unhandled error occurred of type: ${errorInstance}`);
 
-      if (isDefined(monitor) && monitor.hasOwnProperty("handleError") && isFunction(monitor.handleError)) {
+      if (isDevMode()) {
         this.ionicErrorHandler.handleError(error);
       } else {
         // TODO: Add alerts
@@ -56,7 +57,7 @@ export class PegasusErrorHandler implements ErrorHandler {
     }
   }
 
-  getErrorInstance(error: any): Error {
+  private getErrorInstance(error: any): Error {
     if(!isNullOrUndefined(error)
       && error.hasOwnProperty("rejection")
       && error.rejection.hasOwnProperty("constructor")

@@ -1,5 +1,7 @@
-import {Injectable} from '@angular/core';
-import {NavController} from "ionic-angular";
+import {Inject, Injectable} from "@angular/core";
+import {NavController, ModalController} from "ionic-angular";
+import {Builder} from "./builder.base";
+import {LINK_BUILDER, LinkBuilder} from "./link/link-builder.service";
 import {SynchronizationService} from "./synchronization.service";
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction} from "../actions/object-action";
@@ -12,36 +14,38 @@ import {SynchronizeAction} from "../actions/synchronize-action";
 import {ShowObjectListPageAction} from "../actions/show-object-list-page-action";
 import {OpenFileExternalAction} from "../actions/open-file-external-action";
 import {FileService} from "./file.service";
-import {OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
 import {TranslateService} from "ng2-translate/ng2-translate";
-import {ModalController} from "ionic-angular/index";
 import {DataProvider} from "../providers/data-provider.provider";
-import {ILIASLinkBuilder, TokenUrlConverter} from "./url-converter.service";
+import {TokenUrlConverter} from "./url-converter.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 @Injectable()
 export class ILIASObjectActionsService {
 
-    public static get CONTEXT_ACTION_MENU():string {
-        return 'actionMenu';
+    static get CONTEXT_ACTION_MENU(): string {
+        return "actionMenu";
     }
 
-    public static get CONTEXT_DETAILS_PAGE():string {
-        return 'detailsPage';
+    static get CONTEXT_DETAILS_PAGE(): string {
+        return "detailsPage";
     }
 
-    public constructor( protected nav:NavController,
-                        protected sync:SynchronizationService,
-                        protected file:FileService,
-                        protected translate:TranslateService,
-                        protected modal:ModalController,
-                        protected dataProvider:DataProvider,
+    constructor( protected nav: NavController,
+                        protected sync: SynchronizationService,
+                        protected file: FileService,
+                        protected translate: TranslateService,
+                        protected modal: ModalController,
+                        protected dataProvider: DataProvider,
                         private readonly urlConverter: TokenUrlConverter,
-                        private readonly browser: InAppBrowser
+                        private readonly browser: InAppBrowser,
+                        @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+                        private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                        @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
     }
 
-    public getActions(iliasObject:ILIASObject, context:string):ILIASObjectAction[] {
+    getActions(iliasObject: ILIASObject, context: string): Array<ILIASObjectAction> {
         if (context == ILIASObjectActionsService.CONTEXT_ACTION_MENU) {
             return this.getActionsForActionMenu(iliasObject);
         }
@@ -51,15 +55,15 @@ export class ILIASObjectActionsService {
     }
 
 
-    public getPrimaryAction(iliasObject:ILIASObject):ILIASObjectAction {
+    getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
         if (iliasObject.isContainer()) {
             return new ShowObjectListPageAction(this.translate.instant("actions.view_in_ilias"), iliasObject, this.nav);
         }
-        if (iliasObject.type == 'file') {
+        if (iliasObject.type == "file") {
             return new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), iliasObject, this.file);
         }
 
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
+      return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
     }
 
     /**
@@ -67,8 +71,10 @@ export class ILIASObjectActionsService {
      * @param iliasObject
      * @returns {Array}
      */
-    protected getActionsForDetailsPage(iliasObject:ILIASObject):ILIASObjectAction[] {
-        let actions:ILIASObjectAction[] = [new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser)];
+    protected getActionsForDetailsPage(iliasObject: ILIASObject): Array<ILIASObjectAction> {
+        const actions: Array<ILIASObjectAction> = [
+          this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
+        ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
         } else if (iliasObject.isFavorite) {
@@ -76,10 +82,22 @@ export class ILIASObjectActionsService {
         }
         if (iliasObject.isContainer()) {
             if (!iliasObject.isOfflineAvailable) {
-                actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), iliasObject, this.dataProvider, this.sync, this.modal));
+                actions.push(new MarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.mark_as_offline_available"),
+                  iliasObject,
+                  this.dataProvider,
+                  this.sync,
+                  this.modal)
+                );
             } else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"),iliasObject));
-                actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
+                actions.push(new SynchronizeAction(
+                  this.translate.instant("actions.synchronize"),
+                  iliasObject,
+                  this.sync,
+                  this.modal,
+                  this.translate)
+                );
             }
         }
 
@@ -92,10 +110,10 @@ export class ILIASObjectActionsService {
      * @param iliasObject
      * @returns {ILIASObjectAction[]}
      */
-    protected getActionsForActionMenu(iliasObject:ILIASObject):ILIASObjectAction[] {
-        let actions:ILIASObjectAction[] = [
+    protected getActionsForActionMenu(iliasObject: ILIASObject): Array<ILIASObjectAction> {
+        const actions: Array<ILIASObjectAction> = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser),
+            this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId)),
         ];
         if (!iliasObject.isFavorite) {
             actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
@@ -104,10 +122,22 @@ export class ILIASObjectActionsService {
         }
         if (iliasObject.isContainer()) {
             if (!iliasObject.isOfflineAvailable) {
-                actions.push(new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"), iliasObject, this.dataProvider, this.sync, this.modal));
+                actions.push(new MarkAsOfflineAvailableAction(
+                  this.translate.instant("actions.mark_as_offline_available"),
+                  iliasObject,
+                  this.dataProvider,
+                  this.sync,
+                  this.modal)
+                );
             } else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
-                actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
+                actions.push(new SynchronizeAction(
+                  this.translate.instant("actions.synchronize"),
+                  iliasObject,
+                  this.sync,
+                  this.modal,
+                  this.translate
+                ));
             }
         }
         return actions;

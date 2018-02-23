@@ -10,6 +10,7 @@ import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
+import {CreateNews} from "../../migrations/V__4-create-news-shema";
 
 /**
  * DB Migration with TypeORM.
@@ -120,7 +121,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
     return [
       new InitDatabase(),
       new AddObjectAttributes(),
-      new CreateLearnplace()
+      new CreateLearnplace(),
+      new CreateNews(),
     ];
   }
 }
