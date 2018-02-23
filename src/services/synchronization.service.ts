@@ -10,6 +10,10 @@ import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
 import {FileData} from "../models/file-data";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
+import {
+  VISIT_JOURNAL_SYNCHRONIZATION,
+  VisitJournalSynchronization
+} from "../learnplace/services/visitjournal.synchronize";
 
 @Injectable()
 export class SynchronizationService {
@@ -25,12 +29,13 @@ export class SynchronizationService {
     private _isRunning: boolean = false;
 
     constructor(private readonly dataProvider: DataProvider,
-                       private readonly events: Events,
-                       private readonly fileService: FileService,
-                       private readonly footerToolbar: FooterToolbarService,
-                       private readonly translate: TranslateService,
-                       @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization) {
-    }
+                private readonly events: Events,
+                private readonly fileService: FileService,
+                private readonly footerToolbar: FooterToolbarService,
+                private readonly translate: TranslateService,
+                @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
+                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization
+    ) {}
 
     /**
      * Execute synchronization
@@ -293,6 +298,7 @@ export class SynchronizationService {
 
     private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
         await this.newsSynchronization.synchronize();
+        await this.visitJournalSynchronization.synchronize();
         return this.dataProvider.getObjectData(container, this.user, true)
             .then( (iliasObjects) => {
                 iliasObjects.push(container);
@@ -311,6 +317,7 @@ export class SynchronizationService {
         try {
           this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
           await this.newsSynchronization.synchronize();
+          await this.visitJournalSynchronization.synchronize();
         }
         finally {
           this.footerToolbar.removeJob(Job.MetaDataFetch);
