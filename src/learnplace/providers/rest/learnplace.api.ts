@@ -83,7 +83,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    */
   async getLearnPlace(objectId: number): Promise<LearnPlace> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${objectId}`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/learnplace/${objectId}`, DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<LearnPlace>(it =>
       it.json<LearnPlace>(learnplaceJsonSchema)
@@ -100,7 +100,9 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    */
   async getJournalEntries(learnplaceObjectId: number): Promise<Array<JournalEntry>> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/journal-entries`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(
+      `/v2/ilias-app/learnplace/${learnplaceObjectId}/journal-entries`,
+      DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<Array<JournalEntry>>(it =>
       it.json<Array<JournalEntry>>(journalEntriesJsonSchema)
@@ -119,7 +121,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
   async addJournalEntry(learnplaceObjectId: number, time: number): Promise<void> {
 
     const response: HttpResponse = await this.iliasRest.post(
-      `/v2/learnplace/${learnplaceObjectId}/journal-entries`,
+      `/v2/ilias-app/learnplace/${learnplaceObjectId}/journal-entries`,
       {time: time},
       DEFAULT_REQUEST_OPTIONS
     );
@@ -139,7 +141,7 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
    */
   async getBlocks(learnplaceObjectId: number): Promise<BlockObject> {
 
-    const response: HttpResponse = await this.iliasRest.get(`/v2/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
+    const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
 
     return response.handle<BlockObject>(it =>
       it.json<BlockObject>(blocksJsonSchema)
