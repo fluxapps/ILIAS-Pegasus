@@ -104,7 +104,10 @@ import {
   VISIT_JOURNAL_SYNCHRONIZATION,
   VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.synchronize";
-import {OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
+import {
+  OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction,
+  OpenLearnplaceActionFunction
+} from "../actions/open-learnplace-action";
 import {Geolocation} from "@ionic-native/geolocation";
 import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
 import {Http, HttpModule} from "@angular/http";
@@ -388,7 +391,7 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     VisitJournalMapper,
 
     <FactoryProvider>{
-      provide: OpenLearnplaceAction,
+      provide: OPEN_LEARNPLACE_ACTION_FACTORY,
       useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
         (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction =>
           new OpenLearnplaceAction(loader, nav, learnplaceId, learnplaceName)
