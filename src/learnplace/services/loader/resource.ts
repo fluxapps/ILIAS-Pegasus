@@ -1,11 +1,12 @@
 import {File, IWriteOptions} from "@ionic-native/file";
 import {HttpClient, HttpResponse} from "../../../providers/http";
-import {LinkBuilder} from "../../../services/link/link-builder.service";
+import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {Platform} from "ionic-angular";
-import {UserRepository} from "../../../providers/repository/repository.user";
+import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
 
 /**
  * Describes a loader for resources, that loads AND saves a resource.
@@ -26,6 +27,7 @@ export interface ResourceTransfer {
    */
   transfer(resource: string): Promise<string>
 }
+export const RESOURCE_TRANSFER: InjectionToken<string> = new InjectionToken("token for resource transfer");
 
 /**
  * Resource loader over a http connection.
@@ -33,16 +35,17 @@ export interface ResourceTransfer {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class HttpResourceTrasfer implements ResourceTransfer {
+@Injectable()
+export class HttpResourceTransfer implements ResourceTransfer {
 
-  private readonly log: Logger = Logging.getLogger(HttpResourceTrasfer.name);
+  private readonly log: Logger = Logging.getLogger(HttpResourceTransfer.name);
 
   constructor(
     private readonly file: File,
     private readonly http: HttpClient,
-    private readonly linkBuilder: LinkBuilder,
+    @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
     private readonly platform: Platform,
-    private readonly userRepository: UserRepository
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository
   ) {}
 
   /**
@@ -82,6 +85,9 @@ export class HttpResourceTrasfer implements ResourceTransfer {
     }
   }
 
+  /**
+   * @returns {Promise<string>} the storage location for file of a user considering the platform
+   */
   private async getStorageLocation(): Promise<string> {
 
     const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();

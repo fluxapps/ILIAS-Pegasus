@@ -1,4 +1,4 @@
-import {HttpResourceTrasfer, ResourceLoadError} from "../../../../src/learnplace/services/loader/resource";
+import {HttpResourceTransfer, ResourceLoadError} from "../../../../src/learnplace/services/loader/resource";
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {File} from "@ionic-native/file";
 import {stubInstance} from "../../../SinonUtils";
@@ -29,10 +29,10 @@ describe("a http resource transfer", () => {
     delete: () => undefined
   };
 
-  let transfer: HttpResourceTrasfer = new HttpResourceTrasfer(mockFile, mockHttp, mockLinkBuilder, mockPlatform, mockUserRepository);
+  let transfer: HttpResourceTransfer = new HttpResourceTransfer(mockFile, mockHttp, mockLinkBuilder, mockPlatform, mockUserRepository);
 
 	beforeEach(() => {
-		transfer = new HttpResourceTrasfer(mockFile, mockHttp, mockLinkBuilder, mockPlatform, mockUserRepository);
+		transfer = new HttpResourceTransfer(mockFile, mockHttp, mockLinkBuilder, mockPlatform, mockUserRepository);
 	});
 
 	afterEach(() => {

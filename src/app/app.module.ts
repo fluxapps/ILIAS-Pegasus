@@ -113,6 +113,7 @@ import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directi
 import {Http, HttpModule} from "@angular/http";
 import {HttpClientModule} from "@angular/common/http";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
+import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 
 @NgModule({
   declarations: [
@@ -389,6 +390,11 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
     LinkBlockMapper,
     VideoBlockMapper,
     VisitJournalMapper,
+
+    {
+      provide: RESOURCE_TRANSFER,
+      useClass: HttpResourceTransfer
+    },
 
     <FactoryProvider>{
       provide: OPEN_LEARNPLACE_ACTION_FACTORY,
