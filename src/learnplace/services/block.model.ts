@@ -40,7 +40,7 @@ export enum BlockType {
  * Base class for all specific block types. Shares common attributes over all blocks.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.1.0
+ * @version 1.2.0
  */
 export class BlockModel implements VisibilityAware {
 
@@ -55,6 +55,8 @@ export class BlockModel implements VisibilityAware {
  isPicture(): boolean {return this.type === BlockType.PICTURE}
 
  isVideo(): boolean {return this.type === BlockType.VIDEO}
+
+ isLink(): boolean {return this.type == BlockType.ILIAS_LINK}
 }
 
 /**
@@ -98,7 +100,8 @@ export class LinkBlockModel extends BlockModel {
 
   constructor(
     sequence: number,
-    readonly refId: number
+    readonly refId: number,
+    readonly name: string
   ) {super(sequence, false, BlockType.ILIAS_LINK)}
 }
 

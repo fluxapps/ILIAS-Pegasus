@@ -20,6 +20,9 @@ export class LinkblockEntity {
   @Column()
   refId: number;
 
+  @Column()
+  name: string;
+
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;

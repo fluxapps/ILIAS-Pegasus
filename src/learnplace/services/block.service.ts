@@ -37,7 +37,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    private readonly strategyApplier: VisibilityStrategyApplier
+    private readonly strategyApplier: VisibilityStrategyApplier,
   ) {}
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
@@ -72,8 +72,9 @@ export class VisibilityManagedBlockService implements BlockService {
   }
 
   private mapLinkBlocks(learnplace: LearnplaceEntity): Array<LinkBlockModel> {
+
     return learnplace.linkBlocks.map(it => {
-      const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
+      const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId, it.name);
       this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     })

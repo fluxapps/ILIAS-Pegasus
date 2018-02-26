@@ -122,6 +122,7 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
           this.iliasId = linkBlock.id;
           this.sequence = linkBlock.sequence;
           this.refId = linkBlock.refId;
+          this.name = ""; // TODO add name by ILIAS object
           this.visibility = getVisibilityEntity(linkBlock.visibility);
       })
     );

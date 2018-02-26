@@ -70,6 +70,7 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
       new TableColumn({name: "refId", type: "integer", isNullable: false}),
+      new TableColumn({name: "name", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
