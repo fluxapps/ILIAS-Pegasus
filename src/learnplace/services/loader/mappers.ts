@@ -8,10 +8,11 @@ import {Optional} from "../../../util/util.optional";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
 import {User} from "../../../models/user";
-import {Injectable} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+import {RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
 
 /**
  * Describes a mapper for an array.
@@ -22,7 +23,7 @@ import {VisitJournalEntity} from "../../entity/visit-journal.entity";
  * - remote, which corresponds to {@code T}
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export interface ArrayMapper<K, T> {
 
@@ -46,12 +47,23 @@ export interface ArrayMapper<K, T> {
  * Maps a {@link TextBlock} to {@link TextblockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.2
+ * @version 1.0.0
  */
 @Injectable()
 export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> {
 
-
+  /**
+   * Maps the given {@code remote} text blocks to {@link TextblockEntity}
+   * by considering the given {@code local} entity array to find existing text blocks.
+   *
+   * If the {@code TextblockEntity#iliasId} property matches the {@code TextBlock#id} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * @param {Array<LinkblockEntity>} local - the entities to search in for existing text blocks
+   * @param {Array<ILIASLinkBlock>} remote - the text blocks to save / update
+   *
+   * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
+   */
   async map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Promise<Array<TextblockEntity>> {
 
     return remote.map(textBlock =>
@@ -76,20 +88,57 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
 @Injectable()
 export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
 
+  constructor(
+    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
+  ) {}
+
+  /**
+   * Maps the given {@code remote} picture blocks to {@link PictureBlockEntity}
+   * by considering the given {@code local} entity array to find existing picture blocks.
+   *
+   * If the {@code PictureBlockEntity#iliasId} property matches the {@code PictureBlock#id} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * If the {@code PictureBlockEntity#thumbnailHash} or {@code PictureBlockEntity#hash} does not match
+   * the {@code PictureBlock#thumbnailHash} or {@code PictureBlock#hash} property the according picture
+   * will be downloaded and saved by the {@link ResourceTransfer}.
+   *
+   * @param {Array<LinkblockEntity>} local - the entities to search in for existing picture blocks
+   * @param {Array<ILIASLinkBlock>} remote - the picture blocks to save / update
+   *
+   * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
+   */
   async map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Promise<Array<PictureBlockEntity>> {
-    return remote.map(pictureBlock =>
-      findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new PictureBlockEntity())
-        .applies(function(): void {
-          this.iliasId = pictureBlock.id;
-          this.sequence = pictureBlock.sequence;
-          this.title = pictureBlock.title;
-          this.description = pictureBlock.description;
-          this.thumbnail = pictureBlock.thumbnail;
-          this.url = pictureBlock.url;
-          this.visibility = getVisibilityEntity(pictureBlock.visibility);
-      })
-    );
+
+    const result: Array<PictureBlockEntity> = [];
+
+    for(const pictureBlock of remote) {
+
+      const entity: PictureBlockEntity = findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new PictureBlockEntity());
+
+      if (entity.thumbnailHash != pictureBlock.thumbnailHash) {
+        entity.thumbnail = await this.resourceTransfer.transfer(pictureBlock.thumbnail);
+      }
+
+      if (entity.hash != pictureBlock.hash) {
+        entity.url = await this.resourceTransfer.transfer(pictureBlock.url);
+      }
+
+      entity.applies(function(): void {
+        this.iliasId = pictureBlock.id;
+        this.sequence = pictureBlock.sequence;
+        this.title = pictureBlock.title;
+        this.description = pictureBlock.description;
+        this.thumbnailHash = pictureBlock.thumbnailHash;
+        this.hash = pictureBlock.hash;
+        this.visibility = getVisibilityEntity(pictureBlock.visibility);
+      });
+
+      result.push(entity);
+    }
+
+    return result;
   }
 }
 
@@ -195,31 +244,6 @@ export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, Journ
           this.synchronized = true;
       })
     );
-  }
-}
-
-/**
- * DO NOT USE.
- * This class was created only and only for the purpose of finishing a feature in time.
- * Do never use this class everywhere else that in this file.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
- */
-export class SimpleStorageLocation {
-
-  constructor(
-    private readonly platform: Platform,
-    private readonly file: File
-  ) {}
-
-  async getUserStorageLocation(): Promise<string> {
-    const user: User = await User.currentUser();
-    if (this.platform.is("android")) {
-      return `${this.file.externalApplicationStorageDirectory}ilias-app/${user.id}/`;
-    } else if (this.platform.is("ios")) {
-      return `${this.file.dataDirectory}${user.id}/`;
-    }
   }
 }
 

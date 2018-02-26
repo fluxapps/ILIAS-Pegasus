@@ -1,7 +1,7 @@
-import {SinonSandbox, createSandbox} from "sinon";
+import {SinonSandbox, createSandbox, SinonStub} from "sinon";
 import {
   LinkBlockMapper,
-  PictureBlockMapper, SimpleStorageLocation,
+  PictureBlockMapper,
   TextBlockMapper, VideoBlockMapper, VisitJournalMapper
 } from "../../../../src/learnplace/services/loader/mappers";
 import {
@@ -10,11 +10,11 @@ import {
 } from "../../../../src/learnplace/providers/rest/learnplace.pojo";
 import {TextblockEntity} from "../../../../src/learnplace/entity/textblock.entity";
 import {getVisibilityEntity} from "./learnplace.spec";
-import {stubInstance} from "../../../SinonUtils";
 import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
 import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
 import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journal.entity";
+import {ResourceTransfer} from "../../../../src/learnplace/services/loader/resource";
 
 describe("a text block mapper", () => {
 
@@ -109,12 +109,15 @@ describe("a text block mapper", () => {
 describe("a picture block mapper", () => {
 
   const sandbox: SinonSandbox = createSandbox();
-  const mockStorageLocation: SimpleStorageLocation = stubInstance(SimpleStorageLocation);
 
-  let mapper: PictureBlockMapper = new PictureBlockMapper();
+  const mockResourceTransfer: ResourceTransfer = <ResourceTransfer>{
+    transfer: () => undefined
+  };
+
+  let mapper: PictureBlockMapper = new PictureBlockMapper(mockResourceTransfer);
 
 	beforeEach(() => {
-		mapper = new PictureBlockMapper();
+		mapper = new PictureBlockMapper(mockResourceTransfer);
 	});
 
 	afterEach(() => {
@@ -125,14 +128,19 @@ describe("a picture block mapper", () => {
 
 		context("on new picture blocks", () => {
 
-			it("should create new picture block entities", async() => {
+			it("should create new picture block entities and transfer its pictures", async() => {
 
 			  const local: Array<PictureBlockEntity> = [];
 
 			  const remote: Array<PictureBlock> = [
-          <PictureBlock>{id: 1, sequence: 3, visibility: "ALWAYS", title: "title", description: "", thumbnail: "=1e", url: "get/picture/1"},
-          <PictureBlock>{id: 2, sequence: 4, visibility: "NEVER", title: "title 2", description: "", thumbnail: "=2e", url: "get/picture/2"}
+          <PictureBlock>{id: 1, sequence: 3, visibility: "ALWAYS", title: "title", description: "",
+            thumbnail: "get/thumbnail.png", thumbnailHash: "=1e", url: "get/picture/1", hash: "=2e"},
+          <PictureBlock>{id: 2, sequence: 4, visibility: "NEVER", title: "title 2", description: "",
+            thumbnail: "get/thumbnail.png", thumbnailHash: "=1ea", url: "get/picture/2", hash: "=2ea"}
         ];
+
+			  sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/local/path/image.png");
 
 
 			  const result: Array<PictureBlockEntity> = await mapper.map(local, remote);
@@ -144,8 +152,10 @@ describe("a picture block mapper", () => {
             this.iliasId = 1;
             this.title = "title";
             this.description = "";
-            this.thumbnail = "=1e";
-            this.url = "get/picture/1";
+            this.thumbnailHash = "=1e";
+            this.thumbnail = "absolute/local/path/image.png";
+            this.url = "absolute/local/path/image.png";
+            this.hash = "=2e";
             this.visibility = getVisibilityEntity("ALWAYS")
           }),
           new PictureBlockEntity().applies(function(): void {
@@ -153,13 +163,15 @@ describe("a picture block mapper", () => {
             this.iliasId = 2;
             this.title = "title 2";
             this.description = "";
-            this.thumbnail = "=2e";
-            this.url = "get/picture/2";
+            this.thumbnailHash = "=1ea";
+            this.thumbnail = "absolute/local/path/image.png";
+            this.url = "absolute/local/path/image.png";
+            this.hash = "=2ea";
             this.visibility = getVisibilityEntity("NEVER")
           })
         ];
 			  chai.expect(result)
-          .to.be.deep.equal(expected);
+          .to.be.deep.equal(expected, `Expected: ${JSON.stringify(expected)}, but was: ${JSON.stringify(result)}`);
 			});
 		});
 
@@ -174,19 +186,23 @@ describe("a picture block mapper", () => {
             this.sequence = 3;
             this.title = "title old";
             this.description = "";
-            this.thumbnail = "=1e";
-            this.url = "get/picture/1";
+            this.thumbnailHash = "=1e";
+            this.thumbnail = "/local/path/image.png";
+            this.url = "/local/path/image.png";
+            this.hash = "=2e";
             this.visibility = getVisibilityEntity("ALWAYS")
           })
         ];
 
         const remote: Array<PictureBlock> = [
-          <PictureBlock>{id: 1, sequence: 3, visibility: "ALWAYS", title: "title", description: "", thumbnail: "=1e", url: "get/picture/1"},
-          <PictureBlock>{id: 2, sequence: 4, visibility: "NEVER", title: "title 2", description: "", thumbnail: "=2e", url: "get/picture/2"}
+          <PictureBlock>{id: 1, sequence: 3, visibility: "ALWAYS", title: "title", description: "",
+            thumbnail: "get/thumbnail.png", thumbnailHash: "=1e", url: "get/picture/1", hash: "=2e"},
+          <PictureBlock>{id: 2, sequence: 4, visibility: "NEVER", title: "title 2", description: "",
+            thumbnail: "get/thumbnail.png", thumbnailHash: "=1ea", url: "get/picture/2", hash: "=2ea"}
         ];
 
-        sandbox.stub(mockStorageLocation, "getUserStorageLocation")
-          .resolves("/somewhere/on/the/filesystem/");
+        sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/local/path/image.png");
 
 
         const result: Array<PictureBlockEntity> = await mapper.map(local, remote);
@@ -199,8 +215,10 @@ describe("a picture block mapper", () => {
             this.sequence = 3;
             this.title = "title";
             this.description = "";
-            this.thumbnail = "=1e";
-            this.url = "get/picture/1";
+            this.thumbnailHash = "=1e";
+            this.thumbnail = "/local/path/image.png";
+            this.url = "/local/path/image.png";
+            this.hash = "=2e";
             this.visibility = getVisibilityEntity("ALWAYS")
           }),
           new PictureBlockEntity().applies(function(): void {
@@ -208,8 +226,10 @@ describe("a picture block mapper", () => {
             this.sequence = 4;
             this.title = "title 2";
             this.description = "";
-            this.thumbnail = "=2e";
-            this.url = "get/picture/2";
+            this.thumbnailHash = "=1ea";
+            this.thumbnail = "absolute/local/path/image.png";
+            this.url = "absolute/local/path/image.png";
+            this.hash = "=2ea";
             this.visibility = getVisibilityEntity("NEVER")
           })
         ];
