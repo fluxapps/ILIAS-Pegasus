@@ -60,7 +60,9 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "title", type: "string", length: "256", isNullable: false}),
       new TableColumn({name: "description", type: "string", length: "2000", isNullable: false}),
       new TableColumn({name: "thumbnail", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "thumbnailHash", type: "string", length: "64", isNullable: false}),
       new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
+      new TableColumn({name: "hash", type: "string", length: "64", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);

@@ -27,7 +27,13 @@ export class PictureBlockEntity {
   thumbnail: string;
 
   @Column()
+  thumbnailHash: string;
+
+  @Column()
   url: string;
+
+  @Column()
+  hash: string;
 
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
