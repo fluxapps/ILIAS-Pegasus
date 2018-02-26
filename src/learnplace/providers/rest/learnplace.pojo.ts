@@ -34,6 +34,7 @@ export interface PictureBlock extends Block {
   readonly title: string
   readonly description: string
   readonly thumbnail: string
+  readonly thumbnailHash: string,
   readonly url: string,
   readonly hash: string
 }
