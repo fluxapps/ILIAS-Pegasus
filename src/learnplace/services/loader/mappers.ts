@@ -3,16 +3,14 @@ import {ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock, VideoBlock} from 
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
-import {apply} from "../../../util/util.function";
 import {Optional} from "../../../util/util.optional";
-import {Platform} from "ionic-angular";
-import {File} from "@ionic-native/file";
-import {User} from "../../../models/user";
 import {Inject, Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
+import {Logger} from "../../../services/logging/logging.api";
+import {Logging} from "../../../services/logging/logging.service";
 
 /**
  * Describes a mapper for an array.
@@ -88,6 +86,8 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
 @Injectable()
 export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
 
+  private readonly log: Logger = Logging.getLogger(PictureBlockMapper.name);
+
   constructor(
     @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
   ) {}
@@ -118,10 +118,12 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
         .orElse(new PictureBlockEntity());
 
       if (entity.thumbnailHash != pictureBlock.thumbnailHash) {
+        this.log.trace(() => `Hash of thumbnail does not match: Download thumbnail ${pictureBlock.thumbnail}`);
         entity.thumbnail = await this.resourceTransfer.transfer(pictureBlock.thumbnail);
       }
 
       if (entity.hash != pictureBlock.hash) {
+        this.log.trace(() => `Hash of picture does not match: Download picture ${pictureBlock.url}`);
         entity.url = await this.resourceTransfer.transfer(pictureBlock.url);
       }
 
@@ -187,6 +189,8 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
 @Injectable()
 export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBlock> {
 
+  private readonly log: Logger = Logging.getLogger(VideoBlockMapper.name);
+
   constructor(
     @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
   ) {}
@@ -216,6 +220,7 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
         .orElse(new VideoBlockEntity());
 
       if (entity.hash != videoBlock.hash) {
+        this.log.trace(() => `Hash of video does not match: Download video ${videoBlock.url}`);
         entity.url = await this.resourceTransfer.transfer(videoBlock.url);
       }
 
@@ -275,7 +280,7 @@ function findIn<K, T>(source: Array<K>, target: T, comparator: (source: K, targe
 }
 
 function getVisibilityEntity(visibility: string): VisibilityEntity {
-  return apply(new VisibilityEntity(), it => {
-    it.value = visibility;
-  })
+  return new VisibilityEntity().applies(function(): void {
+    this.value = visibility;
+  });
 }
