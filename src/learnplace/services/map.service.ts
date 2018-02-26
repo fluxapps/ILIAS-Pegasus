@@ -58,6 +58,7 @@ export class VisibilityManagedMapService implements MapService {
       learnplace.location.longitude
     );
 
+    this.visibilityStrategyApplier.setLearplace(learnplaceId);
     this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
 
     return map;

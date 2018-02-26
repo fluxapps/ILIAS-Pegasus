@@ -69,7 +69,6 @@
     "no-return-await": true,
     "no-sparse-arrays": true,
     "no-string-throw": true,
-    "no-switch-case-fall-through": true,
     "no-unsafe-any": true,
     "no-unsafe-finally": true,
     "no-unused-expression": true,
@@ -81,7 +80,6 @@
     "radix": true,
     "restrict-plus-operands": true,
     "strict-boolean-expressions": true,
-    "switch-default": true,
     "typeof-compare": true,
     "use-isnan": true,
 
