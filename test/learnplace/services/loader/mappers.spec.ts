@@ -333,10 +333,14 @@ describe("a video block mapper", () => {
 
     const sandbox: SinonSandbox = createSandbox();
 
-    let mapper: VideoBlockMapper = new VideoBlockMapper();
+  const mockResourceTransfer: ResourceTransfer = <ResourceTransfer>{
+    transfer: () => undefined
+  };
+
+    let mapper: VideoBlockMapper = new VideoBlockMapper(mockResourceTransfer);
 
 	beforeEach(() => {
-		mapper = new VideoBlockMapper();
+		mapper = new VideoBlockMapper(mockResourceTransfer);
 	});
 
 	afterEach(() => {
@@ -356,6 +360,9 @@ describe("a video block mapper", () => {
           <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
         ];
 
+				sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/path/image.png");
+
 
 				const result: Array<VideoBlockEntity> = await mapper.map(local, remote);
 
@@ -364,14 +371,14 @@ describe("a video block mapper", () => {
 				  new VideoBlockEntity().applies(function(): void {
             this.iliasId = 1;
             this.sequence = 1;
-            this.url = "/get/video/1";
+            this.url = "absolute/path/image.png";
             this.hash = "FB24";
             this.visibility = getVisibilityEntity("ALWAYS");
           }),
           new VideoBlockEntity().applies(function(): void {
             this.iliasId = 2;
             this.sequence = 2;
-            this.url = "/get/video/2";
+            this.url = "absolute/path/image.png";
             this.hash = "4B8A";
             this.visibility = getVisibilityEntity("NEVER");
           })
@@ -390,8 +397,8 @@ describe("a video block mapper", () => {
             this.id = 1;
             this.iliasId = 1;
             this.sequence = 1;
-            this.url = "/get/video/1";
-            this.hash = "A68B";
+            this.url = "path/image.png";
+            this.hash = "FB24";
             this.visibility = getVisibilityEntity("NEVER");
           })
         ];
@@ -400,6 +407,9 @@ describe("a video block mapper", () => {
           <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"},
           <VideoBlock>{id: 2, sequence: 2, url: "/get/video/2", hash: "4B8A", visibility: "NEVER"}
         ];
+
+        sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/path/image.png");
 
 
         const result: Array<VideoBlockEntity> = await mapper.map(local, remote);
@@ -410,14 +420,14 @@ describe("a video block mapper", () => {
             this.id = 1;
             this.iliasId = 1;
             this.sequence = 1;
-            this.url = "/get/video/1";
+            this.url = "path/image.png";
             this.hash = "FB24";
             this.visibility = getVisibilityEntity("ALWAYS");
           }),
           new VideoBlockEntity().applies(function(): void {
             this.iliasId = 2;
             this.sequence = 2;
-            this.url = "/get/video/2";
+            this.url = "absolute/path/image.png";
             this.hash = "4B8A";
             this.visibility = getVisibilityEntity("NEVER");
           })

@@ -83,7 +83,7 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
  * Maps {@link PictureBlock} to {@link PictureBlockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
@@ -182,10 +182,14 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
  * Maps {@link VideoBlock} to {@link VideoBlockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Injectable()
 export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBlock> {
+
+  constructor(
+    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
+  ) {}
 
   /**
    * Maps the given {@code remote} video blocks to {@link VideoBlockEntity}
@@ -194,22 +198,38 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
    * If the {@code VideoBlockEntity#iliasId} property matches the {@code VideoBlock#id} property
    * the entity will be updated, otherwise a new entity will be created.
    *
+   * If the {@code VideoBlockEntity#hash} does not match the {@code VideoBlock#hash} property
+   * the according video will be downloaded and saved by the {@link ResourceTransfer}.
+   *
    * @param {Array<VideoBlockEntity>} local - the entities to search for existing video blocks
    * @param {Array<VideoBlock>} remote - the video blocks to update / create
    *
    * @returns {Promise<Array<VideoBlockEntity>>} the resulting mapped entity array
    */
   async map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Promise<Array<VideoBlockEntity>> {
-    return remote.map(videoBlock =>
-      findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
-        .orElse(new VideoBlockEntity())
-        .applies(function(): void {
-          this.iliasId = videoBlock.id;
-          this.sequence = videoBlock.sequence;
-          this.url = videoBlock.url;
-          this.hash = videoBlock.hash;
-          this.visibility = getVisibilityEntity(videoBlock.visibility);
-      }));
+
+    const result: Array<VideoBlockEntity> = [];
+
+    for(const videoBlock of remote) {
+
+      const entity: VideoBlockEntity = findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new VideoBlockEntity());
+
+      if (entity.hash != videoBlock.hash) {
+        entity.url = await this.resourceTransfer.transfer(videoBlock.url);
+      }
+
+      entity.applies(function(): void {
+        this.iliasId = videoBlock.id;
+        this.sequence = videoBlock.sequence;
+        this.hash = videoBlock.hash;
+        this.visibility = getVisibilityEntity(videoBlock.visibility);
+      });
+
+      result.push(entity);
+    }
+
+    return result;
   }
 }
 
