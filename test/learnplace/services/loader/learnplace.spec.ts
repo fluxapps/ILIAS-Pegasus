@@ -91,15 +91,15 @@ describe("a learnplace loader", () => {
 
         // again, we don't care about the blocks or visit journal, therefore we return empty arrays
         const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const linkBlockMapperStub: SinonStub = sandbox.stub(mockLinkBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
-          .returns([]);
+          .resolves([]);
 
 
         await loader.load(1);
@@ -157,15 +157,15 @@ describe("a learnplace loader", () => {
 
         // again, we don't care about the blocks or visit journal, therefore we return empty arrays
         const textBlockMapperStub: SinonStub = sandbox.stub(mockTextBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const pictureBlockMapperStub: SinonStub = sandbox.stub(mockPictureBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const linkBlockMapperStub: SinonStub = sandbox.stub(mockLinkBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const videoBlockMapperStub: SinonStub = sandbox.stub(mockVideoBlockMapper, "map")
-          .returns([]);
+          .resolves([]);
         const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
-          .returns([]);
+          .resolves([]);
 
 
         await loader.load(1);

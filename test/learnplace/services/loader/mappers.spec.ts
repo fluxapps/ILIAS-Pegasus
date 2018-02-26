@@ -28,7 +28,7 @@ describe("a text block mapper", () => {
 
 		context("on new text blocks", () => {
 
-			it("should create new text block entities", () => {
+			it("should create new text block entities", async() => {
 
 			  const local: Array<TextblockEntity> = [];
 
@@ -38,7 +38,7 @@ describe("a text block mapper", () => {
         ];
 
 
-        const result: Array<TextblockEntity> = mapper.map(local, remote);
+        const result: Array<TextblockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<TextblockEntity> = [
@@ -62,7 +62,7 @@ describe("a text block mapper", () => {
 
 		context("on existing textblocks", () => {
 
-			it("should update the existing ones", () => {
+			it("should update the existing ones", async() => {
 
         const local: Array<TextblockEntity> = [
           new TextblockEntity().applies(function(): void {
@@ -80,7 +80,7 @@ describe("a text block mapper", () => {
         ];
 
 
-        const result: Array<TextblockEntity> = mapper.map(local, remote);
+        const result: Array<TextblockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<TextblockEntity> = [
@@ -125,7 +125,7 @@ describe("a picture block mapper", () => {
 
 		context("on new picture blocks", () => {
 
-			it("should create new picture block entities", () => {
+			it("should create new picture block entities", async() => {
 
 			  const local: Array<PictureBlockEntity> = [];
 
@@ -135,7 +135,7 @@ describe("a picture block mapper", () => {
         ];
 
 
-			  const result: Array<PictureBlockEntity> = mapper.map(local, remote);
+			  const result: Array<PictureBlockEntity> = await mapper.map(local, remote);
 
 
 			  const expected: Array<PictureBlockEntity> = [
@@ -165,7 +165,7 @@ describe("a picture block mapper", () => {
 
 		context("on existing picture blocks", () => {
 
-			it("should update the existing ones", () => {
+			it("should update the existing ones", async() => {
 
         const local: Array<PictureBlockEntity> = [
           new PictureBlockEntity().applies(function(): void {
@@ -189,7 +189,7 @@ describe("a picture block mapper", () => {
           .resolves("/somewhere/on/the/filesystem/");
 
 
-        const result: Array<PictureBlockEntity> = mapper.map(local, remote);
+        const result: Array<PictureBlockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<PictureBlockEntity> = [
@@ -232,7 +232,7 @@ describe("a link block mapper", () => {
 
 		context("on new link blocks", () => {
 
-			it("should create link block entities", () => {
+			it("should create link block entities", async() => {
 
 				const local: Array<LinkblockEntity> = [];
 
@@ -242,7 +242,7 @@ describe("a link block mapper", () => {
         ];
 
 
-        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+        const result: Array<LinkblockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<LinkblockEntity> = [
@@ -266,7 +266,7 @@ describe("a link block mapper", () => {
 
 		context("on existing link blocks", () => {
 
-			it("should update the existing ones", () => {
+			it("should update the existing ones", async() => {
 
         const local: Array<LinkblockEntity> = [
           new LinkblockEntity().applies(function(): void {
@@ -284,7 +284,7 @@ describe("a link block mapper", () => {
         ];
 
 
-        const result: Array<LinkblockEntity> = mapper.map(local, remote);
+        const result: Array<LinkblockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<LinkblockEntity> = [
@@ -327,7 +327,7 @@ describe("a video block mapper", () => {
 
 		context("on new video blocks", () => {
 
-			it("should create new video block entities", () => {
+			it("should create new video block entities", async() => {
 
 				const local: Array<VideoBlockEntity> = [];
 
@@ -337,7 +337,7 @@ describe("a video block mapper", () => {
         ];
 
 
-				const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+				const result: Array<VideoBlockEntity> = await mapper.map(local, remote);
 
 
 				const expected: Array<VideoBlockEntity> = [
@@ -363,7 +363,7 @@ describe("a video block mapper", () => {
 
 		context("on existing video blocks", () => {
 
-			it("should update the existing ones", () => {
+			it("should update the existing ones", async() => {
 
         const local: Array<VideoBlockEntity> = [
           new VideoBlockEntity().applies(function(): void {
@@ -382,7 +382,7 @@ describe("a video block mapper", () => {
         ];
 
 
-        const result: Array<VideoBlockEntity> = mapper.map(local, remote);
+        const result: Array<VideoBlockEntity> = await mapper.map(local, remote);
 
 
         const expected: Array<VideoBlockEntity> = [
@@ -421,7 +421,7 @@ describe("a visit journal mapper", () => {
 
 		context("on new journal entries", () => {
 
-			it("should create new journal entities", () => {
+			it("should create new journal entities", async() => {
 
 				const local: Array<VisitJournalEntity> = [];
 
@@ -437,7 +437,7 @@ describe("a visit journal mapper", () => {
         ];
 
 
-				const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+				const result: Array<VisitJournalEntity> = await mapper.map(local, remote);
 
 
 				const expected: Array<VisitJournalEntity> = [
@@ -460,7 +460,7 @@ describe("a visit journal mapper", () => {
 
 		context("on existing journal entries", () => {
 
-			it("should update the existing journal entities", () => {
+			it("should update the existing journal entities", async() => {
 
         const local: Array<VisitJournalEntity> = [
           new VisitJournalEntity().applies(function(): void {
@@ -488,7 +488,7 @@ describe("a visit journal mapper", () => {
         ];
 
 
-        const result: Array<VisitJournalEntity> = mapper.map(local, remote);
+        const result: Array<VisitJournalEntity> =await mapper.map(local, remote);
 
 
         const expected: Array<VisitJournalEntity> = [

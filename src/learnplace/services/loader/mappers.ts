@@ -37,13 +37,13 @@ export interface ArrayMapper<K, T> {
    * @param {Array<K>} local - the local data to compare
    * @param {Array<T>} remote - the remote data to compare
    *
-   * @returns {Array<K>} the resulting mapped array
+   * @returns {Promise<Array<K>>} the resulting mapped array
    */
-  map(local: Array<K>, remote: Array<T>): Array<K>
+  map(local: Array<K>, remote: Array<T>): Promise<Array<K>>
 }
 
 /**
- * Maps a {@link TextBlock} to {@link TextBlockEntity}.
+ * Maps a {@link TextBlock} to {@link TextblockEntity}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.2
@@ -52,17 +52,17 @@ export interface ArrayMapper<K, T> {
 export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> {
 
 
-  map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Array<TextblockEntity> {
+  async map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Promise<Array<TextblockEntity>> {
 
     return remote.map(textBlock =>
       findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new TextblockEntity())
-        .applies(function(): void {
+        .applies(function (): void {
           this.iliasId = textBlock.id;
           this.sequence = textBlock.sequence;
           this.content = textBlock.content;
           this.visibility = getVisibilityEntity(textBlock.visibility);
-      })
+        })
     );
   }
 }
@@ -76,7 +76,7 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
 @Injectable()
 export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
 
-  map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Array<PictureBlockEntity> {
+  async map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Promise<Array<PictureBlockEntity>> {
     return remote.map(pictureBlock =>
       findIn(local, pictureBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new PictureBlockEntity())
@@ -112,9 +112,9 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
    * @param {Array<LinkblockEntity>} local - the entities to search in for existing link blocks
    * @param {Array<ILIASLinkBlock>} remote - the link blocks to save / update
    *
-   * @returns {Array<LinkblockEntity>} the resulting mapped entity array
+   * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
    */
-  map(local: Array<LinkblockEntity>, remote: Array<ILIASLinkBlock>): Array<LinkblockEntity> {
+  async map(local: Array<LinkblockEntity>, remote: Array<ILIASLinkBlock>): Promise<Array<LinkblockEntity>> {
     return remote.map(linkBlock =>
       findIn(local, linkBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new LinkblockEntity())
@@ -148,9 +148,9 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
    * @param {Array<VideoBlockEntity>} local - the entities to search for existing video blocks
    * @param {Array<VideoBlock>} remote - the video blocks to update / create
    *
-   * @returns {Array<VideoBlockEntity>} the resulting mapped entity array
+   * @returns {Promise<Array<VideoBlockEntity>>} the resulting mapped entity array
    */
-  map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Array<VideoBlockEntity> {
+  async map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Promise<Array<VideoBlockEntity>> {
     return remote.map(videoBlock =>
       findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new VideoBlockEntity())
@@ -183,9 +183,9 @@ export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, Journ
    * @param {Array<VisitJournalEntity>} local - the entities to search for existing journal entries
    * @param {Array<JournalEntry>} remote - the journal entries to create / update
    *
-   * @returns {Array<VisitJournalEntity>} the resulting mapped entity array
+   * @returns {Promise<Array<VisitJournalEntity>>} the resulting mapped entity array
    */
-  map(local: Array<VisitJournalEntity>, remote: Array<JournalEntry>): Array<VisitJournalEntity> {
+  async map(local: Array<VisitJournalEntity>, remote: Array<JournalEntry>): Promise<Array<VisitJournalEntity>> {
     return remote.map(journalEntry =>
       findIn(local, journalEntry, (entity, journal) => entity.username == journal.username)
         .orElse(new VisitJournalEntity())
