@@ -114,6 +114,7 @@ import {Http, HttpModule} from "@angular/http";
 import {HttpClientModule} from "@angular/common/http";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
+import {Base64} from "../services/encoding";
 
 @NgModule({
   declarations: [
@@ -421,6 +422,7 @@ import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/lo
     PegasusHttpClient,
     SplashScreen,
     Geolocation,
+    Base64,
 
     /* from src/services/device/hardware-features */
     Diagnostic,

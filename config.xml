@@ -129,4 +129,5 @@
     <plugin name="polarcape-cordova-plugin-document-handler" spec="^1.0.12" />
     <engine name="ios" spec="4.5.4" />
     <engine name="android" spec="7.0.0" />
+    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.15" />
 </widget>
