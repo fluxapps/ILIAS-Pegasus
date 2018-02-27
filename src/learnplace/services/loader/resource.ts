@@ -1,4 +1,4 @@
-import {File, IWriteOptions} from "@ionic-native/file";
+import {DirectoryEntry, File, Flags, IWriteOptions} from "@ionic-native/file";
 import {HttpClient, HttpResponse} from "../../../providers/http";
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {Platform} from "ionic-angular";
@@ -24,6 +24,7 @@ export interface ResourceTransfer {
    * @param {string} resource - a relative path to the resource
    *
    * @returns {Promise<string>} the local absolute path to the stored resource
+   * @throws {ResourceLoadError} if the transfer fails
    */
   transfer(resource: string): Promise<string>
 }
@@ -33,7 +34,7 @@ export const RESOURCE_TRANSFER: InjectionToken<string> = new InjectionToken("tok
  * Resource loader over a http connection.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Injectable()
 export class HttpResourceTransfer implements ResourceTransfer {
@@ -56,6 +57,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
    * @param {string} resource - a relative path to the resource
    *
    * @returns {Promise<string>} the local absolute path to the stored resource
+   * @throws {ResourceLoadError} if the transfer fails
    */
   async transfer(resource: string): Promise<string> {
 
@@ -75,7 +77,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
       const storageLocation: string = await this.getStorageLocation();
 
       this.log.trace(() => `Save file "${name}" to location "${storageLocation}"`);
-      await this.file.writeFile(storageLocation, name, response.text(), <IWriteOptions>{replace: true});
+      await this.file.writeFile(storageLocation, name, response.arrayBuffer(), <IWriteOptions>{replace: true});
 
       return `${storageLocation}${name}`;
 
@@ -94,11 +96,30 @@ export class HttpResourceTransfer implements ResourceTransfer {
 
     if (this.platform.is("android")) {
       this.log.trace(() => "Platform Android detected");
-      return `${this.file.externalApplicationStorageDirectory}/ilias-app/${user.id}/`;
+      return this.createRecursive(this.file.externalApplicationStorageDirectory, "ilias-app", user.id.toString(), "lernorte");
     } else if (this.platform.is("ios")) {
       this.log.trace(() => "Platform ios detected");
-      return `${this.file.dataDirectory}/${user.id}/`;
+      return this.createRecursive(this.file.dataDirectory, "ilias-app", user.id.toString(), "lernorte");
     }
+  }
+
+  /**
+   * Creates the given directory structure.
+   * If a directory exists already it will not be replaced.
+   *
+   * @param {string} first - initial directory, which must exist already
+   * @param {string} more - sub-directories which will be created if not exist
+   *
+   * @returns {Promise<string>} the created directory path inclusive {@code first}
+   */
+  private async createRecursive(first: string, ...more: Array<string>): Promise<string> {
+
+    let previousDir: DirectoryEntry = await this.file.resolveDirectoryUrl(first);
+    for(const currentDir of more) {
+      previousDir = await this.file.getDirectory(previousDir, currentDir, <Flags>{create: true});
+    }
+
+    return `${first}/${more.join("/")}/`;
   }
 }
 
