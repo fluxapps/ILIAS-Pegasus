@@ -79,7 +79,7 @@ describe("a http resource transfer", () => {
         const result: string = await transfer.transfer(resource);
 
 
-				const expected: string = "absolute/file/path/ilias-app/1/lernorte/image01.png";
+				const expected: string = "ilias-app/1/lernorte/image01.png";
 				await chai.expect(result)
           .to.be.equal(expected);
 

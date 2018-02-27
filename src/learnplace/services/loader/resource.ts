@@ -76,10 +76,13 @@ export class HttpResourceTransfer implements ResourceTransfer {
 
       const storageLocation: string = await this.getStorageLocation();
 
-      this.log.trace(() => `Save file "${name}" to location "${storageLocation}"`);
-      await this.file.writeFile(storageLocation, name, response.arrayBuffer(), <IWriteOptions>{replace: true});
+      const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+      const path: string = await this.createRecursive(storageLocation, "ilias-app", user.id.toString(), "lernorte");
 
-      return `${storageLocation}${name}`;
+      this.log.trace(() => `Save file "${name}" to location "${storageLocation}${path}"`);
+      await this.file.writeFile(`${storageLocation}${path}`, name, response.arrayBuffer(), <IWriteOptions>{replace: true});
+
+      return `${path}${name}`;
 
     } catch (error) {
       this.log.debug(() => `Resource Transfer Error: ${JSON.stringify(error)}`);
@@ -88,18 +91,16 @@ export class HttpResourceTransfer implements ResourceTransfer {
   }
 
   /**
-   * @returns {Promise<string>} the storage location for file of a user considering the platform
+   * @returns {Promise<string>} the storage location considering the platform
    */
   private async getStorageLocation(): Promise<string> {
 
-    const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
-
     if (this.platform.is("android")) {
       this.log.trace(() => "Platform Android detected");
-      return this.createRecursive(this.file.externalApplicationStorageDirectory, "ilias-app", user.id.toString(), "lernorte");
+      return this.file.externalApplicationStorageDirectory;
     } else if (this.platform.is("ios")) {
       this.log.trace(() => "Platform ios detected");
-      return this.createRecursive(this.file.dataDirectory, "ilias-app", user.id.toString(), "lernorte");
+      return this.file.dataDirectory;
     }
   }
 
@@ -110,7 +111,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
    * @param {string} first - initial directory, which must exist already
    * @param {string} more - sub-directories which will be created if not exist
    *
-   * @returns {Promise<string>} the created directory path inclusive {@code first}
+   * @returns {Promise<string>} the created directory path excluding {@code first}
    */
   private async createRecursive(first: string, ...more: Array<string>): Promise<string> {
 
@@ -119,7 +120,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
       previousDir = await this.file.getDirectory(previousDir, currentDir, <Flags>{create: true});
     }
 
-    return `${first}/${more.join("/")}/`;
+    return `${more.join("/")}/`;
   }
 }
 
