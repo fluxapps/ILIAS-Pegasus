@@ -1,12 +1,13 @@
-import {Component} from "@angular/core";
+import {AfterViewInit, Component} from "@angular/core";
 import {MapPage, MapPageParams} from "../map/map.component";
 import {ContentPage, ContentPageParams} from "../content/content.component";
-import {NavParams} from "ionic-angular";
+import {NavController, NavParams} from "ionic-angular";
+import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 
 @Component({
   templateUrl: "tabs.html",
 })
-export class TabsPage {
+export class TabsPage implements AfterViewInit {
 
   readonly mapPage: object = MapPage;
   readonly mapPageParams: MapPageParams;
@@ -15,6 +16,8 @@ export class TabsPage {
   readonly contentPageParams: ContentPageParams;
 
   constructor(
+    private readonly hardware: Hardware,
+    private readonly nav: NavController,
     params: NavParams
   ) {
     const learnplaceId: number = params.get("learnplaceId");
@@ -29,7 +32,12 @@ export class TabsPage {
       learnplaceName: learnplaceName
     }
   }
-
+  
+  ngAfterViewInit(): void {
+    this.hardware.requireLocation()
+      .onFailure(() => this.nav.pop())
+      .check();
+  }
 }
 
 export interface TabsPageParams {
