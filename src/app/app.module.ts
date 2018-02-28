@@ -114,7 +114,6 @@ import {Http, HttpModule} from "@angular/http";
 import {HttpClientModule} from "@angular/common/http";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
-import {Base64} from "../services/encoding";
 import {PhotoViewer} from "@ionic-native/photo-viewer";
 
 @NgModule({
@@ -423,7 +422,6 @@ import {PhotoViewer} from "@ionic-native/photo-viewer";
     PegasusHttpClient,
     SplashScreen,
     Geolocation,
-    Base64,
     PhotoViewer,
 
     /* from src/services/device/hardware-features */
