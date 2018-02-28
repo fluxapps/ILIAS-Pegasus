@@ -5,6 +5,7 @@ import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {NoSuchElementError} from "../../error/errors";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+import {DomSanitizer} from "@angular/platform-browser";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
@@ -38,6 +39,7 @@ export class VisibilityManagedBlockService implements BlockService {
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     private readonly strategyApplier: VisibilityStrategyApplier,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
@@ -57,7 +59,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
   private mapTextblocks(learnplace: LearnplaceEntity): Array<BlockModel> {
     return learnplace.textBlocks.map(it => {
-      const model: TextBlockModel = new TextBlockModel(it.sequence, it.content);
+      const model: TextBlockModel = new TextBlockModel(it.sequence, this.sanitizer.bypassSecurityTrustHtml(it.content));
       this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     });

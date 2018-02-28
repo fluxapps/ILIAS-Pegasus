@@ -1,4 +1,5 @@
 import {VisibilityAware} from "./visibility/visibility.context";
+import {SafeHtml} from "@angular/platform-browser";
 
 /**
  * Contains information to display a map.
@@ -69,7 +70,7 @@ export class TextBlockModel extends BlockModel {
 
   constructor(
     sequence: number,
-    readonly content: string,
+    readonly content: SafeHtml,
   ) {super(sequence, false, BlockType.RICHTEXT)}
 }
 
