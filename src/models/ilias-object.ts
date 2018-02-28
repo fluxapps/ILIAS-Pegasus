@@ -348,13 +348,15 @@ export class ILIASObject extends ActiveRecord {
           const object: ILIASObject = await ILIASObject.find(response.rows.item(0).id);
 
           // We destroy all overdue instances.
-          for (let i = 1; i < response.rows.length; i++) {
+          for (let i: number = 1; i < response.rows.length; i++) {
             (await ILIASObject.find(response.rows.item(i).id)).destroy();
           }
 
           // After finding and deletion we return the found object.
           return object;
         }
+
+        return new ILIASObject();
     }
 
     /**

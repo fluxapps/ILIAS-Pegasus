@@ -325,7 +325,7 @@ export class NewObjectsPage {
      * @param objects
      * @returns {Promise<any>}
      */
-    mark(desktopItemRefId: number, objects: Array<ILIASObject>): Promise<void> {
+    async mark(desktopItemRefId: number, objects: Array<ILIASObject>): Promise<void> {
         if (!objects) {
             return;
         }

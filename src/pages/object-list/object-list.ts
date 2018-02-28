@@ -157,7 +157,7 @@ export class ObjectListPage {
       .then(() => {
 
 		    if (this.objects.length == 0 && this.parent == undefined) {
-		      return this.executeSync();
+		      this.executeSync();
         }
       });
 	}

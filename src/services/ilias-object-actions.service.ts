@@ -1,5 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
 import {NavController, ModalController} from "ionic-angular";
+import {IllegalStateError} from "../error/errors";
 import {Builder} from "./builder.base";
 import {LINK_BUILDER, LinkBuilder} from "./link/link-builder.service";
 import {SynchronizationService} from "./synchronization.service";
@@ -52,6 +53,8 @@ export class ILIASObjectActionsService {
         if (context == ILIASObjectActionsService.CONTEXT_DETAILS_PAGE) {
             return this.getActionsForDetailsPage(iliasObject);
         }
+
+        throw new IllegalStateError(`Unable to determine action for given context "${context}."`);
     }
 
 
