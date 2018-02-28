@@ -100,8 +100,7 @@ export class LinkBlockModel extends BlockModel {
 
   constructor(
     sequence: number,
-    readonly refId: number,
-    readonly name: string
+    readonly refId: number
   ) {super(sequence, false, BlockType.ILIAS_LINK)}
 }
 

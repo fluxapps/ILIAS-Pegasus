@@ -74,7 +74,7 @@ export class VisibilityManagedBlockService implements BlockService {
   private mapLinkBlocks(learnplace: LearnplaceEntity): Array<LinkBlockModel> {
 
     return learnplace.linkBlocks.map(it => {
-      const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId, it.name);
+      const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
       this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
       return model;
     })
