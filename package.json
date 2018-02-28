@@ -166,7 +166,7 @@
       "cordova-plugin-file": {},
       "polarcape-cordova-plugin-document-handler": {},
       "com-sarriaroman-photoviewer": {},
-      "com.hutchind.cordova.plugins.streamingmedia": {}
+      "cordova-plugin-streaming-media": {}
     }
   }
 }
