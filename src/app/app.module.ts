@@ -114,6 +114,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 import {PhotoViewer} from "@ionic-native/photo-viewer";
+import {StreamingMedia} from "@ionic-native/streaming-media";
 
 @NgModule({
   declarations: [
@@ -420,6 +421,7 @@ import {PhotoViewer} from "@ionic-native/photo-viewer";
     SplashScreen,
     Geolocation,
     PhotoViewer,
+    StreamingMedia,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
