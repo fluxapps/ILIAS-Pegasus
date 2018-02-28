@@ -1,4 +1,4 @@
-import {NgModule, ErrorHandler, Provider, FactoryProvider} from "@angular/core";
+import {NgModule, ErrorHandler, FactoryProvider} from "@angular/core";
 import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -91,7 +91,6 @@ import {Diagnostic} from "@ionic-native/diagnostic";
 import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.util";
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
-import {PictureBlockModal} from "../learnplace/directives/pictureblock/pictureblock.modal";
 import {
   LinkBlockMapper, PictureBlockMapper, TextBlockMapper,
   VideoBlockMapper, VisitJournalMapper
@@ -138,7 +137,6 @@ import {PhotoViewer} from "@ionic-native/photo-viewer";
 
     TextBlock,
     PictureBlock,
-    PictureBlockModal,
     VideoBlock,
     LinkBlock,
 
@@ -178,7 +176,6 @@ import {PhotoViewer} from "@ionic-native/photo-viewer";
     MapPage,
     TabsPage,
     ContentPage,
-    PictureBlockModal,
 
     /* fallback screens */
     WifiFallbackScreen,
