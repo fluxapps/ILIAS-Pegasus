@@ -1,3 +1,4 @@
+import {isDevMode} from "../../app/devmode";
 import {ConsoleLogAppender} from "./logging.appenders";
 import {LogAppender, LogEntry, Logger, LogLevel} from "./logging.api";
 import {hasOwnProperty} from "tslint/lib/utils";
@@ -5,7 +6,7 @@ import {hasOwnProperty} from "tslint/lib/utils";
 export namespace Logging {
 
   const appenders: Array<LogAppender> = [
-    new ConsoleLogAppender(LogLevel.INFO)
+    new ConsoleLogAppender(isDevMode() ? LogLevel.TRACE : LogLevel.INFO)
   ];
 
   /**
