@@ -190,10 +190,14 @@
     "xavc" : "Adobe Connect Meeting",
     "xflc" : "Lernkarten",
     "chtr" : "Chatraum",
-    "xxco" : "Externer Inhalt"
+    "xxco" : "Externer Inhalt",
+    "xsrl": "Lernort"
 
   },
   "message": {
     "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
+  },
+  "learnplace": {
+    "no-link-label": "Du besitzt keine Zugriffsrechte für diesen Link"
   }
 }

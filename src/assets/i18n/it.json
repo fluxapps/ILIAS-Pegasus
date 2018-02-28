@@ -183,6 +183,10 @@
     "xavc" : "Adobe Connect Meeting",
     "xflc" : "Flashcards",
     "chtr" : "Chat",
-    "xxco" : "Contenuto esterno"
+    "xxco" : "Contenuto esterno",
+    "xsrl": "luogo di apprendimento"
+  },
+  "learnplace": {
+    "no-link-label": "Non hai diritti di accesso a questo link"
   }
 }
