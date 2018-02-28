@@ -11,6 +11,9 @@ import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {File} from "@ionic-native/file";
+import {Platform} from "ionic-angular";
+import {isUndefined} from "ionic-angular/es2015/util/util";
 
 /**
  * Describes a mapper for an array.
@@ -89,7 +92,9 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
   private readonly log: Logger = Logging.getLogger(PictureBlockMapper.name);
 
   constructor(
-    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
+    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer,
+    private readonly file: File,
+    private readonly platform: Platform
   ) {}
 
   /**
@@ -119,12 +124,16 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
 
       if (entity.thumbnailHash != pictureBlock.thumbnailHash) {
         this.log.trace(() => `Hash of thumbnail does not match: Download thumbnail ${pictureBlock.thumbnail}`);
+        const oldThumbnail: string = entity.thumbnail;
         entity.thumbnail = await this.resourceTransfer.transfer(pictureBlock.thumbnail);
+        await this.removeFile(oldThumbnail);
       }
 
       if (entity.hash != pictureBlock.hash) {
         this.log.trace(() => `Hash of picture does not match: Download picture ${pictureBlock.url}`);
+        const oldUrl: string = entity.url;
         entity.url = await this.resourceTransfer.transfer(pictureBlock.url);
+        await this.removeFile(oldUrl);
       }
 
       entity.applies(function(): void {
@@ -141,6 +150,28 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
     }
 
     return result;
+  }
+
+  private async removeFile(path: string | undefined): Promise<void> {
+
+    // if path is undefined, there was never a picture before to remove
+    if (!isUndefined(path)) {
+      const fileName: string = path.split("/").pop();
+      const pathOnly: string = path.replace(fileName, "");
+
+      await this.file.removeFile(`${this.getStorageLocation()}${pathOnly}`, fileName);
+    }
+  }
+
+  private getStorageLocation(): string {
+    if (this.platform.is("android")) {
+      return this.file.externalApplicationStorageDirectory;
+    }
+    if (this.platform.is("ios")) {
+      return this.file.dataDirectory;
+    }
+
+    throw new Error("Unsupported platform. Can not return a storage location.");
   }
 }
 
@@ -191,7 +222,9 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
   private readonly log: Logger = Logging.getLogger(VideoBlockMapper.name);
 
   constructor(
-    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer
+    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer,
+    private readonly file: File,
+    private readonly platform: Platform
   ) {}
 
   /**
@@ -220,7 +253,9 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
 
       if (entity.hash != videoBlock.hash) {
         this.log.trace(() => `Hash of video does not match: Download video ${videoBlock.url}`);
+        const oldUrl: string = entity.url;
         entity.url = await this.resourceTransfer.transfer(videoBlock.url);
+        await this.removeFile(oldUrl);
       }
 
       entity.applies(function(): void {
@@ -234,6 +269,28 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
     }
 
     return result;
+  }
+
+  private async removeFile(path: string | undefined): Promise<void> {
+
+    // if path is undefined, there was never a picture before to remove
+    if (!isUndefined(path)) {
+      const fileName: string = path.split("/").pop();
+      const pathOnly: string = path.replace(fileName, "");
+
+      await this.file.removeFile(`${this.getStorageLocation()}${pathOnly}`, fileName);
+    }
+  }
+
+  private getStorageLocation(): string {
+    if (this.platform.is("android")) {
+      return this.file.externalApplicationStorageDirectory;
+    }
+    if (this.platform.is("ios")) {
+      return this.file.dataDirectory;
+    }
+
+    throw new Error("Unsupported platform. Can not return a storage location.");
   }
 }
 

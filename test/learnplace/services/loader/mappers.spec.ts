@@ -1,4 +1,4 @@
-import {SinonSandbox, createSandbox, SinonStub} from "sinon";
+import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {
   LinkBlockMapper,
   PictureBlockMapper,
@@ -15,6 +15,10 @@ import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entit
 import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
 import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journal.entity";
 import {ResourceTransfer} from "../../../../src/learnplace/services/loader/resource";
+import {File} from "@ionic-native/file";
+import {stubInstance} from "../../../SinonUtils";
+import {Platform} from "ionic-angular";
+import {platform} from "os";
 
 describe("a text block mapper", () => {
 
@@ -113,11 +117,13 @@ describe("a picture block mapper", () => {
   const mockResourceTransfer: ResourceTransfer = <ResourceTransfer>{
     transfer: () => undefined
   };
+  const mockFile: File = stubInstance(File);
+  const mockPlatform: Platform = stubInstance(Platform);
 
-  let mapper: PictureBlockMapper = new PictureBlockMapper(mockResourceTransfer);
+  let mapper: PictureBlockMapper = new PictureBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
 
 	beforeEach(() => {
-		mapper = new PictureBlockMapper(mockResourceTransfer);
+		mapper = new PictureBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
 	});
 
 	afterEach(() => {
@@ -237,6 +243,49 @@ describe("a picture block mapper", () => {
           .to.be.deep.equal(expected);
 			})
 		});
+
+		context("on updated pictures", () => {
+
+			it("should delete the old picture", async() => {
+
+        const local: Array<PictureBlockEntity> = [
+          new PictureBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 3;
+            this.title = "title";
+            this.description = "";
+            this.thumbnailHash = "=1e";
+            this.thumbnail = "/local/path/image.png";
+            this.url = "/local/path/image.png";
+            this.hash = "=2e";
+            this.visibility = getVisibilityEntity("ALWAYS")
+          })
+        ];
+
+        const remote: Array<PictureBlock> = [
+          <PictureBlock>{id: 1, sequence: 3, visibility: "ALWAYS", title: "title", description: "",
+            thumbnail: "get/thumbnail.png", thumbnailHash: "=1d", url: "get/picture/1", hash: "=2d"}
+        ];
+
+        sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/local/path/image.png");
+
+        sandbox.stub(mockPlatform, "is")
+          .withArgs("ios") // just to use mock the File correct
+          .returns(true);
+        sandbox.stub(mockFile, "dataDirectory") // ios uses this property
+          .get(() => "test/");
+        const deleteStub: SinonStub = sandbox.stub(mockFile, "removeFile")
+          .resolves();
+
+
+        await mapper.map(local, remote);
+
+
+        assert.calledTwice(deleteStub);
+			})
+		});
 	});
 });
 
@@ -336,11 +385,13 @@ describe("a video block mapper", () => {
   const mockResourceTransfer: ResourceTransfer = <ResourceTransfer>{
     transfer: () => undefined
   };
+  const mockFile: File = stubInstance(File);
+  const mockPlatform: Platform = stubInstance(Platform);
 
-    let mapper: VideoBlockMapper = new VideoBlockMapper(mockResourceTransfer);
+  let mapper: VideoBlockMapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
 
 	beforeEach(() => {
-		mapper = new VideoBlockMapper(mockResourceTransfer);
+		mapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
 	});
 
 	afterEach(() => {
@@ -434,6 +485,44 @@ describe("a video block mapper", () => {
         ];
         chai.expect(result)
           .to.be.deep.equal(expected);
+			})
+		});
+
+		context("on updated video", () => {
+
+			it("should delete the old video file", async() => {
+
+        const local: Array<VideoBlockEntity> = [
+          new VideoBlockEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.url = "path/image.png";
+            this.hash = "FB23";
+            this.visibility = getVisibilityEntity("NEVER");
+          })
+        ];
+
+        const remote: Array<VideoBlock> = [
+          <VideoBlock>{id: 1, sequence: 1, url: "/get/video/1", hash: "FB24", visibility: "ALWAYS"}
+        ];
+
+        sandbox.stub(mockResourceTransfer, "transfer")
+          .resolves("absolute/path/image.png");
+
+        sandbox.stub(mockPlatform, "is")
+          .withArgs("ios") // just to use mock the File correct
+          .returns(true);
+        sandbox.stub(mockFile, "dataDirectory") // ios uses this property
+          .get(() => "test/");
+        const deleteStub: SinonStub = sandbox.stub(mockFile, "removeFile")
+          .resolves();
+
+
+        await mapper.map(local, remote);
+
+
+        assert.calledOnce(deleteStub);
 			})
 		});
 	});
