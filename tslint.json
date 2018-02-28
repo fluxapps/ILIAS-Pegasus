@@ -80,7 +80,6 @@
     "radix": true,
     "restrict-plus-operands": true,
     "strict-boolean-expressions": true,
-    "typeof-compare": true,
     "use-isnan": true,
 
     "cyclomatic-complexity": true,
