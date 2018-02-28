@@ -102,6 +102,8 @@ export class HttpResourceTransfer implements ResourceTransfer {
       this.log.trace(() => "Platform ios detected");
       return this.file.dataDirectory;
     }
+
+    throw new Error("Unsupported platform. Can not return a storage location.");
   }
 
   /**
