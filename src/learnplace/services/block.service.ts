@@ -47,7 +47,7 @@ export class VisibilityManagedBlockService implements BlockService {
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${learnplaceId}`));
 
-    this.strategyApplier.setLearplace(learnplaceId);
+    this.strategyApplier.setLearnplace(learnplaceId);
 
     return [
       ...this.mapTextblocks(learnplace),
