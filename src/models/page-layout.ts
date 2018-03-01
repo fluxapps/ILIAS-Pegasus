@@ -3,7 +3,7 @@
  */
 export class PageLayout {
 
-  readonly icon: string = "information-circle";
+  readonly icon: string = "../assets/icon/icon_info_blue.svg";
   readonly text: string;
 
   constructor(

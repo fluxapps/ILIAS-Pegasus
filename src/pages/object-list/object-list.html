@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="primary">
+    <ion-navbar color="nobg-w" class=blue-gradient>
         <ion-title>
           <ion-icon name="ios-book"></ion-icon>
           {{ pageTitle }}
@@ -28,7 +28,9 @@
   <ion-list  class="ilias-object-list">
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
-        <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
+        <ion-avatar item-start>
+            <img [src]="pageLayout.icon">
+        </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
@@ -46,12 +48,12 @@
 
     <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
 
-      <ion-icon [name]=object.presenter.icon() item-left class="badge-container">
-
-        <ion-badge *ngIf="object.isLinked()" color="light" class="badge-link">
-          <ion-icon name="open-outline"></ion-icon>
-        </ion-badge>
-      </ion-icon>
+      <ion-avatar item-start>
+          <img [src]="object.presenter.icon()">
+          <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
+            <img src="./assets/icon/icon_webr.svg" class="badge-img">
+          </ion-badge>
+      </ion-avatar>
 
       <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
       {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
