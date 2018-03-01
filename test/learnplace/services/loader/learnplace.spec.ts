@@ -11,6 +11,7 @@ import {LocationEntity} from "../../../../src/learnplace/entity/location.entity"
 import {VisibilityEntity} from "../../../../src/learnplace/entity/visibility.entity";
 import {HttpRequestError} from "../../../../src/providers/http";
 import {
+  AccordionMapper,
   LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper,
   VisitJournalMapper
 } from "../../../../src/learnplace/services/loader/mappers";
@@ -38,6 +39,7 @@ describe("a learnplace loader", () => {
     const mockPictureBlockMapper: PictureBlockMapper = stubInstance(PictureBlockMapper);
     const mockLinkBlockMapper: LinkBlockMapper = stubInstance(LinkBlockMapper);
     const mockVideoBlockMapper: VideoBlockMapper = stubInstance(VideoBlockMapper);
+    const mockAccordionMapper: AccordionMapper = stubInstance(AccordionMapper);
     const mockJournalEntryMapper: VisitJournalMapper = stubInstance(VisitJournalMapper);
 
     let loader: RestLearnplaceLoader = new RestLearnplaceLoader(
@@ -47,6 +49,7 @@ describe("a learnplace loader", () => {
       mockPictureBlockMapper,
       mockLinkBlockMapper,
       mockVideoBlockMapper,
+      mockAccordionMapper,
       mockJournalEntryMapper
     );
 
@@ -58,6 +61,7 @@ describe("a learnplace loader", () => {
       mockPictureBlockMapper,
       mockLinkBlockMapper,
       mockVideoBlockMapper,
+      mockAccordionMapper,
       mockJournalEntryMapper
     );
 	});
@@ -100,6 +104,8 @@ describe("a learnplace loader", () => {
           .resolves([]);
         const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
           .resolves([]);
+        const accordionMapperStub: SinonStub = sandbox.stub(mockAccordionMapper, "map")
+          .resolves([]);
 
 
         await loader.load(1);
@@ -123,6 +129,7 @@ describe("a learnplace loader", () => {
           this.pictureBlocks = [];
           this.linkBlocks = [];
           this.videoBlocks = [];
+          this.accordionBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
@@ -131,6 +138,7 @@ describe("a learnplace loader", () => {
         assert.calledOnce(linkBlockMapperStub);
         assert.calledOnce(videoBlockMapperStub);
         assert.calledOnce(visitJournalMapperStub);
+        assert.calledOnce(accordionMapperStub);
 			});
 		});
 
@@ -166,6 +174,8 @@ describe("a learnplace loader", () => {
           .resolves([]);
         const visitJournalMapperStub: SinonStub = sandbox.stub(mockJournalEntryMapper, "map")
           .resolves([]);
+        const accordionMapperStub: SinonStub = sandbox.stub(mockAccordionMapper, "map")
+          .resolves([]);
 
 
         await loader.load(1);
@@ -192,6 +202,7 @@ describe("a learnplace loader", () => {
           this.pictureBlocks = [];
           this.linkBlocks = [];
           this.videoBlocks = [];
+          this.accordionBlocks = [];
         });
         assert.calledWith(saveStub, expected);
 
@@ -200,6 +211,7 @@ describe("a learnplace loader", () => {
         assert.calledOnce(linkBlockMapperStub);
         assert.calledOnce(videoBlockMapperStub);
         assert.calledOnce(visitJournalMapperStub);
+        assert.calledOnce(accordionMapperStub);
 			})
 		});
 
@@ -258,19 +270,6 @@ function createLearnPlace(): LearnPlace {
   };
 }
 
-function createJournalEntries(): Array<JournalEntry> {
-  return [
-    <JournalEntry>{
-      username: "mmuster",
-      timestamp: 0
-    },
-    <JournalEntry>{
-      username: "ssuster",
-      timestamp: 0
-    }
-  ];
-}
-
 function createEmptyBlocks(): BlockObject {
   return <BlockObject>{
     text: [],
@@ -305,6 +304,7 @@ function getExistingLearnplace(): LearnplaceEntity {
     this.videoBlocks = [];
     this.linkBlocks = [];
     this.visitJournal = [];
+    this.accordionBlocks = [];
   });
 }
 

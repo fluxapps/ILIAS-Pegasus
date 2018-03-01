@@ -10,7 +10,10 @@ import {VisibilityEntity} from "../../entity/visibility.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {Optional} from "../../../util/util.optional";
 import {HttpRequestError} from "../../../providers/http";
-import {LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper, VisitJournalMapper} from "./mappers";
+import {
+  AccordionMapper, LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper,
+  VisitJournalMapper
+} from "./mappers";
 
 /**
  * Describes a loader for a single learnplace.
@@ -38,7 +41,7 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * them through {@link CRUDRepository}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.4.0
+ * @version 1.5.0
  */
 @Injectable()
 export class RestLearnplaceLoader implements LearnplaceLoader {
@@ -52,6 +55,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     private readonly pictureBlockMapper: PictureBlockMapper,
     private readonly linkBlockMapper: LinkBlockMapper,
     private readonly videoBlockMapper: VideoBlockMapper,
+    private readonly accordionMapper: AccordionMapper,
     private readonly visitJournalMapper: VisitJournalMapper
   ) {}
 
@@ -98,6 +102,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
       learnplaceEntity.pictureBlocks = await this.pictureBlockMapper.map(learnplaceEntity.pictureBlocks, blocks.picture);
       learnplaceEntity.linkBlocks = await this.linkBlockMapper.map(learnplaceEntity.linkBlocks, blocks.iliasLink);
       learnplaceEntity.videoBlocks = await this.videoBlockMapper.map(learnplaceEntity.videoBlocks, blocks.video);
+      learnplaceEntity.accordionBlocks = await this.accordionMapper.map(learnplaceEntity.accordionBlocks, blocks.accordion);
 
       await this.learnplaceRepository.save(learnplaceEntity);
 
