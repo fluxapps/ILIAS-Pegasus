@@ -57,6 +57,8 @@ export interface ArrayMapper<K, T> {
 @Injectable()
 export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> {
 
+  private readonly log: Logger = Logging.getLogger(TextBlockMapper.name);
+
   /**
    * Maps the given {@code remote} text blocks to {@link TextblockEntity}
    * by considering the given {@code local} entity array to find existing text blocks.
@@ -70,6 +72,8 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
    * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
    */
   async map(local: Array<TextblockEntity>, remote: Array<TextBlock>): Promise<Array<TextblockEntity>> {
+
+    this.log.trace(() => "Map TextBlock to TextblockEntity");
 
     return remote.map(textBlock =>
       findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
@@ -118,6 +122,8 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
    * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
    */
   async map(local: Array<PictureBlockEntity>, remote: Array<PictureBlock>): Promise<Array<PictureBlockEntity>> {
+
+    this.log.trace(() => "Map PictureBlock to PictureBlockEntity");
 
     const result: Array<PictureBlockEntity> = [];
 
@@ -188,6 +194,8 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
 @Injectable()
 export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBlock> {
 
+  private readonly log: Logger = Logging.getLogger(LinkBlockMapper.name);
+
   /**
    * Maps the given {@code remote} link blocks to {@link LinkblockEntity}
    * by considering the given {@code local} entity array to find existing link blocks.
@@ -201,6 +209,9 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
    * @returns {Promise<Array<LinkblockEntity>>} the resulting mapped entity array
    */
   async map(local: Array<LinkblockEntity>, remote: Array<ILIASLinkBlock>): Promise<Array<LinkblockEntity>> {
+
+    this.log.trace(() => "Map ILIASLinkBlock to LinkBlockEntity");
+
     return remote.map(linkBlock =>
       findIn(local, linkBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new LinkblockEntity())
@@ -247,6 +258,8 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
    * @returns {Promise<Array<VideoBlockEntity>>} the resulting mapped entity array
    */
   async map(local: Array<VideoBlockEntity>, remote: Array<VideoBlock>): Promise<Array<VideoBlockEntity>> {
+
+    this.log.trace(() => "Map VideoBlock to VideoBlockEntity");
 
     const result: Array<VideoBlockEntity> = [];
 
@@ -307,6 +320,8 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
 @Injectable()
 export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBlock> {
 
+  private readonly log: Logger = Logging.getLogger(AccordionMapper.name);
+
   constructor(
     private readonly textBlockMapper: TextBlockMapper,
     private readonly pictureBlockMapper: PictureBlockMapper,
@@ -330,6 +345,8 @@ export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBl
    * @returns {Promise<Array<AccordionEntity>>} the resulting mapped entity array
    */
   async map(local: Array<AccordionEntity>, remote: Array<AccordionBlock>): Promise<Array<AccordionEntity>> {
+
+    this.log.trace(() => "Map AccordionBlock to AccordionEntity");
 
     const result: Array<AccordionEntity> = [];
 
@@ -362,6 +379,8 @@ export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBl
 @Injectable()
 export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, JournalEntry> {
 
+  private readonly log: Logger = Logging.getLogger(VisitJournalMapper.name);
+
   /**
    * Maps the given {@code remote} journal entries to {@link VisitJournalEntity}
    * by considering the given {@code local} entity array to find existing journal entries.
@@ -375,6 +394,9 @@ export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, Journ
    * @returns {Promise<Array<VisitJournalEntity>>} the resulting mapped entity array
    */
   async map(local: Array<VisitJournalEntity>, remote: Array<JournalEntry>): Promise<Array<VisitJournalEntity>> {
+
+    this.log.trace(() => "Map JournalEntry to VisitJournalEntity");
+
     return remote.map(journalEntry =>
       findIn(local, journalEntry, (entity, journal) => entity.username == journal.username)
         .orElse(new VisitJournalEntity())
