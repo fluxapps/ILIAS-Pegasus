@@ -21,7 +21,7 @@ export interface VisibilityAware {
  * Helper class to apply a {@link VisibilityStrategy} on a {@link VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.2.0
+ * @version 1.2.1
  */
 @Injectable()
 export class VisibilityStrategyApplier {
@@ -41,7 +41,7 @@ export class VisibilityStrategyApplier {
    *
    * @param {number} id - the object id of the learnplace
    */
-  setLearplace(id: number): void {
+  setLearnplace(id: number): void {
      this.learnplaceId = id;
   }
 
@@ -58,10 +58,6 @@ export class VisibilityStrategyApplier {
    */
    apply(model: VisibilityAware, strategy: VisibilityStrategyType): void {
 
-      if (isUndefined(this.learnplaceId)) {
-        throw new IllegalStateError(`Can not apply strategy without learnplace id: Call ${VisibilityStrategyApplier.name}#setLearnplace first`);
-      }
-
       switch (strategy) {
         case VisibilityStrategyType.ALWAYS:
           this.alwaysStrategy.on(model);
@@ -70,10 +66,18 @@ export class VisibilityStrategyApplier {
           this.neverStrategy.on(model);
           break;
         case VisibilityStrategyType.ONLY_AT_PLACE:
+          this.requireLearnplace();
           this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
           break;
         case VisibilityStrategyType.AFTER_VISIT_PLACE:
+          this.requireLearnplace();
           this.afterVisitPlace.membership(this.learnplaceId).on(model);
       }
+   }
+
+   private requireLearnplace(): void {
+     if (isUndefined(this.learnplaceId)) {
+       throw new IllegalStateError(`Can not apply strategy without learnplace id: Call ${VisibilityStrategyApplier.name}#setLearnplace first`);
+     }
    }
 }

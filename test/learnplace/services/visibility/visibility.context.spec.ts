@@ -2,7 +2,7 @@ import {
   VisibilityAware,
   VisibilityStrategyApplier
 } from "../../../../src/learnplace/services/visibility/visibility.context";
-import {SinonSandbox, createSandbox} from "sinon";
+import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {
   AfterVisitPlaceStrategy,
   AlwaysStrategy, NeverStrategy,
@@ -36,7 +36,7 @@ describe("a visibility strategy applier", () => {
 
 	describe("apply strategy", () => {
 
-		context("without called learnplace setter", () => {
+		context("strategy which requires a learnplace", () => {
 
 			it("should throw an illegal state error", () => {
 
@@ -44,10 +44,28 @@ describe("a visibility strategy applier", () => {
 			    visible: true
         };
 
-				chai.expect(() => applier.apply(mockModel, VisibilityStrategyType.NEVER))
+				chai.expect(() => applier.apply(mockModel, VisibilityStrategyType.ONLY_AT_PLACE))
           .to.throw(IllegalStateError)
           .and.have.property("message", "Can not apply strategy without learnplace id: Call VisibilityStrategyApplier#setLearnplace first");
 			});
+		});
+
+		context("strategy which requires no learnplace", () => {
+
+			it("should apply the strategy", () => {
+
+        const mockModel: VisibilityAware = <VisibilityAware>{
+          visible: true
+        };
+
+        const applyStub: SinonStub = sandbox.stub(mockAlwaysStrategy, "on");
+
+
+        applier.apply(mockModel, VisibilityStrategyType.ALWAYS);
+
+
+        assert.calledOnce(applyStub);
+			})
 		});
 	});
 });
