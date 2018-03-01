@@ -3,7 +3,6 @@ import {
   RelationOptions
 } from "typeorm";
 import {VisibilityEntity} from "./visibility.entity";
-import {LearnplaceEntity} from "./learnplace.entity";
 
 @Entity("LinkBlock")
 export class LinkblockEntity {
@@ -23,8 +22,4 @@ export class LinkblockEntity {
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;
-
-  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.linkBlocks)
-  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
-  learnplace: LearnplaceEntity;
 }
