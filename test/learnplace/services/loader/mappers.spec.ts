@@ -1,10 +1,12 @@
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {
+  AccordionMapper,
   LinkBlockMapper,
   PictureBlockMapper,
   TextBlockMapper, VideoBlockMapper, VisitJournalMapper
 } from "../../../../src/learnplace/services/loader/mappers";
 import {
+  AccordionBlock,
   ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
   VideoBlock
 } from "../../../../src/learnplace/providers/rest/learnplace.pojo";
@@ -19,6 +21,7 @@ import {File} from "@ionic-native/file";
 import {stubInstance} from "../../../SinonUtils";
 import {Platform} from "ionic-angular";
 import {platform} from "os";
+import {AccordionEntity} from "../../../../src/learnplace/entity/accordion.entity";
 
 describe("a text block mapper", () => {
 
@@ -627,6 +630,76 @@ describe("a visit journal mapper", () => {
         chai.expect(result)
           .to.be.deep.equal(expected);
 			})
+		});
+	});
+});
+
+describe("a accordion mapper", () => {
+
+    const sandbox: SinonSandbox = createSandbox();
+
+    const mockTextMapper: TextBlockMapper = stubInstance(TextBlockMapper);
+    const mockPictureMapper: PictureBlockMapper = stubInstance(PictureBlockMapper);
+    const mockLinkMapper: LinkBlockMapper = stubInstance(LinkBlockMapper);
+    const mockVideoMapper: VideoBlockMapper = stubInstance(VideoBlockMapper);
+
+    let mapper: AccordionMapper = new AccordionMapper(mockTextMapper, mockPictureMapper, mockLinkMapper, mockVideoMapper);
+
+	beforeEach(() => {
+		mapper = new AccordionMapper(mockTextMapper, mockPictureMapper, mockLinkMapper, mockVideoMapper);
+	});
+
+	afterEach(() => {
+		sandbox.restore();
+	});
+
+	describe("mapping accordion blocks", () => {
+
+		context("on new accordion blocks", () => {
+
+			it("should create new accordion entities", async() => {
+
+				const local: Array<AccordionEntity> = [];
+
+				const remote: Array<AccordionBlock> = [
+				  <AccordionBlock>{id: 1, sequence: 1, visibility: "ALWAYS", text: [
+				      <TextBlock>{id: 1, sequence: 1, content: "", visibility: "ALWAYS"}
+            ]},
+          <AccordionBlock>{id: 2, sequence: 2, visibility: "ALWAYS", text: [
+              <TextBlock>{id: 2, sequence: 1, content: "", visibility: "ALWAYS"}
+            ]}
+        ];
+
+				// We do not resolve the entities, we only want to check if the mapper is called
+				const textMapperStub: SinonStub = sandbox.stub(mockTextMapper, "map")
+          .resolves();
+				const pictureMapperStub: SinonStub = sandbox.stub(mockPictureMapper, "map")
+          .resolves();
+				const linkMapperStub: SinonStub = sandbox.stub(mockLinkMapper, "map")
+          .resolves();
+				const videoMapperStub: SinonStub = sandbox.stub(mockVideoMapper, "map")
+          .resolves();
+
+
+				const result: Array<AccordionEntity> = await mapper.map(local, remote);
+
+
+				// because we resolve undefined on the block mappers, we do not set any block on the expected accordion
+				const expected: Array<AccordionEntity> = [
+				  new AccordionEntity().applies(function(): void {
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.visibility = getVisibilityEntity("ALWAYS");
+          })
+        ];
+				chai.expect(result)
+          .to.be.deep.equal(expected);
+
+				assert.calledOnce(textMapperStub);
+				assert.calledOnce(pictureMapperStub);
+				assert.calledOnce(linkMapperStub);
+				assert.calledOnce(videoMapperStub);
+			});
 		});
 	});
 });
