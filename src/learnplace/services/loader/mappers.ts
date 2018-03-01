@@ -1,5 +1,8 @@
 import {TextblockEntity} from "../../entity/textblock.entity";
-import {ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock, VideoBlock} from "../../providers/rest/learnplace.pojo";
+import {
+  AccordionBlock, ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
+  VideoBlock
+} from "../../providers/rest/learnplace.pojo";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {isNullOrUndefined} from "util";
 import {VisibilityEntity} from "../../entity/visibility.entity";
@@ -14,6 +17,7 @@ import {Logging} from "../../../services/logging/logging.service";
 import {File} from "@ionic-native/file";
 import {Platform} from "ionic-angular";
 import {isUndefined} from "ionic-angular/es2015/util/util";
+import {AccordionEntity} from "../../entity/accordion.entity";
 
 /**
  * Describes a mapper for an array.
@@ -291,6 +295,27 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
     }
 
     throw new Error("Unsupported platform. Can not return a storage location.");
+  }
+}
+
+/**
+ * Maps {@link AccordionBlock} to {@link AccordionEntity}.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 0.0.1
+ */
+@Injectable()
+export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBlock> {
+
+  constructor(
+    private readonly textBlockMapper: TextBlockMapper,
+    private readonly pictureBlockMapper: PictureBlockMapper,
+    private readonly linkBlockMapper: LinkBlockMapper,
+    private readonly videoBlockMapper: VideoBlockMapper
+  ) {}
+
+  map(local: Array<AccordionEntity>, remote: Array<AccordionBlock>): Promise<Array<AccordionEntity>> {
+    throw new Error("This method is not implemented yet");
   }
 }
 
