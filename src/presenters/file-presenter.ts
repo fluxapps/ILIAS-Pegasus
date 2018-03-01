@@ -4,7 +4,7 @@ import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 export class FileObjectPresenter extends GenericILIASObjectPresenter {
 
     icon():string {
-        return 'document';
+        return "./assets/icon/icon_file.svg";
     }
 
     title():string {

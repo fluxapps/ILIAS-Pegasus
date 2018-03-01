@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="primary">
+    <ion-navbar color="nobg-w" class=blue-gradient>
         <ion-title>
           <ion-icon name="stopwatch"></ion-icon>
           {{ 'new-objects.title' | translate:{value: null} }}
@@ -11,7 +11,7 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content padding class="new-objects">
+<ion-content  class="new-objects">
 
     <ion-list text-wrap *ngIf="desktopItems && desktopItems.length == 0 && footerToolbar.isLoading == false">
         <ion-item>{{ 'new-objects.no_new_items' | translate:[] }}</ion-item>
@@ -28,15 +28,18 @@
     <ion-list class="ilias-object-list">
         <!--<ion-item-sliding>-->
             <div *ngFor="let desktopItem of desktopItems">
-                <ion-list-header>
+                <ion-list-header no-lines>
                     {{desktopItem.title}}
                     <button ion-button item-right light (click)="markDesktopItemAsSeen(desktopItem)">
                         {{'remove' | translate:{value: null} }}
                     </button>
                 </ion-list-header>
+                <ion-card>
                 <ion-item-sliding text-wrap *ngFor="let object of objects[desktopItem.refId]">
                     <ion-item (click)="onClick(object)" *ngIf="object">
-                        <ion-icon [name]=object.presenter.icon() item-start></ion-icon>
+                      <ion-avatar item-start>
+                        <img  [src]=object.presenter.icon() />
+                      </ion-avatar>
                         <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
 
                         {{ object.presenter.title() }}
@@ -72,6 +75,7 @@
                         </button>
                     </ion-item-options>
                 </ion-item-sliding>
+              </ion-card>
             </div>
 
         <!--</ion-item-sliding>-->
