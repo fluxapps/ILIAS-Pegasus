@@ -9,6 +9,7 @@ import {PictureBlockEntity} from "./pictureBlock.entity";
 import {LinkblockEntity} from "./linkblock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";
 import {VisitJournalEntity} from "./visit-journal.entity";
+import {AccordionEntity} from "./accordion.entity";
 
 @Entity("Learnplace")
 export class LearnplaceEntity {
@@ -24,6 +25,24 @@ export class LearnplaceEntity {
 
   @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   visitJournal: Array<VisitJournalEntity>;
+
+  @ManyToMany(type => TextblockEntity, <RelationOptions>{
+    cascadeInsert: true,
+    cascadeUpdate: true,
+    eager: true
+  })
+  @JoinTable(<JoinTableOptions>{
+    name: "learnplace_accordion",
+    joinColumn: <JoinColumnOptions>{
+      name: "learnplaceId",
+      referencedColumnName: "objectId"
+    },
+    inverseJoinColumn: <JoinColumnOptions>{
+      name: "accordionId",
+      referencedColumnName: "id"
+    }
+  })
+  accordionBlocks: Array<AccordionEntity>;
 
   @ManyToMany(type => TextblockEntity, <RelationOptions>{
     cascadeInsert: true,
