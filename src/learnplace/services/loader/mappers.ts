@@ -314,8 +314,42 @@ export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBl
     private readonly videoBlockMapper: VideoBlockMapper
   ) {}
 
-  map(local: Array<AccordionEntity>, remote: Array<AccordionBlock>): Promise<Array<AccordionEntity>> {
-    throw new Error("This method is not implemented yet");
+  /**
+   * Maps the given {@code remote} accordion blocks to {@link AccordionEntity}
+   * by considering the given {@code local} entity array to find existing accordion blocks.
+   *
+   * If the {@code AccordionEntity#iliasId} property matches the {@code AccordionBlock#id} property
+   * the entity will be updated, otherwise a new entity will be created.
+   *
+   * The according mappers are used in order to map all other block types inside the accordion.
+   * @see TextBlockMapper, PictureBlockMapper, LinkBlockMapper, VideoBlockMapper
+   *
+   * @param {Array<AccordionEntity>} local - the entities to search for existing accordion blocks
+   * @param {Array<AccordionBlock>} remote - the accordion blocks to update / create
+   *
+   * @returns {Promise<Array<AccordionEntity>>} the resulting mapped entity array
+   */
+  async map(local: Array<AccordionEntity>, remote: Array<AccordionBlock>): Promise<Array<AccordionEntity>> {
+
+    const result: Array<AccordionEntity> = [];
+
+    for (const accordionBlock of remote) {
+
+      const entity: AccordionEntity = findIn(local, accordionBlock, (entity, block) => entity.iliasId == block.id)
+        .orElse(new AccordionEntity());
+
+      entity.iliasId = accordionBlock.id;
+      entity.sequence = accordionBlock.sequence;
+      entity.visibility = getVisibilityEntity(accordionBlock.visibility);
+      entity.textBlocks = await this.textBlockMapper.map(entity.textBlocks, accordionBlock.text);
+      entity.pictureBlocks = await this.pictureBlockMapper.map(entity.pictureBlocks, accordionBlock.picture);
+      entity.linkBlocks = await this.linkBlockMapper.map(entity.linkBlocks, accordionBlock.iliasLink);
+      entity.videoBlocks = await this.videoBlockMapper.map(entity.videoBlocks, accordionBlock.video);
+
+      result.push(entity);
+    }
+
+    return result;
   }
 }
 

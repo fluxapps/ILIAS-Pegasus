@@ -672,34 +672,119 @@ describe("a accordion mapper", () => {
 
 				// We do not resolve the entities, we only want to check if the mapper is called
 				const textMapperStub: SinonStub = sandbox.stub(mockTextMapper, "map")
-          .resolves();
+          .resolves(undefined);
 				const pictureMapperStub: SinonStub = sandbox.stub(mockPictureMapper, "map")
-          .resolves();
+          .resolves(undefined);
 				const linkMapperStub: SinonStub = sandbox.stub(mockLinkMapper, "map")
-          .resolves();
+          .resolves(undefined);
 				const videoMapperStub: SinonStub = sandbox.stub(mockVideoMapper, "map")
-          .resolves();
+          .resolves(undefined);
 
 
 				const result: Array<AccordionEntity> = await mapper.map(local, remote);
 
 
-				// because we resolve undefined on the block mappers, we do not set any block on the expected accordion
+				// because we resolve undefined on the block mappers, we set undefined on any block of an accordion
 				const expected: Array<AccordionEntity> = [
 				  new AccordionEntity().applies(function(): void {
             this.iliasId = 1;
             this.sequence = 1;
             this.visibility = getVisibilityEntity("ALWAYS");
+            this.textBlocks = undefined;
+            this.pictureBlocks = undefined;
+            this.linkBlocks = undefined;
+            this.videoBlocks = undefined;
+          }),
+          new AccordionEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.visibility = getVisibilityEntity("ALWAYS");
+            this.textBlocks = undefined;
+            this.pictureBlocks = undefined;
+            this.linkBlocks = undefined;
+            this.videoBlocks = undefined;
           })
         ];
 				chai.expect(result)
-          .to.be.deep.equal(expected);
+          .to.be.deep.equal(expected, `Expected: ${JSON.stringify(expected)}, but was: ${JSON.stringify(result)}`);
 
-				assert.calledOnce(textMapperStub);
-				assert.calledOnce(pictureMapperStub);
-				assert.calledOnce(linkMapperStub);
-				assert.calledOnce(videoMapperStub);
+				assert.calledTwice(textMapperStub);
+				assert.calledTwice(pictureMapperStub);
+				assert.calledTwice(linkMapperStub);
+				assert.calledTwice(videoMapperStub);
 			});
+		});
+
+		context("on existing accordion blocks", () => {
+
+			it("should update the existing accordion entities", async() => {
+
+        const local: Array<AccordionEntity> = [
+          new AccordionEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.visibility = getVisibilityEntity("NEVER");
+            this.textBlocks = undefined;
+            this.pictureBlocks = undefined;
+            this.linkBlocks = undefined;
+            this.videoBlocks = undefined;
+          })
+        ];
+
+        const remote: Array<AccordionBlock> = [
+          <AccordionBlock>{id: 1, sequence: 1, visibility: "ALWAYS", text: [
+              <TextBlock>{id: 1, sequence: 1, content: "", visibility: "ALWAYS"}
+            ]},
+          <AccordionBlock>{id: 2, sequence: 2, visibility: "ALWAYS", text: [
+              <TextBlock>{id: 2, sequence: 1, content: "", visibility: "ALWAYS"}
+            ]}
+        ];
+
+        // We do not resolve the entities, we only want to check if the mapper is called
+        const textMapperStub: SinonStub = sandbox.stub(mockTextMapper, "map")
+          .resolves(undefined);
+        const pictureMapperStub: SinonStub = sandbox.stub(mockPictureMapper, "map")
+          .resolves(undefined);
+        const linkMapperStub: SinonStub = sandbox.stub(mockLinkMapper, "map")
+          .resolves(undefined);
+        const videoMapperStub: SinonStub = sandbox.stub(mockVideoMapper, "map")
+          .resolves(undefined);
+
+
+        const result: Array<AccordionEntity> = await mapper.map(local, remote);
+
+
+        // because we resolve undefined on the block mappers, we set undefined on any block of an accordion
+        const expected: Array<AccordionEntity> = [
+          new AccordionEntity().applies(function(): void {
+            this.id = 1;
+            this.iliasId = 1;
+            this.sequence = 1;
+            this.visibility = getVisibilityEntity("ALWAYS");
+            this.textBlocks = undefined;
+            this.pictureBlocks = undefined;
+            this.linkBlocks = undefined;
+            this.videoBlocks = undefined;
+          }),
+          new AccordionEntity().applies(function(): void {
+            this.iliasId = 2;
+            this.sequence = 2;
+            this.visibility = getVisibilityEntity("ALWAYS");
+            this.textBlocks = undefined;
+            this.pictureBlocks = undefined;
+            this.linkBlocks = undefined;
+            this.videoBlocks = undefined;
+          })
+        ];
+        chai.expect(result)
+          .to.be.deep.equal(expected, `Expected: ${JSON.stringify(expected)}, but was: ${JSON.stringify(result)}`);
+
+        assert.calledTwice(textMapperStub);
+        assert.calledTwice(pictureMapperStub);
+        assert.calledTwice(linkMapperStub);
+        assert.calledTwice(videoMapperStub);
+			})
 		});
 	});
 });
