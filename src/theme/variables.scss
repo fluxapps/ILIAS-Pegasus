@@ -42,6 +42,8 @@ $colors: (
           base: #f4f4f4,
           contrast: #12466F,
           ),
+        white:   #FFFFFF,
+
 );
 
 $refresher-text-font-size: 1em;
@@ -77,6 +79,26 @@ $refresher-text-font-size: 1em;
   animation-delay: 2s;
   animation-iteration-count: infinite;
   transform-origin: center bottom;
+}
+
+.green-gradient{
+  background-image: linear-gradient(to top left, #538132, #74a029)
+
+}
+
+.orange-gradient{
+  background-image: linear-gradient(to top left, #e66e1e, #ff8e2c)
+
+}
+
+.blue-gradient{
+  background-image: linear-gradient(to top left, #4a668b, #003c66);
+  color:white;
+
+}
+.blue-gradient-invert{
+  background-image: linear-gradient(to top right, #4a668b, #003c66)
+
 }
 
 

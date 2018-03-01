@@ -54,7 +54,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
     }
 
     icon():string {
-        return 'open';
+        return './assets/icon/icon_webr.svg';
     }
 
     title():string {
