@@ -116,6 +116,7 @@ import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive
 import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 import {PhotoViewer} from "@ionic-native/photo-viewer";
 import {StreamingMedia} from "@ionic-native/streaming-media";
+import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
 
 @NgModule({
   declarations: [
@@ -141,6 +142,7 @@ import {StreamingMedia} from "@ionic-native/streaming-media";
     PictureBlock,
     VideoBlock,
     LinkBlock,
+    AccordionBlock,
 
     /* fallback screens */
     WifiFallbackScreen,
