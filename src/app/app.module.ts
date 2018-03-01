@@ -92,6 +92,7 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
 import {
+  AccordionMapper,
   LinkBlockMapper, PictureBlockMapper, TextBlockMapper,
   VideoBlockMapper, VisitJournalMapper
 } from "../learnplace/services/loader/mappers";
@@ -388,6 +389,7 @@ import {StreamingMedia} from "@ionic-native/streaming-media";
     PictureBlockMapper,
     LinkBlockMapper,
     VideoBlockMapper,
+    AccordionMapper,
     VisitJournalMapper,
 
     {
