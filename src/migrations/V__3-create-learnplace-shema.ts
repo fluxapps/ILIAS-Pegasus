@@ -5,7 +5,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm";
  * Migration for Lernorte 2.0.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.5
+ * @version 0.0.6
  */
 export class CreateLearnplace implements Migration {
 
@@ -44,13 +44,34 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
 
+    const accordion: Table = new Table("Accordion", [
+      new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
+      new TableColumn({name: "sequence", type: "integer", isNullable: false}),
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
+    const learnplaceAccordionJunction: Table = new Table("learnplace_accordion", [
+      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
     const textBlock: Table = new Table("TextBlock", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
       new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
       new TableColumn({name: "content", type: "string", length: "5000", isNullable: false}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
-      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
+    const learnplaceTextblockJunction: Table = new Table("learnplace_textblock", [
+      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "textblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
+    const accordionTextblockJunction: Table = new Table("accordion_textblock", [
+      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "textblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     const pictureBlock: Table = new Table("PictureBlock", [
@@ -63,8 +84,17 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "thumbnailHash", type: "string", length: "64", isNullable: false}),
       new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
       new TableColumn({name: "hash", type: "string", length: "64", isNullable: false}),
-      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
+    const learnplacePictureblockJunction: Table = new Table("learnplace_pictureblock", [
+      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "pictureblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
+    const accordionPictureblockJunction: Table = new Table("accordion_pictureblock", [
+      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "pictureblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     const linkBlock: Table = new Table("LinkBlock",[
@@ -72,8 +102,17 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "iliasId", type: "integer", isNullable: false}),
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
       new TableColumn({name: "refId", type: "integer", isNullable: false}),
-      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
+    const learnplaceLinkblockJunction: Table = new Table("learnplace_linkblock", [
+      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "linkblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
+    const accordionLinkblockJunction: Table = new Table("accordion_linkblock", [
+      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "linkblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     const videoBlock: Table = new Table("VideoBlock", [
@@ -82,8 +121,17 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "sequence", type: "integer", isNullable: false}),
       new TableColumn({name: "url", type: "string", length: "256", isNullable: false}),
       new TableColumn({name: "hash", type: "string", length: "64", isNullable: false}),
-      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false})
+    ]);
+
+    const learnplaceVideoblockJunction: Table = new Table("learnplace_videoblock", [
+      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "viedoblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+    ]);
+
+    const accordionVideoblockJunction: Table = new Table("accordion_videoblock", [
+      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "videoblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     await queryRunner.createTable(learnplace);
@@ -91,10 +139,20 @@ export class CreateLearnplace implements Migration {
     await queryRunner.createTable(visibility);
     await queryRunner.createTable(location);
     await queryRunner.createTable(map);
+    await queryRunner.createTable(accordion);
+    await queryRunner.createTable(learnplaceAccordionJunction);
     await queryRunner.createTable(textBlock);
+    await queryRunner.createTable(learnplaceTextblockJunction);
+    await queryRunner.createTable(accordionTextblockJunction);
     await queryRunner.createTable(pictureBlock);
+    await queryRunner.createTable(learnplacePictureblockJunction);
+    await queryRunner.createTable(accordionPictureblockJunction);
     await queryRunner.createTable(linkBlock);
+    await queryRunner.createTable(learnplaceLinkblockJunction);
+    await queryRunner.createTable(accordionLinkblockJunction);
     await queryRunner.createTable(videoBlock);
+    await queryRunner.createTable(learnplaceVideoblockJunction);
+    await queryRunner.createTable(accordionVideoblockJunction);
 
     await queryRunner.insert("Visibility", {value: "ALWAYS"});
     await queryRunner.insert("Visibility", {value: "NEVER"});
@@ -107,9 +165,15 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Location");
     await queryRunner.dropTable("Visibility");
     await queryRunner.dropTable("TextBlock");
+    await queryRunner.dropTable("learnplace_textblock");
     await queryRunner.dropTable("PictureBlock");
+    await queryRunner.dropTable("learnplace_pictureblock");
     await queryRunner.dropTable("LinkBLock");
+    await queryRunner.dropTable("learnplace_linkblock");
     await queryRunner.dropTable("VideoBlock");
+    await queryRunner.dropTable("learnplace_videoblock");
+    await queryRunner.dropTable("Accordion");
+    await queryRunner.dropTable("learnplace_accordion");
     await queryRunner.dropTable("VisitJournal");
     await queryRunner.dropTable("Learnplace");
   }
