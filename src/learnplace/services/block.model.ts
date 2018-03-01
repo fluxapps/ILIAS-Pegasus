@@ -34,7 +34,8 @@ export enum BlockType {
   COMMENT,
   HORIZONTAL_LINE,
   AUDIO,
-  ILIAS_LINK
+  ILIAS_LINK,
+  ACCORDION
 }
 
 /**
@@ -117,4 +118,20 @@ export class VideoBlockModel extends BlockModel {
     sequence: number,
     readonly url: string
   ) {super(sequence, false, BlockType.VIDEO)}
+}
+
+/**
+ * Model class for an accordion block
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class AccordionBlockModel extends BlockModel {
+
+  constructor(
+    sequence: number,
+    readonly blocks: Array<BlockModel>,
+  ) {
+    super(sequence, false, BlockType.ACCORDION)
+  }
 }
