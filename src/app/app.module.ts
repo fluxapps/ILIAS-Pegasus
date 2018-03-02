@@ -117,6 +117,7 @@ import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/lo
 import {PhotoViewer} from "@ionic-native/photo-viewer";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
@@ -155,6 +156,7 @@ import {AccordionBlock} from "../learnplace/directives/accordion/accordion.direc
   imports: [
     IonicModule.forRoot(MyApp),
     BrowserModule,
+    BrowserAnimationsModule,
     HttpModule,
     HttpClientModule,
     TranslateModule.forRoot({
