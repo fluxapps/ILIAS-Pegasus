@@ -268,7 +268,7 @@ function createLearnPlace(): LearnPlace {
     },
     map: {
       visibility: "ALWAYS",
-      zoom: 10
+      zoomLevel: 10
     }
   };
 }

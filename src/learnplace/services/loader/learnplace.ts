@@ -85,7 +85,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
       learnplaceEntity.objectId = learnplace.objectId;
 
       learnplaceEntity.map = Optional.ofNullable(learnplaceEntity.map).orElse(new MapEntity()).applies(function(): void {
-        this.zoom = learnplace.map.zoom;
+        this.zoom = learnplace.map.zoomLevel;
         this.visibility = new VisibilityEntity().applies(function(): void {
           this.value = learnplace.map.visibility;
         })

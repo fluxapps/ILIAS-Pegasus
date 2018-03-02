@@ -1,6 +1,6 @@
 export interface Map {
   readonly visibility: string,
-  readonly zoom: number
+  readonly zoomLevel: number
 }
 
 export interface Location {
