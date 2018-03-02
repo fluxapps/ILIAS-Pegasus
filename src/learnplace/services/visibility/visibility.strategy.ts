@@ -9,6 +9,8 @@ import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api
 import {isDefined} from "ionic-angular/es2015/util/util";
 import {Subscription} from "rxjs/Subscription";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
+import {UserEntity} from "../../../entity/user.entity";
 
 /**
  * Enumerator for available strategies.
@@ -167,8 +169,8 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    private readonly geolocation: Geolocation
-    // TODO: Add UserRepository
+    private readonly geolocation: Geolocation,
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository
   ) {}
 
   /**
@@ -210,8 +212,9 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
 
-    // TODO: Use username of active user
-    if (isDefined(learnplace.visitJournal.find(it => it.username == "Username"))) {
+    const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+
+    if (isDefined(learnplace.visitJournal.find(it => it.username == user.iliasLogin))) {
       object.visible = true;
       return;
     }
@@ -228,7 +231,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
         object.visible = true;
 
         const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
-          this.username = "Username"; // TODO: Use username of active user
+          this.username = user.iliasLogin;
           this.time = Date.now() / 1000; // unix time in seconds
           this.synchronized = false;
         });
