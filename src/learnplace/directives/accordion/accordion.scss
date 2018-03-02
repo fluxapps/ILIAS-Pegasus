@@ -1,10 +1,9 @@
 accordion-block {
 
-  .expand-wrapper {
-    transition: 0.2s linear;
-  }
-
-  .collapsed {
-    height: 0 !important;
+  // remove the margin of ion-card inside the accordion
+  ion-card.accordion ion-card {
+    margin-left: 0!important;
+    margin-right: 0!important;
+    width: 100%!important;
   }
 }

@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<ion-card class="accordion">
 
-</body>
-</html>
+  <ion-card-content>
+
+    <ion-card-title (click)="toggle()">
+
+      <ion-icon *ngIf="!expanded" name="arrow-forward"></ion-icon>
+      <ion-icon *ngIf="expanded" name="arrow-down"></ion-icon>
+
+      Title of the
+    </ion-card-title>
+
+
+    <div #expandWrapper [@expanded]="expanded" class="expand-wrapper">
+
+      <div *ngFor="let block of accordion.blocks">
+        <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
+        <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
+        <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
+        <link-block *ngIf="block.isLink()" [value]="block"></link-block>
+      </div>
+
+    </div>
+
+  </ion-card-content>
+
+</ion-card>
