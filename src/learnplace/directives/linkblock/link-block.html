@@ -1,4 +1,4 @@
-<ion-card (click)="open()">
+<ion-card (click)="open()" *ngIf="link.visible">
   <ion-card-content>
     {{linkLabel}}
   </ion-card-content>

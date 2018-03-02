@@ -1,4 +1,4 @@
-<ion-card>
+<ion-card *ngIf="picture.visible">
   <ion-card-content>
     <img (click)="show()" [src]="embeddedSrc" alt="{{picture.title}}"/>
     <ion-card-title *ngIf="picture.title">
