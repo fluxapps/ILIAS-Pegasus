@@ -1,4 +1,4 @@
-import {Component, Input} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {AccordionBlockModel} from "../../services/block.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 
@@ -18,14 +18,16 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
     ])
   ]
 })
-export class AccordionBlock {
+export class AccordionBlock implements OnInit {
 
   @Input("value")
   readonly accordion: AccordionBlockModel;
 
   expanded: boolean = false;
 
-  toggle(): void {
-    this.expanded = !this.expanded;
+  ngOnInit(): void {
+    this.expanded = this.accordion.expanded; // sets the default expanded state of the accordion
   }
+
+  toggle(): void { this.expanded = !this.expanded }
 }
