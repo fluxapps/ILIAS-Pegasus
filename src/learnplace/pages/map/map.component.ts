@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject} from "@angular/core";
-import {GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
+import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {NavParams, Platform} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {MapModel} from "../../services/block.model";
@@ -38,9 +38,11 @@ export class MapPage implements AfterViewInit{
 
     const builder: MapBuilder = new MapBuilder();
 
-    const camera: GeoCoordinate = <GeoCoordinate>{
-      latitude: map.latitude,
-      longitude: map.longitude
+    const camera: CameraOptions = <CameraOptions>{
+      position: <GeoCoordinate>{
+        latitude: map.latitude,
+        longitude: map.longitude
+      }
     };
 
     const marker: Marker = <Marker>{

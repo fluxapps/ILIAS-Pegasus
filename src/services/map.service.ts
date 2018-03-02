@@ -28,6 +28,17 @@ export interface Marker {
 }
 
 /**
+ * Describes options for the camera positon on a map.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface CameraOptions {
+  readonly zoom?: number
+  readonly position: GeoCoordinate
+}
+
+/**
  * Describes a standard map that is used in the map service.
  * It exposes allowed method from a google map and hides methods
  * that should not be used directly and only be accessed via
@@ -217,7 +228,7 @@ class StandardMapBinding implements StandardMap {
  * MUST be used in a class, that has access to the given node.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export class MapBuilder {
 
@@ -242,18 +253,18 @@ export class MapBuilder {
   /**
    * Uses the given {@code position} as the map camera.
    *
-   * @param {GeoCoordinate} position the position to set the camera
+   * @param {CameraOptions} options the position to set the camera
    *
    * @returns {MapBuilder} this instance
    */
-  camera(position: GeoCoordinate): MapBuilder {
+  camera(options: CameraOptions): MapBuilder {
 
     this.cameraPosition = <CameraPosition<ILatLng>>{
-      zoom: 10,
+      zoom: (options.zoom == undefined)? 10 : options.zoom,
       tilt: 0,
       target: <ILatLng>{
-        lat: position.latitude,
-        lng: position.longitude
+        lat: options.position.latitude,
+        lng: options.position.longitude
       }
     };
 
