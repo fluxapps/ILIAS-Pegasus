@@ -126,7 +126,7 @@ export class CreateLearnplace implements Migration {
 
     const learnplaceVideoblockJunction: Table = new Table("learnplace_videoblock", [
       new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
-      new TableColumn({name: "viedoblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+      new TableColumn({name: "videoblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     const accordionVideoblockJunction: Table = new Table("accordion_videoblock", [
