@@ -39,6 +39,7 @@ export class MapPage implements AfterViewInit{
     const builder: MapBuilder = new MapBuilder();
 
     const camera: CameraOptions = <CameraOptions>{
+      zoom: map.zoom,
       position: <GeoCoordinate>{
         latitude: map.latitude,
         longitude: map.longitude

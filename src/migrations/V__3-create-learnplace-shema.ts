@@ -40,6 +40,7 @@ export class CreateLearnplace implements Migration {
 
     const map: Table = new Table("Map", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
+      new TableColumn({name: "zoom", type: "integer", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
     ]);
@@ -168,12 +169,16 @@ export class CreateLearnplace implements Migration {
     await queryRunner.dropTable("Visibility");
     await queryRunner.dropTable("TextBlock");
     await queryRunner.dropTable("learnplace_textblock");
+    await queryRunner.dropTable("accordion_textblock");
     await queryRunner.dropTable("PictureBlock");
     await queryRunner.dropTable("learnplace_pictureblock");
+    await queryRunner.dropTable("accordion_pictureblock");
     await queryRunner.dropTable("LinkBLock");
     await queryRunner.dropTable("learnplace_linkblock");
+    await queryRunner.dropTable("accordion_linkblock");
     await queryRunner.dropTable("VideoBlock");
     await queryRunner.dropTable("learnplace_videoblock");
+    await queryRunner.dropTable("accordion_videoblock");
     await queryRunner.dropTable("Accordion");
     await queryRunner.dropTable("learnplace_accordion");
     await queryRunner.dropTable("VisitJournal");

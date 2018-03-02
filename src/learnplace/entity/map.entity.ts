@@ -1,5 +1,6 @@
 import {VisibilityEntity} from "./visibility.entity";
 import {
+  Column,
   Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
   RelationOptions
 } from "typeorm";
@@ -10,6 +11,9 @@ export class MapEntity {
 
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  zoom: number;
 
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})

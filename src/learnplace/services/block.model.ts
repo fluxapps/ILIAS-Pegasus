@@ -13,6 +13,7 @@ export class MapModel implements VisibilityAware {
     readonly title: string,
     readonly latitude: number,
     readonly longitude: number,
+    readonly zoom: number,
     public visible: boolean = false
   ) {}
 }

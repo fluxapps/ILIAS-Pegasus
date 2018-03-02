@@ -28,7 +28,7 @@ export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token
  * Manages the visibility of a map by using the {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Injectable()
 export class VisibilityManagedMapService implements MapService {
@@ -53,9 +53,10 @@ export class VisibilityManagedMapService implements MapService {
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId)).get();
 
     const map: MapModel = new MapModel(
-      "title", // TODO: what title do we want
+      "", // TODO: what title do we want
       learnplace.location.latitude,
-      learnplace.location.longitude
+      learnplace.location.longitude,
+      learnplace.map.zoom
     );
 
     this.visibilityStrategyApplier.setLearnplace(learnplaceId);

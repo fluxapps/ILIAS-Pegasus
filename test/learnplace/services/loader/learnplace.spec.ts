@@ -115,6 +115,7 @@ describe("a learnplace loader", () => {
 
           this.objectId = learnplace.objectId;
           this.map = new MapEntity().applies(function(): void {
+            this.zoom = 10;
             this.visibility = getVisibilityEntity(learnplace.map.visibility);
           });
           this.location = new LocationEntity().applies(function(): void {
@@ -187,6 +188,7 @@ describe("a learnplace loader", () => {
           this.objectId = learnplace.objectId;
           this.map = new MapEntity().applies(function(): void {
             this.id = 1;
+            this.zoom = 10;
             this.visibility = getVisibilityEntity(learnplace.map.visibility);
           });
           this.location = new LocationEntity().applies(function(): void {
@@ -265,7 +267,8 @@ function createLearnPlace(): LearnPlace {
       radius: 15
     },
     map: {
-      visibility: "ALWAYS"
+      visibility: "ALWAYS",
+      zoom: 10
     }
   };
 }
