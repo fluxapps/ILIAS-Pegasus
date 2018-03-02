@@ -140,24 +140,27 @@ export const blocksJsonSchema: object = {
     "video": videoBlockJsonSchema,
     "iliasLink": iliasLinkJsonSchema,
     "accordion": {
-      "description": "Contains the id of all accordions of this leanrplace",
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "minimum": 1
+      "type": "array",
+      "items": {
+        "description": "Contains the id of all accordions of this leanrplace",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": { "type": "string" },
+          "expanded": {
+            "description": "if the accordion should be expanded by default or not",
+            "type": "boolean"
+          },
+          "text": textBlockJsonSchema,
+          "picture": pictureBlockJsonSchema,
+          "video": videoBlockJsonSchema,
+          "iliasLink": iliasLinkJsonSchema,
         },
-        "title": { "type": "string" },
-        "expanded": {
-          "description": "if the accordion should be expanded by default or not",
-          "type": "boolean"
-        },
-        "text": textBlockJsonSchema,
-        "picture": pictureBlockJsonSchema,
-        "video": videoBlockJsonSchema,
-        "iliasLink": iliasLinkJsonSchema,
-      },
-      "required": ["id", "title", "expanded", "text", "picture", "video", "iliasLink"]
+        "required": ["id", "title", "expanded", "text", "picture", "video", "iliasLink"]
+      }
     }
   },
   "required": ["text", "picture", "video", "iliasLink", "accordion"]
@@ -194,6 +197,7 @@ export const learnplaceJsonSchema: object = {
     "map": {
       "type": [ "object", "null" ],
       "properties": {
+        "zoomLevel": { "type": "integer" },
         "visibility": {
           "type": "string",
           "pattern": "^ALWAYS$|^NEVER$|^ONLY_AT_PLACE$|^AFTER_VISIT_PLACE$"
