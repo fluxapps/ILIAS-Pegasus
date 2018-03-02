@@ -1,6 +1,8 @@
 import {
+  Column,
   Entity,
   JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToOne,
+  PrimaryGeneratedColumn,
   RelationOptions
 } from "typeorm";
 import {LinkblockEntity} from "./linkblock.entity";
@@ -12,10 +14,13 @@ import {VisibilityEntity} from "./visibility.entity";
 @Entity("Accordion")
 export class AccordionEntity {
 
+  @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
   iliasId: number;
 
+  @Column()
   sequence: number;
 
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
@@ -86,7 +91,7 @@ export class AccordionEntity {
   @JoinTable(<JoinTableOptions>{
     name: "accordion_videoblock",
     joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
+      name: "accordionId",
       referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
