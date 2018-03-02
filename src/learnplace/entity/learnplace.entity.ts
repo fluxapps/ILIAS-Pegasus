@@ -26,7 +26,7 @@ export class LearnplaceEntity {
   @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
   visitJournal: Array<VisitJournalEntity>;
 
-  @ManyToMany(type => TextblockEntity, <RelationOptions>{
+  @ManyToMany(type => AccordionEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
