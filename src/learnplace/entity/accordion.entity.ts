@@ -23,6 +23,12 @@ export class AccordionEntity {
   @Column()
   sequence: number;
 
+  @Column()
+  title: string;
+
+  @Column()
+  expanded: boolean;
+
   @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
   @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
   visibility: VisibilityEntity;

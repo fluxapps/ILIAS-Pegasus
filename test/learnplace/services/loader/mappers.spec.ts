@@ -662,10 +662,10 @@ describe("a accordion mapper", () => {
 				const local: Array<AccordionEntity> = [];
 
 				const remote: Array<AccordionBlock> = [
-				  <AccordionBlock>{id: 1, sequence: 1, visibility: "ALWAYS", text: [
+				  <AccordionBlock>{id: 1, sequence: 1, title: "title", expanded: true, visibility: "ALWAYS", text: [
 				      <TextBlock>{id: 1, sequence: 1, content: "", visibility: "ALWAYS"}
             ]},
-          <AccordionBlock>{id: 2, sequence: 2, visibility: "ALWAYS", text: [
+          <AccordionBlock>{id: 2, sequence: 2, title: "title", expanded: true, visibility: "ALWAYS", text: [
               <TextBlock>{id: 2, sequence: 1, content: "", visibility: "ALWAYS"}
             ]}
         ];
@@ -689,6 +689,8 @@ describe("a accordion mapper", () => {
 				  new AccordionEntity().applies(function(): void {
             this.iliasId = 1;
             this.sequence = 1;
+            this.title = "title";
+            this.expanded = true;
             this.visibility = getVisibilityEntity("ALWAYS");
             this.textBlocks = undefined;
             this.pictureBlocks = undefined;
@@ -698,6 +700,8 @@ describe("a accordion mapper", () => {
           new AccordionEntity().applies(function(): void {
             this.iliasId = 2;
             this.sequence = 2;
+            this.title = "title";
+            this.expanded = true;
             this.visibility = getVisibilityEntity("ALWAYS");
             this.textBlocks = undefined;
             this.pictureBlocks = undefined;
@@ -724,6 +728,8 @@ describe("a accordion mapper", () => {
             this.id = 1;
             this.iliasId = 1;
             this.sequence = 1;
+            this.title = "title";
+            this.expanded = true;
             this.visibility = getVisibilityEntity("NEVER");
             this.textBlocks = undefined;
             this.pictureBlocks = undefined;
@@ -733,10 +739,10 @@ describe("a accordion mapper", () => {
         ];
 
         const remote: Array<AccordionBlock> = [
-          <AccordionBlock>{id: 1, sequence: 1, visibility: "ALWAYS", text: [
+          <AccordionBlock>{id: 1, sequence: 1, title: "title", expanded: true, visibility: "ALWAYS", text: [
               <TextBlock>{id: 1, sequence: 1, content: "", visibility: "ALWAYS"}
             ]},
-          <AccordionBlock>{id: 2, sequence: 2, visibility: "ALWAYS", text: [
+          <AccordionBlock>{id: 2, sequence: 2, title: "title", expanded: true, visibility: "ALWAYS", text: [
               <TextBlock>{id: 2, sequence: 1, content: "", visibility: "ALWAYS"}
             ]}
         ];
@@ -761,6 +767,8 @@ describe("a accordion mapper", () => {
             this.id = 1;
             this.iliasId = 1;
             this.sequence = 1;
+            this.title = "title";
+            this.expanded = true;
             this.visibility = getVisibilityEntity("ALWAYS");
             this.textBlocks = undefined;
             this.pictureBlocks = undefined;
@@ -770,6 +778,8 @@ describe("a accordion mapper", () => {
           new AccordionEntity().applies(function(): void {
             this.iliasId = 2;
             this.sequence = 2;
+            this.title = "title";
+            this.expanded = true;
             this.visibility = getVisibilityEntity("ALWAYS");
             this.textBlocks = undefined;
             this.pictureBlocks = undefined;

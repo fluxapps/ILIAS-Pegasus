@@ -49,6 +49,8 @@ export interface ILIASLinkBlock extends Block {
 }
 
 export interface AccordionBlock extends Block {
+  readonly title: string,
+  readonly expanded: boolean,
   readonly text: Array<TextBlock>
   readonly picture: Array<PictureBlock>
   readonly video: Array<VideoBlock>

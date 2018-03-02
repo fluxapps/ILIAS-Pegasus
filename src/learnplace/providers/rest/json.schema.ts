@@ -141,17 +141,23 @@ export const blocksJsonSchema: object = {
     "iliasLink": iliasLinkJsonSchema,
     "accordion": {
       "description": "Contains the id of all accordions of this leanrplace",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "text": textBlockJsonSchema,
-          "picture": pictureBlockJsonSchema,
-          "video": videoBlockJsonSchema,
-          "iliasLink": iliasLinkJsonSchema
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
         },
-        "required": ["text", "picture", "video", "iliasLink"]
-      }
+        "title": { "type": "string" },
+        "expanded": {
+          "description": "if the accordion should be expanded by default or not",
+          "type": "boolean"
+        },
+        "text": textBlockJsonSchema,
+        "picture": pictureBlockJsonSchema,
+        "video": videoBlockJsonSchema,
+        "iliasLink": iliasLinkJsonSchema,
+      },
+      "required": ["id", "title", "expanded", "text", "picture", "video", "iliasLink"]
     }
   },
   "required": ["text", "picture", "video", "iliasLink", "accordion"]

@@ -132,6 +132,8 @@ export class AccordionBlockModel extends BlockModel {
 
   constructor(
     sequence: number,
+    readonly title: string,
+    readonly expanded: boolean,
     readonly blocks: Array<BlockModel>,
   ) {
     super(sequence, false, BlockType.ACCORDION)

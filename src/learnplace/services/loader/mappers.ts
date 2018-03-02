@@ -357,6 +357,8 @@ export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBl
 
       entity.iliasId = accordionBlock.id;
       entity.sequence = accordionBlock.sequence;
+      entity.title = accordionBlock.title;
+      entity.expanded = accordionBlock.expanded;
       entity.visibility = getVisibilityEntity(accordionBlock.visibility);
       entity.textBlocks = await this.textBlockMapper.map(entity.textBlocks, accordionBlock.text);
       entity.pictureBlocks = await this.pictureBlockMapper.map(entity.pictureBlocks, accordionBlock.picture);

@@ -103,6 +103,8 @@ export class VisibilityManagedBlockService implements BlockService {
     return accordions.map(it => {
       const model: AccordionBlockModel = new AccordionBlockModel(
         it.sequence,
+        it.title,
+        it.expanded,
         [
           ...this.mapTextblocks(it.textBlocks),
           ...this.mapPictureBlocks(it.pictureBlocks),
