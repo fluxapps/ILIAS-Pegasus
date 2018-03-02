@@ -12,6 +12,7 @@ import {LinkblockEntity} from "../learnplace/entity/linkblock.entity";
 import {VideoBlockEntity} from "../learnplace/entity/videoblock.entity";
 import {UserEntity} from "../entity/user.entity";
 import {NewsEntity} from "../entity/news.entity";
+import {AccordionEntity} from "../learnplace/entity/accordion.entity";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
 
@@ -45,6 +46,7 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
               PictureBlockEntity,
               VideoBlockEntity,
               LinkblockEntity,
+              AccordionEntity,
               VisitJournalEntity,
               UserEntity,
               NewsEntity
