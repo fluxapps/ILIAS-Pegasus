@@ -4,6 +4,7 @@ import {CourseObjectPresenter} from "./course-presenter";
 import {FolderObjectPresenter} from "./folder-presenter";
 import {GroupObjectPresenter} from "./group-presenter";
 import {FileObjectPresenter} from "./file-presenter";
+import {LearnplaceObjectPresenter} from "./learnplace-presenter";
 
 export class ILIASObjectPresenterFactory {
     public static instance(object:ILIASObject):ILIASObjectPresenter {
@@ -12,6 +13,8 @@ export class ILIASObjectPresenterFactory {
         if (object.type == 'grp') return new GroupObjectPresenter(object);
 
         if (object.type == 'file') return new FileObjectPresenter(object);
+        if (object.isLearnplace()) return new LearnplaceObjectPresenter(object);
+
 
         return new GenericILIASObjectPresenter(object);
     }

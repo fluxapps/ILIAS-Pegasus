@@ -46,7 +46,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
     this.log.trace(() => "Open ios browser (internal).");
     this.log.trace(() => `Navigate to url: ${link}`);
     const options: InAppBrowserOptions = {
-      location: "yes",
+      location: "no",
       clearcache: "yes",
       clearsessioncache: "yes"
     };

@@ -34,6 +34,11 @@ export class MapPage implements AfterViewInit{
     this.platform.ready().then((): void => {this.init()})
   }
 
+  // //FIX map not loading on tab change
+  // ionViewEnter() {
+  // setTimeout(this.mapService.getMap(this.learnplaceId).bind(this), 100);
+  // }
+
   async init(): Promise<void> {
 
     try {
