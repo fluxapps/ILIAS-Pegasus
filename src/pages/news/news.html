@@ -25,16 +25,19 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <!-- <ion-list> -->
+  <ion-list>
   <div *ngFor="let newsPresenter of newsPresenters">
     <ion-item (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)">
-      <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon>
+      <!-- <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon> -->
+      <ion-avatar item-start>
+          <img src="{{newsPresenter[1].icon()}}">
+      </ion-avatar>
 
       <h2 class="news-title">{{newsPresenter[0].title}}</h2>
       <p class="info-text">{{newsPresenter[0].content}}</p>
-      <ion-note item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
+      <ion-note class="date-note" item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
     </ion-item>
   </div>
-  <!-- </ion-list> -->
+  </ion-list>
 
 </ion-content>
