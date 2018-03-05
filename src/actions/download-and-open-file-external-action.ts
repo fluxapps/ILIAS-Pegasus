@@ -1,70 +1,68 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
+import {
+  ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionSuccess, ILIASObjectActionNoMessage
+} from "./object-action";
 import {FileService} from "../services/file.service";
 import {Log} from "../services/log.service";
 import {TranslateService} from "ng2-translate/ng2-translate";
-import {AlertController} from "ionic-angular/index";
+import {Alert, AlertController} from "ionic-angular";
 import {Settings} from "../models/settings";
-import {ILIASObjectActionResult} from "./object-action";
-import {ILIASObjectActionSuccess} from "./object-action";
-import {ILIASObjectActionNoMessage} from "./object-action";
 import {OfflineException} from "../exceptions/OfflineException";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
-    public constructor(public title:string,
-                       public fileObject:ILIASObject,
-                       public file:FileService,
-                       public translate:TranslateService,
-                       public alerter:AlertController) {
+    constructor(public title: string,
+                       public fileObject: ILIASObject,
+                       public file: FileService,
+                       public translate: TranslateService,
+                       public alerter: AlertController) {
         super();
         this.title = title;
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
 
         // Download is only executed if a newer version is available in ILIAS
-        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload)
+        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
             return Promise.reject(new OfflineException());
 
-        else if(this.fileObject.needsDownload)
-            return Settings.findByUserId(this.fileObject.userId)
-                .then( settings => this.checkWLANAndDownload(settings) );
+        else if(this.fileObject.needsDownload) {
+          const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
+          return this.checkWLANAndDownload(settings);
+        }
+        else {
+          await this.file.open(this.fileObject);
+          return new ILIASObjectActionNoMessage();
+        }
 
-        else
-            return this.open(this.fileObject);
     }
 
-    protected open(fileObject:ILIASObject):Promise<any> {
-            return this.file.open(fileObject);
-    }
-
-    private checkWLANAndDownload(settings):Promise<ILIASObjectActionResult> {
-        return new Promise((resolve, reject) => {
+    private checkWLANAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
+        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
             if (settings.shouldntDownloadBecauseOfWLAN()) {
-                let alert = this.alerter.create({
+                const alert: Alert = this.alerter.create({
                     title: this.translate.instant("actions.download_without_wlan"),
                     subTitle: this.translate.instant("actions.download_without_wlan_continue"),
                     buttons: [
                         {
                             text: this.translate.instant("cancel"),
-                            role: 'cancel',
-                            handler: () => {
+                            role: "cancel",
+                            handler: (): void => {
                                 resolve(new ILIASObjectActionNoMessage());
                             }
                         },
                         {
-                            text: 'Ok',
-                            handler: () => {
-                                this.checkExceedDiskQuota(settings).then((res) => resolve(res)).catch(err => reject(err));
+                            text: "Ok",
+                            handler: (): void => {
+                                this.checkExceedDiskQuota(settings).then(resolve).catch(reject);
                             }
                         }
                     ]
                 });
                 alert.present();
             } else {
-                this.checkExceedDiskQuota(settings).then((res) => resolve(res)).catch(err => reject(err));
+                this.checkExceedDiskQuota(settings).then(resolve).catch(reject);
             }
         });
     };
@@ -75,32 +73,32 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
      * @param settings
      * @returns {Promise<T>}
      */
-    public checkExceedDiskQuota(settings:Settings):Promise<any> {
-        return new Promise((resolve, reject) => {
+    checkExceedDiskQuota(settings: Settings): Promise<ILIASObjectActionNoMessage> {
+        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
             settings.quotaExceeds(this.fileObject).then(tooBig => {
                 if (tooBig) {
-                    let alert = this.alerter.create({
+                    const alert: Alert = this.alerter.create({
                         title: this.translate.instant("actions.download_without_disk_quota"),
                         subTitle: this.translate.instant("actions.download_without_disk_quota_text"),
                         buttons: [
                             {
                                 text: this.translate.instant("cancel"),
-                                role: 'cancel',
-                                handler: () => {
+                                role: "cancel",
+                                handler: (): void => {
                                     resolve(new ILIASObjectActionNoMessage());
                                 }
                             },
                             {
-                                text: 'Ok',
-                                handler: () => {
-                                    this.checkFileTooBigAndDownload(settings).then((res) => resolve(res)).catch(err => reject(err));
+                                text: "Ok",
+                                handler: (): void => {
+                                    this.checkFileTooBigAndDownload(settings).then(resolve).catch(reject);
                                 }
                             }
                         ]
                     });
                     alert.present();
                 } else {
-                    this.checkFileTooBigAndDownload(settings).then((res) => resolve(res)).catch(err => reject(err));
+                    this.checkFileTooBigAndDownload(settings).then(resolve).catch(reject);
                 }
             });
         });
@@ -112,43 +110,43 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
      * @param settings
      * @returns {Promise<T>}
      */
-    public checkFileTooBigAndDownload(settings:Settings):Promise<any> {
-        return new Promise((resolve, reject) => {
+    checkFileTooBigAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
+        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
             if (settings.fileTooBig(this.fileObject)) {
-                let alert = this.alerter.create({
+                const alert: Alert = this.alerter.create({
                     title: this.translate.instant("actions.download_with_file_too_big"),
                     subTitle: this.translate.instant("actions.download_with_file_too_big_text"),
                     buttons: [
                         {
                             text: this.translate.instant("cancel"),
-                            role: 'cancel',
-                            handler: () => {
+                            role: "cancel",
+                            handler: (): void => {
                                 resolve(new ILIASObjectActionNoMessage());
                             }
                         },
                         {
-                            text: 'Ok',
-                            handler: () => {
-                                this.downloadAndOpen().then((res) => resolve(res)).catch(err => reject(err));
+                            text: "Ok",
+                            handler: (): void => {
+                                this.downloadAndOpen().then(resolve).catch(reject);
                             }
                         }
                     ]
                 });
                 alert.present();
             } else {
-                this.downloadAndOpen().then((res) => resolve(res)).catch(err => reject(err));
+                this.downloadAndOpen().then(resolve).catch(reject);
             }
         });
     }
 
-    public downloadAndOpen():Promise<any> {
-        return this.file.download(this.fileObject, true)
-            .then(() => this.file.open(this.fileObject))
-            .then(() => new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful")));
+    async downloadAndOpen(): Promise<ILIASObjectActionResult> {
+      await this.file.download(this.fileObject, true);
+      await this.file.open(this.fileObject);
+      return new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful"));
     };
 
-    public alert():ILIASObjectActionAlert {
-        return null;
+    alert(): ILIASObjectActionAlert {
+        return undefined;
     }
 
 }

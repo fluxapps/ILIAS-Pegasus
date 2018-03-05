@@ -59,7 +59,7 @@ export class ILIASRestProvider {
       const response: HttpResponse = await this.iliasRest.get(`/v1/files/${refId}`, DEFAULT_OPTIONS);
 
       return response.handle<Promise<FileEntry>>(async(it) =>
-        this.file.writeFile(storageLocation, fileName, it.text(), <IWriteOptions>{replace: true})
+        this.file.writeFile(storageLocation, fileName, it.arrayBuffer(), <IWriteOptions>{replace: true})
       );
     }
 }

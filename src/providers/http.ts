@@ -2,6 +2,7 @@ import {HttpClient as Http, HttpResponse as Response, HttpHeaders, HttpParams} f
 import {Validator, ValidatorResult} from "jsonschema";
 import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
+import {IllegalStateError} from "../error/errors";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isDefined} from "ionic-angular/es2015/util/util";
@@ -189,7 +190,14 @@ export class HttpResponse {
    * @returns {string} the resulting text
    */
   text(): string {
-    return String.fromCharCode.apply(undefined, new Uint8Array(this.response.body));
+    if (!("TextDecoder" in window)) {
+      const message: string = "This browser does not support TextDecoder.";
+      this.log.fatal(() => message);
+      throw new IllegalStateError(message);
+    }
+
+    const decoder: TextDecoder = new TextDecoder("utf-8");
+    return decoder.decode(this.response.body);
 
   }
 
