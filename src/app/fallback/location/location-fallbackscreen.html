@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="nobg-blue">
+    <ion-navbar color="nobg-w">
       <ion-buttons left>
       <button ion-button icon-only (click)="close()">
         <ion-icon name ="close"></ion-icon>
@@ -7,13 +7,13 @@
       </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content class="blue-gradient" color="nobg-w">
 
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
        viewBox="0 0 355.5 501" style="enable-background:new 0 0 355.5 501;" xml:space="preserve" id="marker-icon">
     <style type="text/css">
       .st0{opacity:0.56;fill:url(#SVGID_1_);}
-      .st1{fill:#12466F;}
+      .st1{fill:#ffffff;}
     </style>
     <g id="shadow">
 
@@ -32,12 +32,15 @@
 
     <ion-grid>
       <ion-row justify-content-center padding>
-
-        Aktivere Deinen Standort um den Lernort zu sehen.
-
+        <h1 text-center color="white">
+          Aktivere Deinen Standort um den Lernort zu sehen.
+        </h1>
       </ion-row>
       <ion-row padding>
-        <button ion-button round outline (click)="switchToLocation()" id="middle-button">Standort aktivieren</button>
+        <button ion-button round outline (click)="switchToLocation()" id="middle-button" color="white">Standort aktivieren</button>
+      </ion-row>
+      <ion-row>
+        <button ion-button round clear block (click)="close()" id="middle-button" color="white">Nope, ich will zurück</button>
       </ion-row>
     </ion-grid>
 

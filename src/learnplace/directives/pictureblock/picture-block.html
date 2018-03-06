@@ -7,3 +7,10 @@
     <p *ngIf="picture.description">{{picture.description}}</p>
   </ion-card-content>
 </ion-card>
+
+
+<ion-card *ngIf="!picture.visible">
+  <ion-card-content>
+      You're to far away to view this picture.
+  </ion-card-content>
+</ion-card>

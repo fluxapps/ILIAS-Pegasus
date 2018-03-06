@@ -1,11 +1,15 @@
 <ion-card (click)="open()" *ngIf="link.visible" color=primary>
   <ion-card-content>
-    <!-- <ion-buttons>
-      <button ion-button block full> -->
       <ion-icon name="link">
-    {{linkLabel}}
+        {{linkLabel}}
       </ion-icon>
-      <!-- </button>
-    </ion-buttons> -->
+  </ion-card-content>
+</ion-card>
+
+<ion-card (click)="open()" *ngIf="!link.visible" color=primary>
+  <ion-card-content>
+      <ion-icon name="link">
+        You're to far away to view this link.
+      </ion-icon>
   </ion-card-content>
 </ion-card>

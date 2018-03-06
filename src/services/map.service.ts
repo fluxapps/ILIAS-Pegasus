@@ -239,6 +239,7 @@ export class MapBuilder {
   private readonly defaultControls: object = {
     compass: false,
     myLocationButton: true,
+    myLocation: true,
     indoorPicker: false,
     zoom: true
   };
@@ -284,7 +285,9 @@ export class MapBuilder {
 
     this.markerOptions = <MarkerOptions>{
       title: marker.title,
-      icon: "blue",
+      icon: {
+          'url': "assets/icon/icon_xsrl.png",
+            },
       animation: "DROP",
       position: <ILatLng>{
         lat: marker.position.latitude,
