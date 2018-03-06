@@ -170,7 +170,10 @@
       "cordova-plugin-file": {},
       "polarcape-cordova-plugin-document-handler": {},
       "com-sarriaroman-photoviewer": {},
-      "cordova-plugin-streaming-media": {}
+      "cordova-plugin-streaming-media": {},
+      "cordova-plugin-geolocation": {
+        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
+      }
     }
   }
 }
