@@ -1,7 +1,7 @@
 import {VisibilityAware} from "./visibility.context";
 import {Inject, Injectable} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {Geolocation} from "@ionic-native/geolocation";
+import {Geolocation, GeolocationOptions} from "@ionic-native/geolocation";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {NoSuchElementError} from "../../../error/errors";
 import {Coordinates} from "../../../services/geodesy";
@@ -11,6 +11,9 @@ import {Subscription} from "rxjs/Subscription";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
+import {Logger} from "../../../services/logging/logging.api";
+import {Logging} from "../../../services/logging/logging.service";
+import {Platform} from "ionic-angular";
 
 /**
  * Enumerator for available strategies.
@@ -105,9 +108,12 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
 
   private membershipId: number = -1;
 
+  private readonly log: Logger = Logging.getLogger(OnlyAtPlaceStrategy.name);
+
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    private readonly geolocation: Geolocation
+    private readonly geolocation: Geolocation,
+    private readonly platform: Platform
   ) {}
 
   /**
@@ -141,14 +147,21 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
    */
   private async execute(object: VisibilityAware): Promise<void> {
 
+    await this.platform.ready();
+
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`));
 
     const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
-    this.geolocation.watchPosition().subscribe(location => {
+    this.log.info(() => "Watch position for visibility 'Only at Place'");
+    this.geolocation.watchPosition()
+      .filter(p => isDefined(p.coords))
+      .subscribe(location => {
 
       const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
+
+      this.log.trace(() => `Current position: latitude=${currentCoordinates.latitude}, longitude=${currentCoordinates.longitude}`);
 
       object.visible = learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
     });
