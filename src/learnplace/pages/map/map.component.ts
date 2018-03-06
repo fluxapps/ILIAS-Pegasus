@@ -33,6 +33,12 @@ export class MapPage implements AfterViewInit{
   ngAfterViewInit(): void {
     this.platform.ready().then((): void => {this.init()})
   }
+  // // anoter FIX map not loading on tab change
+  // ionViewDidLoad() {
+  // setTimeout(() => {
+  // this.mapService.getMap(this.learnplaceId);
+  // }, 100);
+  // }
 
   // //FIX map not loading on tab change
   // ionViewEnter() {
