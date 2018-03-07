@@ -39,7 +39,7 @@ describe("A timeline link builder ", () => {
 
     context("without a ref id", () => {
 
-      it("should throw an illegal state error.", async () => {
+      it("should throw an illegal state error.", async() => {
 
         await chai.expect(subject.build())
           .to.be.rejectedWith(IllegalStateError)
@@ -49,7 +49,7 @@ describe("A timeline link builder ", () => {
 
     context("without an authenticated user", () => {
 
-      it("should throw a no such element error.", async () => {
+      it("should throw a no such element error.", async() => {
 
         const refId: number = 15;
         subject.target(refId);
@@ -65,7 +65,7 @@ describe("A timeline link builder ", () => {
 
     context("with an authenticated user and a valid ref id", () => {
 
-      it("should build the ILIAS timeline link.", async () => {
+      it("should build the ILIAS timeline link.", async() => {
 
         const token: string = "auth token";
         const installation: string = "http://ilias.de";
