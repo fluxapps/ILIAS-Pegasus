@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+import {Injectable} from "@angular/core";
+import "rxjs/add/operator/toPromise";
 import {User} from "../models/user";
 import {ILIASRestProvider} from "./ilias-rest.provider";
 import {ILIASObject} from "../models/ilias-object";
@@ -10,8 +10,8 @@ import {Log} from "../services/log.service";
 @Injectable()
 export class DataProvider {
 
-    constructor(protected rest:ILIASRestProvider,
-                protected fileObjectHandler:DataProviderFileObjectHandler) {
+    constructor(protected rest: ILIASRestProvider,
+                protected fileObjectHandler: DataProviderFileObjectHandler) {
     }
 
     /**
@@ -19,7 +19,7 @@ export class DataProvider {
      * @param user
      * @returns {Promise<ILIASObject[]>}
      */
-    public getDesktopData(user:User):Promise<ILIASObject[]> {
+    getDesktopData(user: User): Promise<Array<ILIASObject>> {
         return this.rest.getDesktopData(user)
             .then(data => this.storeILIASDesktopObjects(data, user))
             .then(objects => objects.sort(ILIASObject.compare));
@@ -33,7 +33,7 @@ export class DataProvider {
      * @param recursive
      * @returns {Promise<ILIASObject[]>}
      */
-    public getObjectData(parentObject:ILIASObject, user:User, recursive, refreshFiles = true):Promise<ILIASObject[]> {
+    getObjectData(parentObject: ILIASObject, user: User, recursive, refreshFiles = true): Promise<Array<ILIASObject>> {
         //TODO: we want to update the meta data just once.
         return this.rest.getObjectData(parentObject.refId, user, recursive)
             .then((data) => this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles))
@@ -47,11 +47,11 @@ export class DataProvider {
      * @param rootParent
      * @returns {Promise<ILIASObject>}
      */
-    protected storeILIASObject(object:any, user:User, rootParent:ILIASObject = null, refreshFiles = true):Promise<ILIASObject> {
+    protected storeILIASObject(object: any, user: User, rootParent: ILIASObject = null, refreshFiles = true): Promise<ILIASObject> {
 
         Log.write(this, "Storing ILIAS Object");
 
-        let the_iliasObject:ILIASObject = null;
+        let the_iliasObject: ILIASObject = null;
 
         return ILIASObject.findByRefId(object.refId, user.id)
             .then(iliasObject => {
@@ -67,12 +67,12 @@ export class DataProvider {
             })
             .then(iliasObject => iliasObject.parent)
             .then(parent => {
-                if(the_iliasObject.id == 0 && parent != null)
+                if(the_iliasObject.id == 0 && parent != undefined)
                     the_iliasObject.isNew = true;
                 return the_iliasObject.save() as Promise<ILIASObject>;
             })
-            .then((iliasObject:ILIASObject) => {
-                if (iliasObject.type == 'file') {
+            .then((iliasObject: ILIASObject) => {
+                if (iliasObject.type == "file") {
                     if(refreshFiles)
                         return this.onSaveFile(user, iliasObject);
                     else {
@@ -85,9 +85,9 @@ export class DataProvider {
             });
     }
 
-    protected onSaveFile(user, iliasObject:ILIASObject):Promise<ILIASObject> {
+    protected onSaveFile(user, iliasObject: ILIASObject): Promise<ILIASObject> {
 
-        let resolveObject:ILIASObject;
+        let resolveObject: ILIASObject;
 
         return this.fileObjectHandler.onSave(iliasObject, user)
             .then(iliasObject => {
@@ -104,12 +104,12 @@ export class DataProvider {
      * @param user
      * @returns {Promise<ILIASObject[]>}
      */
-    protected storeILIASDesktopObjects(objects:Array<any>, user:User):Promise<ILIASObject[]> {
-            let iliasObjects = [];
-            let promises = [];
+    protected storeILIASDesktopObjects(objects: Array<any>, user: User): Promise<Array<ILIASObject>> {
+            const iliasObjects = [];
+            const promises = [];
             // We store desktop items that are only courses or groups
             objects.forEach(object => {
-                let promise = this.storeILIASObject(object, user).then((iliasObject) => {
+                const promise = this.storeILIASObject(object, user).then((iliasObject) => {
                     iliasObjects.push(iliasObject);
                 });
                 promises.push(promise);
@@ -132,7 +132,7 @@ export class DataProvider {
      * @param recursive
      * @returns {Promise<ILIASObject[]>}
      */
-    protected storeILIASObjects(remoteObjects:Array<any>, user:User, parentObject:ILIASObject, recursive = false, refreshFiles = true):Promise<ILIASObject[]> {
+    protected storeILIASObjects(remoteObjects: Array<any>, user: User, parentObject: ILIASObject, recursive = false, refreshFiles = true): Promise<Array<ILIASObject>> {
 
         if(recursive) {
             return ILIASObject.findByParentRefIdRecursive(parentObject.refId, user.id)
@@ -150,16 +150,16 @@ export class DataProvider {
      * @param rootParent
      * @returns {Promise<ILIASObject[]>}
      */
-    protected saveOrDeleteObjects(remoteObjects:Array<any>, existingObjects:ILIASObject[], user:User, rootParent:ILIASObject, refreshFiles = true):Promise<ILIASObject[]> {
-            let iliasObjects = [];
-            let promises = [];
-            let objectsToDelete = existingObjects;
+    protected saveOrDeleteObjects(remoteObjects: Array<any>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles = true): Promise<Array<ILIASObject>> {
+            const iliasObjects = [];
+            const promises = [];
+            const objectsToDelete = existingObjects;
             Log.describe(this, "Existing Objects.", existingObjects);
             remoteObjects.forEach(remoteObject => {
-                let promise = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
+                const promise = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
                     iliasObjects.push(iliasObject);
                     // Check if the stored object exists already locally, if so, remove it from objectsToDelete
-                    let objectIndex = existingObjects.findIndex(existingObject => {
+                    const objectIndex = existingObjects.findIndex(existingObject => {
                         return existingObject.objId == iliasObject.objId;
                     });
                     if (objectIndex > -1) {
@@ -186,10 +186,10 @@ export class DataProvider {
      * @param iliasObject
      * @param user
      */
-    protected deleteObject(iliasObject:ILIASObject, user:User) {
-        let promises = [];
+    protected deleteObject(iliasObject: ILIASObject, user: User) {
+        const promises = [];
         promises.push(iliasObject.destroy());
-        if (iliasObject.type == 'file') {
+        if (iliasObject.type == "file") {
             promises.push(this.fileObjectHandler.onDelete(iliasObject, user));
         }
         // Container object must also delete their children
@@ -202,7 +202,6 @@ export class DataProvider {
         }
         return Promise.all(promises);
     }
-
 
 
 }

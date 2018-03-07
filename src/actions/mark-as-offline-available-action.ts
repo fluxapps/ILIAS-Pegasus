@@ -12,12 +12,12 @@ import {ModalController} from "ionic-angular";
 
 export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
 
-    public constructor(public title:string, public object:ILIASObject, public dataProvider:DataProvider, public syncService: SynchronizationService, public modal: ModalController) {
+    constructor(public title: string, public object: ILIASObject, public dataProvider: DataProvider, public syncService: SynchronizationService, public modal: ModalController) {
         super();
         this.object = object;
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    execute(): Promise<ILIASObjectActionResult> {
         this.object.isOfflineAvailable = true;
         this.object.offlineAvailableOwner = ILIASObject.OFFLINE_OWNER_USER;
         this.object.needsDownload = true;
@@ -26,7 +26,7 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
         return User.find(this.object.userId)
             .then( user => this.dataProvider.getObjectData(this.object, user, true, false) )
             .then( (children) => {
-                var promises = [];
+                const promises = [];
                 children.forEach(child => {
                     promises.push(this.setChildToOfflineAvailable(child));
                 });
@@ -38,13 +38,13 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
             .then( () => this.syncService.execute(this.object))
             .then( (syncResult) =>  {
                 if(syncResult.objectsLeftOut.length > 0 ) {
-                    let syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
+                    const syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
                     syncModal.present();
                 }
             }).then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
     }
 
-    public alert():ILIASObjectActionAlert|any {
+    alert(): ILIASObjectActionAlert|any {
         return null;
     }
 
@@ -53,16 +53,16 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
      * Note: We don't wait for the async ILIASObject::save() operation here
      * @param iliasObject
      */
-    protected setChildrenToOfflineAvailable(iliasObject:ILIASObject) {
+    protected setChildrenToOfflineAvailable(iliasObject: ILIASObject) {
         ILIASObject.findByParentRefId(iliasObject.refId, iliasObject.userId).then(children => {
-            for (let child of children) {
+            for (const child of children) {
                 this.setChildToOfflineAvailable(child).catch(error => {Log.error(this, error);});
                 this.setChildrenToOfflineAvailable(child);
             }
         });
     }
 
-    protected setChildToOfflineAvailable(child:ILIASObject):Promise<ActiveRecord> {
+    protected setChildToOfflineAvailable(child: ILIASObject): Promise<ActiveRecord> {
         child.isOfflineAvailable = true;
         child.offlineAvailableOwner = ILIASObject.OFFLINE_OWNER_SYSTEM;
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {ILIASRestProvider} from "../ilias-rest.provider";
 import {User} from "../../models/user";
 import {FileService} from "../../services/file.service";
@@ -10,15 +10,15 @@ import {ILIASObject} from "../../models/ilias-object";
 @Injectable()
 export class DataProviderFileObjectHandler implements DataProviderILIASObjectHandler {
 
-    public constructor(protected rest:ILIASRestProvider,
-                       protected file:FileService) {
+    constructor(protected rest: ILIASRestProvider,
+                       protected file: FileService) {
     }
 
-    onSave(iliasObject:ILIASObject, user:User):Promise<ILIASObject> {
+    onSave(iliasObject: ILIASObject, user: User): Promise<ILIASObject> {
         return this.getFileMetaData(iliasObject, user);
     }
 
-    onDelete(iliasObject:ILIASObject, user:User):Promise<any> {
+    onDelete(iliasObject: ILIASObject, user: User): Promise<any> {
         // Note: Order matters! FileService::remove still needs FileData
         return this.file.remove(iliasObject)
             .then(() => FileData.find(iliasObject.id))
@@ -31,7 +31,7 @@ export class DataProviderFileObjectHandler implements DataProviderILIASObjectHan
      * @param user
      * @returns {Promise<ILIASObject>}
      */
-    public getFileMetaData(iliasObject:ILIASObject, user:User):Promise<ILIASObject> {
+    getFileMetaData(iliasObject: ILIASObject, user: User): Promise<ILIASObject> {
 
         let fileMetaData;
 
@@ -39,7 +39,7 @@ export class DataProviderFileObjectHandler implements DataProviderILIASObjectHan
             .then(aFileMetaData => {
                 fileMetaData = aFileMetaData;
                 return FileData.find(iliasObject.id);
-            }).then((fileData:FileData) => {
+            }).then((fileData: FileData) => {
                 fileData.readFromObject(fileMetaData);
                 iliasObject.needsDownload = fileData.needsDownload();
                 return fileData.save() as Promise<ILIASObject>;

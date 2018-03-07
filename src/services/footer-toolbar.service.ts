@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {DownloadProgress} from "./file.service";
 import {Log} from "./log.service";
 
@@ -7,26 +7,26 @@ export class FooterToolbarService {
 
     private _offline: boolean = false;
 
-    public constructor() {
+    constructor() {
     }
 
     protected _isLoading: boolean = false;
-    protected _loadingText: string = '';
+    protected _loadingText: string = "";
     protected _buttons: Array<{label: string, icon: string, handler: any}> = [];
-    protected _jobs: {id: number, text: string}[] = [];
+    protected _jobs: Array<{id: number, text: string}> = [];
     protected _jobsProgress: {[id: number]: DownloadProgress} = {};
 
-    public get isLoading() {
+    get isLoading() {
         return this._isLoading;
     }
 
-    public addJob(id: number, text: string) {
+    addJob(id: number, text: string) {
         this.spliceId(id);
         this._jobs.push({id: id, text: text});
         this.updateLoading();
     }
 
-    public removeJob(id: number) {
+    removeJob(id: number) {
         this.spliceId(id);
         this.updateLoading();
     }
@@ -36,7 +36,7 @@ export class FooterToolbarService {
      * @param id
      */
     private spliceId(id: number) {
-        for (let key in this._jobs) {
+        for (const key in this._jobs) {
             if (this._jobs[key].id == id) {
                 this._jobs.splice((<any> key), 1);
             }
@@ -52,14 +52,14 @@ export class FooterToolbarService {
             this._loadingText = this.getCurrentText();
         } else {
             this._isLoading = false;
-            this._loadingText = '';
+            this._loadingText = "";
         }
     }
 
     protected getCurrentText(): string {
         // with the slice we make sure the last element is not popped from the original array.
         if (this._jobs.slice(-1).pop()) {
-            let job: {id: number, text: string} = this._jobs.slice(-1).pop();
+            const job: {id: number, text: string} = this._jobs.slice(-1).pop();
             return job.text;
         }
         else
@@ -70,7 +70,7 @@ export class FooterToolbarService {
         return this._jobs.length;
     }
 
-    public get loadingText() {
+    get loadingText() {
         return this._loadingText;
     }
 

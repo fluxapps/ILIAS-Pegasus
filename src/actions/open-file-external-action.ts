@@ -6,13 +6,13 @@ import {ILIASObjectActionNoMessage} from "./object-action";
 
 export class OpenFileExternalAction extends ILIASObjectAction {
 
-    public constructor(public title:string,
-                       public fileObject:ILIASObject,
-                       public file:FileService) {
+    constructor(public title: string,
+                       public fileObject: ILIASObject,
+                       public file: FileService) {
         super();
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
             this.file.existsFile(this.fileObject).then(() => {
                 this.file.open(this.fileObject).then(() => {
@@ -26,7 +26,7 @@ export class OpenFileExternalAction extends ILIASObjectAction {
         });
     }
 
-    public alert():ILIASObjectActionAlert {
+    alert(): ILIASObjectActionAlert {
         return null;
     }
 

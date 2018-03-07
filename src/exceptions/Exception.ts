@@ -1,7 +1,7 @@
 export class Exception {
-    public message;
+    message;
 
-    public constructor(message = null) {
+    constructor(message = null) {
         this.message = message;
     }
 }

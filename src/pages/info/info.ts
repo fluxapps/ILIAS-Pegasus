@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import {Component} from "@angular/core";
+import {NavController} from "ionic-angular";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 /*
@@ -9,22 +9,22 @@ import {InAppBrowser} from "@ionic-native/in-app-browser";
   Ionic pages and navigation.
 */
 @Component({
-  templateUrl: 'info.html'
+  templateUrl: "info.html"
 })
 export class InfoPage {
 
-  public tab:string = 'info';
+  tab: string = "info";
 
   constructor(
     public nav: NavController,
     private readonly browser: InAppBrowser
   ) {}
 
-  public call(number) {
+  call(number) {
     (<any> window).location = number;
   }
 
-  public browse(page) {
+  browse(page) {
     this.browser.create(page, "_system");
   }
 }
