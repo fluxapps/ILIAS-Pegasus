@@ -121,13 +121,13 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
   async addJournalEntry(learnplaceObjectId: number, time: number): Promise<void> {
 
     const response: HttpResponse = await this.iliasRest.post(
-      `/v2/ilias-app/learnplace/${learnplaceObjectId}/journal-entries`,
-      {time: time},
-      DEFAULT_REQUEST_OPTIONS
+      `/v2/ilias-app/learnplace/${learnplaceObjectId}/journal-entry`,
+      {time: Math.floor(time)},
+      <ILIASRequestOptions>{contentType: "application/json"}
     );
 
     return response.handle<void>(_ => {
-      this.log.info(() => "Successful post journal entry to ILIAS");
+      this.log.trace(() => "Successful post journal entry to ILIAS");
     });
   }
 

@@ -5,7 +5,7 @@ import {
   OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier, OAuth2Token, TOKEN_RESPONSE_CONSUMER,
   TokenResponseConsumer
 } from "./ilias.rest-api";
-import {isUndefined} from "ionic-angular/es2015/util/util";
+import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 
@@ -256,9 +256,14 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
     const url: string = `${credentials.apiURL}${path}`;
     const headers: Array<[string, string]> = [
-      ["accept", options.accept],
       ["Authorization", `${credentials.token.type} ${await this.tokenManager.getAccessToken()}`]
     ];
+
+    if(isDefined(options.accept))
+      headers.push(["Accept", options.accept]);
+
+    if(isDefined(options.contentType))
+      headers.push(["Content-Type", options.contentType]);
 
     const requestOptions: RequestOptions = <RequestOptions>{
       headers:headers,
@@ -291,7 +296,8 @@ const oAuthTokenSchema: object = {
  * @version 1.0.0
  */
 export interface ILIASRequestOptions {
-  readonly accept: string,
+  readonly accept?: string,
+  readonly contentType?: string,
   readonly urlParams?: Array<[string, string]>
 }
 
