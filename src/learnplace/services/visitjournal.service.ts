@@ -94,6 +94,7 @@ export interface VisitJournalWatch extends LocationWatch {
    */
   setLearnplace(id: number): void;
 }
+export const VISIT_JOURNAL_WATCH: InjectionToken<VisitJournalWatch> = new InjectionToken<VisitJournalWatch>("token for visit journal watch");
 
 /**
  * Synchronizes the visit journal of a learnplace with ILIAS.
