@@ -103,7 +103,7 @@ import {
 import {
   VISIT_JOURNAL_SYNCHRONIZATION,
   VisitJournalSynchronizationImpl
-} from "../learnplace/services/visitjournal.synchronize";
+} from "../learnplace/services/visitjournal.service";
 import {
   OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction,
   OpenLearnplaceActionFunction

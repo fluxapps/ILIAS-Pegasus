@@ -1,4 +1,4 @@
-import {VisitJournalSynchronizationImpl} from "../../../src/learnplace/services/visitjournal.synchronize";
+import {VisitJournalSynchronizationImpl} from "../../../src/learnplace/services/visitjournal.service";
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
 import {LearnplaceAPI} from "../../../src/learnplace/providers/rest/learnplace.api";
 import {VisitJournalRepository} from "../../../src/learnplace/providers/repository/visitjournal.repository";
