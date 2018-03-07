@@ -67,7 +67,7 @@ export class VisitJournalSynchronizationImpl implements VisitJournalSynchronizat
         it.synchronized = true;
         await this.visitJournalRepository.save(it);
       } catch(error) {
-        this.log.warn(() => `Could not synchronize journal entry: id=${it.id}, username=${it.username}`);
+        this.log.warn(() => `Could not synchronize journal entry: id=${it.id}`);
         this.log.debug(() => `Synchronize Journal Entry Error: ${JSON.stringify(error)}`);
       }
     }
@@ -165,7 +165,7 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
       .filter(p => isDefined(p.coords))
       .subscribe(async(location) => {
 
-        if (isDefined(learnplace.visitJournal.find(it => it.username == user.iliasLogin))) {
+        if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
           this.stop();
           return;
         }
@@ -177,7 +177,7 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
           this.stop();
 
           const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
-            this.username = user.iliasLogin;
+            this.userId = user.iliasUserId;
             this.time = Math.floor(Date.now() / 1000); // unix time in seconds
             this.synchronized = false;
           });

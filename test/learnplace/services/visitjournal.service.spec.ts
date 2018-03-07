@@ -49,7 +49,7 @@ describe("a visit journal synchronization", () => {
 				const unsynchronized: Array<VisitJournalEntity> = [
 				  new VisitJournalEntity().applies(function(): void {
 				    this.synchronized = false;
-				    this.username = "mmuster";
+				    this.userId = 1;
 				    this.time = 0;
 				    this.learnplace = getLearnplace();
           })
@@ -60,7 +60,7 @@ describe("a visit journal synchronization", () => {
 				const apiStub: SinonStub = sandbox.stub(mockLearnplaceAPI, "addJournalEntry")
           .resolves();
 				const saveStub: SinonStub = sandbox.stub(mockVisitJournalRepository, "save")
-          .resolves(new VisitJournalEntity()) // return value does not matter here, so we just return an empty entity
+          .resolves(new VisitJournalEntity()); // return value does not matter here, so we just return an empty entity
 
 
         await sync.synchronize();
@@ -68,7 +68,7 @@ describe("a visit journal synchronization", () => {
 
 				const expected: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
 				  this.synchronized = true;
-				  this.username = "mmuster";
+				  this.userId = 1;
 				  this.time = 0;
 				  this.learnplace = getLearnplace();
         });
@@ -84,13 +84,13 @@ describe("a visit journal synchronization", () => {
         const unsynchronized: Array<VisitJournalEntity> = [
           new VisitJournalEntity().applies(function(): void {
             this.synchronized = false;
-            this.username = "mmuster";
+            this.userId = 1;
             this.time = 0;
             this.learnplace = getLearnplace();
           }),
           new VisitJournalEntity().applies(function(): void {
             this.synchronized = false;
-            this.username = "ssuster";
+            this.userId = 2;
             this.time = 0;
             this.learnplace = getLearnplace();
           })
@@ -113,7 +113,7 @@ describe("a visit journal synchronization", () => {
 
         const expected: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
           this.synchronized = true;
-          this.username = "mmuster";
+          this.userId = 1;
           this.time = 0;
           this.learnplace = getLearnplace();
         });

@@ -224,7 +224,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
 
     const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
 
-    if (isDefined(learnplace.visitJournal.find(it => it.username == user.iliasLogin))) {
+    if (isDefined(learnplace.visitJournal.find(it => it.id == user.iliasUserId))) {
       object.visible = true;
       return;
     }

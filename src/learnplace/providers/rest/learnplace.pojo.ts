@@ -11,7 +11,7 @@ export interface Location {
 }
 
 export interface JournalEntry {
-  readonly username: string
+  readonly userId: number
   readonly timestamp: number
 }
 
