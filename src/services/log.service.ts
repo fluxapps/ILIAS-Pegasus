@@ -17,7 +17,7 @@ export class Log {
         if(!Log.debug)
             return;
         if(!logger.constructor)
-            return
+            return;
         if(param.length > 0)
             console.log("[" + logger.constructor.name  + "] " + text, param[0]);
         else

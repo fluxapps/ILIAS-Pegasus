@@ -98,7 +98,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
             );
             detailPromises.push(
                 Promise.resolve({label: 'details.offline_available', value: (this.iliasObject.isOfflineAvailable && !this.iliasObject.needsDownload)?'yes':'no', translate: true})
-            )
+            );
 
             return Promise.all(detailPromises);
         } else {

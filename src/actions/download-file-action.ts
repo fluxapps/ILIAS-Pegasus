@@ -24,7 +24,7 @@ export class DownloadFileAction extends ILIASObjectAction {
 
     async execute(): Promise<ILIASObjectActionResult> {
         // Download is only executed if a newer version is available in ILIAS
-        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload)
+        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
             throw new OfflineException();
 
