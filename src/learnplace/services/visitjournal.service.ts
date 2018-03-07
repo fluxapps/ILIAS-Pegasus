@@ -8,6 +8,12 @@ import {LocationWatch} from "../../services/location";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {Geolocation} from "@ionic-native/geolocation";
+import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
+import {IllegalStateError, NoSuchElementError} from "../../error/errors";
+import {Coordinates} from "../../services/geodesy";
+import {Subscription} from "rxjs/Subscription";
+import {LearnplaceEntity} from "../entity/learnplace.entity";
+import {UserEntity} from "../../entity/user.entity";
 
 /**
  * Describes a synchronization that manages un-synchronized visit journal entries.
@@ -94,12 +100,15 @@ export interface VisitJournalWatch extends LocationWatch {
  * The current user will be considered in order to know the appropriate ILIAS installation.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
   private learnplaceId: number | undefined = undefined;
+  private watch: Subscription | undefined = undefined;
+
+  private readonly log: Logger = Logging.getLogger(SynchronizedVisitJournalWatch.name);
 
   constructor(
     @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
@@ -113,9 +122,77 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
     this.learnplaceId = id;
   }
 
+  /**
+   * Starts watching the device's location and compares it with the learnplace location.
+   * If the device is near enough to the learnplace, it will mark the current user as visited.
+   *
+   * If the current user is already marked as visited or the device location is near enough, this watch will stop itself.
+   *
+   * The device is near enough to the learnplace by considering the {@link Coordinates#isNearTo} method with
+   * the latitude and longitude of the device's and learnplace location, as well as the radius defined on the learnplace.
+   */
   start(): void {
+
+    if(isUndefined(this.learnplaceId)) {
+      throw new IllegalStateError(`Can not start ${SynchronizedVisitJournalWatch.name} without learnplace id`);
+    }
+
+    this.execute();
   }
 
+  /**
+   * Stops watching the device's location.
+   */
   stop(): void {
+    this.watch.unsubscribe();
+  }
+
+  /**
+   * Helper method to use async / await.
+   */
+  private async execute(): Promise<void> {
+
+    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.learnplaceId))
+      .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.learnplaceId}`));
+    const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+
+    const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
+
+    this.log.trace(() => "Watch position for visit journal watch'");
+
+    this.watch = this.geolocation.watchPosition()
+      .filter(p => isDefined(p.coords))
+      .subscribe(async(location) => {
+
+        if (isDefined(learnplace.visitJournal.find(it => it.username == user.iliasLogin))) {
+          this.stop();
+          return;
+        }
+
+        const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
+
+        if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
+
+          this.stop();
+
+          const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
+            this.username = user.iliasLogin;
+            this.time = Math.floor(Date.now() / 1000); // unix time in seconds
+            this.synchronized = false;
+          });
+
+          learnplace.visitJournal.push(visitJournalEntity);
+
+          try {
+
+            await this.learnplaceAPI.addJournalEntry(this.learnplaceId, visitJournalEntity.time);
+
+            // if the entry could be added to ILIAS, set synchronized to true
+            visitJournalEntity.synchronized = true;
+          } finally {
+            await this.learnplaceRepository.save(learnplace);
+          }
+        }
+      });
   }
 }
