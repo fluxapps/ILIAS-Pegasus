@@ -101,7 +101,8 @@ import {
   VISIT_JOURNAL_REPOSITORY
 } from "../learnplace/providers/repository/visitjournal.repository";
 import {
-  VISIT_JOURNAL_SYNCHRONIZATION,
+  SynchronizedVisitJournalWatch,
+  VISIT_JOURNAL_SYNCHRONIZATION, VISIT_JOURNAL_WATCH,
   VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.service";
 import {
@@ -296,6 +297,10 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     {
       provide: BLOCK_SERVICE,
       useClass: VisibilityManagedBlockService
+    },
+    {
+      provide: VISIT_JOURNAL_WATCH,
+      useClass: SynchronizedVisitJournalWatch
     },
 
     /* Link service */
