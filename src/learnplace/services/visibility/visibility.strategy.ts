@@ -154,14 +154,12 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
 
     const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
-    this.log.info(() => "Watch position for visibility 'Only at Place'");
+    this.log.trace(() => "Watch position for visibility 'Only at Place'");
     this.geolocation.watchPosition()
       .filter(p => isDefined(p.coords))
       .subscribe(location => {
 
       const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
-
-      this.log.trace(() => `Current position: latitude=${currentCoordinates.latitude}, longitude=${currentCoordinates.longitude}`);
 
       object.visible = learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
     });
@@ -202,8 +200,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
    * If the user exists in the journal, the visibility of the given {@code object} is set to true.
    *
    * Otherwise, the current position is watched and sets the visibility of the given {@code object}
-   * to true, if its 'near' to the learnplace. In addition a new journal entry will be added to the learnplace.
-   * If the post request to add a journal entry fails, it will be retried with the next synchronization.
+   * to true, if its 'near' to the learnplace.
    *
    * The current position is considered as 'near', if the distance of the current position
    * to the learnplace position is in the learnplace radius. Once the current position is 'near' to
@@ -242,23 +239,6 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
         watch.unsubscribe();
 
         object.visible = true;
-
-        const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
-          this.username = user.iliasLogin;
-          this.time = Date.now() / 1000; // unix time in seconds
-          this.synchronized = false;
-        });
-
-        learnplace.visitJournal.push(visitJournalEntity);
-
-        try {
-
-          await this.learnplaceAPI.addJournalEntry(this.membershipId, visitJournalEntity.time);
-
-          visitJournalEntity.synchronized = true;
-        } finally {
-          await this.learnplaceRepository.save(learnplace);
-        }
       }
     });
   }
