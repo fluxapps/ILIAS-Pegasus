@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {PictureBlockModel} from "../../services/block.model";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
@@ -7,12 +7,14 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 @Component({
   selector: "picture-block",
   templateUrl: "picture-block.html"
 })
-export class PictureBlock implements OnInit {
+export class PictureBlock implements OnInit, OnDestroy {
 
   @Input("value")
   readonly observablePicture: Observable<PictureBlockModel>;
@@ -20,6 +22,8 @@ export class PictureBlock implements OnInit {
   pictureBlock: PictureBlockModel | undefined = undefined;
 
   embeddedSrc: SafeUrl | undefined = undefined;
+
+  private pictureBlockSubscription: Subscription | undefined = undefined;
 
   private readonly log: Logger = Logging.getLogger(PictureBlock.name);
 
@@ -31,10 +35,9 @@ export class PictureBlock implements OnInit {
     private readonly detectorRef: ChangeDetectorRef
   ) {}
 
-
   ngOnInit(): void {
 
-    this.observablePicture.subscribe(it => {
+    this.pictureBlockSubscription = this.observablePicture.subscribe(it => {
       this.pictureBlock = it;
       this.detectorRef.detectChanges();
     });
@@ -51,6 +54,11 @@ export class PictureBlock implements OnInit {
         this.log.debug(() => `Thumbnail load error: ${JSON.stringify(error)}`);
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    if(isDefined(this.pictureBlockSubscription))
+      this.pictureBlockSubscription.unsubscribe();
   }
 
   show(): void {

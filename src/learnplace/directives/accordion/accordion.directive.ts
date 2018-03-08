@@ -1,7 +1,9 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {AccordionBlockModel} from "../../services/block.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 @Component({
   selector: "accordion-block",
@@ -19,13 +21,15 @@ import {Observable} from "rxjs/Observable";
     ])
   ]
 })
-export class AccordionBlock implements OnInit {
+export class AccordionBlock implements OnInit, OnDestroy {
 
   @Input("value")
   readonly observableAccordion: Observable<AccordionBlockModel>;
 
   accordion: AccordionBlockModel;
   expanded: boolean = false;
+
+  private accordionSubscription: Subscription | undefined = undefined;
 
   constructor(
     private readonly detectorRef: ChangeDetectorRef
@@ -38,6 +42,11 @@ export class AccordionBlock implements OnInit {
       this.expanded = it.expanded; // sets the default expanded state of the accordion
       this.detectorRef.detectChanges();
     });
+  }
+
+  ngOnDestroy(): void {
+    if(isDefined(this.accordionSubscription))
+      this.accordionSubscription.unsubscribe();
   }
 
   toggle(): void { this.expanded = !this.expanded }

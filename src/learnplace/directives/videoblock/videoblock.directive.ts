@@ -1,20 +1,24 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {VideoBlockModel} from "../../services/block.model";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 @Component({
   selector: "video-block",
   templateUrl: "video-block.html"
 })
-export class VideoBlock implements OnInit {
+export class VideoBlock implements OnInit, OnDestroy {
 
   @Input("value")
   readonly observableVideoBlock: Observable<VideoBlockModel>;
 
   videoBlock: VideoBlockModel | undefined = undefined;
+
+  private videoBlockSubscription: Subscription | undefined = undefined;
 
   constructor(
     private readonly platform: Platform,
@@ -25,10 +29,15 @@ export class VideoBlock implements OnInit {
 
 
   ngOnInit(): void {
-    this.observableVideoBlock.subscribe(it => {
+    this.videoBlockSubscription = this.observableVideoBlock.subscribe(it => {
       this.videoBlock = it;
       this.detectorRef.detectChanges();
     })
+  }
+
+  ngOnDestroy(): void {
+    if(isDefined(this.videoBlockSubscription))
+      this.videoBlockSubscription.unsubscribe();
   }
 
   play(): void {

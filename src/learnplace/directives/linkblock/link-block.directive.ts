@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Inject, Input, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {LinkBlockModel} from "../../services/block.model";
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {
@@ -13,18 +13,22 @@ import {ILIASObject} from "../../../models/ilias-object";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 @Component({
   selector: "link-block",
   templateUrl: "link-block.html"
 })
-export class LinkBlock implements OnInit {
+export class LinkBlock implements OnInit, OnDestroy {
 
   @Input("value")
   readonly observableLinkBlock: Observable<LinkBlockModel>;
 
   link: LinkBlockModel | undefined = undefined;
   linkLabel: string | undefined = undefined;
+
+  private linkBlockSubscription: Subscription | undefined = undefined;
 
   private readonly log: Logger = Logging.getLogger(LinkBlock.name);
 
@@ -36,10 +40,9 @@ export class LinkBlock implements OnInit {
     private readonly detectorRef: ChangeDetectorRef
   ){}
 
-
   ngOnInit(): void {
 
-    this.observableLinkBlock.subscribe(it => {
+    this.linkBlockSubscription = this.observableLinkBlock.subscribe(it => {
       this.link = it;
       this.detectorRef.detectChanges();
     });
@@ -56,6 +59,12 @@ export class LinkBlock implements OnInit {
         this.linkLabel = this.translate.instant("learnplace.no-link-label");
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    if(isDefined(this.linkBlockSubscription)) {
+      this.linkBlockSubscription.unsubscribe();
+    }
   }
 
   open(): void {
