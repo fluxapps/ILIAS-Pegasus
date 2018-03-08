@@ -400,10 +400,10 @@ export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, Journ
     this.log.trace(() => "Map JournalEntry to VisitJournalEntity");
 
     return remote.map(journalEntry =>
-      findIn(local, journalEntry, (entity, journal) => entity.username == journal.username)
+      findIn(local, journalEntry, (entity, journal) => entity.userId == journal.userId)
         .orElse(new VisitJournalEntity())
         .applies(function(): void {
-          this.username = journalEntry.username;
+          this.userId = journalEntry.userId;
           this.time = journalEntry.timestamp;
           this.synchronized = true;
       })

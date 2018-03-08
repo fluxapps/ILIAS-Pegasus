@@ -14,7 +14,7 @@ import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchroniza
 import {
   VISIT_JOURNAL_SYNCHRONIZATION,
   VisitJournalSynchronization
-} from "../learnplace/services/visitjournal.synchronize";
+} from "../learnplace/services/visitjournal.service";
 
 @Injectable()
 export class SynchronizationService {

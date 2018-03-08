@@ -215,8 +215,9 @@ export const journalEntriesJsonSchema: object = {
   "items": {
     "type": "object",
     "properties": {
-      "username": {
-        "type": "string"
+      "userId": {
+        "type": "integer",
+        "minimum": 1
       },
       "timestamp": {
         "description": "The unix time in seconds",
@@ -224,6 +225,6 @@ export const journalEntriesJsonSchema: object = {
         "minimum": 0
       }
     },
-    "required": ["username", "timestamp"]
+    "required": ["userId", "timestamp"]
   }
 };

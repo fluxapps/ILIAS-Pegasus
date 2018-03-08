@@ -1,5 +1,6 @@
 import {VisibilityAware} from "./visibility/visibility.context";
 import {SafeHtml} from "@angular/platform-browser";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Contains information to display a map.
@@ -135,7 +136,7 @@ export class AccordionBlockModel extends BlockModel {
     sequence: number,
     readonly title: string,
     readonly expanded: boolean,
-    readonly blocks: Array<BlockModel>,
+    readonly blocks: Array<Observable<BlockModel>>,
   ) {
     super(sequence, false, BlockType.ACCORDION)
   }

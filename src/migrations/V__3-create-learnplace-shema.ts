@@ -19,7 +19,7 @@ export class CreateLearnplace implements Migration {
 
     const visitJournal: Table = new Table("VisitJournal", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isGenerated: true, isNullable: false}),
-      new TableColumn({name: "username", type: "string", length: "128", isNullable: false}),
+      new TableColumn({name: "userId", type: "integer", isNullable: false}),
       new TableColumn({name: "time", type: "integer", isNullable: false}),
       new TableColumn({name: "synchronized", type: "boolean", isNullable: false}),
       new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})

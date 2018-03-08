@@ -8,7 +8,7 @@ export class VisitJournalEntity {
   id: number;
 
   @Column()
-  username: string;
+  userId: number;
 
   @Column()
   time: number;

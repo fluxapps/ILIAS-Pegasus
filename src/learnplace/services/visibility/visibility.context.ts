@@ -6,6 +6,7 @@ import {
 import {Injectable} from "@angular/core";
 import {isUndefined} from "ionic-angular/es2015/util/util";
 import {IllegalStateError} from "../../../error/errors";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Describes an object that can be visible or not.
@@ -21,7 +22,7 @@ export interface VisibilityAware {
  * Helper class to apply a {@link VisibilityStrategy} on a {@link VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.2.1
+ * @version 2.0.0
  */
 @Injectable()
 export class VisibilityStrategyApplier {
@@ -51,27 +52,24 @@ export class VisibilityStrategyApplier {
    * If the setter {@link VisibilityStrategyApplier#setLearnplace} was not called,
    * this method throws an {@link IllegalStateError}.
    *
-   * @param {VisibilityAware} model - model to apply the strategy on
+   * @param {T} model - model to apply the strategy on
    * @param {VisibilityStrategyType} strategy - the strategy type to use
    *
    * @throws {IllegalStateError} if the setter for the learnplace was not called
    */
-   apply(model: VisibilityAware, strategy: VisibilityStrategyType): void {
+   apply<T extends VisibilityAware>(model: T, strategy: VisibilityStrategyType): Observable<T> {
 
       switch (strategy) {
         case VisibilityStrategyType.ALWAYS:
-          this.alwaysStrategy.on(model);
-          break;
+          return this.alwaysStrategy.on(model);
         case VisibilityStrategyType.NEVER:
-          this.neverStrategy.on(model);
-          break;
+          return this.neverStrategy.on(model);
         case VisibilityStrategyType.ONLY_AT_PLACE:
           this.requireLearnplace();
-          this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
-          break;
+          return this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
         case VisibilityStrategyType.AFTER_VISIT_PLACE:
           this.requireLearnplace();
-          this.afterVisitPlace.membership(this.learnplaceId).on(model);
+          return this.afterVisitPlace.membership(this.learnplaceId).on(model);
       }
    }
 

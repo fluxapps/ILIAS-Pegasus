@@ -549,11 +549,11 @@ describe("a visit journal mapper", () => {
 
 				const remote: Array<JournalEntry> = [
 				  <JournalEntry>{
-				    username: "mmuster",
+				    userId: 1,
             timestamp: 0
           },
           <JournalEntry>{
-				    username: "ssuster",
+				    userId: 2,
             timestamp: 0
           }
         ];
@@ -564,12 +564,12 @@ describe("a visit journal mapper", () => {
 
 				const expected: Array<VisitJournalEntity> = [
 				  new VisitJournalEntity().applies(function(): void {
-				    this.username = "mmuster";
+				    this.userId = 1;
 				    this.time = 0;
 				    this.synchronized = true;
           }),
           new VisitJournalEntity().applies(function(): void {
-            this.username = "ssuster";
+            this.userId = 2;
             this.time = 0;
             this.synchronized = true;
           })
@@ -587,12 +587,12 @@ describe("a visit journal mapper", () => {
         const local: Array<VisitJournalEntity> = [
           new VisitJournalEntity().applies(function(): void {
             this.id = 1;
-            this.username = "mmuster";
+            this.userId = 1;
             this.time = 0;
             this.synchronized = true;
           }),
           new VisitJournalEntity().applies(function(): void {
-            this.username = "ssuster";
+            this.userId = 2;
             this.time = 0;
             this.synchronized = true;
           })
@@ -600,11 +600,11 @@ describe("a visit journal mapper", () => {
 
         const remote: Array<JournalEntry> = [
           <JournalEntry>{
-            username: "mmuster",
+            userId: 1,
             timestamp: 0
           },
           <JournalEntry>{
-            username: "ssuster",
+            userId: 2,
             timestamp: 0
           }
         ];
@@ -616,12 +616,12 @@ describe("a visit journal mapper", () => {
         const expected: Array<VisitJournalEntity> = [
           new VisitJournalEntity().applies(function(): void {
             this.id = 1;
-            this.username = "mmuster";
+            this.userId = 1;
             this.time = 0;
             this.synchronized = true;
           }),
           new VisitJournalEntity().applies(function(): void {
-            this.username = "ssuster";
+            this.userId = 2;
             this.time = 0;
             this.synchronized = true;
           })

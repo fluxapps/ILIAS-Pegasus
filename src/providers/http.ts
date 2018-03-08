@@ -176,7 +176,7 @@ export class HttpResponse {
 
     const json: {} = this.tryJson(this.response, (): Error => {
       this.log.warn(() => "Could not parse response body to json");
-      this.log.debug(() => `Request Body: ${this.response.body}`);
+      this.log.debug(() => `Request Body: ${this.text()}`);
       return new JsonValidationError("Could not parse response body to json");
     });
 
@@ -186,7 +186,8 @@ export class HttpResponse {
       return <T>json;
     }
 
-    throw new JsonValidationError(result.errors[0].message);
+    this.log.debug(() => `Request Body: ${this.text()}`);
+    throw new JsonValidationError("Response body does not match json schema");
   }
 
   /**
@@ -280,6 +281,7 @@ export class HttpResponse {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
+// TODO: For some unknown reason, this error can not be initialized
 export class JsonValidationError extends Error {
 
   constructor(message: string) {
