@@ -199,5 +199,10 @@
   },
   "learnplace": {
     "no-link-label": "Du besitzt keine Zugriffsrechte für diesen Link"
+  },
+  "fallback": {
+    "browser": "Sie verlassen nun die ILIAS Pegasus App",
+    "browser_ok": "OK, auf zum Browser!",
+    "browser_no": "Nein. Zurück!"
   }
 }

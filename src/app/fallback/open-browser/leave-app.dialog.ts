@@ -3,6 +3,8 @@ import {InAppBrowserOptions} from "@ionic-native/in-app-browser";
 import {NavParams, ViewController} from "ionic-angular";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {TranslateService} from "ng2-translate/src/translate.service";
+
 
 @Component({
   templateUrl: "leave-app.dialog.html"
@@ -15,7 +17,8 @@ export class LeaveAppDialog {
 
   constructor(
     nav: NavParams,
-    private readonly viewCtrl: ViewController
+    private readonly viewCtrl: ViewController,
+    private readonly translate: TranslateService
   ) {
     this.params = <LeaveAppDialogNavParams>nav.data;
   }
