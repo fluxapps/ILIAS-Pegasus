@@ -8,46 +8,46 @@ export class User extends ActiveRecord {
     /**
      * The internal user-ID in ILIAS corresponding to the installation given by installationID
      */
-    public iliasUserId:number;
+    iliasUserId: number;
 
     /**
      * The ILIAS username corresponding to the installation given by installationID
      */
-    public iliasLogin:string;
+    iliasLogin: string;
 
     /**
      * The ID of the ILIAS installation
      */
-    public installationId:number;
+    installationId: number;
 
     /**
      * OAuth2 Access-Token to query the ILIAS REST-interface
      */
-    public accessToken:string;
+    accessToken: string;
 
     /**
      * OAuth2 Refresh-Token needed in exchange for a new access-token
      */
-    public refreshToken:string;
+    refreshToken: string;
 
     /**
      * When was the last time we refreshed the access token?
      */
-    public lastTokenUpdate:number;
+    lastTokenUpdate: number;
 
     /**
      * Holds the app settings
      */
-    protected _settings:Settings;
+    protected _settings: Settings;
 
     constructor(id = 0) {
-        super(id, new SQLiteConnector('users', [
-            'installationId',
-            'iliasUserId',
-            'iliasLogin',
-            'accessToken',
-            'refreshToken',
-            'lastTokenUpdate'
+        super(id, new SQLiteConnector("users", [
+            "installationId",
+            "iliasUserId",
+            "iliasLogin",
+            "accessToken",
+            "refreshToken",
+            "lastTokenUpdate"
         ]));
     }
 
@@ -55,7 +55,7 @@ export class User extends ActiveRecord {
      * Get settings
      * @returns {Promise<Settings>}
      */
-    public get settings():Promise<Settings> {
+    get settings(): Promise<Settings> {
         if (this._settings) {
             return Promise.resolve(this._settings);
         }
@@ -69,10 +69,10 @@ export class User extends ActiveRecord {
      * @param id
      * @returns {Promise<User>}
      */
-    static find(id:number):Promise<User> {
-        let user = new User(id);
+    static find(id: number): Promise<User> {
+        const user = new User(id);
         return user.read()
-          .then(activeRecord => { return activeRecord as User })
+          .then(activeRecord => activeRecord as User)
     }
 
 
@@ -80,11 +80,11 @@ export class User extends ActiveRecord {
      * Find user by ILIAS userId and installationId. Returns either existing user or new instance!
      * @returns {Promise<User>}
      */
-    static findByILIASUserId(iliasUserId:number, installationId:number):Promise<User> {
+    static findByILIASUserId(iliasUserId: number, installationId: number): Promise<User> {
         return new Promise((resolve, reject) => {
             SQLiteDatabaseService.instance().then(db => {
-                db.query('SELECT * FROM users WHERE iliasUserId = ? AND installationId = ?', [iliasUserId, installationId]).then((response:any) => {
-                    let user = new User();
+                db.query("SELECT * FROM users WHERE iliasUserId = ? AND installationId = ?", [iliasUserId, installationId]).then((response: any) => {
+                    const user = new User();
                     if (response.rows.length == 0) {
                         user.iliasUserId = iliasUserId;
                         user.installationId = installationId;
@@ -105,14 +105,14 @@ export class User extends ActiveRecord {
      * Find the active user in the app (accessToken is present). Resolves the promise if found, rejects otherwise
      * @returns {Promise<User>}
      */
-    static findActiveUser():Promise<User> {
+    static findActiveUser(): Promise<User> {
         return SQLiteDatabaseService.instance()
-            .then(db => db.query('SELECT * FROM users WHERE accessToken IS NOT NULL'))
-            .then((response:any) => {
+            .then(db => db.query("SELECT * FROM users WHERE accessToken IS NOT NULL"))
+            .then((response: any) => {
                 if (response.rows.length == 0) {
                     return <Promise<User>> Promise.reject("No active user found.");
                 } else {
-                    let user = new User();
+                    const user = new User();
                     user.readFromObject(response.rows.item(0));
                     return Promise.resolve(<User> user);
                 }
@@ -124,8 +124,8 @@ export class User extends ActiveRecord {
      * the promise is rejected.
      * @returns {User}
      */
-    public static currentUser():Promise<User> {
-        if (window['cordova']) {
+    static currentUser(): Promise<User> {
+        if (window["cordova"]) {
             return User.findActiveUser();
         }
 
@@ -159,9 +159,9 @@ export class User extends ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<any>}
      */
-    public destroy():Promise<any> {
+    destroy(): Promise<any> {
         return new Promise((resolve, reject) => {
-            let promises = [];
+            const promises = [];
             ILIASObject.findByUserId(this.id).then(objects => {
                 objects.forEach(object => {
                     promises.push(object.destroy());
@@ -181,13 +181,13 @@ export class User extends ActiveRecord {
     /**
      * Find all users of this app
      */
-    public static findAllUsers():Promise<User[]> {
+    static findAllUsers(): Promise<Array<User>> {
        return SQLiteDatabaseService.instance()
            .then(db => db.query("SELECT * FROM users"))
-           .then((response:any) => {
-               let users = [];
+           .then((response: any) => {
+               const users = [];
                for (let i = 0; i < response.rows.length; i++) {
-                   let user = new User();
+                   const user = new User();
                    user.readFromObject(response.rows.item(i));
                    users.push(user);
                }

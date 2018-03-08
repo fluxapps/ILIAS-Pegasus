@@ -7,12 +7,12 @@ export interface DataProviderILIASObjectHandler {
      * @param iliasObject
      * @param user
      */
-    onSave(iliasObject:ILIASObject, user:User):Promise<ILIASObject>
+    onSave(iliasObject: ILIASObject, user: User): Promise<ILIASObject>
 
     /**
      * Executed after the given iliasObject has been deleted from local DB by given user
      * @param iliasObject
      * @param user
      */
-    onDelete(iliasObject:ILIASObject, user:User):Promise<any>
+    onDelete(iliasObject: ILIASObject, user: User): Promise<any>
 }

@@ -5,22 +5,22 @@ import {ILIASObjectActionResult} from "./object-action";
 
 export class RemoveLocalFileAction extends ILIASObjectAction {
 
-    public constructor(public title:string, public fileObject:ILIASObject, public file:FileService) {
+    constructor(public title: string, public fileObject: ILIASObject, public file: FileService) {
         super();
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
             this.file.remove(this.fileObject).then(() => {
-                resolve(new ILIASObjectActionSuccess('Sucessfully removed file'));
+                resolve(new ILIASObjectActionSuccess("Sucessfully removed file"));
             });
         });
     }
 
-    public alert():ILIASObjectActionAlert {
+    alert(): ILIASObjectActionAlert {
         return {
-            title: 'Delete downloaded file ' + this.fileObject.title,
-            subTitle: 'Are you sure you want to delete this file?',
+            title: "Delete downloaded file " + this.fileObject.title,
+            subTitle: "Are you sure you want to delete this file?",
         }
     }
 

@@ -7,17 +7,17 @@ export class DesktopItem extends ActiveRecord {
     /**
      * Internal user-ID
      */
-    public userId:number;
+    userId: number;
 
     /**
      * ILIAS Object-ID
      */
-    public objId:number;
+    objId: number;
 
     constructor(id = 0) {
-        super(id, new SQLiteConnector('desktop', [
-            'userId',
-            'objId',
+        super(id, new SQLiteConnector("desktop", [
+            "userId",
+            "objId",
         ]));
     }
 
@@ -26,25 +26,25 @@ export class DesktopItem extends ActiveRecord {
      * @param userId
      * @param desktopItems
      */
-    static storeDesktopItems(userId:number, desktopItems:ILIASObject[]):Promise<any> {
+    static storeDesktopItems(userId: number, desktopItems: Array<ILIASObject>): Promise<any> {
         return SQLiteDatabaseService.instance()
-            .then(db => db.query('SELECT * FROM desktop WHERE userId = ?', [userId]))
-            .then((response:any) => {
-                let existingItems:DesktopItem[] = [];
-                let promises = [];
+            .then(db => db.query("SELECT * FROM desktop WHERE userId = ?", [userId]))
+            .then((response: any) => {
+                const existingItems: Array<DesktopItem> = [];
+                const promises = [];
                 for (let i = 0; i < response.rows.length; i++) {
-                    let desktopItem = new DesktopItem();
+                    const desktopItem = new DesktopItem();
                     desktopItem.readFromObject(response.rows.item(i));
                     existingItems.push(desktopItem);
                 }
                 // Store new delivered desktopItems
                 desktopItems.forEach(desktopItem => {
-                    let index = existingItems.findIndex(item => {
+                    const index = existingItems.findIndex(item => {
                         return (item.objId == desktopItem.objId);
                     });
                     if (index == -1) {
                         // Item does not yet exist, create
-                        let newDesktopItem = new DesktopItem();
+                        const newDesktopItem = new DesktopItem();
                         newDesktopItem.userId = userId;
                         newDesktopItem.objId = desktopItem.objId;
                         promises.push(newDesktopItem.save());
@@ -52,7 +52,7 @@ export class DesktopItem extends ActiveRecord {
                 });
                 // Delete items no longer delivered
                 existingItems.forEach(existingItem => {
-                    let index = desktopItems.findIndex(item => {
+                    const index = desktopItems.findIndex(item => {
                         return (item.objId == existingItem.objId);
                     });
                     if (index == -1) {
@@ -68,9 +68,9 @@ export class DesktopItem extends ActiveRecord {
      * The overriden method makes sure the save action is atomic. We don't want the same input item twice on the desktop.
      * @returns {Promise<DesktopItem>}
      */
-    public save():Promise<ActiveRecord> {
-        return this.connector.query('INSERT OR REPLACE INTO ' + this.connector.table + '(userId, objId) VALUES (' + this.userId + ', ' + this.objId + ')')
-            .then((response:any) => Promise.resolve(<number> response.insertId))
+    save(): Promise<ActiveRecord> {
+        return this.connector.query("INSERT OR REPLACE INTO " + this.connector.table + "(userId, objId) VALUES (" + this.userId + ", " + this.objId + ")")
+            .then((response: any) => Promise.resolve(<number> response.insertId))
             .then((newId) => {
             this._id = newId;
             return Promise.resolve(this);
@@ -82,16 +82,16 @@ export class DesktopItem extends ActiveRecord {
      * @param userId
      * @returns {Promise<ILIASObject[]>}
      */
-    static findByUserId(userId:number):Promise<ILIASObject[]> {
+    static findByUserId(userId: number): Promise<Array<ILIASObject>> {
         return SQLiteDatabaseService.instance()
             .then(db => {
-                let sql =
-                    'SELECT objects.* FROM desktop ' +
-                    'INNER JOIN objects ON (objects.objId = desktop.objId AND objects.userId = desktop.userId) ' +
-                    'WHERE desktop.userId = ?';
+                const sql =
+                    "SELECT objects.* FROM desktop " +
+                    "INNER JOIN objects ON (objects.objId = desktop.objId AND objects.userId = desktop.userId) " +
+                    "WHERE desktop.userId = ?";
                 return db.query(sql, [userId])
-            }).then((response:any) => {
-                let iliasObjectPromises = [];
+            }).then((response: any) => {
+                const iliasObjectPromises = [];
                 for (let i = 0; i < response.rows.length; i++) {
                     iliasObjectPromises.push(ILIASObject.find(response.rows.item(i).id));
                     Log.describe(this, "Desktop item row: ", response.rows.item(i))

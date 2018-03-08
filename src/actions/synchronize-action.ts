@@ -10,18 +10,18 @@ import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-moda
 
 export class SynchronizeAction extends ILIASObjectAction {
 
-    public constructor(public title:string,
-                       public object:ILIASObject,
-                       public sync:SynchronizationService,
+    constructor(public title: string,
+                       public object: ILIASObject,
+                       public sync: SynchronizationService,
                         public modal: ModalController,
-                        public translate:TranslateService) {
+                        public translate: TranslateService) {
         super();
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    execute(): Promise<ILIASObjectActionResult> {
             return this.sync.execute(this.object).then((syncResult) => {
                 if(syncResult.objectsLeftOut.length > 0 ){
-                    let syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
+                    const syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
                     syncModal.present();
                     return Promise.resolve(new ILIASObjectActionNoMessage());
                 } else {
@@ -30,7 +30,7 @@ export class SynchronizeAction extends ILIASObjectAction {
             });
     }
 
-    public alert():ILIASObjectActionAlert|any {
+    alert(): ILIASObjectActionAlert|any {
         return null;
     }
 

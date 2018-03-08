@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Events, Platform} from "ionic-angular";
+import {isNullOrUndefined} from "util";
 import {IllegalStateError} from "../error/errors";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
@@ -145,69 +146,49 @@ export class FileService {
      * Deletes the local file on the device from the given ILIAS file object
      * @param fileObject
      */
-    remove(fileObject: ILIASObject): Promise<void> {
-        return User.find(fileObject.userId).then(user => {
-            if (fileObject.data.hasOwnProperty("fileName") && fileObject.data.hasOwnProperty("fileVersionDateLocal")) {
-                const storageLocation: string = this.getStorageLocation(user, fileObject);
+    async remove(fileObject: ILIASObject): Promise<void> {
+        const user: User = await User.find(fileObject.userId);
+        if (fileObject.data.hasOwnProperty("fileName")) {
+          const storageLocation: string = this.getStorageLocation(user, fileObject);
 
-                // There's no local file to delete.
-                if(fileObject.data.fileVersionDateLocal == undefined)
-                    return Promise.resolve();
+          // There's no local file to delete.
+          if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
+            return;
 
-                // We delete the file and save the metadata.
-                return Promise.all([
-                    this.file.removeFile(storageLocation, fileObject.data.fileName),
-                    this.resetFileVersionLocal(fileObject)
-                ]).then(() => Promise.resolve());
+          // We delete the file and save the metadata.
+          await this.file.removeFile(storageLocation, fileObject.data.fileName);
+          await this.resetFileVersionLocal(fileObject);
 
-            } else {
-                return Promise.reject(new Error("Metadata of file object is not (fully) present"));
-            }
-        });
+        } else {
+          throw new Error("Metadata of file object is not (fully) present");
+        }
     }
 
     /**
      * Remove all local files recursively under the given container ILIAS object
      * @param containerObject
      */
-    removeRecursive(containerObject: ILIASObject): Promise<void> {
-            this.footerToolbar.addJob(Job.DeleteFilesTree, this.translate.instant("deleting_files"));
-            return ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId).then(iliasObjects => {
-                iliasObjects.push(containerObject);
-                const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
-                    return iliasObject.type == "file";
-                });
-                const promises: Array<Promise<void>> = [];
-                fileObjects.forEach(fileObject => {
-                    promises.push(this.remove(fileObject));
-                });
+    async removeRecursive(containerObject: ILIASObject): Promise<void> {
 
-                return Promise.all(promises);
-            }).then(() => {
-                Log.write(this, "Deleting Files complete");
-                this.footerToolbar.removeJob(Job.DeleteFilesTree);
-                return Promise.resolve();
-            }).catch((error) => {
-                Log.error(this, error);
-                this.footerToolbar.removeJob(Job.DeleteFilesTree);
-                return Promise.reject(error);
-            });
+        try {
+          this.log.trace(() => "Start recursive removal of files");
+          this.footerToolbar.addJob(Job.DeleteFilesTree, this.translate.instant("deleting_files"));
+          const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
+          iliasObjects.push(containerObject);
+          const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
+            return iliasObject.type === "file";
+          });
+          for(const fileObject of fileObjects)
+            await this.remove(fileObject);
+          this.log.info(() => "Deleting Files complete");
+          this.footerToolbar.removeJob(Job.DeleteFilesTree);
+        }
+        catch (error) {
+          this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
+          this.footerToolbar.removeJob(Job.DeleteFilesTree);
+          throw error;
+        }
     }
-
-    /**
-     * Recursive function that will remove all fileObjects given.
-     * @param fileObjects
-     * @returns {any}
-     */
-    protected async removeAll(fileObjects: Array<ILIASObject>): Promise<void> {
-        if (fileObjects.length == 0)
-            return;
-
-        const object: ILIASObject|undefined = fileObjects.pop();
-        await this.remove(object);
-        await this.removeAll(fileObjects)
-    }
-
 
     /**
      * Tries to open the given file with an external application
@@ -220,7 +201,7 @@ export class FileService {
       return this.openExisting(fileEntry, fileObject);
     }
 
-    protected openExisting(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
+    private openExisting(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
         if (this.platform.is("android")) {
             return this.openExistingAndroid(fileEntry, fileObject);
         } else {
@@ -228,7 +209,7 @@ export class FileService {
         }
     }
 
-    protected async openExistingAndroid(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
+    private async openExistingAndroid(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
       this.log.debug(() => `Opening file on Android: ${fileEntry.fullPath}`);
       window["cordova"].plugins.fileOpener2.open(
         fileEntry.toURL(),
@@ -251,7 +232,7 @@ export class FileService {
       );
     }
 
-    protected async openExistingIOS(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
+    private async openExistingIOS(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
         const user: User = await User.currentUser();
         this.log.debug(() => `Opening file on iOS: ${this.getStorageLocation(user, fileObject)}${fileObject.data.fileName}`);
 
@@ -311,7 +292,7 @@ export class FileService {
      * Set the fileVersionDateLocal to fileVersionDate from ILIAS
      * @param fileObject
      */
-    protected storeFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
+    private storeFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
         return new Promise((resolve, reject) => {
             FileData.find(fileObject.id).then(fileData => {
                 // First update the local file date.
@@ -337,7 +318,7 @@ export class FileService {
      * Reset fileVersionDateLocal
      * @param fileObject
      */
-    protected resetFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
+    private resetFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
         return new Promise((resolve, reject) => {
             FileData.find(fileObject.id).then(fileData => {
                 Log.write(this, "File meta found.");

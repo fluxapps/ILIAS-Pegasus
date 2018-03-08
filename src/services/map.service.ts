@@ -286,7 +286,7 @@ export class MapBuilder {
     this.markerOptions = <MarkerOptions>{
       title: marker.title,
       icon: {
-          'url': "assets/icon/icon_xsrl.png",
+          "url": "assets/icon/icon_xsrl.png",
             },
       animation: "DROP",
       position: <ILatLng>{

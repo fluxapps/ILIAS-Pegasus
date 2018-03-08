@@ -44,7 +44,7 @@ export class NewObjectsPage {
     /**
      * Objects under the given parent object
      */
-    public objects: {[containerId: number]: Array<ILIASObject>} = {};
+    objects: {[containerId: number]: Array<ILIASObject>} = {};
 
     /**
      * The parent container object that was clicked to display the current objects
@@ -238,7 +238,7 @@ export class NewObjectsPage {
      * Show the action sheet for the given object
      * @param iliasObject
      */
-    public showActions(iliasObject: ILIASObject) {
+    showActions(iliasObject: ILIASObject) {
         this.actionSheetActive = true;
         const actionButtons: Array<ActionSheetButton> = [];
         // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);

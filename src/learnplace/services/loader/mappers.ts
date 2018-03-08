@@ -78,7 +78,7 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
     return remote.map(textBlock =>
       findIn(local, textBlock, (entity, block) => entity.iliasId == block.id)
         .orElse(new TextblockEntity())
-        .applies(function (): void {
+        .applies(function(): void {
           this.iliasId = textBlock.id;
           this.sequence = textBlock.sequence;
           this.content = textBlock.content;
