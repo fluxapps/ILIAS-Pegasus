@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, Inject, Input, OnInit} from "@angular/core";
 import {LinkBlockModel} from "../../services/block.model";
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {
@@ -12,6 +12,7 @@ import {User} from "../../../models/user";
 import {ILIASObject} from "../../../models/ilias-object";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: "link-block",
@@ -20,7 +21,9 @@ import {Logging} from "../../../services/logging/logging.service";
 export class LinkBlock implements OnInit {
 
   @Input("value")
-  readonly link: LinkBlockModel;
+  readonly observableLinkBlock: Observable<LinkBlockModel>;
+
+  link: LinkBlockModel | undefined = undefined;
   linkLabel: string | undefined = undefined;
 
   private readonly log: Logger = Logging.getLogger(LinkBlock.name);
@@ -30,18 +33,28 @@ export class LinkBlock implements OnInit {
     private readonly translate: TranslateService,
     @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
     private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+    private readonly detectorRef: ChangeDetectorRef
   ){}
 
 
   ngOnInit(): void {
 
-    User.findActiveUser().then(user => {
-      return ILIASObject.findByRefId(this.link.refId, user.id);
-    }).then(obj => {
-      this.linkLabel = obj.title;
-    }).catch(_ => {
-      this.log.info(() => `Could not load label for link block with refId: refId=${this.link.refId}`);
-      this.linkLabel = this.translate.instant("learnplace.no-link-label");
+    this.observableLinkBlock.subscribe(it => {
+      this.link = it;
+      this.detectorRef.detectChanges();
+    });
+
+    // because the ref id is immutable, we only want to read the objects title once
+    this.observableLinkBlock.first().subscribe(it => {
+
+      User.findActiveUser().then(user => {
+        return ILIASObject.findByRefId(it.refId, user.id);
+      }).then(obj => {
+        this.linkLabel = obj.title;
+      }).catch(_ => {
+        this.log.info(() => `Could not load label for link block with refId: refId=${it.refId}`);
+        this.linkLabel = this.translate.instant("learnplace.no-link-label");
+      });
     });
   }
 

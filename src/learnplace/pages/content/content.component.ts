@@ -6,6 +6,7 @@ import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {TranslateService} from "ng2-translate";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   templateUrl: "content.html"
@@ -14,7 +15,7 @@ export class ContentPage implements AfterViewInit {
 
   private readonly learnplaceId: number;
   readonly title: string;
-  readonly blockList: Array<BlockModel> = [];
+  readonly blockList: Array<Observable<BlockModel>> = [];
 
   private readonly log: Logger = Logging.getLogger(ContentPage.name);
 

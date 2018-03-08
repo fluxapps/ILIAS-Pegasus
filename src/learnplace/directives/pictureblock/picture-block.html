@@ -1,15 +1,15 @@
-<ion-card *ngIf="picture.visible">
+<ion-card *ngIf="pictureBlock.visible">
   <ion-card-content>
-    <img (click)="show()" [src]="embeddedSrc" alt="{{picture.title}}"/>
-    <ion-card-title *ngIf="picture.title">
-      {{picture.title}}
+    <img (click)="show()" [src]="embeddedSrc" alt="{{pictureBlock.title}}"/>
+    <ion-card-title *ngIf="pictureBlock.title">
+      {{pictureBlock.title}}
     </ion-card-title>
-    <p *ngIf="picture.description">{{picture.description}}</p>
+    <p *ngIf="pictureBlock.description">{{pictureBlock.description}}</p>
   </ion-card-content>
 </ion-card>
 
 
-<ion-card *ngIf="!picture.visible" color=primary>
+<ion-card *ngIf="!pictureBlock.visible" color=primary>
   <ion-card-content>
       You're to far away to view this picture.
   </ion-card-content>

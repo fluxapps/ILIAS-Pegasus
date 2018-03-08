@@ -14,12 +14,13 @@ import {TextblockEntity} from "../entity/textblock.entity";
 import {PictureBlockEntity} from "../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../entity/linkblock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export interface BlockService {
 
@@ -27,11 +28,13 @@ export interface BlockService {
    * Returns all block types related to the given {@code learnplaceId}.
    * The returned array is ordered by the {@link BlockModel#sequence} property.
    *
+   * The returned array contains {@link Observable} for each block.
+   *
    * @param {number} learnplaceId - the id of the related learnplace
    *
-   * @returns {Promise<Array<TextBlockModel>>} an ordered array of all block types
+   * @returns {Promise<Array<Observable<BlockModel>>>} an ordered array of observables for each block type
    */
-  getBlocks(learnplaceId: number): Promise<Array<BlockModel>>
+  getBlocks(learnplaceId: number): Promise<Array<Observable<BlockModel>>>
 }
 export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockService>("token for block service");
 
@@ -39,7 +42,7 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * Manages the visibility of all blocks by using a {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.5
+ * @version 1.0.0
  */
 @Injectable()
 export class VisibilityManagedBlockService implements BlockService {
@@ -50,7 +53,17 @@ export class VisibilityManagedBlockService implements BlockService {
     private readonly sanitizer: DomSanitizer
   ) {}
 
-  async getBlocks(learnplaceId: number): Promise<Array<BlockModel>> {
+  /**
+   * Returns an array of observables for each block of the learnplace
+   * matching the given {@code learnplaceId}.
+   *
+   * The array is sorted by the {@code sequence} property of each block.
+   *
+   * @param {number} learnplaceId - object id of the learnplace
+   *
+   * @return {Promise<Array<Observable<BlockModel>>>} sorted array of observables of a specific block
+   */
+  async getBlocks(learnplaceId: number): Promise<Array<Observable<BlockModel>>> {
 
     const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId))
       .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${learnplaceId}`));
@@ -63,44 +76,46 @@ export class VisibilityManagedBlockService implements BlockService {
       ...this.mapLinkBlocks(learnplace.linkBlocks),
       ...this.mapVideoBlocks(learnplace.videoBlocks),
       ...this.mapAccordionBlock(learnplace.accordionBlocks)
-    ].sort((a, b) => a.sequence - b.sequence);
+    ].sort((a, b) => a[0] - b[0])
+      .map(it => it[1]);
   }
 
-  private mapTextblocks(textBlocks: Array<TextblockEntity>): Array<TextBlockModel> {
-    return textBlocks.map(it => {
+  private mapTextblocks(textBlocks: Array<TextblockEntity>): Array<[number, Observable<TextBlockModel>]> {
+
+    return textBlocks.map<[number, Observable<TextBlockModel>]>(it => {
       const model: TextBlockModel = new TextBlockModel(it.sequence, this.sanitizer.bypassSecurityTrustHtml(it.content));
-      this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-      return model;
+      const observable: Observable<TextBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
+      return [it.sequence, observable];
     });
   }
 
-  private mapPictureBlocks(pictureBlocks: Array<PictureBlockEntity>): Array<PictureBlockModel> {
-    return pictureBlocks.map(it => {
+  private mapPictureBlocks(pictureBlocks: Array<PictureBlockEntity>): Array<[number, Observable<PictureBlockModel>]> {
+    return pictureBlocks.map<[number, Observable<PictureBlockModel>]>(it => {
       const model: PictureBlockModel = new PictureBlockModel(it.sequence, it.title, it.description, it.thumbnail, it.url);
-      this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-      return model;
+      const observable: Observable<PictureBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
+      return [it.sequence, observable];
     });
   }
 
-  private mapLinkBlocks(linkBlocks: Array<LinkblockEntity>): Array<LinkBlockModel> {
+  private mapLinkBlocks(linkBlocks: Array<LinkblockEntity>): Array<[number, Observable<LinkBlockModel>]> {
 
-    return linkBlocks.map(it => {
+    return linkBlocks.map<[number, Observable<LinkBlockModel>]>(it => {
       const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
-      this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-      return model;
+      const observable: Observable<LinkBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
+      return [it.sequence, observable];
     })
   }
 
-  private mapVideoBlocks(videoBlocks: Array<VideoBlockEntity>): Array<VideoBlockModel> {
-    return videoBlocks.map(it => {
+  private mapVideoBlocks(videoBlocks: Array<VideoBlockEntity>): Array<[number, Observable<VideoBlockModel>]> {
+    return videoBlocks.map<[number, Observable<VideoBlockModel>]>(it => {
       const model: VideoBlockModel = new VideoBlockModel(it.sequence, it.url);
-      this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-      return model;
+      const observable: Observable<VideoBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
+      return [it.sequence, observable];
     })
   }
 
-  private mapAccordionBlock(accordions: Array<AccordionEntity>): Array<AccordionBlockModel> {
-    return accordions.map(it => {
+  private mapAccordionBlock(accordions: Array<AccordionEntity>): Array<[number, Observable<AccordionBlockModel>]> {
+    return accordions.map<[number, Observable<AccordionBlockModel>]>(it => {
       const model: AccordionBlockModel = new AccordionBlockModel(
         it.sequence,
         it.title,
@@ -110,10 +125,11 @@ export class VisibilityManagedBlockService implements BlockService {
           ...this.mapPictureBlocks(it.pictureBlocks),
           ...this.mapLinkBlocks(it.linkBlocks),
           ...this.mapVideoBlocks(it.videoBlocks)
-        ].sort((a, b) => a.sequence - b.sequence)
+        ].sort((a, b) => a[0] - b[0])
+          .map(it => it[1])
       );
-      this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-      return model;
+      const observable: Observable<AccordionBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
+      return [it.sequence, observable];
     })
   }
 }

@@ -14,6 +14,8 @@ import {UserEntity} from "../../../entity/user.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Platform} from "ionic-angular";
+import {Observable} from "rxjs/Observable";
+import {Subscriber} from "rxjs/Subscriber";
 
 /**
  * Enumerator for available strategies.
@@ -32,20 +34,26 @@ export enum VisibilityStrategyType {
  * Describes a strategy to handle a specific visibility
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export interface VisibilityStrategy {
 
   /**
    * Uses this strategy on the given {@code object}.
+   * The returned observable will notify its subscribers every time
+   * this strategy changes the given {@code object}.
    *
-   * @param {VisibilityAware} object the block to use in this strategy
+   * The updated {@code object} will be given to the observable's subscribers.
+   *
+   * @param {T} object - the block to use in this strategy
+   *
+   * @return {Observable<T>} an observable for the given {@code object}
    */
-  on(object: VisibilityAware): void
+  on<T extends VisibilityAware>(object: T): Observable<T>
 }
 
 /**
- * Describes a visibility strategy that has knowlegde about the membership of the used {@code VisibilityAware} model.
+ * Describes a visibility strategy that has knowledge about the membership of the used {@code VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
@@ -66,34 +74,52 @@ export interface MembershipAwareStrategy extends VisibilityStrategy {
  * Strategy, that will always set the block visibility to visible.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class AlwaysStrategy implements VisibilityStrategy {
 
   /**
-   * Sets the {@code visible} property of the given {@code object} to true.
+   * Sets the {@code visible} property of the given {@code object} to true,
+   * notifies the subscriber of the returned observable and completes it.
    *
-   * @param {VisibilityAware} object the block to use in this strategy
+   * @param {T} object - the block to use in this strategy
+   *
+   * @return {Observable<T>} an observable for the given {@code object}
    */
-  on(object: VisibilityAware): void { object.visible = true }
+  on<T extends VisibilityAware>(object: T): Observable<T> {
+    return Observable.create((subscriber: Subscriber<T>) => {
+      object.visible = true;
+      subscriber.next(object);
+      subscriber.complete();
+    });
+  }
 }
 
 /**
  * Strategy, that will always set the block visibility to invisible.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class NeverStrategy implements VisibilityStrategy {
 
   /**
-   * Sets the {@code visible} property of the given {@code object} to false.
+   * Sets the {@code visible} property of the given {@code object} to false,
+   * notifies the subscriber of the returned observable and completes it.
    *
-   * @param {VisibilityAware} object the block to use in this strategy
+   * @param {T} object - the block to use in this strategy
+   *
+   * @return {Observable<T>} an observable for the given {@code object}
    */
-  on(object: VisibilityAware): void { object.visible = false }
+  on<T extends VisibilityAware>(object: T): Observable<T> {
+    return Observable.create((subscriber: Subscriber<T>) => {
+      object.visible = false;
+      subscriber.next(object);
+      subscriber.complete();
+    });
+  }
 }
 
 /**
@@ -112,8 +138,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
 
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    private readonly geolocation: Geolocation,
-    private readonly platform: Platform
+    private readonly geolocation: Geolocation
   ) {}
 
   /**
@@ -131,37 +156,35 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
    * Watches the current position and sets the visibility of the given {@code object}
    * to true, if its 'near' to the learnplace with the matching membership specified by {@link OnlyAtPlaceStrategy#membership} method.
    *
+   * If the visibility is set to true, subscriber of the returned observable are notified.
+   *
    * The current position is considered as 'near', if the distance of the current position
    * to the learnplace position is in the learnplace radius.
    *
-   * This method is executed asynchronously and can not be used with await or Promise#then.
+   * @param {T} object - the object to use in this strategy
    *
-   * @param {VisibilityAware} object - the object to use in this strategy
+   * @return {Observable<T>} an observable for the given {@code object}
    */
-  on(object: VisibilityAware): void {
-    this.execute(object);
-  }
+  on<T extends VisibilityAware>(object: T): Observable<T> {
+    return Observable.create(async(subscriber: Subscriber<T>) => {
 
-  /**
-   * Helper method to enable async/await.
-   */
-  private async execute(object: VisibilityAware): Promise<void> {
+      subscriber.next(object);
 
-    await this.platform.ready();
+      const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
+        .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`));
 
-    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
-      .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`));
+      const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
-    const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
+      this.log.trace(() => "Watch position for visibility 'Only at Place'");
+      this.geolocation.watchPosition()
+        .filter(p => isDefined(p.coords))
+        .subscribe(location => {
 
-    this.log.trace(() => "Watch position for visibility 'Only at Place'");
-    this.geolocation.watchPosition()
-      .filter(p => isDefined(p.coords))
-      .subscribe(location => {
+          const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
 
-      const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
-
-      object.visible = learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
+          object.visible = learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
+          subscriber.next(object);
+        });
     });
   }
 }
@@ -170,7 +193,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
  * Strategy, that will set the {@code VisibilityAware} model to visible,
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
@@ -197,7 +220,8 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
 
   /**
    * Checks if the current user is in the journal entry of the learnplace matching the {@code AfterVisitPlaceStrategy#membership} id.
-   * If the user exists in the journal, the visibility of the given {@code object} is set to true.
+   * If the user exists in the journal, the visibility of the given {@code object} is set to true,
+   * notifies the subscriber of the returned observable and completes it.
    *
    * Otherwise, the current position is watched and sets the visibility of the given {@code object}
    * to true, if its 'near' to the learnplace.
@@ -206,40 +230,41 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
    * to the learnplace position is in the learnplace radius. Once the current position is 'near' to
    * the learnplace, it will stop watching the current position.
    *
-   * This method is executed asynchronously and can not be used with await or Promise#then.
+   * @param {T} object - the object to use in this strategy
    *
-   * @param {VisibilityAware} object - the object to use in this strategy
+   * @return {Observable<T>} an observable for the given {@code object}
    */
-  on(object: VisibilityAware): void {
-    this.execute(object);
-  }
+  on<T extends VisibilityAware>(object: T): Observable<T> {
+    return Observable.create(async(subscriber: Subscriber<T>) => {
 
-  /**
-   * Helper method to enable async/await.
-   */
-  private async execute(object: VisibilityAware): Promise<void> {
+      subscriber.next(object);
 
-    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
-      .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
+      const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
+        .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
 
-    const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+      const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
 
-    if (isDefined(learnplace.visitJournal.find(it => it.id == user.iliasUserId))) {
-      object.visible = true;
-      return;
-    }
-
-    const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
-
-    const watch: Subscription = this.geolocation.watchPosition().subscribe(async(location) => {
-
-      const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
-
-      if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
-        watch.unsubscribe();
-
+      if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
         object.visible = true;
+        subscriber.next(object);
+        subscriber.complete();
+        return;
       }
+
+      const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
+
+      const watch: Subscription = this.geolocation.watchPosition().subscribe(async(location) => {
+
+        const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
+
+        if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
+          watch.unsubscribe();
+
+          object.visible = true;
+          subscriber.next(object);
+          subscriber.complete();
+        }
+      });
     });
   }
 }
