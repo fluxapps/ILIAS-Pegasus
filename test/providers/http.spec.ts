@@ -98,7 +98,7 @@ describe("a http response", () => {
 
         chai.expect((): void => { httpResponse.json(schema) })
           .to.throw(JsonValidationError)
-          .to.have.property("message", 'requires property "id"');
+          .to.have.property("message", "Response body does not match json schema");
 			})
 		});
 
