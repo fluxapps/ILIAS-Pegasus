@@ -16,6 +16,8 @@ export class TabsPage implements OnInit, OnDestroy {
   readonly contentPage: object = ContentPage;
   readonly contentPageParams: ContentPageParams;
 
+  readonly title: string;
+
   constructor(
     private readonly hardware: Hardware,
     private readonly nav: NavController,
@@ -33,6 +35,8 @@ export class TabsPage implements OnInit, OnDestroy {
       learnplaceId: learnplaceId,
       learnplaceName: learnplaceName
     };
+
+    this.title = learnplaceName;
 
     this.visitJournalWatch.setLearnplace(learnplaceId);
     this.visitJournalWatch.start();
