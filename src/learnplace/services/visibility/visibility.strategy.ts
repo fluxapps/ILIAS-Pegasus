@@ -53,6 +53,21 @@ export interface VisibilityStrategy {
 }
 
 /**
+ * Describes a visibility strategy that can be shutdown,
+ * in order to make sure all depending tasks are finished or aborted.
+ *
+ * @author nmaerchy <nm@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface ShutdownVisibilityStrategy extends VisibilityStrategy {
+
+  /**
+   * Makes sure that this strategy stops every depending task.
+   */
+  shutdown(): void;
+}
+
+/**
  * Describes a visibility strategy that has knowledge about the membership of the used {@code VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
@@ -130,9 +145,11 @@ export class NeverStrategy implements VisibilityStrategy {
  * @version 1.0.0
  */
 @Injectable()
-export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
+export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
   private membershipId: number = -1;
+
+  private watch: Subscription | undefined = undefined;
 
   private readonly log: Logger = Logging.getLogger(OnlyAtPlaceStrategy.name);
 
@@ -176,8 +193,8 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
       const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
       this.log.trace(() => "Watch position for visibility 'Only at Place'");
-      this.geolocation.watchPosition()
-        .filter(p => isDefined(p.coords))
+      this.watch = this.geolocation.watchPosition()
+        .filter(it => isDefined(it.coords))
         .subscribe(location => {
 
           const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
@@ -186,6 +203,14 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
           subscriber.next(object);
         });
     });
+  }
+
+  /**
+   * Stops watching the device's location.
+   */
+  shutdown(): void {
+    if (isDefined(this.watch))
+      this.watch.unsubscribe();
   }
 }
 
@@ -196,9 +221,11 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy {
  * @version 1.0.0
  */
 @Injectable()
-export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
+export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
   private membershipId: number = -1;
+
+  private watch: Subscription | undefined = undefined;
 
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
@@ -253,18 +280,28 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy {
 
       const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
-      const watch: Subscription = this.geolocation.watchPosition().subscribe(async(location) => {
+      this.watch = this.geolocation.watchPosition()
+        .filter(it => isDefined(it.coords))
+        .subscribe(async(location) => {
 
         const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
 
         if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
-          watch.unsubscribe();
 
           object.visible = true;
           subscriber.next(object);
           subscriber.complete();
+          this.shutdown();
         }
       });
     });
+  }
+
+  /**
+   * Stops watching the device's location.
+   */
+  shutdown(): void {
+    if(isDefined(this.watch))
+      this.watch.unsubscribe();
   }
 }

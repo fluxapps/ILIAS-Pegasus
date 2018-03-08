@@ -9,7 +9,7 @@ import {LearnplaceEntity} from "../entity/learnplace.entity";
  * Describes a service to operate with Maps.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export interface MapService {
 
@@ -21,6 +21,11 @@ export interface MapService {
    * @returns {Promise<MapModel>} the resulting model
    */
   getMap(learnplaceId: number): Promise<MapModel>
+
+  /**
+   * Shutdown every depending or async task which can be occurred by the {@link MapService#getMap} method.
+   */
+  shutdown(): void;
 }
 export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token for map service");
 
@@ -28,7 +33,7 @@ export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token
  * Manages the visibility of a map by using the {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.1.0
+ * @version 1.2.0
  */
 @Injectable()
 export class VisibilityManagedMapService implements MapService {
@@ -63,5 +68,13 @@ export class VisibilityManagedMapService implements MapService {
     this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
 
     return map;
+  }
+
+
+  /**
+   * Invokes {@link VisibilityStrategyApplier#shutdown} method.
+   */
+  shutdown(): void {
+    this.visibilityStrategyApplier.shutdown();
   }
 }

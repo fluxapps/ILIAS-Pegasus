@@ -73,6 +73,14 @@ export class VisibilityStrategyApplier {
       }
    }
 
+  /**
+   * Shutdown the {@link OnlyAtPlaceStrategy} and {@link AfterVisitPlaceStrategy} by invoking their {@code shutdown} method.
+   */
+  shutdown(): void {
+     this.onlyAtPlaceStrategy.shutdown();
+     this.afterVisitPlace.shutdown();
+   }
+
    private requireLearnplace(): void {
      if (isUndefined(this.learnplaceId)) {
        throw new IllegalStateError(`Can not apply strategy without learnplace id: Call ${VisibilityStrategyApplier.name}#setLearnplace first`);

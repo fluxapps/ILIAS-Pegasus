@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject} from "@angular/core";
+import {AfterViewInit, Component, Inject, OnDestroy} from "@angular/core";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {AlertController, AlertOptions, NavParams, Platform} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
@@ -12,7 +12,7 @@ import {Logging} from "../../../services/logging/logging.service";
     selector: "map",
     templateUrl: "map.html"
 })
-export class MapPage implements AfterViewInit{
+export class MapPage implements AfterViewInit, OnDestroy {
 
   private readonly learnplaceId: number;
   readonly title: string;
@@ -33,7 +33,13 @@ export class MapPage implements AfterViewInit{
   ngAfterViewInit(): void {
     this.platform.ready().then((): void => {this.init()})
   }
-  // // anoter FIX map not loading on tab change
+
+
+  ngOnDestroy(): void {
+    this.mapService.shutdown();
+  }
+
+// // anoter FIX map not loading on tab change
   // ionViewDidLoad() {
   // setTimeout(() => {
   // this.mapService.getMap(this.learnplaceId);

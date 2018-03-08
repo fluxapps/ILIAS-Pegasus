@@ -35,6 +35,11 @@ export interface BlockService {
    * @returns {Promise<Array<Observable<BlockModel>>>} an ordered array of observables for each block type
    */
   getBlocks(learnplaceId: number): Promise<Array<Observable<BlockModel>>>
+
+  /**
+   * Shutdown every depending or async task which can be occurred by the {@link BlockService#getBlocks} method.
+   */
+  shutdown(): void;
 }
 export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<BlockService>("token for block service");
 
@@ -42,7 +47,7 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * Manages the visibility of all blocks by using a {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Injectable()
 export class VisibilityManagedBlockService implements BlockService {
@@ -78,6 +83,13 @@ export class VisibilityManagedBlockService implements BlockService {
       ...this.mapAccordionBlock(learnplace.accordionBlocks)
     ].sort((a, b) => a[0] - b[0])
       .map(it => it[1]);
+  }
+
+  /**
+   * Invokes {@link VisibilityStrategyApplier#shutdown} method.
+   */
+  shutdown(): void {
+    this.strategyApplier.shutdown();
   }
 
   private mapTextblocks(textBlocks: Array<TextblockEntity>): Array<[number, Observable<TextBlockModel>]> {

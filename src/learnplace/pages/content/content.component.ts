@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject} from "@angular/core";
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {BlockModel} from "../../services/block.model";
 import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
 import {AlertController, AlertOptions, NavParams} from "ionic-angular";
@@ -11,7 +11,7 @@ import {Observable} from "rxjs/Observable";
 @Component({
   templateUrl: "content.html"
 })
-export class ContentPage implements AfterViewInit {
+export class ContentPage implements OnInit, OnDestroy {
 
   private readonly learnplaceId: number;
   readonly title: string;
@@ -29,13 +29,18 @@ export class ContentPage implements AfterViewInit {
     this.title = params.get("learnplaceName");
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.blockService.getBlocks(this.learnplaceId)
       .then(blocks => this.blockList.push(...blocks))
       .catch(error => {
         this.log.warn(() => `Could not load content: error=${JSON.stringify(error)}`);
         this.showAlert(this.translate.instant("something_went_wrong"));
       });
+  }
+
+
+  ngOnDestroy(): void {
+    this.blockService.shutdown();
   }
 
   private showAlert(message: string): void {
