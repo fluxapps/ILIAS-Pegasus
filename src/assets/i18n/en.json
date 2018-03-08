@@ -194,5 +194,10 @@
   },
   "learnplace": {
     "no-link-label": "You don't have access to the link"
+  },
+  "fallback": {
+    "browser": "You are leaving the ILIAS Pegasus App ",
+    "browser_ok": "OK, let's go!",
+    "browser_no": "No. return!"
   }
 }
