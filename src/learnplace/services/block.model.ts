@@ -1,6 +1,7 @@
 import {VisibilityAware} from "./visibility/visibility.context";
 import {SafeHtml} from "@angular/platform-browser";
 import {Observable} from "rxjs/Observable";
+import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 
 /**
  * Contains information to display a map.
@@ -15,8 +16,20 @@ export class MapModel implements VisibilityAware {
     readonly latitude: number,
     readonly longitude: number,
     readonly zoom: number,
-    public visible: boolean = false
+    private readonly visibility: VisibilityStrategyType,
+    public visible: boolean = false,
   ) {}
+
+  getDescription(): string {
+    switch (this.visibility) {
+      case VisibilityStrategyType.NEVER:
+        return "This learnplace has no map";
+      case VisibilityStrategyType.ALWAYS:
+        return "";
+      default:
+        return "You are too far away to view the map";
+    }
+  }
 }
 
 /**

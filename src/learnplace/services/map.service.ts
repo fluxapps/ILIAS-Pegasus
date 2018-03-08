@@ -4,6 +4,8 @@ import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
+import {Observable} from "rxjs/Observable";
+import {Subscriber} from "rxjs/Subscriber";
 
 /**
  * Describes a service to operate with Maps.
@@ -18,9 +20,9 @@ export interface MapService {
    *
    * @param {number} learnplaceId - the id of the learnplace to find the according map
    *
-   * @returns {Promise<MapModel>} the resulting model
+   * @returns {Observable<MapModel>} an observable of the map
    */
-  getMap(learnplaceId: number): Promise<MapModel>
+  getMap(learnplaceId: number): Observable<MapModel>
 
   /**
    * Shutdown every depending or async task which can be occurred by the {@link MapService#getMap} method.
@@ -50,26 +52,29 @@ export class VisibilityManagedMapService implements MapService {
    *
    * @param {number} learnplaceId - the id of the learnplace to find the according map
    *
-   * @returns {Promise<MapModel>} the resulting model
+   * @returns {Observable<MapModel>} an observable of the map
    * @throws {NoSuchElementError} if no learnplace matches the given id
    */
-  async getMap(learnplaceId: number): Promise<MapModel> {
+  getMap(learnplaceId: number): Observable<MapModel> {
 
-    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(learnplaceId)).get();
+    return Observable.fromPromise(this.learnplaceRepository.find(learnplaceId))
+      .map(it => {
 
-    const map: MapModel = new MapModel(
-      "", // TODO: what title do we want
-      learnplace.location.latitude,
-      learnplace.location.longitude,
-      learnplace.map.zoom
-    );
+        const learnplace: LearnplaceEntity = it.get();
 
-    this.visibilityStrategyApplier.setLearnplace(learnplaceId);
-    this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
+        const map: MapModel = new MapModel(
+          "", // TODO: what title do we want
+          learnplace.location.latitude,
+          learnplace.location.longitude,
+          learnplace.map.zoom,
+          VisibilityStrategyType[learnplace.map.visibility.value]
+        );
 
-    return map;
+        this.visibilityStrategyApplier.setLearnplace(learnplaceId);
+        return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
+      })
+      .mergeAll();
   }
-
 
   /**
    * Invokes {@link VisibilityStrategyApplier#shutdown} method.
