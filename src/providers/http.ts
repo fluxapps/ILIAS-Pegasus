@@ -2,13 +2,13 @@ import {HttpClient as Http, HttpResponse as Response, HttpHeaders, HttpParams} f
 import {Validator, ValidatorResult} from "jsonschema";
 import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
+import {Observable} from "rxjs/Observable";
 import {IllegalStateError} from "../error/errors";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isDefined} from "ionic-angular/es2015/util/util";
-import {timeout} from "rxjs/operators";
 
-export const DEFAULT_TIMEOUT: number = 20000;
+export const DEFAULT_TIMEOUT: number = 3600;
 
 /**
  * Abstracts the Http service of angular in async methods.
@@ -19,6 +19,8 @@ export const DEFAULT_TIMEOUT: number = 20000;
  */
 @Injectable()
 export class HttpClient {
+
+  private static readonly RETRY_COUNT: number = 2;
 
   private readonly log: Logger = Logging.getLogger(HttpClient.name);
 
@@ -36,20 +38,22 @@ export class HttpClient {
    */
   async get(url: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    try {
+    this.log.trace(() => `Http GET request to: ${url}`);
+    const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
+      .timeout(DEFAULT_TIMEOUT)
+      .do(
+        (_) => this.log.trace(() => `Http GET request succeeded to: ${url}`),
+        (_) => this.log.warn(() => `Http GET request attempt failed to: ${url}`)
+      )
+      .retry(HttpClient.RETRY_COUNT)
+      .catch((error) => {
+        this.log.error(() => `Http GET request failed: resource=${url}`);
+        this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
+        return Observable.throw(new UnfinishedHttpRequestError(`Could no finish request: url=${url}`));
+      })
+      .toPromise();
 
-      this.log.trace(() => `Http GET request to: ${url}`);
-      const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
-        .pipe(timeout(DEFAULT_TIMEOUT))
-        .toPromise();
-
-      return new HttpResponse(response);
-
-    } catch(error) {
-      this.log.warn(() => `Http GET request failed: resource=${url}`);
-      this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
-      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
-    }
+    return new HttpResponse(response);
   }
 
   /**
@@ -64,20 +68,22 @@ export class HttpClient {
    */
   async post(url: string, body?: string, options?: RequestOptions): Promise<HttpResponse> {
 
-    try {
-
-      this.log.trace(() => `Http POST request to: ${url}`);
-      const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
-        .pipe(timeout(DEFAULT_TIMEOUT))
-        .toPromise();
+    this.log.trace(() => `Http POST request to: ${url}`);
+    const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
+      .timeout(DEFAULT_TIMEOUT)
+      .do(
+        (_) => this.log.trace(() => `Http POST request succeeded to: ${url}`),
+        (_) => this.log.warn(() => `Http POST request attempt failed to: ${url}`)
+      )
+      .retry(HttpClient.RETRY_COUNT)
+      .catch((error) => {
+        this.log.error(() => `Http POST request failed: resource=${url}`);
+        this.log.debug(() => `Http POST request error: ${JSON.stringify(error)}`);
+        return Observable.throw(new UnfinishedHttpRequestError(`Could no finish POST request: url=${url}`));
+      })
+      .toPromise();
 
       return new HttpResponse(response);
-
-    } catch (error) {
-      this.log.warn(() => `Http GET request failed: resource=${url}`);
-      this.log.debug(() => `Http GET request error: ${error}`);
-      throw new UnfinishedHttpRequestError(`Could no finish request: url=${url}`);
-    }
   }
 }
 

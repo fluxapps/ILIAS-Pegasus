@@ -39,7 +39,7 @@ import {TimeLine} from "../../models/timeline";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {TimeoutError} from "rxjs/Rx";
-import {HttpRequestError} from "../../providers/http";
+import {HttpRequestError, UnfinishedHttpRequestError} from "../../providers/http";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
@@ -377,6 +377,12 @@ export class ObjectListPage {
 
       if(error instanceof HttpRequestError) {
         this.log.warn(() => `Unable to sync news due to http request error "${error.statuscode}".`);
+        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
+        return;
+      }
+
+      if(error instanceof UnfinishedHttpRequestError) {
+        this.log.warn(() => `Unable to sync due to http request error with message "${error.message}".`);
         this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
         return;
       }

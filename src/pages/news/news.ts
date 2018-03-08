@@ -9,7 +9,7 @@ import {Log} from "../../services/log.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
 import {Alert, AlertController, AlertOptions, Modal, ModalController, Refresher} from "ionic-angular";
 import {TimeoutError} from "rxjs/Rx";
-import {HttpRequestError} from "../../providers/http";
+import {HttpRequestError, UnfinishedHttpRequestError} from "../../providers/http";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
@@ -192,6 +192,12 @@ export class NewsPage implements AfterViewInit {
 
       if(error instanceof HttpRequestError) {
         this.log.warn(() => `Unable to sync news due to http request error "${error.statuscode}".`);
+        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
+        return;
+      }
+
+      if(error instanceof UnfinishedHttpRequestError) {
+        this.log.warn(() => `Unable to sync due to http request error with message "${error.message}".`);
         this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
         return;
       }

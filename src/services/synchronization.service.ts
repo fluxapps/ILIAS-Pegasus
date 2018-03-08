@@ -1,4 +1,5 @@
 import {Inject, Injectable} from "@angular/core";
+import {ILIASObjectActionError} from "../actions/object-action";
 import {ILIASObject} from "../models/ilias-object";
 import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
@@ -90,7 +91,8 @@ export class SynchronizationService {
                 return Promise.resolve(syncResult);
             })
             .catch( (error) => {
-                // we catch any occuring errors in the process so we can turn off the sync status. then we delegate for any view to be able to recatch the exception.
+                // we catch any occuring errors in the process so we can turn off the sync status.
+                // then we delegate for any view to be able to recatch the exception.
                 this.syncEnded(this.user.id);
                 return Promise.reject(error);
             });
@@ -108,7 +110,8 @@ export class SynchronizationService {
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
             this._isRunning = true;
             SQLiteDatabaseService.instance().then(db => {
-                db.query("INSERT INTO synchronization (userId, startDate, endDate, isRunning) VALUES (" + user_id + ", date('now'), NULL, 1)").then(() => {
+                db.query(`INSERT INTO synchronization (userId, startDate, endDate, isRunning) VALUES (${user_id}, date('now'), NULL, 1)`)
+                  .then(() => {
                     resolve();
                 }).catch(err => {
                     Log.error(this, err);
@@ -127,26 +130,24 @@ export class SynchronizationService {
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
                 .then(db => {
-					// let now = new Date();
-					// let datestring = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+" "+("0"+now.getHours()).substr(-2) + ":" + ("0"+now.getMinutes()).substr(-2)+":00";
-					// db.query("UPDATE synchronization SET isRunning = 0, endDate = '"+datestring+"' WHERE userId = " + user_id + " AND isRunning = 1")
-					db.query("UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = " + user_id + " AND isRunning = 1")
+
+					  db.query(`UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = ${user_id} AND isRunning = 1`)
 				})
                 .then(() => this.updateLastSync(user_id));
     }
 
     updateLastSync(user_id: number){
         return SQLiteDatabaseService.instance()
-            .then(db => db.query("SELECT endDate FROM synchronization WHERE userId = " + user_id + " AND endDate not Null ORDER BY endDate DESC LIMIT 1"))
+            .then(db =>
+              db.query(`SELECT endDate FROM synchronization WHERE userId = ${user_id} AND endDate not Null ORDER BY endDate DESC LIMIT 1`))
             .then((result) => {
                 if(result.rows.length == 0)
                     return Promise.resolve(null);
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
-				const now = new Date();
+				const now: Date = new Date();
 				this.lastSync = new Date(result.rows.item(0).endDate);
-				// this.lastSync.setTime(this.lastSync.getTime() - now.getTimezoneOffset()*60*1000);
 
-				let date_string = "";
+				let date_string: string = "";
 				if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
 					if (now.getDate() == this.lastSync.getDate()) {
 						date_string = this.translate.instant("today");
@@ -156,8 +157,6 @@ export class SynchronizationService {
 				}
 
 				date_string = date_string ? date_string : this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
-
-                // this.lastSyncString = date_string +", "+("0"+this.lastSync.getHours()).substr(-2) + ":" + ("0"+this.lastSync.getMinutes()).substr(-2);
                 this.lastSyncString = date_string;
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
