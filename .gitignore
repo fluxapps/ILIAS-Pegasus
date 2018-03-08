@@ -43,6 +43,7 @@ www/*
 !www/.placeholder
 bower_components
 src/assets/config.json
+src/assets/testinstallation_config.json
 build.sh
 build2.sh
 build3.sh

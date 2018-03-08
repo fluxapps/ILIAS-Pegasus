@@ -1,20 +1,18 @@
 <ion-header no-border>
   <ion-navbar color="nobg-w">
-    <!-- <ion-title>
-        <ion-icon name="log-in"></ion-icon>
-    </ion-title> -->
-    <ion-buttons end>
+
+    <!-- <ion-buttons end>
       <button ion-button menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 <ion-content padding class="login" color="nobg-w">
   <!-- <ion-card> -->
     <img src="assets/img/molly_pony_white.svg" alt="" id="pony">
     <!-- <ion-card-header> -->
-      <h1>{{ 'login.hello' | translate:[]}}</h1>
+      <h1 text-center>{{ 'login.hello' | translate:[]}}</h1>
       <br>
     <!-- </ion-card-header> -->
     <!-- <ion-card-content> -->
@@ -29,6 +27,7 @@
       </ion-select>
     </ion-item>
     <br>
+    
     <!-- <h4>{{ 'login.instructions2' | translate:[]}}</h4> -->
     <ion-col>
       <button ion-button full block (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
@@ -36,7 +35,7 @@
   <!-- </ion-card> -->
 
     <ion-item no-lines text-align:center color="nobg-w" id="version-if-footer">
-        Version 1.1.0
+        Version 2.0.0 Beta
       </ion-item>
 
 </ion-content>
