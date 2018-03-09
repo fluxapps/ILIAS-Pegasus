@@ -1,6 +1,6 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy} from "@angular/core";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
-import {AlertController, AlertOptions, NavParams, Platform} from "ionic-angular";
+import {AlertController, AlertOptions, NavParams} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {MapModel} from "../../services/block.model";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
