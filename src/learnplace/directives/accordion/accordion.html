@@ -11,7 +11,7 @@
     </ion-card-title>
 
 
-    <div #expandWrapper [@expanded]="expanded" class="expand-wrapper">
+    <div #expandWrapper [@expanded]="expanded">
 
       <div *ngFor="let block of accordion.blocks">
         <text-block *ngIf="(block | async).isRichtext()" [value]="block"></text-block>
