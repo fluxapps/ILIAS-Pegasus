@@ -6,7 +6,13 @@
 
 <ion-content padding-vertical color="nobg-w">
 
-  <div *ngIf="blockList.length == 0">{{"learnplace.block.no_content" | translate}}</div>
+  <div *ngIf="blockList.length == 0" padding>
+    <ion-card color=primary>
+      <ion-card-content>
+        <h1 text-center>{{"learnplace.block.no_content" | translate}}</h1>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
   <div *ngFor="let block of blockList">
 
