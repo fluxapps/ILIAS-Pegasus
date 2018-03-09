@@ -17,7 +17,7 @@ import {isDefined} from "ionic-angular/es2015/util/util";
       state("1", style({
         height: "*"
       })),
-      transition("* => *", animate(".5s"))
+      transition("0 <=> 1", animate(".5s")),
     ])
   ]
 })
@@ -27,7 +27,8 @@ export class AccordionBlock implements OnInit, OnDestroy {
   readonly observableAccordion: Observable<AccordionBlockModel>;
 
   accordion: AccordionBlockModel;
-  expanded: boolean = false;
+
+  private expanded: boolean = false;
 
   private accordionSubscription: Subscription | undefined = undefined;
 
@@ -39,7 +40,7 @@ export class AccordionBlock implements OnInit, OnDestroy {
 
     this.observableAccordion.subscribe(it => {
       this.accordion = it;
-      this.expanded = it.expanded; // sets the default expanded state of the accordion
+      this.expanded = it.expanded;
       this.detectorRef.detectChanges();
     });
   }
