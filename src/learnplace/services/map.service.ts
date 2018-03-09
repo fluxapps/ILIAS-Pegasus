@@ -5,7 +5,6 @@ import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {Observable} from "rxjs/Observable";
-import {Subscriber} from "rxjs/Subscriber";
 
 /**
  * Describes a service to operate with Maps.
@@ -16,7 +15,7 @@ import {Subscriber} from "rxjs/Subscriber";
 export interface MapService {
 
   /**
-   * Creates a map by the given {@code learnplaceId}.
+   * Creates a observable map by the given {@code learnplaceId}.
    *
    * @param {number} learnplaceId - the id of the learnplace to find the according map
    *
@@ -46,7 +45,7 @@ export class VisibilityManagedMapService implements MapService {
   ) {}
 
   /**
-   * Creates a map by the given {@code learnplaceId}.
+   * Creates a observable map by the given {@code learnplaceId}.
    *
    * The returned maps visibility is managed by the {@link VisibilityStrategy}.
    *
