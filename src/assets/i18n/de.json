@@ -198,7 +198,29 @@
     "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
   },
   "learnplace": {
-    "no-link-label": "Du besitzt keine Zugriffsrechte für diesen Link"
+    "map": {
+      "no_map": "Dieser Lernort besitzt keine Karte",
+      "too_far_away": "Sie sind nicht nahe genug am Lernort, um die Karte betrachten zu können"
+    },
+    "block": {
+      "no_content": "Dieser Lernort besitzt keinen Inhalt",
+      "text": {
+        "too_far_away": "Sie sind nicht nahe genum am Lernort, um diesen Text lesen zu können"
+      },
+      "picture": {
+        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Bild ansehen zu können"
+      },
+      "link": {
+        "too_far_away": "Sie sind nicht nahe genug am Lernort, um diesen Link anklicken zu können",
+        "no_access": "Sie besitzen nicht die nötigen Zugriffsrechte für diesen Link"
+      },
+      "video": {
+        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Video ansehen zu können"
+      },
+      "accordion": {
+        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Accordion ansehen zu können"
+      }
+    }
   },
   "fallback": {
     "browser": "Sie verlassen nun die ILIAS Pegasus App",
