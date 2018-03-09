@@ -8,6 +8,6 @@
 
   <div *ngIf="map?.visible" #map id="map"></div>
 
-  <div *ngIf="!map?.visible">{{map?.getDescription()}}</div>
+  <div *ngIf="!map?.visible">{{map?.getDescriptionLangVar() | translate}}</div>
 
 </ion-content>

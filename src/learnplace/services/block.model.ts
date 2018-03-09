@@ -7,12 +7,11 @@ import {VisibilityStrategyType} from "./visibility/visibility.strategy";
  * Contains information to display a map.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
 export class MapModel implements VisibilityAware {
 
   constructor(
-    readonly title: string,
     readonly latitude: number,
     readonly longitude: number,
     readonly zoom: number,
@@ -20,14 +19,20 @@ export class MapModel implements VisibilityAware {
     public visible: boolean = false,
   ) {}
 
-  getDescription(): string {
+  /**
+   * Determines the language variable by considering the
+   * {@code visibility} property.
+   *
+   * @return {string} the according language variable
+   */
+  getDescriptionLangVar(): string {
     switch (this.visibility) {
       case VisibilityStrategyType.NEVER:
-        return "This learnplace has no map";
+        return "learnplace.map.no_map";
       case VisibilityStrategyType.ALWAYS:
         return "";
       default:
-        return "You are too far away to view the map";
+        return "learnplace.map.too_far_away";
     }
   }
 }

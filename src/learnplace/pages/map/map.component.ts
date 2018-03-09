@@ -8,7 +8,6 @@ import {TranslateService} from "ng2-translate";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Subscription} from "rxjs/Subscription";
-import {Observable} from "rxjs/Observable";
 
 @Component({
     selector: "map",
@@ -19,16 +18,13 @@ export class MapPage implements AfterViewInit, OnDestroy {
   private readonly learnplaceId: number;
   readonly title: string;
 
-  mapModel: Observable<MapModel> | undefined = undefined;
-
   map: MapModel | undefined = undefined;
 
-  private mapsubscription: Subscription | undefined = undefined;
+  private mapSubscription: Subscription | undefined = undefined;
 
   private readonly log: Logger = Logging.getLogger(MapPage.name);
 
   constructor(
-    private readonly platform: Platform,
     @Inject(MAP_SERVICE) private readonly mapService: MapService,
     private readonly translate: TranslateService,
     private readonly alert: AlertController,
@@ -41,43 +37,58 @@ export class MapPage implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
 
-    // TODO: catch error
-    this.mapsubscription = this.mapService.getMap(this.learnplaceId).subscribe(async(it) => {
+    this.mapSubscription = this.mapService.getMap(this.learnplaceId)
+      .subscribe(
+        this.init,
+        error => {
 
-      this.map = it;
+        this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
+        this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
 
-      this.detectorRef.detectChanges();
-
-      if(it.visible) {
-        const builder: MapBuilder = new MapBuilder();
-
-        const camera: CameraOptions = <CameraOptions>{
-          zoom: it.zoom,
-          position: <GeoCoordinate>{
-            latitude: it.latitude,
-            longitude: it.longitude
-          }
-        };
-
-        const marker: Marker = <Marker>{
-          position: <GeoCoordinate>{
-            latitude: it.latitude, longitude: it.longitude
-          },
-          title: this.title
-        };
-
-        await builder
-          .camera(camera)
-          .marker(marker)
-          .bind("map")
-          .build();
-      }
+        this.showAlert(this.translate.instant("something_went_wrong"));
     });
   }
 
   ngOnDestroy(): void {
     this.mapService.shutdown();
-    this.mapsubscription.unsubscribe();
+    this.mapSubscription.unsubscribe();
+  }
+
+  private async init(map: MapModel): Promise<void> {
+
+    this.map = map;
+
+    this.detectorRef.detectChanges();
+
+    /*
+     * Only build map if its visible.
+     * Otherwise the builder will fail, because there
+     * is no html element to bind.
+     */
+    if(map.visible) {
+      const builder: MapBuilder = new MapBuilder();
+
+      const camera: CameraOptions = <CameraOptions>{
+        zoom: map.zoom,
+        position: <GeoCoordinate>{
+          latitude: map.latitude,
+          longitude: map.longitude
+        }
+      };
+
+      const marker: Marker = <Marker>{
+        position: <GeoCoordinate>{
+          latitude: map.latitude, longitude: map.longitude
+        },
+        title: this.title
+      };
+
+      await builder
+        .camera(camera)
+        .marker(marker)
+        .bind("map")
+        .build();
+    }
   }
 
   private showAlert(message: string): void {

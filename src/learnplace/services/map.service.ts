@@ -63,7 +63,6 @@ export class VisibilityManagedMapService implements MapService {
         const learnplace: LearnplaceEntity = it.get();
 
         const map: MapModel = new MapModel(
-          "", // TODO: what title do we want
           learnplace.location.latitude,
           learnplace.location.longitude,
           learnplace.map.zoom,
