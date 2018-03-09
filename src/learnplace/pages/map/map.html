@@ -4,10 +4,14 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding color="nobg-w">
+<ion-content padding color="nobg-w"class="blue-gradient">
 
   <div *ngIf="map?.visible" #map id="map"></div>
 
-  <div *ngIf="!map?.visible">{{map?.getDescriptionLangVar() | translate}}</div>
+  <div *ngIf="!map?.visible" padding>
+
+    <h1 text-center>{{map?.getDescriptionLangVar() | translate}}</h1>
+      
+  </div>
 
 </ion-content>
