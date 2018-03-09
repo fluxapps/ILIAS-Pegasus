@@ -39,7 +39,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
 
     this.mapSubscription = this.mapService.getMap(this.learnplaceId)
       .subscribe(
-        this.init,
+        this.init.bind(this),
         error => {
 
         this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
