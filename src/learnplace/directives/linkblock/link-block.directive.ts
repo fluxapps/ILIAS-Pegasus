@@ -27,6 +27,7 @@ export class LinkBlock implements OnInit, OnDestroy {
 
   link: LinkBlockModel | undefined = undefined;
   linkLabel: string | undefined = undefined;
+  disableLink: boolean = false;
 
   private linkBlockSubscription: Subscription | undefined = undefined;
 
@@ -55,8 +56,9 @@ export class LinkBlock implements OnInit, OnDestroy {
       }).then(obj => {
         this.linkLabel = obj.title;
       }).catch(_ => {
-        this.log.info(() => `Could not load label for link block with refId: refId=${it.refId}`);
-        this.linkLabel = this.translate.instant("learnplace.no-link-label");
+        this.disableLink = true;
+        this.log.warn(() => `Could not load label for link block with refId: refId=${it.refId}`);
+        this.linkLabel = this.translate.instant("learnplace.block.link.no_access");
       });
     });
   }
@@ -69,11 +71,13 @@ export class LinkBlock implements OnInit, OnDestroy {
 
   open(): void {
 
-    const action: ILIASObjectAction = this.openInIliasActionFactory(
-      this.translate.instant("actions.view_in_ilias"),
-      this.linkBuilder.default().target(this.link.refId)
-    );
+    if(!this.disableLink) {
+      const action: ILIASObjectAction = this.openInIliasActionFactory(
+        this.translate.instant("actions.view_in_ilias"),
+        this.linkBuilder.default().target(this.link.refId)
+      );
 
-    action.execute();
+      action.execute();
+    }
   }
 }
