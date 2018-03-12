@@ -1,18 +1,21 @@
+import {isDevMode as isAngularDevMode} from "@angular/core";
 import {isDefined, isFunction} from "ionic-angular/es2015/util/util";
 
 /**
- * Looks for a property {@code IonicDevServer} on the window.
- * If the property does exist and the {@code handleError} function is defined,
- * the ionic dev server is running.
+ * Returns true if the dev mode is enabled, otherwise returns false.
  *
- * The common case, when this function returns true, is if the {@code ionic cordova emulate} command is used.
+ * The app is considered to run in dev mode if one of the following conditions are met:
+ * - If the ionic dev server is running
+ * - If the angular dev mode is enabled.
  *
- * @returns {boolean} true if the Ionic Dev Server is running, otherwise false
+ * @returns {boolean} true if the pegasus dev mode is enabled, otherwise false.
  */
 export function isDevMode(): boolean {
   const monitor: IonicDevServer = <IonicDevServer>window["IonicDevServer"];
 
-  return isDefined(monitor) && monitor.hasOwnProperty("handleError") && isFunction(monitor.handleError);
+  return    isDefined(monitor) &&
+            isFunction(monitor.handleError) ||
+            isAngularDevMode();
 }
 
 interface IonicDevServer {
