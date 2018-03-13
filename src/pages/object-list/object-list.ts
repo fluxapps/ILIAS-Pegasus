@@ -43,6 +43,7 @@ import {HttpRequestError, UnfinishedHttpRequestError} from "../../providers/http
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {LearnplaceLoadingError} from "../../learnplace/services/loader/learnplace";
 
 
 @Component({
@@ -458,42 +459,26 @@ export class ObjectListPage {
 	 */
 	showActions(iliasObject: ILIASObject): void {
 		this.actionSheetActive = true;
-		// let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
-		const actions: Array<ILIASObjectAction> = [
-			new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
-      this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
-		];
-		if (!iliasObject.isFavorite) {
-			actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
-		} else if (iliasObject.isFavorite) {
-			actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
-		}
 
-		if (iliasObject.isContainer() && !iliasObject.isLinked() || iliasObject.type == "file") {
-			if (!iliasObject.isOfflineAvailable) {
-				actions.push(new MarkAsOfflineAvailableAction(
-				  this.translate.instant("actions.mark_as_offline_available"),
-          iliasObject,
-          this.dataProvider,
-          this.sync,
-          this.modal)
-        );
-			} else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-				actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
-				actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
-			}
-			actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
-		}
+		const actions: Array<ILIASObjectAction> = [];
+
+		this.applyDefaultActions(actions, iliasObject);
+        this.applyMarkAsFavoriteAction(actions, iliasObject);
+        this.applyUnmarkAsFavoriteAction(actions, iliasObject);
+        this.applyMarkAsOfflineAction(actions, iliasObject);
+        this.applyUnmarkAsOfflineAction(actions, iliasObject);
+        this.applySynchronizeAction(actions, iliasObject);
+        this.applyRemoveLocalFileAction(actions, iliasObject);
 
 		const buttons: Array<ActionSheetButton> = actions.map(action => {
 
 			return <ActionSheetButton>{
 				text: action.title,
-				handler: () => {
+				handler: (): void => {
 					this.actionSheetActive = false;
 					// This action displays an alert before it gets executed
 					if (action.alert()) {
-						const alert = this.alert.create({
+						this.alert.create({
 							title: action.alert().title,
 							subTitle: action.alert().subTitle,
 							buttons: [
@@ -503,13 +488,12 @@ export class ObjectListPage {
 								},
 								{
 									text: "Ok",
-									handler: () => {
+									handler: (): void => {
 										this.executeAction(action);
 									}
 								}
 							]
-						});
-						alert.present();
+						}).present();
 					} else {
 						this.executeAction(action);
 					}
@@ -537,6 +521,76 @@ export class ObjectListPage {
 		actionSheet.present();
 	}
 
+	private applyDefaultActions(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+	    actions.push(
+            new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
+            this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
+        );
+    }
+
+    private applyMarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(!iliasObject.isFavorite) {
+            actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
+        }
+    }
+
+    private applyUnmarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(iliasObject.isFavorite) {
+            actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
+        }
+    }
+
+    private applyMarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(!iliasObject.isOfflineAvailable
+            && (
+                iliasObject.isContainer() && !iliasObject.isLinked()
+                ||
+                iliasObject.isFile()
+                ||
+                iliasObject.isLearnplace()
+            )
+        ) {
+            actions.push(new MarkAsOfflineAvailableAction(
+                this.translate.instant("actions.mark_as_offline_available"),
+                iliasObject,
+                this.dataProvider,
+                this.sync,
+                this.modal)
+            );
+        }
+    }
+
+    private applyUnmarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
+            && (
+                iliasObject.isContainer() && !iliasObject.isLinked()
+                ||
+                iliasObject.isFile()
+                ||
+                iliasObject.isLearnplace()
+            )
+        ) {
+            actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
+        }
+    }
+
+    private applySynchronizeAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
+            && (
+                iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()
+                ||
+                iliasObject.isFile()
+            )
+        ) {
+            actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
+        }
+    }
+
+    private applyRemoveLocalFileAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace() || iliasObject.isFile()) {
+            actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
+        }
+    }
 
 	private handleActionResult(result: ILIASObjectActionResult): void {
 		if (!result) return;
@@ -588,7 +642,7 @@ export class ObjectListPage {
 			}
 			return Promise.reject(error);
 		}).catch(error => {
-			if (error instanceof RESTAPIException) {
+			if (error instanceof RESTAPIException || error instanceof LearnplaceLoadingError) {
 				this.showAlert(this.translate.instant("actions.server_not_reachable"));
 				this.footerToolbar.removeJob(hash);
 				return Promise.resolve();
