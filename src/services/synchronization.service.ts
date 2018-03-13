@@ -15,6 +15,9 @@ import {
   VISIT_JOURNAL_SYNCHRONIZATION,
   VisitJournalSynchronization
 } from "../learnplace/services/visitjournal.service";
+import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
+import {Observable} from "rxjs/Observable";
+import {Subscriber} from "rxjs/Subscriber";
 
 @Injectable()
 export class SynchronizationService {
@@ -35,7 +38,8 @@ export class SynchronizationService {
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
-                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization
+                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
+                @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader
     ) {}
 
     /**
@@ -297,15 +301,29 @@ export class SynchronizationService {
     private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
         await this.newsSynchronization.synchronize();
         await this.visitJournalSynchronization.synchronize();
-        return this.dataProvider.getObjectData(container, this.user, true)
-            .then( (iliasObjects) => {
-                iliasObjects.push(container);
-                return this.checkForFileDownloads(iliasObjects);
 
-            })
-            .then( (syncResults) =>
-                this.syncEnded(this.user.id).then( () => Promise.resolve(syncResults))
-            );
+        const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
+        iliasObjects.push(container);
+
+        const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
+        await this.downloadLearnplaces(iliasObjects).toPromise();
+
+        await this.syncEnded(this.user.id);
+
+        return syncResults;
+    }
+
+    private downloadLearnplaces(tree: Array<ILIASObject>): Observable<void> {
+
+      return Observable.merge(
+        ...tree
+          .filter(it => it.isLearnplace() && it.needsDownload)
+          .map(it => Observable.fromPromise(
+              this.learnplaceLoader.load(it.objId).then(() => {
+                  it.needsDownload = false;
+              })
+          ))
+      );
     }
 
     private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {
