@@ -317,7 +317,7 @@ export class SynchronizationService {
 
       return Observable.merge(
         ...tree
-          .filter(it => it.isLearnplace() && it.needsDownload)
+          .filter(it => it.isLearnplace())
           .map(it => Observable.fromPromise(
               this.learnplaceLoader.load(it.objId).then(() => {
                   it.needsDownload = false;
