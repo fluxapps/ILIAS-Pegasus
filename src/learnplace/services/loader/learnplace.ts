@@ -9,7 +9,7 @@ import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityEntity} from "../../entity/visibility.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {Optional} from "../../../util/util.optional";
-import {HttpRequestError} from "../../../providers/http";
+import {HttpRequestError, UnfinishedHttpRequestError} from "../../../providers/http";
 import {
   AccordionMapper, LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper,
   VisitJournalMapper
@@ -109,12 +109,12 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
     } catch (error) {
 
-      if (error instanceof HttpRequestError) {
+      if (error instanceof HttpRequestError || error instanceof UnfinishedHttpRequestError) {
 
         if (!(await this.learnplaceRepository.exists(id))) {
           throw new LearnplaceLoadingError(`Could not load learnplace with id "${id}" over http connection`);
         }
-        this.log.debug(() => `Learnplace with id "${id} could bot be loaded, but is available from local storage"`);
+        this.log.debug(() => `Learnplace with id "${id}" could bot be loaded, but is available from local storage"`);
         // At the moment nothing needs to be done here
       } else {
         throw error;
