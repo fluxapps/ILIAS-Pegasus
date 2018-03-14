@@ -14,7 +14,9 @@ export class CreateLearnplace implements Migration {
   async up(queryRunner: QueryRunner): Promise<void> {
 
     const learnplace: Table = new Table("Learnplace", [
-      new TableColumn({name: "objectId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+        new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isGenerated: true, isNullable: false}),
+        new TableColumn({name: "objectId", type: "integer", isNullable: false}),
+        new TableColumn({name: "FK_user", type: "integer", isNullable: false})
     ]);
 
     const visitJournal: Table = new Table("VisitJournal", [

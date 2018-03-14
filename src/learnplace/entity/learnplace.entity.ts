@@ -1,8 +1,10 @@
 import {LocationEntity} from "./location.entity";
 import {MapEntity} from "./map.entity";
 import {
-  Entity, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToMany, OneToOne, PrimaryColumn,
-  RelationOptions
+    Column,
+    Entity, JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToMany, OneToOne, PrimaryColumn,
+    PrimaryGeneratedColumn,
+    RelationOptions
 } from "typeorm";
 import {TextblockEntity} from "./textblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
@@ -10,28 +12,36 @@ import {LinkblockEntity} from "./linkblock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";
 import {VisitJournalEntity} from "./visit-journal.entity";
 import {AccordionEntity} from "./accordion.entity";
+import {UserEntity} from "../../entity/user.entity";
 
 @Entity("Learnplace")
 export class LearnplaceEntity {
 
-  @PrimaryColumn()
-  objectId: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @OneToOne(type => LocationEntity, location => location.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
-  location: LocationEntity;
+    @Column()
+    objectId: number;
 
-  @OneToOne(type => MapEntity, map => map.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
-  map: MapEntity;
+    @OneToOne(type => UserEntity, <RelationOptions>{cascadeAll: false, lazy: true})
+    @JoinColumn()
+    user: Promise<UserEntity>;
 
-  @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
-  visitJournal: Array<VisitJournalEntity>;
+    @OneToOne(type => LocationEntity, location => location.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    location: LocationEntity;
 
-  @ManyToMany(type => AccordionEntity, <RelationOptions>{
+    @OneToOne(type => MapEntity, map => map.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    map: MapEntity;
+
+    @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    visitJournal: Array<VisitJournalEntity>;
+
+    @ManyToMany(type => AccordionEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
-  })
-  @JoinTable(<JoinTableOptions>{
+    })
+    @JoinTable(<JoinTableOptions>{
     name: "learnplace_accordion",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
@@ -41,15 +51,15 @@ export class LearnplaceEntity {
       name: "accordionId",
       referencedColumnName: "id"
     }
-  })
-  accordionBlocks: Array<AccordionEntity>;
+    })
+    accordionBlocks: Array<AccordionEntity>;
 
-  @ManyToMany(type => TextblockEntity, <RelationOptions>{
+    @ManyToMany(type => TextblockEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
-  })
-  @JoinTable(<JoinTableOptions>{
+    })
+    @JoinTable(<JoinTableOptions>{
     name: "learnplace_textblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
@@ -59,15 +69,15 @@ export class LearnplaceEntity {
       name: "textblockId",
       referencedColumnName: "id"
     }
-  })
-  textBlocks: Array<TextblockEntity>;
+    })
+    textBlocks: Array<TextblockEntity>;
 
-  @ManyToMany(type => PictureBlockEntity, <RelationOptions>{
+    @ManyToMany(type => PictureBlockEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
-  })
-  @JoinTable(<JoinTableOptions>{
+    })
+    @JoinTable(<JoinTableOptions>{
     name: "learnplace_pictureblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
@@ -77,16 +87,16 @@ export class LearnplaceEntity {
       name: "pictureblockId",
       referencedColumnName: "id"
     }
-  })
-  pictureBlocks: Array<PictureBlockEntity>;
+    })
+    pictureBlocks: Array<PictureBlockEntity>;
 
 
-  @ManyToMany(type => LinkblockEntity, <RelationOptions>{
+    @ManyToMany(type => LinkblockEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
-  })
-  @JoinTable(<JoinTableOptions>{
+    })
+    @JoinTable(<JoinTableOptions>{
     name: "learnplace_linkblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
@@ -96,16 +106,16 @@ export class LearnplaceEntity {
       name: "linkblockId",
       referencedColumnName: "id"
     }
-  })
-  linkBlocks: Array<LinkblockEntity>;
+    })
+    linkBlocks: Array<LinkblockEntity>;
 
 
-  @ManyToMany(type => VideoBlockEntity, <RelationOptions>{
+    @ManyToMany(type => VideoBlockEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
     eager: true
-  })
-  @JoinTable(<JoinTableOptions>{
+    })
+    @JoinTable(<JoinTableOptions>{
     name: "learnplace_videoblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
@@ -115,6 +125,6 @@ export class LearnplaceEntity {
       name: "videoblockId",
       referencedColumnName: "id"
     }
-  })
-  videoBlocks: Array<VideoBlockEntity>;
+    })
+    videoBlocks: Array<VideoBlockEntity>;
 }
