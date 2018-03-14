@@ -18,7 +18,6 @@ import {TranslateService} from "ng2-translate/src/translate.service";
 import {SynchronizationService} from "../services/synchronization.service";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {SQLite} from "@ionic-native/sqlite";
-import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {SplashScreen} from "@ionic-native/splash-screen";
 import {Database} from "../services/database/database";
@@ -26,7 +25,6 @@ import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
-import {ContentPage} from "../learnplace/pages/content/content.component";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {NewsPage} from "../pages/news/news";
 
