@@ -5,6 +5,7 @@
  * @version 1.0.0
  */
 import {isDefined} from "ionic-angular/es2015/util/util";
+import {isDevMode} from "../../app/devmode";
 
 export interface Logger {
 
@@ -138,7 +139,7 @@ export abstract class LogLevelAppender extends LogBuffer {
     private readonly level: LogLevel,
     buffer: number = 10
   ) {
-    super((isDefined(window["IonicDevServer"]))? 1 : buffer);
+    super(isDevMode() ? 1 : buffer);
   }
 
   /**
