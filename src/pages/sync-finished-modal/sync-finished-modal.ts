@@ -1,9 +1,8 @@
 import {Component} from "@angular/core";
-import {SyncResults} from "../../services/synchronization.service";
+import {NavParams, ViewController} from "ionic-angular";
 import {TranslateService} from "ng2-translate/ng2-translate";
-import {LeftOutReason} from "../../services/synchronization.service";
-import {NavParams} from "ionic-angular/index";
-import {ViewController} from "ionic-angular/index";
+import {ILIASObject} from "../../models/ilias-object";
+import {LeftOutReason, SyncResults} from "../../services/synchronization.service";
 
 @Component({
     templateUrl: "sync-finished-modal.html",
@@ -20,6 +19,9 @@ export class SyncFinishedModal {
 
     /**
      * @param params
+     * @param translate
+     *
+     * @param viewCtrl
      */
     constructor(params: NavParams,
                 public translate: TranslateService,
@@ -45,11 +47,11 @@ export class SyncFinishedModal {
     }
 
 
-    closeModal() {
+    closeModal(): void {
         this.viewCtrl.dismiss();
     }
 
-    protected getPathToObject(object) {
+    private getPathToObject(object: ILIASObject): Promise<string> {
         return object.getParentsTitleChain()
             .then(parentTitles => parentTitles.join("/"))
     }

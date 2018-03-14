@@ -25,7 +25,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
         // Download is only executed if a newer version is available in ILIAS
         Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
-            return Promise.reject(new OfflineException());
+            return Promise.reject(new OfflineException("File requireds download and is offline at the same time."));
 
         else if(this.fileObject.needsDownload) {
           const settings: Settings = await Settings.findByUserId(this.fileObject.userId);

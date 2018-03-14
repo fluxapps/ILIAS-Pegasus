@@ -88,7 +88,7 @@ export class FileService {
 
         // We don't want to download if we're not in wlan
         if (forceDownload == false && settings.shouldntDownloadBecauseOfWLAN()) {
-          throw new NoWLANException();
+          throw new NoWLANException(`Unable to download file with refId ${fileObject.refId}`);
         }
 
         // If we have no file name we throw an error.
@@ -218,7 +218,7 @@ export class FileService {
           error: (e): void => {
             if (e.status == 9) {
               this.log.error(() => "Unable to open existing file on Android because the file type is not supported.");
-              throw new CantOpenFileTypeException();
+              throw new CantOpenFileTypeException("Unable to open existing file on Android because the file type is not supported.");
             }
           else {
               this.log.error(() => "Unable to open existing file on Android with a general error.");
@@ -242,7 +242,7 @@ export class FileService {
           },
           (msg) => {
             this.log.error(() => `Unable to open existing file on iOS with message "${msg}"`);
-            throw new CantOpenFileTypeException();
+            throw new CantOpenFileTypeException(`Unable to open existing file on iOS with message "${msg}"`);
           },
           fileEntry.toURL()
         );

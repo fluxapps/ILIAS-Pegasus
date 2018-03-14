@@ -1,7 +1,7 @@
-export class Exception {
-    message;
+export class Exception extends Error {
 
-    constructor(message = null) {
-        this.message = message;
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, Exception.prototype);
     }
 }

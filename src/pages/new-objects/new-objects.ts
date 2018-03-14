@@ -9,6 +9,8 @@ import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {User} from "../../models/user";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {LoginPage} from "../login/login";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
@@ -40,6 +42,8 @@ import {InAppBrowser} from "@ionic-native/in-app-browser";
     templateUrl: "new-objects.html",
 })
 export class NewObjectsPage {
+
+    private readonly log: Logger = Logging.getLogger(NewObjectsPage.name);
 
     /**
      * Objects under the given parent object

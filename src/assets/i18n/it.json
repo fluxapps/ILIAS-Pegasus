@@ -103,7 +103,8 @@
     "remove_local_files_in_text": "Sei sicuro/a di voler eliminare tutti i file scaricati?",
     "download_successful": "Download completato",
     "cant_open_file": "Non ci sono applicazioni che possono aprire questo tipo di file.",
-    "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi."
+    "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi.",
+      "server_response_validation_error": "Problema di comunicazione del server, assicurati di eseguire l'ultima app e riprova."
   },
   "details" : {
     "last_update": "Ultimo aggiornamento",

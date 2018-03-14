@@ -1,48 +1,58 @@
 import {Component, Inject} from "@angular/core";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
-  NavController, NavParams, ActionSheetController, AlertController,
-  ToastController, Events, ActionSheetOptions, ActionSheetButton, Refresher, AlertOptions, ActionSheet, Toast, Alert
+    ActionSheet,
+    ActionSheetButton,
+    ActionSheetController,
+    ActionSheetOptions,
+    Alert,
+    AlertController,
+    AlertOptions,
+    Events, Modal,
+    ModalController,
+    NavController,
+    NavParams,
+    Refresher,
+    Toast,
+    ToastController
 } from "ionic-angular";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {ILIASObject} from "../../models/ilias-object";
-import {Builder} from "../../services/builder.base";
-import {FileService} from "../../services/file.service";
-import {User} from "../../models/user";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
-import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
-import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
-import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
-import {SynchronizeAction} from "../../actions/synchronize-action";
-import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
-import {DesktopItem} from "../../models/desktop-item";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
+import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {TranslateService} from "ng2-translate/src/translate.service";
-import {Log} from "../../services/log.service";
-import {Job} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular";
-import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
+import {TimeoutError} from "rxjs/Rx";
+import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
+import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
+import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
+import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
+import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
+import {SynchronizeAction} from "../../actions/synchronize-action";
+import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
+import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
+import {Exception} from "../../exceptions/Exception";
 import {NoWLANException} from "../../exceptions/noWLANException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLinkBuilder, ILIASLinkView, TokenUrlConverter} from "../../services/url-converter.service";
+import {DesktopItem} from "../../models/desktop-item";
+import {ILIASObject} from "../../models/ilias-object";
 import {PageLayout} from "../../models/page-layout";
-import {Exception} from "../../exceptions/Exception";
 import {TimeLine} from "../../models/timeline";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
-import {TimeoutError} from "rxjs/Rx";
+import {User} from "../../models/user";
+import {DataProvider} from "../../providers/data-provider.provider";
 import {HttpRequestError, UnfinishedHttpRequestError} from "../../providers/http";
+import {Builder} from "../../services/builder.base";
+import {FileService} from "../../services/file.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
+import {TokenUrlConverter} from "../../services/url-converter.service";
+import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
 
 @Component({
@@ -325,6 +335,10 @@ export class ObjectListPage {
 
 		try {
 
+            if (this.sync.isRunning) {
+                this.log.debug(() => "Unable to sync because sync is already running.");
+                return;
+            }
 			Log.write(this, "Sync start", [], []);
 			this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
@@ -335,64 +349,23 @@ export class ObjectListPage {
 
 			// We have some files that were marked but not downloaded. We need to explain why and open a modal.
 			if (syncResult.objectsLeftOut.length > 0) {
-				const syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-				syncModal.present();
-			} else {
-				// If there were no files left out and everything went okay, we just display a "okay" result!
-				// this.displaySuccessToast(); // not needed with footer
+				const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
+				await syncModal.present();
 			}
+
 			//maybe some objects came in new.
 			this.footerToolbar.removeJob(Job.Synchronize);
 
-			return Promise.resolve();
 		} catch (error) {
 
 			Log.error(this, error);
-
 			this.footerToolbar.removeJob(Job.Synchronize);
-
-			if (error instanceof NoWLANException) {
-        this.log.warn(() => "Unable to sync newsPresenters no wlan active.");
-				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
-				return Promise.resolve();
-			}
-
-			if (error instanceof RESTAPIException) {
-        this.log.warn(() => "Unable to sync server not reachable.");
-				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-				return Promise.resolve();
-			}
-
-			if (this.sync.isRunning) {
-        this.log.warn(() => "Unable to sync because sync is already running.");
-				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.sync_already_running"));
-				return Promise.resolve();
-			}
-
-      if(error instanceof TimeoutError) {
-        this.log.warn(() => "Unable to sync newsPresenters due to request timeout.");
-        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-        return;
-      }
-
-      if(error instanceof HttpRequestError) {
-        this.log.warn(() => `Unable to sync news due to http request error "${error.statuscode}".`);
-        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-        return;
-      }
-
-      if(error instanceof UnfinishedHttpRequestError) {
-        this.log.warn(() => `Unable to sync due to http request error with message "${error.message}".`);
-        this.displayAlert(<string>this.translate.instant("sync.title"), this.translate.instant("actions.server_not_reachable"));
-        return;
-      }
-
-			return Promise.reject(error);
+			throw error;
 		}
 	}
 
-	private displayAlert(title: string, message: string) {
-		const alert = this.alert.create(<AlertOptions>{
+	private displayAlert(title: string, message: string): void {
+		const alert: Alert = this.alert.create(<AlertOptions>{
 			title: title,
 			message: message,
       buttons: [

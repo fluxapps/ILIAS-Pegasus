@@ -1,27 +1,33 @@
 import {Component, Inject} from "@angular/core";
-import {NavController, ActionSheetController, Alert, Toast, ToastOptions,
-  ActionSheet, ActionSheetOptions, ActionSheetButton, AlertController, ToastController} from "ionic-angular";
-import {ILIASObject} from "../../models/ilias-object";
-import {Favorites} from "../../models/favorites";
-import {FileService} from "../../services/file.service";
-import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {
+    ActionSheet,
+    ActionSheetButton,
+    ActionSheetController,
+    ActionSheetOptions,
+    AlertController,
+    NavController,
+    Toast,
+    ToastController,
+    ToastOptions
+} from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
+import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
-import { TranslateService } from "ng2-translate/src/translate.service";
-import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
+import {Favorites} from "../../models/favorites";
+import {ILIASObject} from "../../models/ilias-object";
 import {User} from "../../models/user";
-import {Log} from "../../services/log.service";
-import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {OfflineException} from "../../exceptions/OfflineException";
-import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
-import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {TokenUrlConverter} from "../../services/url-converter.service";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {Builder} from "../../services/builder.base";
+import {FileService} from "../../services/file.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {Log} from "../../services/log.service";
+import {TokenUrlConverter} from "../../services/url-converter.service";
 
 
 @Component({
@@ -78,48 +84,11 @@ export class FavoritesPage {
         action.execute().then((result) => {
             this.handleActionResult(result);
             this.footerToolbar.removeJob(hash);
-        }).catch((error: CantOpenFileTypeException) => {
-            if(error instanceof CantOpenFileTypeException) {
-                this.showAlert(this.translate.instant("actions.cant_open_file"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-        }).catch(error => {
-            if(error instanceof OfflineException) {
-                this.showAlert(this.translate.instant("actions.offline_and_no_local_file"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-        }).catch(error => {
-            if(error instanceof RESTAPIException) {
-                this.showAlert(this.translate.instant("actions.server_not_reachable"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-
-        }).catch((message) => {
-            if (message) {
-                Log.describe(this, "action gone wrong: ", message);
-            }
-            this.showAlert(this.translate.instant("something_went_wrong"));
+        }).catch((error) => {
+            Log.describe(this, "action gone wrong: ", error);
             this.footerToolbar.removeJob(hash);
+            throw error;
         });
-    }
-
-    private showAlert(message: string): void {
-        const alert: Alert = this.alert.create({
-            title: message,
-            buttons: [
-                {
-                    text: this.translate.instant("close"),
-                    role: "cancel"
-                }
-                ]
-        });
-        alert.present();
     }
 
     private handleActionResult(result: ILIASObjectActionResult): void {
@@ -143,7 +112,6 @@ export class FavoritesPage {
     showActions(object: ILIASObject): void {
         this.actionSheetActive = true;
         const actionButtons: Array<ActionSheetButton> = [];
-        // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
         const actions: Array<ILIASObjectAction> = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), object, this.nav),
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(object.refId)),

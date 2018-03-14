@@ -1,35 +1,37 @@
 import {Component, Inject} from "@angular/core";
-import {NavController, NavParams, AlertController, ToastController, ModalController, Alert, Toast} from "ionic-angular";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {Alert, AlertController, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {DownloadFileAction} from "../../actions/download-file-action";
+import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
+import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {OpenFileExternalAction} from "../../actions/open-file-external-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
+import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
+import {SynchronizeAction} from "../../actions/synchronize-action";
+import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
+import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {ILIASObject} from "../../models/ilias-object";
 import {DataProvider} from "../../providers/data-provider.provider";
-import {ILIASObjectAction, ILIASObjectActionSuccess, ILIASObjectActionResult} from "../../actions/object-action";
 import {Builder} from "../../services/builder.base";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {SynchronizationService} from "../../services/synchronization.service";
 import {FileService} from "../../services/file.service";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
-import {SynchronizeAction} from "../../actions/synchronize-action";
-import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
-import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
-import {OpenFileExternalAction} from "../../actions/open-file-external-action";
-import {DownloadFileAction} from "../../actions/download-file-action";
-import {Log} from "../../services/log.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
 import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {RESTAPIException} from "../../exceptions/RESTAPIException";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Log} from "../../services/log.service";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
+import {SynchronizationService} from "../../services/synchronization.service";
 import {TokenUrlConverter} from "../../services/url-converter.service";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
     templateUrl: "object-details.html"
 })
 export class ObjectDetailsPage {
+
+    private readonly log: Logger = Logging.getLogger(ObjectDetailsPage.name);
 
     iliasObject: ILIASObject;
 
@@ -92,40 +94,16 @@ export class ObjectDetailsPage {
     }
 
     private executeAndHandleAction(action: ILIASObjectAction): void {
-        Log.write(this, "executeAndHandleAction");
-        Log.describe(this, "action: ", action);
-        action.execute().then(result => {
-                this.actionHandler(result);
-            }
-        ).catch(error => {
-            if (error instanceof RESTAPIException) {
-                this.showAlert(this.translate.instant("actions.server_not_reachable"));
-                return Promise.resolve();
-            } else if (error instanceof  CantOpenFileTypeException) {
-                this.showAlert(this.translate.instant("actions.cant_open_file"));
-            }
-            return Promise.reject(error);
-        }).catch((message) => {
-            if (message) {
-                Log.describe(this, "action gone wrong: ", message);
-            }
-            this.loadAvailableActions();
-            this.loadObjectDetails();
-            this.showAlert(this.translate.instant("something_went_wrong"));
+        this.log.trace(() => "executeAndHandleAction");
+        this.log.debug(() => `action: ${action}`);
+        action.execute()
+            .then(result => this.actionHandler(result))
+            .catch((error) => {
+                this.log.warn(() => `action gone wrong: ${error}`);
+                this.loadAvailableActions();
+                this.loadObjectDetails();
+                throw error;
         });
-    }
-
-    private showAlert(message: string): void {
-        const alert: Alert = this.alert.create({
-            title: message,
-            buttons: [
-                {
-                    text: this.translate.instant("close"),
-                    role: "cancel"
-                }
-            ]
-        });
-        alert.present();
     }
 
     private actionHandler(result: ILIASObjectActionResult): void {
@@ -135,7 +113,7 @@ export class ObjectDetailsPage {
         this.loadObjectDetails();
     }
 
-    protected handleActionResult(result: ILIASObjectActionResult): void {
+    private handleActionResult(result: ILIASObjectActionResult): void {
         Log.write(this, "handleActionResult");
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {

@@ -26,7 +26,7 @@ export class DownloadFileAction extends ILIASObjectAction {
         // Download is only executed if a newer version is available in ILIAS
         Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
-            throw new OfflineException();
+            throw new OfflineException("File requireds download and is offline at the same time.");
 
         if (this.fileObject.needsDownload)
             return this.wlanAndDownload();
