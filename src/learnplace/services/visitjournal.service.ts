@@ -7,27 +7,28 @@ import {Logging} from "../../services/logging/logging.service";
 import {LocationWatch} from "../../services/location";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
-import {Geolocation} from "@ionic-native/geolocation";
+import {Geolocation, Geoposition} from "@ionic-native/geolocation";
 import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
 import {IllegalStateError, NoSuchElementError} from "../../error/errors";
 import {Coordinates} from "../../services/geodesy";
 import {Subscription} from "rxjs/Subscription";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Describes a synchronization that manages un-synchronized visit journal entries.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 export interface VisitJournalSynchronization {
 
-  /**
-   * Synchronizes local journal entries that could not be synchronized
-   * to ILIAS during their creations.
-   */
-  synchronize(): Promise<void>
+    /**
+     * Synchronizes local journal entries that could not be synchronized
+     * to ILIAS during their creations.
+     */
+    synchronize(): Promise<void>
 }
 export const VISIT_JOURNAL_SYNCHRONIZATION: InjectionToken<VisitJournalSynchronization> = new InjectionToken("token for VisitJournalSynchronization");
 
@@ -35,43 +36,43 @@ export const VISIT_JOURNAL_SYNCHRONIZATION: InjectionToken<VisitJournalSynchroni
  * Manages un-synchronized visit journal entries.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Injectable()
 export class VisitJournalSynchronizationImpl implements VisitJournalSynchronization {
 
-  private readonly log: Logger = Logging.getLogger(VisitJournalSynchronizationImpl.name);
+    private readonly log: Logger = Logging.getLogger(VisitJournalSynchronizationImpl.name);
 
-  constructor(
-    @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    @Inject(VISIT_JOURNAL_REPOSITORY) private readonly visitJournalRepository: VisitJournalRepository
-  ) {}
+    constructor(
+        @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
+        @Inject(VISIT_JOURNAL_REPOSITORY) private readonly visitJournalRepository: VisitJournalRepository
+    ) {}
 
-  /**
-   * Synchronizes local journal entries that could not be synchronized
-   * to ILIAS during their creations.
-   *
-   * If {@link VisitJournalEntity#synchronized} property is set to false
-   * it will be picked up by this synchronization. If the synchronization
-   * still fails it remains unmodified. If the synchronization is successful
-   * its synchronized property will be set to true.
-   */
-  async synchronize(): Promise<void> {
+    /**
+     * Synchronizes local journal entries that could not be synchronized
+     * to ILIAS during their creations.
+     *
+     * If {@link VisitJournalEntity#synchronized} property is set to false
+     * it will be picked up by this synchronization. If the synchronization
+     * still fails it remains unmodified. If the synchronization is successful
+     * its synchronized property will be set to true.
+     */
+    async synchronize(): Promise<void> {
 
-    const unsynchronized: Array<VisitJournalEntity> = await this.visitJournalRepository.findUnsynchronized();
+        const unsynchronized: Array<VisitJournalEntity> = await this.visitJournalRepository.findUnsynchronized();
 
-    for (const it of unsynchronized) {
-      try {
+        for (const it of unsynchronized) {
+            try {
 
-        await this.learnplaceAPI.addJournalEntry(it.learnplace.objectId, it.time);
-        it.synchronized = true;
-        await this.visitJournalRepository.save(it);
-      } catch(error) {
-        this.log.warn(() => `Could not synchronize journal entry: id=${it.id}`);
-        this.log.debug(() => `Synchronize Journal Entry Error: ${JSON.stringify(error)}`);
-      }
+                await this.learnplaceAPI.addJournalEntry(it.learnplace.objectId, it.time);
+                it.synchronized = true;
+                await this.visitJournalRepository.save(it);
+            } catch(error) {
+                this.log.warn(() => `Could not synchronize journal entry: id=${it.id}`);
+                this.log.debug(() => `Synchronize Journal Entry Error: ${JSON.stringify(error)}`);
+            }
+        }
     }
-  }
 }
 
 /**
@@ -87,12 +88,12 @@ export class VisitJournalSynchronizationImpl implements VisitJournalSynchronizat
  */
 export interface VisitJournalWatch extends LocationWatch {
 
-  /**
-   * Sets the id for the learnplace to use for the visit journal.
-   *
-   * @param {number} id - the object id of the learnplace
-   */
-  setLearnplace(id: number): void;
+    /**
+     * Sets the id for the learnplace to use for the visit journal.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     */
+    setLearnplace(objectId: number): void;
 }
 export const VISIT_JOURNAL_WATCH: InjectionToken<VisitJournalWatch> = new InjectionToken<VisitJournalWatch>("token for visit journal watch");
 
@@ -101,99 +102,103 @@ export const VISIT_JOURNAL_WATCH: InjectionToken<VisitJournalWatch> = new Inject
  * The current user will be considered in order to know the appropriate ILIAS installation.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Injectable()
 export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
-  private learnplaceId: number | undefined = undefined;
-  private watch: Subscription | undefined = undefined;
+    private learnplaceObjectId: number | undefined = undefined;
 
-  private readonly log: Logger = Logging.getLogger(SynchronizedVisitJournalWatch.name);
+    private running: boolean = false;
 
-  constructor(
-    @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
-    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
-    private readonly geolocation: Geolocation
-  ) {}
+    private readonly log: Logger = Logging.getLogger(SynchronizedVisitJournalWatch.name);
+
+    constructor(
+        @Inject(LEARNPLACE_API) private readonly learnplaceAPI: LearnplaceAPI,
+        @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
+        @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
+        private readonly geolocation: Geolocation
+    ) {}
 
 
-  setLearnplace(id: number): void {
-    this.learnplaceId = id;
-  }
-
-  /**
-   * Starts watching the device's location and compares it with the learnplace location.
-   * If the device is near enough to the learnplace, it will mark the current user as visited.
-   *
-   * If the current user is already marked as visited or the device location is near enough, this watch will stop itself.
-   *
-   * The device is near enough to the learnplace by considering the {@link Coordinates#isNearTo} method with
-   * the latitude and longitude of the device's and learnplace location, as well as the radius defined on the learnplace.
-   */
-  start(): void {
-
-    if(isUndefined(this.learnplaceId)) {
-      throw new IllegalStateError(`Can not start ${SynchronizedVisitJournalWatch.name} without learnplace id`);
+    setLearnplace(objectId: number): void {
+        this.learnplaceObjectId = objectId;
     }
 
-    this.execute();
-  }
+    /**
+     * Starts watching the device's location and compares it with the learnplace location.
+     * If the device is near enough to the learnplace, it will mark the current user as visited.
+     *
+     * The device is near enough to the learnplace by considering the {@link Coordinates#isNearTo} method with
+     * the latitude and longitude of the device's and learnplace location, as well as the radius defined on the learnplace.
+     */
+    start(): void {
 
-  /**
-   * Stops watching the device's location.
-   */
-  stop(): void {
-    this.watch.unsubscribe();
-  }
+        if(isUndefined(this.learnplaceObjectId)) {
+            throw new IllegalStateError(`Can not start ${SynchronizedVisitJournalWatch.name} without learnplace id`);
+        }
 
-  /**
-   * Helper method to use async / await.
-   */
-  private async execute(): Promise<void> {
+        this.running = true;
 
-    const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.learnplaceId))
-      .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.learnplaceId}`));
-    const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+        const user: Observable<UserEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser()).map(it => it.get());
 
-    const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
+        const learnplace: Observable<LearnplaceEntity> = user
+            .mergeMap(it => this.learnplaceRepository.findByObjectIdAndUserId(this.learnplaceObjectId, it.id))
+            .map(it => it.get());
 
-    this.log.trace(() => "Watch position for visit journal watch'");
+        this.log.trace(() => "Start watching the device's location")
+        const position: Observable<Coordinates> = this.geolocation.watchPosition()
+            .filter(it => isDefined(it.coords)) // filter errors
+            .map(it => new Coordinates(it.coords.latitude, it.coords.longitude))
+            .takeWhile(_ => this.running);
 
-    this.watch = this.geolocation.watchPosition()
-      .filter(p => isDefined(p.coords))
-      .subscribe(async(location) => {
+        Observable.combineLatest(user, learnplace, position)
+            .filter(this.checkConditions)
+            .map(it => {
+
+                const user: UserEntity = it[0];
+
+                return new VisitJournalEntity().applies<VisitJournalEntity>(function(): void {
+                    this.userId = user.iliasUserId;
+                    this.time = Math.floor(Date.now() / 1000); // unix time in seconds
+                    this.synchronized = false;
+                })
+            })
+            .mergeMap(it => Observable.fromPromise(this.learnplaceAPI.addJournalEntry(this.learnplaceObjectId, it.time))
+            .map(_ => it)
+            .do(it => it.synchronized = true)
+            .catch((..._) => Observable.of(it))
+        ).combineLatest(learnplace, (visitJournal, learnplace) => learnplace.applies<LearnplaceEntity>(function(): void {
+            this.visitJournal.push(visitJournal)
+        })).subscribe(it => {
+            this.learnplaceRepository.save(it);
+        });
+    }
+
+    /**
+     * Stops watching the device's location.
+     */
+    stop(): void {
+        this.running = false;
+    }
+
+    /**
+     * Checks, if the conditions are met when the device location needs to be handled.
+     *
+     * @param {[UserEntity , LearnplaceEntity , Coordinates]} it - a triple of user, learnplace and current coordinates
+     *
+     * @return {boolean} true if the conditions are met, otherwise false
+     */
+    private checkConditions(it: [UserEntity, LearnplaceEntity, Coordinates]): boolean {
+
+        const [user, learnplace, position]: [UserEntity, LearnplaceEntity, Coordinates] = it;
 
         if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
-          this.stop();
-          return;
+            return false;
         }
 
-        const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
+        const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
 
-        if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
-
-          this.stop();
-
-          const visitJournalEntity: VisitJournalEntity = new VisitJournalEntity().applies(function(): void {
-            this.userId = user.iliasUserId;
-            this.time = Math.floor(Date.now() / 1000); // unix time in seconds
-            this.synchronized = false;
-          });
-
-          learnplace.visitJournal.push(visitJournalEntity);
-
-          try {
-
-            await this.learnplaceAPI.addJournalEntry(this.learnplaceId, visitJournalEntity.time);
-
-            // if the entry could be added to ILIAS, set synchronized to true
-            visitJournalEntity.synchronized = true;
-          } finally {
-            await this.learnplaceRepository.save(learnplace);
-          }
-        }
-      });
-  }
+        return position.isNearTo(learnplaceCoordinates, learnplace.location.radius);
+    }
 }

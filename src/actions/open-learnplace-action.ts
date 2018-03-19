@@ -1,6 +1,6 @@
 import {
-  ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage,
-  ILIASObjectActionResult
+    ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage,
+    ILIASObjectActionResult
 } from "./object-action";
 import {LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {NavController} from "ionic-angular";
@@ -17,26 +17,26 @@ import {OpenObjectInILIASAction} from "./open-object-in-ilias-action";
  */
 export class OpenLearnplaceAction extends ILIASObjectAction {
 
-  constructor(
-    private readonly loader: LearnplaceLoader,
-    private readonly nav: NavController,
-    private readonly learnplaceId: number,
-    private readonly learnplaceName: string
-  ) {super()}
+    constructor(
+        private readonly loader: LearnplaceLoader,
+        private readonly nav: NavController,
+        private readonly learnplaceObjectId: number,
+        private readonly learnplaceName: string
+    ) {super()}
 
-  async execute(): Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
 
-    await this.loader.load(this.learnplaceId);
+        await this.loader.load(this.learnplaceObjectId);
 
-    await this.nav.push(TabsPage, <TabsPageParams>{learnplaceId: this.learnplaceId, learnplaceName: this.learnplaceName});
+        await this.nav.push(TabsPage, <TabsPageParams>{learnplaceObjectId: this.learnplaceObjectId, learnplaceName: this.learnplaceName});
 
-    return new ILIASObjectActionNoMessage();
-  }
+        return new ILIASObjectActionNoMessage();
+    }
 
-  alert(): ILIASObjectActionAlert {
-    return null;
-  }
+    alert(): ILIASObjectActionAlert {
+        return null;
+    }
 }
 
-export interface OpenLearnplaceActionFunction { (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction }
+export interface OpenLearnplaceActionFunction { (nav: NavController, learnplaceObjectId: number, learnplaceName: string): OpenLearnplaceAction }
 export const OPEN_LEARNPLACE_ACTION_FACTORY: InjectionToken<OpenLearnplaceAction> = new InjectionToken("token for open learnplace action factory");

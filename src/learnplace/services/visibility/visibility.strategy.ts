@@ -78,11 +78,11 @@ export interface MembershipAwareStrategy extends VisibilityStrategy {
   /**
    * Sets the membership of the model used in this strategy.
    *
-   * @param {number} id - the id of the object where the model belongs to
+   * @param {string} id - the id of the object where the model belongs to
    *
    * @returns {VisibilityStrategy} this strategy instance
    */
-  membership(id: number): VisibilityStrategy;
+  membership(id: string): VisibilityStrategy;
 }
 
 /**
@@ -147,7 +147,7 @@ export class NeverStrategy implements VisibilityStrategy {
 @Injectable()
 export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
-  private membershipId: number = -1;
+  private membershipId: string = "";
 
   private watch: Subscription | undefined = undefined;
 
@@ -161,10 +161,10 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
   /**
    * Sets the membership of the object used in this strategy.
    *
-   * @param {number} id
+   * @param {string} id
    * @returns {VisibilityStrategy}
    */
-  membership(id: number): VisibilityStrategy {
+  membership(id: string): VisibilityStrategy {
     this.membershipId = id;
     return this;
   }
@@ -223,7 +223,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
 @Injectable()
 export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
-  private membershipId: number = -1;
+  private membershipId: string = "";
 
   private watch: Subscription | undefined = undefined;
 
@@ -237,10 +237,10 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
   /**
    * Sets the membership of the object used in this strategy.
    *
-   * @param {number} id
+   * @param {string} id
    * @returns {VisibilityStrategy}
    */
-  membership(id: number): VisibilityStrategy {
+  membership(id: string): VisibilityStrategy {
     this.membershipId = id;
     return this;
   }

@@ -1,4 +1,4 @@
-import {Connection, FindManyOptions, getConnection} from "typeorm";
+import {Connection, getConnection} from "typeorm";
 import {DEFAULT_CONNECTION_NAME} from "../../services/database/database.api";
 import {Database} from "../../services/database/database";
 import {Logger} from "../../services/logging/logging.api";
@@ -13,45 +13,45 @@ import {Optional} from "../../util/util.optional";
  */
 export interface CRUDRepository<T, K> {
 
-  /**
-   * Saves the given {@code entity} and returns the stored entity.
-   * Property changes during the save process are updated in the returned entity. e.g. primary key generation
-   *
-   * @param {T} entity - the entity to save
-   *
-   * @returns {Promise<T>} - the resulting entity
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  save(entity: T): Promise<T>
+    /**
+     * Saves the given {@code entity} and returns the stored entity.
+     * Property changes during the save process are updated in the returned entity. e.g. primary key generation
+     *
+     * @param {T} entity - the entity to save
+     *
+     * @returns {Promise<T>} - the resulting entity
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    save(entity: T): Promise<T>
 
-  /**
-   * Searches an entity matching the given {@code primaryKey}.
-   *
-   * @param {K} primaryKey - primary key to search
-   *
-   * @returns {Promise<Optional<T>>} - an Optional of the resulting entity
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  find(primaryKey: K): Promise<Optional<T>>
+    /**
+     * Searches an entity matching the given {@code primaryKey}.
+     *
+     * @param {K} primaryKey - primary key to search
+     *
+     * @returns {Promise<Optional<T>>} - an Optional of the resulting entity
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    find(primaryKey: K): Promise<Optional<T>>
 
-  /**
-   * Deletes the given {@code entity}.
-   *
-   * @param {T} entity - the entity to delete
-   *
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  delete(entity: T): Promise<void>
+    /**
+     * Deletes the given {@code entity}.
+     *
+     * @param {T} entity - the entity to delete
+     *
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    delete(entity: T): Promise<void>
 
-  /**
-   * Returns true if an entity matching the given {@code primaryKey} exists,
-   * otherwise false.
-   *
-   * @param {K} primaryKey - primary key to check
-   *
-   * @returns {Promise<boolean>} true if it exists, otherwise false
-   */
-  exists(primaryKey: K): Promise<boolean>
+    /**
+     * Returns true if an entity matching the given {@code primaryKey} exists,
+     * otherwise false.
+     *
+     * @param {K} primaryKey - primary key to check
+     *
+     * @returns {Promise<boolean>} true if it exists, otherwise false
+     */
+    exists(primaryKey: K): Promise<boolean>
 }
 
 /**
@@ -64,123 +64,126 @@ export interface CRUDRepository<T, K> {
  */
 export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, K> {
 
-  protected _connection: Connection;
-  get connection(): Connection {
-    return getConnection(this.connectionName);
-  }
-
-  private readonly log: Logger = Logging.getLogger(AbstractCRUDRepository.name);
-
-  constructor(
-    protected readonly database: Database,
-    private readonly connectionName: string = DEFAULT_CONNECTION_NAME
-  ) {}
-
-  /**
-   * Saves the given {@code entity} and returns the stored entity.
-   * Property changes during the save process are updated in the returned entity. e.g. primary key generation
-   *
-   * The entity will be saved by TypeORM.
-   *
-   * @param {T} entity - the entity to save
-   *
-   * @returns {Promise<T>} - the resulting entity
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  async save(entity: T): Promise<T> {
-
-    try {
-
-      await this.database.ready(this.connectionName);
-
-      this.log.info(() => `Save entity "${this.getEntityName()}"`);
-
-      return this.connection
-        .getRepository(this.getEntityName())
-        .save(entity);
-
-    } catch (error) {
-      throw new RepositoryError(Logging.getMessage(error, `Could not save entity "${this.getEntityName()}"`));
+    protected _connection: Connection;
+    get connection(): Connection {
+        return getConnection(this.connectionName);
     }
-  }
 
-  /**
-   * Searches an entity matching the given {@code primaryKey}.
-   *
-   * The entity will be found by TypeORM.
-   *
-   * @param {K} primaryKey - primary key to search
-   *
-   * @returns {Promise<Optional<T>>} - an Optional of the resulting entity
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  async find(primaryKey: K): Promise<Optional<T>> {
+    private readonly log: Logger = Logging.getLogger(AbstractCRUDRepository.name);
 
-    try {
+    constructor(
+        protected readonly database: Database,
+        private readonly connectionName: string = DEFAULT_CONNECTION_NAME
+    ) {}
 
-      await this.database.ready(this.connectionName);
+    /**
+     * Saves the given {@code entity} and returns the stored entity.
+     * Property changes during the save process are updated in the returned entity. e.g. primary key generation
+     *
+     * The entity will be saved by TypeORM.
+     *
+     * @param {T} entity - the entity to save
+     *
+     * @returns {Promise<T>} - the resulting entity
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    async save(entity: T): Promise<T> {
 
-      this.log.info(() => `Find entity "${this.getEntityName()}" by id "${primaryKey}"`);
+        try {
 
-      const result: T = await this.connection
-        .getRepository(this.getEntityName())
-        .findOneById(primaryKey) as T;
+            await this.database.ready(this.connectionName);
 
-      return Optional.ofNullable(result);
+            this.log.trace(() => `Save entity "${this.getEntityName()}"`);
 
-    } catch (error) {
-      throw new RepositoryError(Logging.getMessage(error, `Could not find entity "${this.getEntityName()}" by id "${primaryKey}"`));
+            return this.connection
+                .getRepository(this.getEntityName())
+                .save(entity);
+
+        } catch (error) {
+            this.log.debug(() => `Could not save entity ${this.getEntityName()}: error=${JSON.stringify(error)}`);
+            throw new RepositoryError(Logging.getMessage(error, `Could not save entity "${this.getEntityName()}"`));
+        }
     }
-  }
 
-  /**
-   * Deletes the given {@code entity} by searching for the database entry with the same id.
-   *
-   * The entity will be deleted by TypeORM.
-   *
-   * @param {T} entity - the entity to delete
-   *
-   * @throws {RepositoryError} if an error occurs during this operation
-   */
-  async delete(entity: T): Promise<void> {
+    /**
+     * Searches an entity matching the given {@code primaryKey}.
+     *
+     * The entity will be found by TypeORM.
+     *
+     * @param {K} primaryKey - primary key to search
+     *
+     * @returns {Promise<Optional<T>>} - an Optional of the resulting entity
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    async find(primaryKey: K): Promise<Optional<T>> {
 
-    try {
+        try {
 
-      await this.database.ready(this.connectionName);
+            await this.database.ready(this.connectionName);
 
-      this.log.info(() => `Delete entity "${this.getEntityName()}"`);
+            this.log.trace(() => `Find entity "${this.getEntityName()}" by id "${primaryKey}"`);
 
-      await this.connection
-        .getRepository(this.getEntityName())
-        .deleteById(entity[this.getIdName()]);
-    } catch (error) {
-      throw new RepositoryError(Logging.getMessage(error, `Could not delete entity "${this.getEntityName()}"`));
+            const result: T = await this.connection
+                .getRepository(this.getEntityName())
+                .findOneById(primaryKey) as T;
+
+            return Optional.ofNullable(result);
+
+        } catch (error) {
+            this.log.debug(() => `Could not find entity "${this.getEntityName()}" by id ${primaryKey}: error=${JSON.stringify(error)}`);
+            throw new RepositoryError(Logging.getMessage(error, `Could not find entity "${this.getEntityName()}" by id "${primaryKey}"`));
+        }
     }
-  }
 
-  /**
-   * Returns true if an entity matching the given {@code primaryKey} exists,
-   * otherwise false.
-   *
-   * Uses the {@link AbstractCRUDRepository#find} method to check the existence of the entity.
-   *
-   * @param {K} primaryKey - primary key to check
-   *
-   * @returns {Promise<boolean>} true if it exists, otherwise false
-   */
-  async exists(primaryKey: K): Promise<boolean> {
-      return (await this.find(primaryKey)).isPresent();
-  }
+    /**
+     * Deletes the given {@code entity} by searching for the database entry with the same id.
+     *
+     * The entity will be deleted by TypeORM.
+     *
+     * @param {T} entity - the entity to delete
+     *
+     * @throws {RepositoryError} if an error occurs during this operation
+     */
+    async delete(entity: T): Promise<void> {
 
-  /**
-   * @returns {string} the name of the entity used
-   */
-  protected abstract getEntityName(): string
+        try {
 
-  /**
-   * @returns {string} the name of the id property of the entity used
-   */
-  protected abstract getIdName(): string
+            await this.database.ready(this.connectionName);
+
+            this.log.trace(() => `Delete entity "${this.getEntityName()}"`);
+
+            await this.connection
+                .getRepository(this.getEntityName())
+                .deleteById(entity[this.getIdName()]);
+        } catch (error) {
+            this.log.debug(() => `Could not delete entity "${this.getEntityName()}": error=${JSON.stringify(error)}`);
+            throw new RepositoryError(Logging.getMessage(error, `Could not delete entity "${this.getEntityName()}"`));
+        }
+    }
+
+    /**
+     * Returns true if an entity matching the given {@code primaryKey} exists,
+     * otherwise false.
+     *
+     * Uses the {@link AbstractCRUDRepository#find} method to check the existence of the entity.
+     *
+     * @param {K} primaryKey - primary key to check
+     *
+     * @returns {Promise<boolean>} true if it exists, otherwise false
+     */
+    async exists(primaryKey: K): Promise<boolean> {
+        return (await this.find(primaryKey)).isPresent();
+    }
+
+    /**
+     * @returns {string} the name of the entity used
+     */
+    protected abstract getEntityName(): string
+
+    /**
+     * @returns {string} the name of the id property of the entity used
+     */
+    protected abstract getIdName(): string
 }
 
 /**
@@ -191,8 +194,8 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
  */
 export class RepositoryError extends Error {
 
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, RepositoryError.prototype);
-  }
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, RepositoryError.prototype);
+    }
 }

@@ -5,6 +5,8 @@ import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 import {Optional} from "../../../util/util.optional";
 import {Logging} from "../../../services/logging/logging.service";
+import {Logger} from "../../../services/logging/logging.api";
+import {isDefined} from "ionic-angular/es2015/util/util";
 
 /**
  * Describes a CRUD repository for {@link LearnplaceEntity}.
@@ -12,7 +14,7 @@ import {Logging} from "../../../services/logging/logging.service";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.1.0
  */
-export interface LearnplaceRepository extends CRUDRepository<LearnplaceEntity, number> {
+export interface LearnplaceRepository extends CRUDRepository<LearnplaceEntity, string> {
 
     /**
      * Finds a learnplace matching the given {@code objectId} and {@code userid}.
@@ -33,11 +35,13 @@ export const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new I
  * @version 1.1.0
  */
 @Injectable()
-export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEntity, number> implements LearnplaceRepository {
+export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEntity, string> implements LearnplaceRepository {
 
-  constructor(database: Database) {
-    super(database, PEGASUS_CONNECTION_NAME);
-  }
+    private logger: Logger = Logging.getLogger(TypeORMLearnplaceRepository.name);
+
+    constructor(database: Database) {
+        super(database, PEGASUS_CONNECTION_NAME);
+    }
 
     /**
      * Finds a learnplace matching the given {@code objectId} and {@code userid}.
@@ -52,15 +56,28 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
         try {
             await this.database.ready(PEGASUS_CONNECTION_NAME);
 
-            const entity: LearnplaceEntity | null = await this.connection.createQueryBuilder()
-                .select()
-                .from(LearnplaceEntity, "learnplace")
-                .where("learnplace.objectId = :objectId AND learnplace.FK_user = :userId", {objectId: objectId, userId: userId})
-                .getOne();
+            this.logger.trace(() => `Find learnplace by object id and user id: objectId=${objectId}, userId=${userId}`);
 
-            return Optional.ofNullable(entity);
+            /*
+             * This is a workaround. Due an unknown issue, the relations of a learnplace are not loaded
+             * by using query builder. Therefore we just read the raw data and invoke the find method
+             * with the primary key, where the relations will be loaded.
+             */
+            const rawLearnplace: RawLearnplace | null = await this.connection
+                .getRepository(this.getEntityName())
+                .createQueryBuilder( "learnplace")
+                .where("learnplace.objectId = :objectId AND learnplace.FK_user = :userId", {objectId: objectId, userId: userId})
+                .getRawOne();
+
+            if(isDefined(rawLearnplace.learnplace_id)) {
+                return this.find(rawLearnplace.learnplace_id);
+            }
+
+            return Optional.empty();
 
         } catch(error) {
+            this.logger.warn(() => `Could not load learnplace by object id and user id: objectId=${objectId}, userId=${userId}`);
+            this.logger.debug(() => `Find learnplace by object id and user id Error: ${JSON.stringify(error)}`);
             throw new RepositoryError(Logging.getMessage(error,
                 `Could not load learnplace by object id and user id: objectId=${objectId}, userId=${userId}`)
             );
@@ -70,4 +87,10 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
     protected getEntityName(): string { return "Learnplace" }
 
     protected getIdName(): string { return "id" }
+}
+
+interface RawLearnplace {
+    learnplace_id: string;
+    learnplace_objectId: number;
+    learnplace_FK_user: number
 }

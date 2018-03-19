@@ -3,7 +3,6 @@ import {MapEntity} from "./map.entity";
 import {
     Column,
     Entity, JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToMany, OneToOne, PrimaryColumn,
-    PrimaryGeneratedColumn,
     RelationOptions
 } from "typeorm";
 import {TextblockEntity} from "./textblock.entity";
@@ -17,14 +16,14 @@ import {UserEntity} from "../../entity/user.entity";
 @Entity("Learnplace")
 export class LearnplaceEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryColumn()
+    id: string;
 
     @Column()
     objectId: number;
 
     @OneToOne(type => UserEntity, <RelationOptions>{cascadeAll: false, lazy: true})
-    @JoinColumn()
+    @JoinColumn(<JoinColumnOptions>{name: "FK_user", referencedColumnName: "id"})
     user: Promise<UserEntity>;
 
     @OneToOne(type => LocationEntity, location => location.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
@@ -45,7 +44,7 @@ export class LearnplaceEntity {
     name: "learnplace_accordion",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
-      referencedColumnName: "objectId"
+      referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
       name: "accordionId",
@@ -63,7 +62,7 @@ export class LearnplaceEntity {
     name: "learnplace_textblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
-      referencedColumnName: "objectId"
+      referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
       name: "textblockId",
@@ -81,7 +80,7 @@ export class LearnplaceEntity {
     name: "learnplace_pictureblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
-      referencedColumnName: "objectId"
+      referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
       name: "pictureblockId",
@@ -100,7 +99,7 @@ export class LearnplaceEntity {
     name: "learnplace_linkblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
-      referencedColumnName: "objectId"
+      referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
       name: "linkblockId",
@@ -119,7 +118,7 @@ export class LearnplaceEntity {
     name: "learnplace_videoblock",
     joinColumn: <JoinColumnOptions>{
       name: "learnplaceId",
-      referencedColumnName: "objectId"
+      referencedColumnName: "id"
     },
     inverseJoinColumn: <JoinColumnOptions>{
       name: "videoblockId",

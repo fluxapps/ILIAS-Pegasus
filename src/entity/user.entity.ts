@@ -1,10 +1,13 @@
-import {Column, Entity, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, PrimaryColumn, RelationOptions} from "typeorm";
+import {
+    Column, Entity, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, PrimaryColumn,
+    PrimaryGeneratedColumn, RelationOptions
+} from "typeorm";
 import {NewsEntity} from "./news.entity";
 
 @Entity("users")
 export class UserEntity {
 
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()

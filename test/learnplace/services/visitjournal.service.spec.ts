@@ -138,7 +138,7 @@ describe("a visit journal watch", () => {
     addJournalEntry: () => undefined, getLearnPlace: () => undefined, getBlocks: () => undefined, getJournalEntries: () => undefined
   };
   const mockLearnplaceRepository: LearnplaceRepository = <LearnplaceRepository>{
-    find: () => undefined, delete: () => undefined, exists: () => undefined, save: () => undefined
+    find: () => undefined, delete: () => undefined, exists: () => undefined, save: () => undefined, findByObjectIdAndUserId: () => undefined
   };
   const mockUserRepository: UserRepository = <UserRepository>{
     save: () => undefined, exists: () => undefined, delete: () => undefined, find: () => undefined, findAuthenticatedUser: () => undefined
