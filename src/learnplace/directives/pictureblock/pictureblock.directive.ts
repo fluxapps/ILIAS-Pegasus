@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/c
 import {PictureBlockModel} from "../../services/block.model";
 import {Platform} from "ionic-angular";
 import {File} from "@ionic-native/file";
-import {PhotoViewer} from "@ionic-native/photo-viewer";
+import {PhotoViewer, PhotoViewerOptions} from "@ionic-native/photo-viewer";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
@@ -62,7 +62,7 @@ export class PictureBlock implements OnInit, OnDestroy {
   }
 
   show(): void {
-    this.photoViewer.show(`${this.getStorageLocation()}${this.pictureBlock.url}`, this.pictureBlock.title);
+    this.photoViewer.show(`${this.getStorageLocation()}${this.pictureBlock.url}`, this.pictureBlock.title, <PhotoViewerOptions>{share:false});
   }
 
   private getStorageLocation(): string {
