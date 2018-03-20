@@ -1,14 +1,12 @@
-import {HttpClient as Http, HttpResponse as Response, HttpHeaders, HttpParams} from "@angular/common/http";
-import {Validator, ValidatorResult} from "jsonschema";
+import {HttpClient as Http, HttpHeaders, HttpParams, HttpResponse as Response, XhrFactory} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import * as HttpStatus from "http-status-codes";
+import {isDefined} from "ionic-angular/es2015/util/util";
+import {Validator, ValidatorResult} from "jsonschema";
 import {Observable} from "rxjs/Observable";
 import {IllegalStateError} from "../error/errors";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
-import {isDefined} from "ionic-angular/es2015/util/util";
-
-export const DEFAULT_TIMEOUT: number = 3600;
 
 /**
  * Abstracts the Http service of angular in async methods.
@@ -40,7 +38,6 @@ export class HttpClient {
 
     this.log.trace(() => `Http GET request to: ${url}`);
     const response: Response<ArrayBuffer> = await this.http.get(url, toAngularOptions(options))
-      .timeout(DEFAULT_TIMEOUT)
       .do(
         (_) => this.log.trace(() => `Http GET request succeeded to: ${url}`),
         (_) => this.log.warn(() => `Http GET request attempt failed to: ${url}`)
@@ -49,7 +46,7 @@ export class HttpClient {
       .catch((error) => {
         this.log.error(() => `Http GET request failed: resource=${url}`);
         this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
-        return Observable.throw(new UnfinishedHttpRequestError(`Could no finish request: url=${url}`));
+        return Observable.throw(new UnfinishedHttpRequestError(`Could not finish request: url=${url}`));
       })
       .toPromise();
 
@@ -70,7 +67,6 @@ export class HttpClient {
 
     this.log.trace(() => `Http POST request to: ${url}`);
     const response: Response<ArrayBuffer> = await this.http.post(url, body, toAngularOptions(options))
-      .timeout(DEFAULT_TIMEOUT)
       .do(
         (_) => this.log.trace(() => `Http POST request succeeded to: ${url}`),
         (_) => this.log.warn(() => `Http POST request attempt failed to: ${url}`)
@@ -79,7 +75,7 @@ export class HttpClient {
       .catch((error) => {
         this.log.error(() => `Http POST request failed: resource=${url}`);
         this.log.debug(() => `Http POST request error: ${JSON.stringify(error)}`);
-        return Observable.throw(new UnfinishedHttpRequestError(`Could no finish POST request: url=${url}`));
+        return Observable.throw(new UnfinishedHttpRequestError(`Could not finish POST request: url=${url}`));
       })
       .toPromise();
 
@@ -348,4 +344,126 @@ export class NotFoundError extends HttpRequestError {
     super(HttpStatus.NOT_FOUND, message, responseBody);
     Object.setPrototypeOf(this, NotFoundError.prototype);
   }
+}
+
+export class PegasusXhrFactory extends XhrFactory {
+
+    /* timeout in milliseconds, 0 means no timeout at all
+     * please only set this if the http backend is aware of the timeout event. (Angular 5.2.8 is not aware of the event)
+     */
+    private static readonly TIMEOUT: number = 0;
+
+    private readonly log: Logger = Logging.getLogger(PegasusXhrFactory.name);
+
+    //used to identify the xhr requests
+    private xhrCount: number = 0;
+
+    build(): XMLHttpRequest {
+        const xhr: XMLHttpRequest = new XMLHttpRequest();
+
+        //prevent save integer overflow
+        if(this.xhrCount === Number.MAX_SAFE_INTEGER)
+            this.xhrCount = 0;
+
+        const xhrId: number = ++this.xhrCount;
+        this.log.trace(() => `XHR-${xhrId} created.`);
+
+        this.registerLoadendEvent(xhr, xhrId);
+        this.registerLoadstartEvent(xhr, xhrId);
+        this.registerTimeoutEvent(xhr, xhrId);
+        this.registerReadyStateChangeEventListener(xhr, xhrId);
+
+        return xhr;
+    }
+
+    /**
+     * fired after OPENED
+     *
+     * @param {XMLHttpRequest} xhr
+     * @param {number} xhrId
+     */
+    private registerLoadstartEvent(xhr: XMLHttpRequest, xhrId: number): void {
+        xhr.addEventListener("loadstart", (ev: Event): void => {
+            this.log.trace(() => `XHR-${xhrId} set timeout to ${PegasusXhrFactory.TIMEOUT}`);
+            xhr.timeout = PegasusXhrFactory.TIMEOUT;
+        }, <AddEventListenerOptions>{
+            capture: false,
+            once: true,
+            passive: true
+        });
+    }
+
+    /**
+     * fired after DONE (this will be fired after the error handlers)
+     *
+     * @param {XMLHttpRequest} xhr
+     * @param {number} xhrId
+     */
+    private registerLoadendEvent(xhr: XMLHttpRequest, xhrId: number): void {
+        xhr.addEventListener("loadend", (ev: ProgressEvent) => {
+            this.log.trace(() => `XHR-${xhrId} load end status event: "${ev.loaded}/${ev.total}"`);
+        }, <AddEventListenerOptions>{
+            capture: false,
+            once: true,
+            passive: true
+        });
+    }
+
+    /**
+     * fired after DONE in case of timeout
+     *
+     * @param {XMLHttpRequest} xhr
+     * @param {number} xhrId
+     */
+    private registerTimeoutEvent(xhr: XMLHttpRequest, xhrId: number): void {
+        xhr.addEventListener("timeout", (ev: ProgressEvent) => {
+            this.log.warn(() => `XHR-${xhrId} timeout event received with progress: "${ev.loaded}/${ev.total}"`);
+        }, <AddEventListenerOptions>{
+            capture: false,
+            once: true,
+            passive: true
+        });
+    }
+
+    /**
+     * fires at state changes OPENED, HEADERS_RECEIVED, LOADING, DONE
+     *
+     * @param {XMLHttpRequest} xhr
+     * @param {number} xhrId
+     */
+    private registerReadyStateChangeEventListener(xhr: XMLHttpRequest, xhrId: number): void {
+        let state: number = 0;
+        const stateReadChangeListener: EventListener = (ev: Event): void => {
+            const newState: number = xhr.readyState;
+            if(newState > state) {
+                this.log.trace(() => `XHR-${xhrId} ready state change from ${XhrState[state]} to ${XhrState[newState]}`);
+                state = newState;
+            }
+
+            if (state === XMLHttpRequest.DONE) {
+                xhr.removeEventListener("readystatechange", stateReadChangeListener);
+                this.log.trace(() => `XHR-${xhrId} unregister ready state event listener`);
+            }
+
+        };
+
+        xhr.addEventListener("readystatechange", stateReadChangeListener, <AddEventListenerOptions>{
+            capture: false,
+            once: false,
+            passive: true
+        });
+    }
+}
+
+/**
+ * All ready states of XMLHttpRequest,
+ * the primary use of the enum is to print the
+ * written state instead of a number.
+ */
+enum XhrState {
+    UNSENT,             //	Client has been created. open() not called yet.
+    OPENED,             //	open() has been called.
+	HEADERS_RECEIVED,	//  send() has been called, and headers and status are available.
+	LOADING,            //  Downloading; responseText holds partial data.
+ 	DONE	            //  The operation is complete.
 }

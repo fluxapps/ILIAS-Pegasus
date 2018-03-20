@@ -1,4 +1,4 @@
-import {NgModule, ErrorHandler, FactoryProvider} from "@angular/core";
+import {NgModule, ErrorHandler, FactoryProvider, ClassProvider} from "@angular/core";
 import {IonicApp, IonicModule, IonicErrorHandler, Platform, ModalController, NavController} from "ionic-angular";
 import { MyApp } from "./app.component";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -28,7 +28,7 @@ import {Network} from "@ionic-native/network";
 import {File} from "@ionic-native/file";
 import {SQLite} from "@ionic-native/sqlite";
 import {Toast} from "@ionic-native/toast";
-import {HttpClient as PegasusHttpClient} from "../providers/http";
+import {HttpClient as PegasusHttpClient, PegasusXhrFactory} from "../providers/http";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {
   ILIAS_REST, ILIASRestImpl, ILIASTokenManager,
@@ -112,7 +112,7 @@ import {
 import {Geolocation} from "@ionic-native/geolocation";
 import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
 import {Http, HttpModule} from "@angular/http";
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule, XhrFactory} from "@angular/common/http";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 import {PhotoViewer} from "@ionic-native/photo-viewer";
@@ -440,7 +440,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     Hardware,
 
     IonicErrorHandler,
-    {provide: ErrorHandler, useClass: PegasusErrorHandler}
+    {provide: ErrorHandler, useClass: PegasusErrorHandler},
+      <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false}
   ],
   exports: [
     TranslateModule

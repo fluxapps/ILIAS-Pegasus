@@ -99,9 +99,11 @@ export class MyApp {
 
       return this.initializeApp();
 
-    }).catch(error =>
-      this.log.warn(() => getMessage(error, `Could not initialize app. Error occurred: \n${JSON.stringify(error)}`))
-    )
+    }).catch((error) => {
+            const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
+            const errorType: string = (error instanceof Error) ? error.name : "N/a";
+            this.log.warn(() => `Could not initialize app. Error type: ${errorType} Message: ${message}`)
+    });
   }
 
   /**
