@@ -1,4 +1,5 @@
-import {DirectoryEntry, File, Flags, IWriteOptions} from "@ionic-native/file";
+import {DirectoryEntry, File, Flags, IWriteOptions, FileWriter, FileEntry, FileError} from "@ionic-native/file";
+import {IllegalStateError} from "../../../error/errors";
 import {HttpClient, HttpResponse} from "../../../providers/http";
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {Platform} from "ionic-angular";
@@ -80,7 +81,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
       const path: string = await this.createRecursive(storageLocation, "ilias-app", user.id.toString(), "lernorte");
 
       this.log.trace(() => `Save file "${name}" to location "${storageLocation}${path}"`);
-      await this.file.writeFile(`${storageLocation}${path}`, name, response.arrayBuffer(), <IWriteOptions>{replace: true});
+      await this.writeFileJunked(response.arrayBuffer(), `${storageLocation}${path}`, name);
 
       return `${path}${name}`;
 
@@ -89,6 +90,52 @@ export class HttpResourceTransfer implements ResourceTransfer {
       throw new ResourceLoadError(`Could not transfer resource: resource=${resource}`);
     }
   }
+
+    /**
+     * Write content in 5MB junks to the file.
+     * This is necessary due to ram spike issues while writing large files (base64 encode at the cordova js nativ exec call bridge),
+     * which leads to an instant crash of the app.
+     *
+     * @param {ArrayBuffer} fileContent
+     * @param {string} path
+     * @param {string} name
+     * @returns {Promise<void>}
+     */
+    private async writeFileJunked(fileContent: ArrayBuffer, path: string, name: string): Promise<void> {
+        const blockSize: number = 5 * 1024**2; //5MB
+        const writeCycles: number = Math.floor(fileContent.byteLength / blockSize);
+
+        this.log.trace(() => `Writing file with block-size: ${blockSize}, cycles: ${writeCycles}`);
+        const fileEntry: FileEntry = await this.file.writeFile(path, name, "", <IWriteOptions>{replace: true});
+
+        for(let i: number = 0; i <= writeCycles; i++) {
+            //start byte pointer
+            const blockPointer: number = i * blockSize;
+
+            //the end pointer is equal to the start + block size or the data which are left at the end of the file.
+            const blockPointerEnd: number = (blockSize <= (fileContent.byteLength - blockPointer))
+                ? blockPointer + blockSize
+                : fileContent.byteLength - blockPointer;
+
+            this.log.trace(() => `Writing file block ${i} start ${blockPointer} end ${blockPointerEnd}`);
+            await this.writeFileJunk(fileContent.slice(blockPointer, blockPointerEnd), fileEntry, blockPointer);
+        }
+    }
+
+    private async writeFileJunk(slice: ArrayBuffer, file: FileEntry, blockPosition: number): Promise<void> {
+        return new Promise<void>((resolve: Resolve<void>, reject: Reject<Error>) => {
+            file.createWriter((writer: FileWriter) => {
+
+                writer.onerror = (event: ProgressEvent): void => {reject(new Error("Unable to write file."))};
+                writer.onwriteend = (event: ProgressEvent): void => resolve();
+                writer.seek(blockPosition);
+                writer.write(slice);
+
+            }, (error: FileError) => {
+                reject(new IllegalStateError(`Unable to write file with FileError: ${error.code} and message ${error.message}`));
+            });
+        });
+    }
 
   /**
    * @returns {Promise<string>} the storage location considering the platform
