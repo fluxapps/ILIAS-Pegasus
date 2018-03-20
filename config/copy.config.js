@@ -15,7 +15,12 @@ module.exports = {
     dest: '{{WWW}}/assets/fonts'
   },
   copyPolyfills: {
-    src: [`{{ROOT}}/node_modules/ionic-angular/polyfills/${process.env.IONIC_POLYFILL_FILE_NAME}`, `{{ROOT}}/node_modules/web-animations-js/web-animations.min.js`, "{{ROOT}}/node_modules/text-encoding/lib/encoding.js"],
+    src: [
+        `{{ROOT}}/node_modules/ionic-angular/polyfills/${process.env.IONIC_POLYFILL_FILE_NAME}`,
+        `{{ROOT}}/node_modules/web-animations-js/web-animations.min.js`,
+        `{{ROOT}}/node_modules/web-animations-js/web-animations.min.js.map`,
+        "{{ROOT}}/node_modules/text-encoding/lib/encoding.js"
+    ],
     dest: '{{BUILD}}'
   },
   copySwToolbox: {
