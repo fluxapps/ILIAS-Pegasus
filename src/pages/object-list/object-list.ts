@@ -151,12 +151,12 @@ export class ObjectListPage {
 	}
 
 	ionViewDidEnter(): void {
-		Log.write(this, "Did enter.");
+		this.log.trace(() => "Ion view did enter.");
 		this.calculateChildrenMarkedAsNew();
 	}
 
 	ionViewDidLoad(): void {
-		Log.write(this, "Did load page object list.");
+        this.log.trace(() => "Ion view did load page object list.");
 
 		User.currentUser()
       .then(user => {
@@ -180,20 +180,6 @@ export class ObjectListPage {
       await this.loadCachedDesktopData();
     } else {
       await this.loadCachedObjectData();
-    }
-
-    return Promise.resolve();
-  }
-
-
-	private async loadOnlineObjects(): Promise<void> {
-
-    this.user = await User.currentUser();
-
-    if (this.parent == undefined) {
-      await this.loadOnlineDesktopData();
-    } else {
-      await this.loadOnlineObjectData();
     }
 
     return Promise.resolve();
@@ -224,29 +210,6 @@ export class ObjectListPage {
 	}
 
 	/**
-	 * loads the object data from the rest api and stores it into the db chache.
-	 * @returns {Promise<void>}
-	 */
-	private async loadOnlineObjectData(): Promise<void> {
-
-	  try {
-
-      this.footerToolbar.addJob(this.parent.refId, "");
-
-      this.objects = await this.dataProvider.getObjectData(this.parent, this.user, true);
-      this.calculateChildrenMarkedAsNew();
-      this.footerToolbar.removeJob(this.parent.refId);
-      this.parent.updatedAt = new Date().toISOString();
-
-      return Promise.resolve();
-
-    } catch (error) {
-	    this.footerToolbar.removeJob(this.parent.refId);
-	    return Promise.reject(error);
-    }
-	}
-
-	/**
 	 * load the desktop data from the local db.
 	 * @returns {Promise<void>}
 	 */
@@ -257,30 +220,6 @@ export class ObjectListPage {
       this.footerToolbar.addJob(Job.DesktopAction, "");
 
       this.objects = await DesktopItem.findByUserId(this.user.id);
-      this.objects.sort(ILIASObject.compare);
-      this.calculateChildrenMarkedAsNew();
-
-      this.footerToolbar.removeJob(Job.DesktopAction);
-
-      return Promise.resolve();
-
-    } catch (error) {
-	    this.footerToolbar.removeJob(Job.DesktopAction);
-	    return Promise.reject(error);
-    }
-	}
-
-	/**
-	 * load the desktop data from the rest api. and save the data into the local db.
-	 * @returns {Promise<void>}
-	 */
-	private async loadOnlineDesktopData(): Promise<void> {
-
-	  try {
-
-      this.footerToolbar.addJob(Job.DesktopAction, "");
-
-      this.objects = await this.dataProvider.getDesktopData(this.user);
       this.objects.sort(ILIASObject.compare);
       this.calculateChildrenMarkedAsNew();
 
@@ -321,7 +260,7 @@ export class ObjectListPage {
 	 * @param {Refresher} refresher
 	 * @returns {Promise<void>}
 	 */
-	async startSync(refresher: Refresher) {
+	async startSync(refresher: Refresher): Promise<void> {
 		refresher.complete();
 		await this.executeSync();
 	}
@@ -341,8 +280,6 @@ export class ObjectListPage {
             }
 			Log.write(this, "Sync start", [], []);
 			this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-
-			await this.loadOnlineObjects();
 
 			const syncResult: SyncResults = await this.sync.execute();
 			this.calculateChildrenMarkedAsNew();
