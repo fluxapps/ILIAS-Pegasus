@@ -113,7 +113,7 @@ export class PegasusErrorHandler implements ErrorHandler {
             }
 
         } catch (err) {
-            this.log.warn(() => `Error occurred during error handling: ${JSON.stringify(err)}`);
+            this.log.warn(() => `Error occurred during error handling: ${JSON.stringify(err)}, previous error ${JSON.stringify(error)}`);
         }
     }
 
@@ -121,6 +121,12 @@ export class PegasusErrorHandler implements ErrorHandler {
 
         if(isNullOrUndefined(errorLike))
             return new Error("Unhandled exception is null or undefined.");
+
+        if(isString(errorLike))
+            return new Error(`String value thrown: "${errorLike}"`);
+
+        if(isNumber(errorLike))
+            return new Error(`Number value thrown: "${errorLike}"`);
 
         //check if we got a zone js error
         if (errorLike.hasOwnProperty("rejection")) {
@@ -136,12 +142,6 @@ export class PegasusErrorHandler implements ErrorHandler {
 
         if(isObject(errorLike))
             return new Error(JSON.stringify(errorLike));
-
-        if(isString(errorLike))
-            return new Error(`String value thrown: "${errorLike}"`);
-
-        if(isNumber(errorLike))
-            return new Error(`Number value thrown: "${errorLike}"`);
 
         return new Error(`Unknown error value thrown: "${errorLike}"`);
     }
