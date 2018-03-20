@@ -88,12 +88,14 @@ export class SynchronizationService {
                             sync.rejecter(error);
                     });
                 }
+                this.events.publish("sync:complete");
                 return Promise.resolve(syncResult);
             })
             .catch( (error) => {
                 // we catch any occuring errors in the process so we can turn off the sync status.
                 // then we delegate for any view to be able to recatch the exception.
                 this.syncEnded(this.user.id);
+                this.events.publish("sync:complete");
                 return Promise.reject(error);
             });
     }

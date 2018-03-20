@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
-import "rxjs/add/operator/toPromise";
 import {User} from "../models/user";
-import {ILIASRestProvider} from "./ilias-rest.provider";
+import {DesktopData, ILIASRestProvider} from "./ilias-rest.provider";
 import {ILIASObject} from "../models/ilias-object";
 import {DesktopItem} from "../models/desktop-item";
 import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
@@ -10,8 +9,8 @@ import {Log} from "../services/log.service";
 @Injectable()
 export class DataProvider {
 
-    constructor(protected rest: ILIASRestProvider,
-                protected fileObjectHandler: DataProviderFileObjectHandler) {
+    constructor(private readonly rest: ILIASRestProvider,
+                private readonly fileObjectHandler: DataProviderFileObjectHandler) {
     }
 
     /**
@@ -31,9 +30,10 @@ export class DataProvider {
      * @param parentObject
      * @param user
      * @param recursive
+     * @param refreshFiles
      * @returns {Promise<ILIASObject[]>}
      */
-    getObjectData(parentObject: ILIASObject, user: User, recursive, refreshFiles = true): Promise<Array<ILIASObject>> {
+    getObjectData(parentObject: ILIASObject, user: User, recursive: boolean, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         //TODO: we want to update the meta data just once.
         return this.rest.getObjectData(parentObject.refId, user, recursive)
             .then((data) => this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles))
@@ -45,15 +45,16 @@ export class DataProvider {
      * @param object
      * @param user
      * @param rootParent
+     * @param refreshFiles
      * @returns {Promise<ILIASObject>}
      */
-    protected storeILIASObject(object: any, user: User, rootParent: ILIASObject = null, refreshFiles = true): Promise<ILIASObject> {
+    private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject|undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
 
         Log.write(this, "Storing ILIAS Object");
 
-        let the_iliasObject: ILIASObject = null;
+        let the_iliasObject: ILIASObject = undefined;
 
-        return ILIASObject.findByRefId(object.refId, user.id)
+        return ILIASObject.findByRefId(parseInt(object.refId, 10), user.id)
             .then(iliasObject => {
                 iliasObject.readFromObject(object);
 
@@ -85,7 +86,7 @@ export class DataProvider {
             });
     }
 
-    protected onSaveFile(user, iliasObject: ILIASObject): Promise<ILIASObject> {
+    private onSaveFile(user: User, iliasObject: ILIASObject): Promise<ILIASObject> {
 
         let resolveObject: ILIASObject;
 
@@ -104,7 +105,7 @@ export class DataProvider {
      * @param user
      * @returns {Promise<ILIASObject[]>}
      */
-    protected storeILIASDesktopObjects(objects: Array<any>, user: User): Promise<Array<ILIASObject>> {
+    protected storeILIASDesktopObjects(objects: Array<DesktopData>, user: User): Promise<Array<ILIASObject>> {
             const iliasObjects = [];
             const promises = [];
             // We store desktop items that are only courses or groups
@@ -130,9 +131,10 @@ export class DataProvider {
      * @param user
      * @param parentObject
      * @param recursive
+     * @param refreshFiles
      * @returns {Promise<ILIASObject[]>}
      */
-    protected storeILIASObjects(remoteObjects: Array<any>, user: User, parentObject: ILIASObject, recursive = false, refreshFiles = true): Promise<Array<ILIASObject>> {
+    private storeILIASObjects(remoteObjects: Array<DesktopData>, user: User, parentObject: ILIASObject, recursive: boolean = false, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
 
         if(recursive) {
             return ILIASObject.findByParentRefIdRecursive(parentObject.refId, user.id)
@@ -148,18 +150,19 @@ export class DataProvider {
      * @param existingObjects
      * @param user
      * @param rootParent
+     * @param refreshFiles
      * @returns {Promise<ILIASObject[]>}
      */
-    protected saveOrDeleteObjects(remoteObjects: Array<any>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles = true): Promise<Array<ILIASObject>> {
-            const iliasObjects = [];
-            const promises = [];
-            const objectsToDelete = existingObjects;
+    private saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
+            const iliasObjects: Array<ILIASObject> = [];
+            const promises: Array<Promise<void>> = [];
+            const objectsToDelete: Array<ILIASObject> = existingObjects;
             Log.describe(this, "Existing Objects.", existingObjects);
             remoteObjects.forEach(remoteObject => {
-                const promise = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
+                const promise: Promise<void> = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
                     iliasObjects.push(iliasObject);
                     // Check if the stored object exists already locally, if so, remove it from objectsToDelete
-                    const objectIndex = existingObjects.findIndex(existingObject => {
+                    const objectIndex: number = existingObjects.findIndex(existingObject => {
                         return existingObject.objId == iliasObject.objId;
                     });
                     if (objectIndex > -1) {
@@ -186,8 +189,8 @@ export class DataProvider {
      * @param iliasObject
      * @param user
      */
-    protected deleteObject(iliasObject: ILIASObject, user: User) {
-        const promises = [];
+    private deleteObject(iliasObject: ILIASObject, user: User): Promise<object> {
+        const promises: Array<Promise<object>> = [];
         promises.push(iliasObject.destroy());
         if (iliasObject.type == "file") {
             promises.push(this.fileObjectHandler.onDelete(iliasObject, user));

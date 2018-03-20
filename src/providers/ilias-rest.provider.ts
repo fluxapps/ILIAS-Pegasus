@@ -30,7 +30,7 @@ export class ILIASRestProvider {
       );
     }
 
-    async getDesktopData(user: User): Promise<Array<object>> {
+    async getDesktopData(user: User): Promise<Array<DesktopData>> {
 
       const response: HttpResponse = await this.iliasRest.get("/v2/ilias-app/desktop", DEFAULT_OPTIONS);
 
@@ -39,7 +39,7 @@ export class ILIASRestProvider {
       );
     }
 
-    async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = 0): Promise<Array<object>> {
+    async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = 0): Promise<Array<DesktopData>> {
 
       const opt: ILIASRequestOptions = (recursive)? {accept: "application/json", urlParams: [["recursive", "1"]]} : DEFAULT_OPTIONS;
 
@@ -50,7 +50,7 @@ export class ILIASRestProvider {
       );
     }
 
-    async getFileData(refId: number, user: User, timeout: number = 0): Promise<object> {
+    async getFileData(refId: number, user: User, timeout: number = 0): Promise<FileData> {
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
 
@@ -132,7 +132,7 @@ const authTokenSchema: object = {
   }
 };
 
-interface DesktopData {
+export interface DesktopData {
   objId: string
   title: string
   description: string
@@ -174,7 +174,7 @@ const desktopDataSchema: object = {
   }
 };
 
-interface FileData {
+export interface FileData {
   fileExtension: string
   fileName: string
   fileSize: string
