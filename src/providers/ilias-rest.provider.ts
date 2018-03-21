@@ -82,8 +82,8 @@ export class ILIASRestProvider {
         const blockSize: number = 5 * 1024**2; //5MB
         const writeCycles: number = Math.floor(fileContent.byteLength / blockSize);
 
-        this.log.trace(() => `Writing file with block-size: ${blockSize}, cycles: ${writeCycles}`);
-        const fileEntry: FileEntry = await this.file.writeFile(path, name, "", <IWriteOptions>{replace: true});
+        this.log.trace(() => `Writing file with block-size: ${blockSize}, cycles: ${writeCycles+1} total-size: ${fileContent.byteLength}`);
+        const fileEntry: FileEntry = await this.file.writeFile(path, name, "", <IWriteOptions>{ replace: true });
 
         for(let i: number = 0; i <= writeCycles; i++) {
             //start byte pointer
@@ -92,7 +92,7 @@ export class ILIASRestProvider {
             //the end pointer is equal to the start + block size or the data which are left at the end of the file.
             const blockPointerEnd: number = (blockSize <= (fileContent.byteLength - blockPointer))
                 ? blockPointer + blockSize
-                : fileContent.byteLength - blockPointer;
+                : fileContent.byteLength;
 
             this.log.trace(() => `Writing file block ${i} start ${blockPointer} end ${blockPointerEnd}`);
             await this.writeFileJunk(fileContent.slice(blockPointer, blockPointerEnd), fileEntry, blockPointer);
