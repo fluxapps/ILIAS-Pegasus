@@ -23,7 +23,6 @@ import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService} from "../../services/synchronization.service";
-import {TokenUrlConverter} from "../../services/url-converter.service";
 
 
 @Component({
@@ -51,7 +50,6 @@ export class ObjectDetailsPage {
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
-                private readonly urlConverter: TokenUrlConverter,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,

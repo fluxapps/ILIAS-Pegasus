@@ -1,41 +1,47 @@
 import {Component, Inject} from "@angular/core";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
-  NavController, NavParams, ActionSheetController, LoadingController, AlertController,
-  ToastController, ActionSheetButton, Alert, ActionSheet, Toast
+    ActionSheet,
+    ActionSheetButton,
+    ActionSheetController,
+    Alert,
+    AlertController,
+    LoadingController,
+    ModalController,
+    NavController,
+    NavParams,
+    Toast,
+    ToastController
 } from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
+import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
+import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
+import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
+import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
+import {SynchronizeAction} from "../../actions/synchronize-action";
+import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
+import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
+import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
+import {OfflineException} from "../../exceptions/OfflineException";
+import {RESTAPIException} from "../../exceptions/RESTAPIException";
 import {ActiveRecord} from "../../models/active-record";
+import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
+import {User} from "../../models/user";
+import {DataProvider} from "../../providers/data-provider.provider";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
-import {User} from "../../models/user";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {LoginPage} from "../login/login";
-import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
-import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
-import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
-import {SynchronizeAction} from "../../actions/synchronize-action";
-import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
-import {DesktopItem} from "../../models/desktop-item";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
-import {Log} from "../../services/log.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {Job} from "../../services/footer-toolbar.service";
-import {ModalController} from "ionic-angular";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {OfflineException} from "../../exceptions/OfflineException";
-import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {TokenUrlConverter} from "../../services/url-converter.service";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 
 @Component({
@@ -72,7 +78,6 @@ export class NewObjectsPage {
                 public translate: TranslateService,
                 public modal: ModalController,
                 public dataProvider: DataProvider,
-                private readonly urlConverter: TokenUrlConverter,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,

@@ -51,7 +51,6 @@ import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
-import {TokenUrlConverter} from "../../services/url-converter.service";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
 @Component({
@@ -89,7 +88,6 @@ export class ObjectListPage {
 				private readonly dataProvider: DataProvider,
 				readonly footerToolbar: FooterToolbarService,
 				private readonly events: Events,
-				private readonly urlConverter: TokenUrlConverter,
 				private readonly browser: InAppBrowser,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,

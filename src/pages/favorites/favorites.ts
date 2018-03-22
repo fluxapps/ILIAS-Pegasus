@@ -27,7 +27,6 @@ import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {Log} from "../../services/log.service";
-import {TokenUrlConverter} from "../../services/url-converter.service";
 
 
 @Component({
@@ -48,7 +47,6 @@ export class FavoritesPage {
                 public footerToolbar: FooterToolbarService,
                 public alert: AlertController,
                 public toast: ToastController,
-                private readonly urlConverter: TokenUrlConverter,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
