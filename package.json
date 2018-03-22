@@ -35,6 +35,7 @@
     "@ionic-native/file": "^4.5.3",
     "@ionic-native/geolocation": "^4.5.3",
     "@ionic-native/google-maps": "^4.5.3",
+    "@ionic-native/http": "^4.6.0",
     "@ionic-native/in-app-browser": "^4.5.3",
     "@ionic-native/network": "^4.5.3",
     "@ionic-native/photo-viewer": "^4.5.3",
@@ -48,6 +49,7 @@
     "com.googlemaps.ios": "https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk",
     "cordova-android": "7.0.0",
     "cordova-ios": "4.5.4",
+    "cordova-plugin-advanced-http": "^1.11.1",
     "cordova-plugin-crosswalk-webview": "^2.4.0",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-file": "^6.0.1",
@@ -176,7 +178,8 @@
         "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
         "XWALK_MODE": "embedded",
         "XWALK_MULTIPLEAPK": "true"
-      }
+      },
+      "cordova-plugin-advanced-http": {}
     }
   }
 }
