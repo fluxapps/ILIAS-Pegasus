@@ -1,5 +1,5 @@
 import {LearnplaceEntity} from "./learnplace.entity";
-import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, JoinColumnOptions, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity("VisitJournal")
 export class VisitJournalEntity {
@@ -16,7 +16,7 @@ export class VisitJournalEntity {
   @Column()
   synchronized: boolean;
 
-  @OneToOne(type => LearnplaceEntity, learnplace => learnplace.visitJournal)
-  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
+  @ManyToOne(type => LearnplaceEntity, learnplace => learnplace.visitJournal)
+  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
   learnplace: LearnplaceEntity;
 }

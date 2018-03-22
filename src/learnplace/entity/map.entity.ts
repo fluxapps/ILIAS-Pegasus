@@ -20,6 +20,6 @@ export class MapEntity {
   visibility: VisibilityEntity;
 
   @OneToOne(type => LearnplaceEntity, learnplace => learnplace.map)
-  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
+  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
   learnplace: LearnplaceEntity;
 }

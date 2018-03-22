@@ -107,13 +107,6 @@
     <plugin name="cordova-plugin-x-toast" spec="^2.6.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
-    <plugin name="cordova-plugin-crosswalk-webview" spec="^2.4.0">
-        <variable name="XWALK_VERSION" value="23+" />
-        <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
-        <variable name="XWALK_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
-        <variable name="XWALK_MODE" value="embedded" />
-        <variable name="XWALK_MULTIPLEAPK" value="true" />
-    </plugin>
     <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git">
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
@@ -129,11 +122,18 @@
         <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     </plugin>
     <plugin name="polarcape-cordova-plugin-document-handler" spec="^1.0.12" />
-    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.15" />
     <plugin name="cordova-plugin-streaming-media" spec="~0.1.4" />
-    <engine name="ios" spec="4.5.4" />
-    <engine name="android" spec="7.0.0" />
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
+    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.16" />
+    <plugin name="cordova-plugin-crosswalk-webview" spec="^2.4.0">
+        <variable name="XWALK_VERSION" value="23+" />
+        <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
+        <variable name="XWALK_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
+        <variable name="XWALK_MODE" value="embedded" />
+        <variable name="XWALK_MULTIPLEAPK" value="true" />
+    </plugin>
+    <engine name="ios" spec="4.5.4" />
+    <engine name="android" spec="7.0.0" />
 </widget>

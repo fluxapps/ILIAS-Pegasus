@@ -413,8 +413,8 @@ import {LoadingPage} from "./fallback/loading/loading.component";
     <FactoryProvider>{
       provide: OPEN_LEARNPLACE_ACTION_FACTORY,
       useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
-        (nav: NavController, learnplaceId: number, learnplaceName: string): OpenLearnplaceAction =>
-          new OpenLearnplaceAction(loader, nav, learnplaceId, learnplaceName)
+        (nav: NavController, learnplaceObjectId: number, learnplaceName: string): OpenLearnplaceAction =>
+          new OpenLearnplaceAction(loader, nav, learnplaceObjectId, learnplaceName)
       ,
       deps: [LEARNPLACE_LOADER]
     },

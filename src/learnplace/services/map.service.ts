@@ -5,6 +5,7 @@ import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {Observable} from "rxjs/Observable";
+import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 
 /**
  * Describes a service to operate with Maps.
@@ -15,13 +16,13 @@ import {Observable} from "rxjs/Observable";
 export interface MapService {
 
   /**
-   * Creates a observable map by the given {@code learnplaceId}.
+   * Creates a observable map by the given {@code learnplaceObjectId}.
    *
-   * @param {number} learnplaceId - the id of the learnplace to find the according map
+   * @param {number} learnplaceObjectId - ILIAS object id of the learnplace
    *
    * @returns {Observable<MapModel>} an observable of the map
    */
-  getMap(learnplaceId: number): Observable<MapModel>
+  getMap(learnplaceObjectId: number): Observable<MapModel>
 
   /**
    * Shutdown every depending or async task which can be occurred by the {@link MapService#getMap} method.
@@ -41,37 +42,37 @@ export class VisibilityManagedMapService implements MapService {
 
   constructor(
     private readonly visibilityStrategyApplier: VisibilityStrategyApplier,
-    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository
+    @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository
   ) {}
 
   /**
-   * Creates a observable map by the given {@code learnplaceId}.
+   * Creates a observable map by the given {@code learnplaceObjectId}.
    *
    * The returned maps visibility is managed by the {@link VisibilityStrategy}.
    *
-   * @param {number} learnplaceId - the id of the learnplace to find the according map
+   * @param {number} learnplaceObjectId - ILIAS object id of the learnplace
    *
    * @returns {Observable<MapModel>} an observable of the map
-   * @throws {NoSuchElementError} if no learnplace matches the given id
    */
-  getMap(learnplaceId: number): Observable<MapModel> {
+  getMap(learnplaceObjectId: number): Observable<MapModel> {
 
-    return Observable.fromPromise(this.learnplaceRepository.find(learnplaceId))
-      .map(it => {
+      return Observable.fromPromise(this.userRepository.findAuthenticatedUser())
+          .mergeMap(it => Observable.fromPromise(this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, it.get().id)))
+          .mergeMap(it => {
 
-        const learnplace: LearnplaceEntity = it.get();
+              const learnplace: LearnplaceEntity = it.get();
 
-        const map: MapModel = new MapModel(
-          learnplace.location.latitude,
-          learnplace.location.longitude,
-          learnplace.map.zoom,
-          VisibilityStrategyType[learnplace.map.visibility.value]
-        );
+              const map: MapModel = new MapModel(
+                  learnplace.location.latitude,
+                  learnplace.location.longitude,
+                  learnplace.map.zoom,
+                  VisibilityStrategyType[learnplace.map.visibility.value]
+              );
 
-        this.visibilityStrategyApplier.setLearnplace(learnplaceId);
-        return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
-      })
-      .mergeAll();
+              this.visibilityStrategyApplier.setLearnplace(learnplace.id);
+              return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
+          });
   }
 
   /**

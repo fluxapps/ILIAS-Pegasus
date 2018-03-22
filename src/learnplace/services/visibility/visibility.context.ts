@@ -27,7 +27,7 @@ export interface VisibilityAware {
 @Injectable()
 export class VisibilityStrategyApplier {
 
-  private learnplaceId: number | undefined;
+  private learnplaceId: string | undefined;
 
  constructor(
    private readonly alwaysStrategy: AlwaysStrategy,
@@ -40,9 +40,9 @@ export class VisibilityStrategyApplier {
    * Setter for the learnplace that is used for the membership of models
    * used in the {@link VisibilityStrategyApplier#apply} method.
    *
-   * @param {number} id - the object id of the learnplace
+   * @param {string} id - the id of the learnplace
    */
-  setLearnplace(id: number): void {
+  setLearnplace(id: string): void {
      this.learnplaceId = id;
   }
 

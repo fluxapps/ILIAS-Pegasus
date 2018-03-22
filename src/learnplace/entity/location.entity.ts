@@ -20,6 +20,6 @@ export class LocationEntity {
   radius: number;
 
   @OneToOne(type => LearnplaceEntity, learnplace => learnplace.location)
-  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "objectId"})
+  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
   learnplace: LearnplaceEntity;
 }

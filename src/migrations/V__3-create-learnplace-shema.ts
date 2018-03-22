@@ -14,7 +14,9 @@ export class CreateLearnplace implements Migration {
   async up(queryRunner: QueryRunner): Promise<void> {
 
     const learnplace: Table = new Table("Learnplace", [
-      new TableColumn({name: "objectId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+        new TableColumn({name: "id", type: "string",length: "38", isPrimary: true, isNullable: false}),
+        new TableColumn({name: "objectId", type: "integer", isNullable: false}),
+        new TableColumn({name: "FK_user", type: "integer", isNullable: false})
     ]);
 
     const visitJournal: Table = new Table("VisitJournal", [
@@ -22,7 +24,7 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "userId", type: "integer", isNullable: false}),
       new TableColumn({name: "time", type: "integer", isNullable: false}),
       new TableColumn({name: "synchronized", type: "boolean", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_learnplace", type: "string" ,length: "38", isNullable: false})
     ]);
 
     const visibility: Table = new Table("Visibility", [
@@ -35,14 +37,14 @@ export class CreateLearnplace implements Migration {
       new TableColumn({name: "longitude", type: "double", isNullable: false}),
       new TableColumn({name: "elevation", type:"double", isNullable: false}),
       new TableColumn({name: "radius", type: "integer", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_learnplace", type: "string", length: "38", isNullable: false})
     ]);
 
     const map: Table = new Table("Map", [
       new TableColumn({name: "id", type: "integer", isPrimary: true, generationStrategy: "increment", isNullable: false, isGenerated: true}),
       new TableColumn({name: "zoom", type: "integer", isNullable: false}),
       new TableColumn({name: "FK_visibility", type: "string", length: "128", isNullable: false}),
-      new TableColumn({name: "FK_learnplace", type: "integer", isNullable: false})
+      new TableColumn({name: "FK_learnplace", type: "string", length: "38", isNullable: false})
     ]);
 
     const accordion: Table = new Table("Accordion", [
@@ -55,7 +57,7 @@ export class CreateLearnplace implements Migration {
     ]);
 
     const learnplaceAccordionJunction: Table = new Table("learnplace_accordion", [
-      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "learnplaceId", type: "string", length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
@@ -68,7 +70,7 @@ export class CreateLearnplace implements Migration {
     ]);
 
     const learnplaceTextblockJunction: Table = new Table("learnplace_textblock", [
-      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "learnplaceId", type: "string" ,length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "textblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
@@ -91,7 +93,7 @@ export class CreateLearnplace implements Migration {
     ]);
 
     const learnplacePictureblockJunction: Table = new Table("learnplace_pictureblock", [
-      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "learnplaceId", type: "string" ,length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "pictureblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
@@ -109,12 +111,12 @@ export class CreateLearnplace implements Migration {
     ]);
 
     const learnplaceLinkblockJunction: Table = new Table("learnplace_linkblock", [
-      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "learnplaceId", type: "string" ,length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "linkblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
     const accordionLinkblockJunction: Table = new Table("accordion_linkblock", [
-      new TableColumn({name: "accordionId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "accordionId", type: "integer" ,length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "linkblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 
@@ -128,7 +130,7 @@ export class CreateLearnplace implements Migration {
     ]);
 
     const learnplaceVideoblockJunction: Table = new Table("learnplace_videoblock", [
-      new TableColumn({name: "learnplaceId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+      new TableColumn({name: "learnplaceId", type: "string" ,length: "38", isPrimary: true, isGenerated: false, isNullable: false}),
       new TableColumn({name: "videoblockId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
     ]);
 

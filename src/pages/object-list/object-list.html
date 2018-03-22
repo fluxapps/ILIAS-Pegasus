@@ -61,7 +61,7 @@
         <ion-badge color="light" *ngIf="object.isFavorite">
           <ion-icon color="primary" name="star"></ion-icon>
         </ion-badge>
-        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
           <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
         </ion-badge>
 

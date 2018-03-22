@@ -24,21 +24,21 @@ export class TabsPage implements OnInit, OnDestroy {
     @Inject(VISIT_JOURNAL_WATCH) private readonly visitJournalWatch: VisitJournalWatch,
     params: NavParams
   ) {
-    const learnplaceId: number = params.get("learnplaceId");
+    const learnplaceObjectId: number = params.get("learnplaceObjectId");
     const learnplaceName: string = params.get("learnplaceName");
 
     this.mapPageParams = <MapPageParams>{
-      learnplaceId: learnplaceId,
+      learnplaceObjectId: learnplaceObjectId,
       learnplaceName: learnplaceName
     };
     this.contentPageParams = <ContentPageParams>{
-      learnplaceId: learnplaceId,
+      learnplaceId: learnplaceObjectId,
       learnplaceName: learnplaceName
     };
 
     this.title = learnplaceName;
 
-    this.visitJournalWatch.setLearnplace(learnplaceId);
+    this.visitJournalWatch.setLearnplace(learnplaceObjectId);
     this.visitJournalWatch.start();
   }
 
@@ -54,6 +54,6 @@ export class TabsPage implements OnInit, OnDestroy {
 }
 
 export interface TabsPageParams {
-  readonly learnplaceId: number;
+  readonly learnplaceObjectId: number;
   readonly learnplaceName: string;
 }

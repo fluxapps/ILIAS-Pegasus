@@ -15,7 +15,7 @@ import {Subscription} from "rxjs/Subscription";
 })
 export class MapPage implements AfterViewInit, OnDestroy {
 
-  private readonly learnplaceId: number;
+  private readonly learnplaceObjectId: number;
   readonly title: string;
 
   map: MapModel | undefined = undefined;
@@ -31,21 +31,19 @@ export class MapPage implements AfterViewInit, OnDestroy {
     private readonly detectorRef: ChangeDetectorRef,
     params: NavParams
   ) {
-    this.learnplaceId = params.get("learnplaceId");
+    this.learnplaceObjectId = params.get("learnplaceObjectId");
     this.title = params.get("learnplaceName")
   }
 
   ngAfterViewInit(): void {
-
-    this.mapSubscription = this.mapService.getMap(this.learnplaceId)
+console.log(this.learnplaceObjectId);
+    this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
       .subscribe(
         this.init.bind(this),
         error => {
 
         this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
         this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
-
-        this.showAlert(this.translate.instant("something_went_wrong"));
     });
   }
 
@@ -90,21 +88,9 @@ export class MapPage implements AfterViewInit, OnDestroy {
         .build();
     }
   }
-
-  private showAlert(message: string): void {
-    this.alert.create(<AlertOptions>{
-      title: message,
-      buttons: [
-        <AlertButton>{
-          text: this.translate.instant("close"),
-          role: "cancel"
-        }
-      ]
-    }).present();
-  }
 }
 
 export interface MapPageParams {
-  readonly learnplaceId: number;
+  readonly learnplaceObjectId: number;
   readonly learnplaceName: string;
 }
