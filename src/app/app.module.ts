@@ -120,6 +120,8 @@ import {StreamingMedia} from "@ionic-native/streaming-media";
 import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
+import {LoadingPage} from "./fallback/loading/loading.component";
+
 @NgModule({
   declarations: [
     MyApp,
@@ -134,6 +136,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     SyncFinishedModal,
     ModalPage,
     NewsPage,
+    LoadingPage,
 
     /* from src/learnplace */
     MapPage,
@@ -178,6 +181,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     LoginPage,
     SyncFinishedModal,
     NewsPage,
+    LoadingPage,
 
     /* from src/learnplace */
     MapPage,

@@ -35,7 +35,7 @@
       </ion-item>
 
       <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
-        <ion-icon [name]=timeline.icon item-start=""></ion-icon>
+        <ion-icon [name]=timeline.icon item-start></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
     </div>
