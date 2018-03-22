@@ -1,7 +1,7 @@
 import {Component, Inject, ViewChild} from "@angular/core";
 import {
   Platform, MenuController, Nav, Events, ToastController, Toast,
-  ToastOptions
+  ToastOptions, Modal, ModalController
 } from "ionic-angular";
 import {StatusBar} from "@ionic-native/status-bar";
 import {LoginPage} from "../pages/login/login";
@@ -27,6 +27,7 @@ import {Logging} from "../services/logging/logging.service";
 import getMessage = Logging.getMessage;
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {NewsPage} from "../pages/news/news";
+import {LoadingPage} from "./fallback/loading/loading.component";
 
 @Component({
   templateUrl: "app.html"
@@ -44,6 +45,7 @@ export class MyApp {
   infoPage: object = InfoPage;
   loginPage: object = LoginPage;
   newsPage: object = NewsPage;
+  LoadingPage: object = LoadingPage;
   loggedIn: boolean = false;
   /**
    * The current logged in user
@@ -84,6 +86,7 @@ export class MyApp {
     private readonly network: Network,
     private readonly splashScreen: SplashScreen,
     private readonly database: Database,
+    private readonly modal: ModalController,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite
   ) {
@@ -142,8 +145,14 @@ export class MyApp {
    */
   openTestpage(): void {
     this.menu.close();
-    this.nav.push(HardwareFeaturePage);
+    this.nav.push(LoadingPage);
+
   }
+  // presentLoading(): void {
+  //   this.menu.close();
+  //   let loadingModal = this.modalCtrl.create(LoadingPage);
+  //   loadingModal.present();
+  // }
 
   /**
    * Initialize everything that has to be done on start up.

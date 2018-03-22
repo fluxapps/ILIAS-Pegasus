@@ -44,7 +44,9 @@ export abstract class AbstractRequirement implements HardwareRequirement {
    * @param {Function} page - the angular component to open
    */
   protected async createFallbackScreen(page: Function): Promise<void> {
-    const modal: Modal = this.modalCtrl.create(page);
+    const modal: Modal = this.modalCtrl.create(page, undefined,
+      { cssClass: "modal-fullscreen" }
+    );
     await this.onFailureAction.ifPresent(it => modal.onDidDismiss((..._) => it()));
     await modal.present();
   }

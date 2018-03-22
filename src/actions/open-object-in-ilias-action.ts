@@ -36,9 +36,11 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
 
     private openUserDialog(leaveAction: LeaveAppAction): void {
       this.log.debug(() => "Open leave app modal.");
-      const modal: Modal = this.modal.create(LeaveAppDialog, <LeaveAppDialogNavParams>{
+      const modal: Modal = this.modal.create(LeaveAppDialog,
+        <LeaveAppDialogNavParams>{
         leaveApp: leaveAction
-      });
+      },
+      { cssClass: "modal-fullscreen" });
       modal.present();
     }
 
