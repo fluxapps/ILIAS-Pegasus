@@ -113,7 +113,9 @@ export class PegasusErrorHandler implements ErrorHandler {
             }
 
         } catch (err) {
-            this.log.warn(() => `Error occurred during error handling: ${JSON.stringify(err)}, previous error ${JSON.stringify(error)}`);
+            this.log.warn(
+                () => `Error occurred during error handling: ${this.stringifyWithoutCyclicObjects(err)}, previous error ${this.stringifyWithoutCyclicObjects(error)}`
+            );
         }
     }
 
@@ -141,7 +143,7 @@ export class PegasusErrorHandler implements ErrorHandler {
             return errorLike;
 
         if(isObject(errorLike))
-            return new Error(JSON.stringify(errorLike));
+            return new Error(this.stringifyWithoutCyclicObjects(errorLike));
 
         return new Error(`Unknown error value thrown: "${errorLike}"`);
     }
@@ -160,6 +162,26 @@ export class PegasusErrorHandler implements ErrorHandler {
             ]
         });
         alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
+    }
+
+    private stringifyWithoutCyclicObjects(errorLike: undefined|null|string|number|object): string {
+         const seen: Array<object> = [];
+
+         //https://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+        const stringObject: string = JSON.stringify(errorLike, (key, val) => {
+            if (val !== null  && val !== undefined && val instanceof Object) {
+                if (seen.indexOf(val) >= 0) {
+                    return {};
+                }
+                seen.push(val);
+            }
+            if(!val.hasOwnProperty("toISOString"))
+                return {};
+
+            return val;
+        });
+
+        return stringObject;
     }
 }
 
