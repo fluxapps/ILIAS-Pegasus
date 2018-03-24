@@ -1,12 +1,13 @@
 import {Inject, Injectable} from "@angular/core";
-import {IllegalStateError} from "../error/errors";
 import {User} from "../models/user";
 import {HttpClient} from "@angular/common/http";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "./ilias/ilias.rest";
+import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "./file-transfer/file-download";
+import {ILIAS_REST, ILIASRequestOptions, ILIASRest, TOKEN_MANAGER, TokenManager} from "./ilias/ilias.rest";
 import {HttpResponse} from "./http";
-import {File, FileEntry, IWriteOptions, FileWriter, FileError} from "@ionic-native/file";
+import {File, FileEntry, Entry, Flags} from "@ionic-native/file";
+import {ClientCredentials, OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier} from "./ilias/ilias.rest-api";
 
 const DEFAULT_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
@@ -18,6 +19,9 @@ export class ILIASRestProvider {
     constructor(
       private readonly http: HttpClient,
       @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
+      @Inject(FILE_DOWNLOADER) private readonly donwloader: FileDownloader,
+      @Inject(OAUTH2_DATA_SUPPLIER) private readonly dataSupplier: OAuth2DataSupplier,
+      @Inject(TOKEN_MANAGER) private readonly tokenManager: TokenManager,
       private readonly file: File
     ) {}
 
@@ -61,58 +65,26 @@ export class ILIASRestProvider {
 
     async downloadFile(refId: number, storageLocation: string, fileName: string): Promise<FileEntry> {
 
-      const response: HttpResponse = await this.iliasRest.get(`/v1/files/${refId}`, DEFAULT_OPTIONS);
+        const credentials: ClientCredentials = await this.dataSupplier.getClientCredentials();
+        const url: string = `${credentials.apiURL}/v1/files/${refId}`;
+        const header: object = {
+            Authorization: `${credentials.token.type} ${await this.tokenManager.getAccessToken()}`
+        };
 
-      return response.handle<Promise<FileEntry>>(
-          (it) => this.writeFileJunked(it.arrayBuffer(), storageLocation, fileName)
-      );
-    }
+        const filePath: string = `${storageLocation}${fileName}`;
+        const downloadOptions: DownloadRequestOptions = <DownloadRequestOptions>{
+          url: url,
+          filePath: filePath,
+          body: "",
+          followRedirects: true,
+          headers: header,
+          timeout: 0
+        };
 
-    /**
-     * Write content in 5MB junks to the file.
-     * This is necessary due to ram spike issues while writing large files (base64 encode at the cordova js nativ exec call bridge),
-     * which leads to an instant crash of the app.
-     *
-     * @param {ArrayBuffer} fileContent
-     * @param {string} path
-     * @param {string} name
-     * @returns {Promise<void>}
-     */
-    private async writeFileJunked(fileContent: ArrayBuffer, path: string, name: string): Promise<FileEntry> {
-        const blockSize: number = 5 * 1024**2; //5MB
-        const writeCycles: number = Math.floor(fileContent.byteLength / blockSize);
-
-        this.log.trace(() => `Writing file with block-size: ${blockSize}, cycles: ${writeCycles+1} total-size: ${fileContent.byteLength}`);
-        const fileEntry: FileEntry = await this.file.writeFile(path, name, "", <IWriteOptions>{ replace: true });
-
-        for(let i: number = 0; i <= writeCycles; i++) {
-            //start byte pointer
-            const blockPointer: number = i * blockSize;
-
-            //the end pointer is equal to the start + block size or the data which are left at the end of the file.
-            const blockPointerEnd: number = (blockSize <= (fileContent.byteLength - blockPointer))
-                ? blockPointer + blockSize
-                : fileContent.byteLength;
-
-            this.log.trace(() => `Writing file block ${i} start ${blockPointer} end ${blockPointerEnd}`);
-            await this.writeFileJunk(fileContent.slice(blockPointer, blockPointerEnd), fileEntry, blockPointer);
-        }
-
-        return fileEntry;
-    }
-
-    private async writeFileJunk(slice: ArrayBuffer, file: FileEntry, blockPosition: number): Promise<void> {
-        return new Promise<void>((resolve: Resolve<void>, reject: Reject<Error>) => {
-            file.createWriter((writer: FileWriter) => {
-
-                writer.onerror = (event: ProgressEvent): void => {reject(new Error("Unable to write file."))};
-                writer.onwriteend = (event: ProgressEvent): void => resolve();
-                writer.seek(blockPosition);
-                writer.write(slice);
-
-            }, (error: FileError) => {
-                reject(new IllegalStateError(`Unable to write file with FileError: ${error.code} and message ${error.message}`));
-            });
+        await this.donwloader.download(downloadOptions);
+        return this.file.getFile(await this.file.resolveDirectoryUrl(storageLocation),fileName, <Flags> {
+            create: false,
+            exclusive: false
         });
     }
 }

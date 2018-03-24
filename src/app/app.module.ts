@@ -67,6 +67,8 @@ import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-moda
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
 import {DataProvider} from "../providers/data-provider.provider";
+import {FILE_DOWNLOADER, FileDownloaderImpl} from "../providers/file-transfer/file-download";
+import {FILE_UPLOADER, FileUploaderImpl} from "../providers/file-transfer/file-upload";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
 import {HttpClient as PegasusHttpClient, PegasusXhrFactory} from "../providers/http";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -109,6 +111,7 @@ import {LocationFallbackScreen} from "./fallback/location/location-fallback.comp
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+import {HTTP} from "@ionic-native/http";
 
 @NgModule({
   declarations: [
@@ -407,6 +410,16 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
       deps: [LEARNPLACE_LOADER]
     },
 
+      // file transfer provider
+      <ClassProvider> {
+        provide: FILE_DOWNLOADER,
+          useClass: FileDownloaderImpl
+      },
+      <ClassProvider> {
+          provide: FILE_UPLOADER,
+          useClass: FileUploaderImpl
+      },
+
     ILIASRestProvider,
     FooterToolbarService,
     DataProvider,
@@ -424,6 +437,7 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
     Geolocation,
     PhotoViewer,
     StreamingMedia,
+      HTTP,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
