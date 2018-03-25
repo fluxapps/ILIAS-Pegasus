@@ -72,6 +72,8 @@ export class FileDownloaderImpl implements FileDownloader{
             const response: HTTPResponseWorkaround =
                 (await this.http.downloadFile(options.url, options.body, options.headers, options.filePath)) as HTTPResponseWorkaround;
 
+            this.log.trace(() => `Download-${requestId}: Transfer finished.`);
+
             return new HttpResponse(new Response<ArrayBuffer>({
                 url: response.url,
                 status: response.status,

@@ -71,6 +71,7 @@ export class FileUploaderImpl implements FileUploader{
             this.http.disableRedirect(!options.followRedirects);
             const response: HTTPResponseWorkaround =
                 (await this.http.uploadFile(options.url, "", options.headers, options.filePath, options.name)) as HTTPResponseWorkaround;
+            this.log.trace(() => `Upload-${requestId}: Transfer finished.`);
 
             const rawResponse: string = (typeof (response.data) === "string") ? response.data.toString() : "";
             const bodyBuffer: ArrayBuffer = new ArrayBuffer(rawResponse.length);
