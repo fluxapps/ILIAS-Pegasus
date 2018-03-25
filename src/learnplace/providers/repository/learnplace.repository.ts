@@ -69,7 +69,7 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
                 .where("learnplace.objectId = :objectId AND learnplace.FK_user = :userId", {objectId: objectId, userId: userId})
                 .getRawOne();
 
-            if(isDefined(rawLearnplace.learnplace_id)) {
+            if(isDefined(rawLearnplace) && isDefined(rawLearnplace.learnplace_id)) {
                 return this.find(rawLearnplace.learnplace_id);
             }
 
