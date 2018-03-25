@@ -75,8 +75,6 @@ export class HttpResourceTransfer implements ResourceTransfer {
         .resource(resource)
         .build();
 
-      const response: HttpResponse = await this.http.get(url);
-
       const storageLocation: string = await this.getStorageLocation();
 
       const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
