@@ -525,55 +525,11 @@ export class ObjectListPage {
 			this.handleActionResult(result);
 			this.calculateChildrenMarkedAsNew();
 			this.footerToolbar.removeJob(hash);
-		}).catch((error: CantOpenFileTypeException) => {
-			if (error instanceof CantOpenFileTypeException) {
-				this.showAlert(this.translate.instant("actions.cant_open_file"));
-				this.footerToolbar.removeJob(hash);
-				return Promise.resolve();
-			}
-			return Promise.reject(error);
 		}).catch((error) => {
-			Log.error(this, error);
-			if (error instanceof NoWLANException) {
-				this.footerToolbar.removeJob(Job.Synchronize);
-				this.displayAlert(this.translate.instant("sync.title"), this.translate.instant("sync.stopped_no_wlan"));
-				return Promise.resolve();
-			}
-			return Promise.reject(error);
-		}).catch(error => {
-			if (error instanceof OfflineException) {
-				this.showAlert(this.translate.instant("actions.offline_and_no_local_file"));
-				this.footerToolbar.removeJob(hash);
-				return Promise.resolve();
-			}
-			return Promise.reject(error);
-		}).catch(error => {
-			if (error instanceof RESTAPIException || error instanceof LearnplaceLoadingError) {
-				this.showAlert(this.translate.instant("actions.server_not_reachable"));
-				this.footerToolbar.removeJob(hash);
-				return Promise.resolve();
-			}
-			return Promise.reject(error);
 
-		}).catch((message) => {
-
-			this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(message)}`);
-			this.showAlert(this.translate.instant("something_went_wrong"));
+			this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
 			this.footerToolbar.removeJob(hash);
+			throw error;
 		});
 	}
-
-	private showAlert(message: string): void {
-		const alert: Alert = this.alert.create(<AlertOptions>{
-			title: message,
-			buttons: [
-				<AlertButton>{
-					text: this.translate.instant("close"),
-					role: "cancel"
-				}
-			]
-		});
-		alert.present();
-	}
-
 }
