@@ -59,18 +59,23 @@ export class VisitJournalSynchronizationImpl implements VisitJournalSynchronizat
      */
     async synchronize(): Promise<void> {
 
-        const unsynchronized: Array<VisitJournalEntity> = await this.visitJournalRepository.findUnsynchronized();
+        try {
+            const unsynchronized: Array<VisitJournalEntity> = await this.visitJournalRepository.findUnsynchronized();
 
-        for (const it of unsynchronized) {
-            try {
+            for (const it of unsynchronized) {
+                try {
 
-                await this.learnplaceAPI.addJournalEntry(it.learnplace.objectId, it.time);
-                it.synchronized = true;
-                await this.visitJournalRepository.save(it);
-            } catch(error) {
-                this.log.warn(() => `Could not synchronize journal entry: id=${it.id}`);
-                this.log.debug(() => `Synchronize Journal Entry Error: ${JSON.stringify(error)}`);
+                    await this.learnplaceAPI.addJournalEntry(it.learnplace.objectId, it.time);
+                    it.synchronized = true;
+                    await this.visitJournalRepository.save(it);
+                } catch(error) {
+                    this.log.warn(() => `Could not synchronize journal entry: id=${it.id}`);
+                    this.log.debug(() => `Synchronize Journal Entry Error: ${JSON.stringify(error)}`);
+                }
             }
+        }
+        catch (error) {
+
         }
     }
 }
