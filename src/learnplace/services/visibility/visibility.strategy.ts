@@ -225,7 +225,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
 
   private membershipId: string = "";
 
-  private watch: Subscription | undefined = undefined;
+  private running: boolean = false;
 
   constructor(
     @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
@@ -262,46 +262,54 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
    * @return {Observable<T>} an observable for the given {@code object}
    */
   on<T extends VisibilityAware>(object: T): Observable<T> {
-    return Observable.create(async(subscriber: Subscriber<T>) => {
 
-      subscriber.next(object);
+      this.running = true;
+      const learnplace: Observable<LearnplaceEntity> = Observable.fromPromise(this.learnplaceRepository.find(this.membershipId))
+          .map(it => it.orElseThrow(() => new NoSuchElementError(`No learnplace found with id: ${this.membershipId}`)));
 
-      const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
-        .orElseThrow(() => new NoSuchElementError(`No learnplace foud: id=${this.membershipId}`));
+      const user: Observable<UserEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser())
+          .map(it => it.get());
 
-      const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+      const learnplaceCoordinate: Observable<Coordinates> = learnplace.map(it => new Coordinates(it.location.latitude, it.location.longitude));
 
-      if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
-        object.visible = true;
-        subscriber.next(object);
-        subscriber.complete();
-        return;
-      }
+      return Observable.forkJoin(learnplace, user, learnplaceCoordinate, (learnplace, user, learnplaceCoordinates) => {
+          if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
+              object.visible = true;
+              return Observable.of(object);
+          }
 
-      const learnplaceCoordinates: Coordinates = new Coordinates(learnplace.location.latitude, learnplace.location.longitude);
-
-      this.watch = this.geolocation.watchPosition()
-        .filter(it => isDefined(it.coords))
-        .subscribe(async(location) => {
-
-        const currentCoordinates: Coordinates = new Coordinates(location.coords.latitude, location.coords.longitude);
-
-        if (learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius)) {
-
-          object.visible = true;
-          subscriber.next(object);
-          subscriber.complete();
-          this.shutdown();
-        }
-      });
-    });
+          return this.geolocation.watchPosition()
+              .filter(it => isDefined(it.coords))
+              .filter((it) => {
+                  const currentCoordinates: Coordinates = new Coordinates(it.coords.latitude, it.coords.longitude);
+                  return learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
+              })
+              .mergeMap((_) => {
+                  const journal: VisitJournalEntity = new VisitJournalEntity();
+                  journal.learnplace = learnplace;
+                  journal.synchronized = false;
+                  journal.time = Date.now() / 1000;
+                  learnplace.visitJournal.push(journal);
+                  return Observable.fromPromise(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time)).map((_) => journal);
+              })
+              .do((it) => {
+                  it.synchronized = true;
+              })
+              .finally(() => {
+                  return Observable.fromPromise(this.learnplaceRepository.save(learnplace));
+              })
+              .map((_) => {
+                  object.visible = true;
+                  this.shutdown();
+                  return object;
+              });
+      }).mergeAll().takeWhile(() => this.running);
   }
 
   /**
    * Stops watching the device's location.
    */
   shutdown(): void {
-    if(isDefined(this.watch))
-      this.watch.unsubscribe();
+    this.running = false;
   }
 }
