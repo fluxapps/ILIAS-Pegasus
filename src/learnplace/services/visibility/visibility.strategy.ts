@@ -278,32 +278,37 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
               return Observable.of(object);
           }
 
-          return this.geolocation.watchPosition()
-              .filter(it => isDefined(it.coords))
-              .filter((it) => {
-                  const currentCoordinates: Coordinates = new Coordinates(it.coords.latitude, it.coords.longitude);
-                  return learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
-              })
-              .mergeMap((_) => {
-                  const journal: VisitJournalEntity = new VisitJournalEntity();
-                  journal.learnplace = learnplace;
-                  journal.synchronized = false;
-                  journal.time = Date.now() / 1000;
-                  learnplace.visitJournal.push(journal);
-                  return Observable.fromPromise(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time)).map((_) => journal);
-              })
-              .do((it) => {
-                  it.synchronized = true;
-              })
-              .finally(() => {
-                  return Observable.fromPromise(this.learnplaceRepository.save(learnplace));
-              })
-              .map((_) => {
-                  object.visible = true;
-                  this.shutdown();
-                  return object;
-              });
-      }).mergeAll().takeWhile(() => this.running);
+          return Observable.of(
+              Observable.of(object),
+              this.geolocation.watchPosition()
+                  .takeWhile(() => this.running)
+                  .filter(it => isDefined(it.coords))
+                  .filter(it => {
+                      const currentCoordinates: Coordinates = new Coordinates(it.coords.latitude, it.coords.longitude);
+                      return learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
+                  })
+                  .mergeMap((_) => {
+                      const journal: VisitJournalEntity = new VisitJournalEntity();
+                      journal.learnplace = learnplace;
+                      journal.synchronized = false;
+                      journal.time = Date.now() / 1000;
+                      learnplace.visitJournal.push(journal);
+                      return Observable.fromPromise(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time))
+                          .map((_) => journal);
+                  })
+                  .do((it) => {
+                      it.synchronized = true;
+                  })
+                  .finally(() => {
+                      return Observable.fromPromise(this.learnplaceRepository.save(learnplace));
+                  })
+                  .map((_) => {
+                      object.visible = true;
+                      this.shutdown();
+                      return object;
+                  })
+          ).mergeAll();
+      }).mergeAll();
   }
 
   /**
