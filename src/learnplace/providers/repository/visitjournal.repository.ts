@@ -56,7 +56,8 @@ export class TypeORMVisitJournalRepository extends AbstractCRUDRepository<VisitJ
         .getMany() as Array<VisitJournalEntity>;
 
     } catch (error) {
-      throw new RepositoryError(Logging.getMessage(error, "Could not find un-synchronized visit journals"));
+        this.logger.warn(() => Logging.getMessage(error, "Could not find un-synchronized visit journals"));
+        throw new RepositoryError(Logging.getMessage(error, "Could not find un-synchronized visit journals"));
     }
   }
 
