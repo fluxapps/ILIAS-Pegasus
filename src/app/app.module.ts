@@ -404,8 +404,8 @@ import {HTTP} from "@ionic-native/http";
     <FactoryProvider>{
       provide: OPEN_LEARNPLACE_ACTION_FACTORY,
       useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
-        (nav: NavController, learnplaceObjectId: number, learnplaceName: string): OpenLearnplaceAction =>
-          new OpenLearnplaceAction(loader, nav, learnplaceObjectId, learnplaceName)
+        (nav: NavController, learnplaceObjectId: number, learnplaceName: string, modalController: ModalController): OpenLearnplaceAction =>
+          new OpenLearnplaceAction(loader, nav, learnplaceObjectId, learnplaceName, modalController)
       ,
       deps: [LEARNPLACE_LOADER]
     },

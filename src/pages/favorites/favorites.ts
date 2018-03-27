@@ -9,7 +9,8 @@ import {
     NavController,
     Toast,
     ToastController,
-    ToastOptions
+    ToastOptions,
+    ModalController,
 } from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
@@ -47,6 +48,7 @@ export class FavoritesPage {
                 public footerToolbar: FooterToolbarService,
                 public alert: AlertController,
                 public toast: ToastController,
+                private modal: ModalController,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -150,7 +152,7 @@ export class FavoritesPage {
       }
 
       if (iliasObject.isLearnplace()) {
-        return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title);
+        return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title, this.modal);
       }
 
       if (iliasObject.type == "file") {
