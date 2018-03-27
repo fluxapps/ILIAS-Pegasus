@@ -45,11 +45,10 @@ export class HttpResourceTransfer implements ResourceTransfer {
 
   constructor(
     private readonly file: File,
-    private readonly http: HttpClient,
     @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
     private readonly platform: Platform,
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
-    @Inject(FILE_DOWNLOADER) private readonly donwloader: FileDownloader
+    @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader
   ) {}
 
   /**
@@ -90,7 +89,7 @@ export class HttpResourceTransfer implements ResourceTransfer {
             timeout: 0
         };
 
-      await this.donwloader.download(downloadOptions);
+      await this.downloader.download(downloadOptions);
 
       return `${path}${name}`;
 
