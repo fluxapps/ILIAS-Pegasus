@@ -171,7 +171,8 @@
       },
       "com-sarriaroman-photoviewer": {},
       "com.hutchind.cordova.plugins.streamingmedia": {},
-      "cordova-plugin-advanced-http": {}
+      "cordova-plugin-advanced-http": {},
+      "cordova-custom-config": {}
     }
   }
 }
