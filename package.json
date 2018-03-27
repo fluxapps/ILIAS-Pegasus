@@ -48,6 +48,7 @@
     "com-sarriaroman-photoviewer": "^1.1.16",
     "com.googlemaps.ios": "https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk",
     "cordova-android": "7.1.0",
+    "cordova-custom-config": "^5.0.2",
     "cordova-ios": "4.5.4",
     "cordova-plugin-advanced-http": "^1.11.1",
     "cordova-plugin-device": "^1.1.7",
