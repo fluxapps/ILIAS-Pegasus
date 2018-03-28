@@ -1,4 +1,5 @@
 import {SinonSandbox, createSandbox, SinonStub, assert} from "sinon";
+import {LearnplaceManager, LearnplaceManagerImpl} from "../../../../src/learnplace/services/learnplace.management";
 import {
   AccordionMapper,
   LinkBlockMapper,
@@ -16,7 +17,7 @@ import {PictureBlockEntity} from "../../../../src/learnplace/entity/pictureBlock
 import {LinkblockEntity} from "../../../../src/learnplace/entity/linkblock.entity";
 import {VideoBlockEntity} from "../../../../src/learnplace/entity/videoblock.entity";
 import {VisitJournalEntity} from "../../../../src/learnplace/entity/visit-journal.entity";
-import {ResourceTransfer} from "../../../../src/learnplace/services/loader/resource";
+import {LearnplacePathBuilder, LearnplacePathBuilderImpl, ResourceTransfer} from "../../../../src/learnplace/services/loader/resource";
 import {File} from "@ionic-native/file";
 import {stubInstance} from "../../../SinonUtils";
 import {Platform} from "ionic-angular";
@@ -122,11 +123,12 @@ describe("a picture block mapper", () => {
   };
   const mockFile: File = stubInstance(File);
   const mockPlatform: Platform = stubInstance(Platform);
+  const mockPathBuilder: LearnplacePathBuilder = stubInstance(LearnplacePathBuilderImpl);
 
-  let mapper: PictureBlockMapper = new PictureBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
+  let mapper: PictureBlockMapper = new PictureBlockMapper(mockResourceTransfer, mockPathBuilder, mockFile);
 
 	beforeEach(() => {
-		mapper = new PictureBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
+		mapper = new PictureBlockMapper(mockResourceTransfer, mockPathBuilder, mockFile);
 	});
 
 	afterEach(() => {
@@ -390,11 +392,12 @@ describe("a video block mapper", () => {
   };
   const mockFile: File = stubInstance(File);
   const mockPlatform: Platform = stubInstance(Platform);
+  const mockPathBuilder: LearnplacePathBuilder = stubInstance(LearnplacePathBuilderImpl);
 
-  let mapper: VideoBlockMapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
+  let mapper: VideoBlockMapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPathBuilder);
 
 	beforeEach(() => {
-		mapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPlatform);
+		mapper = new VideoBlockMapper(mockResourceTransfer, mockFile, mockPathBuilder);
 	});
 
 	afterEach(() => {

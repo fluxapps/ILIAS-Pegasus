@@ -1,20 +1,17 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionSuccess} from "./object-action";
 import {FileService} from "../services/file.service";
-import {ILIASObjectActionResult} from "./object-action";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionSuccess} from "./object-action";
+import {TranslateService} from "ng2-translate";
 
 export class RemoveLocalFileAction extends ILIASObjectAction {
 
-    constructor(public title: string, public fileObject: ILIASObject, public file: FileService) {
+    constructor(public title: string, public fileObject: ILIASObject, public file: FileService, private readonly translation: TranslateService) {
         super();
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve, reject) => {
-            this.file.remove(this.fileObject).then(() => {
-                resolve(new ILIASObjectActionSuccess("Sucessfully removed file"));
-            });
-        });
+    async execute(): Promise<ILIASObjectActionResult> {
+        await this.file.remove(this.fileObject);
+        return new ILIASObjectActionSuccess(this.translation.instant("actions.removed_local_file"));
     }
 
     alert(): ILIASObjectActionAlert {
@@ -23,5 +20,4 @@ export class RemoveLocalFileAction extends ILIASObjectAction {
             subTitle: "Are you sure you want to delete this file?",
         }
     }
-
 }

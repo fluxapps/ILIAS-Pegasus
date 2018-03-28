@@ -15,10 +15,14 @@ import {StatusBar} from "@ionic-native/status-bar";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Toast} from "@ionic-native/toast";
 import {IonicApp, IonicErrorHandler, IonicModule, ModalController, NavController, Platform} from "ionic-angular";
-import {TranslateModule} from "ng2-translate/ng2-translate";
+import {TranslateModule, TranslateService} from "ng2-translate/ng2-translate";
 import {TranslateLoader, TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
+import {
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction,
+    RemoveLocalLearnplaceActionFunction
+} from "../actions/remove-local-learnplace-action";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
@@ -35,6 +39,7 @@ import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repo
 import {TypeORMVisitJournalRepository, VISIT_JOURNAL_REPOSITORY} from "../learnplace/providers/repository/visitjournal.repository";
 import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
+import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "../learnplace/services/learnplace.management";
 import {LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {
     AccordionMapper,
@@ -44,7 +49,7 @@ import {
     VideoBlockMapper,
     VisitJournalMapper
 } from "../learnplace/services/loader/mappers";
-import {HttpResourceTransfer, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
+import {HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 import {VisibilityStrategyApplier} from "../learnplace/services/visibility/visibility.context";
 import {AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy} from "../learnplace/services/visibility/visibility.strategy";
@@ -400,6 +405,14 @@ import {HTTP} from "@ionic-native/http";
       provide: RESOURCE_TRANSFER,
       useClass: HttpResourceTransfer
     },
+      {
+          provide: LEARNPLACE_PATH_BUILDER,
+          useClass: LearnplacePathBuilderImpl
+      },
+      {
+        provide: LEARNPLACE_MANAGER,
+        useClass: LearnplaceManagerImpl
+      },
 
     <FactoryProvider>{
       provide: OPEN_LEARNPLACE_ACTION_FACTORY,
@@ -409,6 +422,13 @@ import {HTTP} from "@ionic-native/http";
       ,
       deps: [LEARNPLACE_LOADER]
     },
+      <FactoryProvider>{
+        provide: REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
+          useFactory: (learnplaceManager: LearnplaceManager, translate: TranslateService): RemoveLocalLearnplaceActionFunction =>
+              (title: string, objectId: number, userId: number): RemoveLocalLearnplaceAction =>
+                  new RemoveLocalLearnplaceAction(learnplaceManager, translate, title, objectId, userId),
+          deps: [LEARNPLACE_MANAGER, TranslateService]
+      },
 
       // file transfer provider
       <ClassProvider> {

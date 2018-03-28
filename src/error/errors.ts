@@ -25,7 +25,7 @@ export class IllegalArgumentError extends Error {
     Object.setPrototypeOf(this, IllegalArgumentError.prototype);
   }
 }
-  
+
 /*
  * Describes an illegal state of a class.
  *
@@ -43,4 +43,18 @@ export class IllegalStateError extends Error {
     super(message);
     Object.setPrototypeOf(this, IllegalStateError.prototype);
   }
+}
+
+/**
+ * Indicates an error with the input or output of the app.
+ * For example filesystem operations, or on a low level also network.
+ *
+ * @author nschaefli <ns@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export class IOError extends Error {
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, IOError.prototype);
+    }
 }

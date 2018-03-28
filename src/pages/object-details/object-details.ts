@@ -173,7 +173,8 @@ export class ObjectDetailsPage {
         if (this.iliasObject.type == "file") {
             this.file.existsFile(this.iliasObject).then(() => {
                 this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.iliasObject, this.file));
-                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.iliasObject, this.file));
+                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.iliasObject,
+                    this.file, this.translate));
             }, () => {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
