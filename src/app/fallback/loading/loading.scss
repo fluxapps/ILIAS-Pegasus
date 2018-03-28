@@ -24,3 +24,21 @@
   stroke: #FFFFFF;
   fill: #FFFFFF;
 }
+
+.loading-subtitle{
+  color: white;
+}
+
+.walking-pony{
+  animation: walking-lefttoright;
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+  // position: absolute;
+  margin-left: -20%;
+}
+
+@keyframes walking-lefttoright {
+  0%   {   margin-left: -20%; }
+  // 50% {   padding-left: 50%; }
+  100%   {   margin-left: 150%; }
+}

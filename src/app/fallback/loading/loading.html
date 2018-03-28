@@ -3,7 +3,7 @@
 </ion-header>
 <ion-content class="blue-gradient" color="nobg-w">
 
-
+    <img src="assets/img/walking_pony.png"  class="walking-pony">
     <ion-grid>
       <ion-row justify-content-center padding>
         <h1 text-center color="white">
@@ -12,8 +12,12 @@
       </ion-row>
       <ion-row justify-content-center padding>
         <h1 text-center color="white">
-          Lernort wird geladen
+          {{'fallback.loading' | translate:{value: null} }}
         </h1>
+          <span text-center class=loading-subtitle>
+
+          {{'fallback.loading_subtitle' | translate:{value: null} }}
+        </span>
       </ion-row>
     </ion-grid>
 
