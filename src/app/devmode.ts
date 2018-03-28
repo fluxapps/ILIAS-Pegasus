@@ -14,8 +14,9 @@ export function isDevMode(): boolean {
   const monitor: IonicDevServer = <IonicDevServer>window["IonicDevServer"];
 
   return    isDefined(monitor) &&
-            isFunction(monitor.handleError) ||
-            isAngularDevMode();
+            isFunction(monitor.handleError); 
+            // ||
+            // isAngularDevMode();
 }
 
 interface IonicDevServer {
