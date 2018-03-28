@@ -25,7 +25,12 @@ import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-availa
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
+import {
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction,
+    RemoveLocalLearnplaceActionFunction
+} from "../../actions/remove-local-learnplace-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
@@ -88,6 +93,8 @@ export class ObjectListPage {
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
+                @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
         this.parent = params.get("parent");
@@ -370,6 +377,7 @@ export class ObjectListPage {
         this.applyUnmarkAsOfflineAction(actions, iliasObject);
         this.applySynchronizeAction(actions, iliasObject);
         this.applyRemoveLocalFileAction(actions, iliasObject);
+        this.applyRemoveLearnplaceAction(actions, iliasObject);
 
         const buttons: Array<ActionSheetButton> = actions.map(action => {
 
@@ -488,9 +496,20 @@ export class ObjectListPage {
     }
 
     private applyRemoveLocalFileAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace() || iliasObject.isFile()) {
+        if(iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()) {
             actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
         }
+
+        if(iliasObject.isFile())
+            actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), iliasObject, this.file, this.translate));
+
+    }
+
+    private applyRemoveLearnplaceAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
+        if(iliasObject.isLearnplace())
+            actions.push(this.removeLocalLearnplaceActionFactory(
+                this.translate.instant("actions.remove_local_learnplace"), iliasObject.objId, iliasObject.userId)
+            );
     }
 
     private handleActionResult(result: ILIASObjectActionResult): void {

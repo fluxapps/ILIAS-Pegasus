@@ -11,7 +11,7 @@ import {Inject, Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
-import {RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
+import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder, RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {File} from "@ionic-native/file";
@@ -101,8 +101,8 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
 
   constructor(
     @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer,
-    private readonly file: File,
-    private readonly platform: Platform
+    @Inject(LEARNPLACE_PATH_BUILDER)private readonly pathBuilder: LearnplacePathBuilder,
+    private readonly file: File
   ) {}
 
   /**
@@ -169,19 +169,8 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
       const fileName: string = path.split("/").pop();
       const pathOnly: string = path.replace(fileName, "");
 
-      await this.file.removeFile(`${this.getStorageLocation()}${pathOnly}`, fileName);
+      await this.file.removeFile(`${this.pathBuilder.getStorageLocation()}${pathOnly}`, fileName);
     }
-  }
-
-  private getStorageLocation(): string {
-    if (this.platform.is("android")) {
-      return this.file.externalApplicationStorageDirectory;
-    }
-    if (this.platform.is("ios")) {
-      return this.file.dataDirectory;
-    }
-
-    throw new Error("Unsupported platform. Can not return a storage location.");
   }
 }
 
@@ -236,11 +225,11 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
 
   private readonly log: Logger = Logging.getLogger(VideoBlockMapper.name);
 
-  constructor(
-    @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer,
-    private readonly file: File,
-    private readonly platform: Platform
-  ) {}
+    constructor(
+        @Inject(RESOURCE_TRANSFER) private readonly resourceTransfer: ResourceTransfer,
+        private readonly file: File,
+        @Inject(LEARNPLACE_PATH_BUILDER)private readonly pathBuilder: LearnplacePathBuilder
+    ) {}
 
   /**
    * Maps the given {@code remote} video blocks to {@link VideoBlockEntity}
@@ -295,19 +284,8 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
       const fileName: string = path.split("/").pop();
       const pathOnly: string = path.replace(fileName, "");
 
-      await this.file.removeFile(`${this.getStorageLocation()}${pathOnly}`, fileName);
+      await this.file.removeFile(`${this.pathBuilder.getStorageLocation()}${pathOnly}`, fileName);
     }
-  }
-
-  private getStorageLocation(): string {
-    if (this.platform.is("android")) {
-      return this.file.externalApplicationStorageDirectory;
-    }
-    if (this.platform.is("ios")) {
-      return this.file.dataDirectory;
-    }
-
-    throw new Error("Unsupported platform. Can not return a storage location.");
   }
 }
 

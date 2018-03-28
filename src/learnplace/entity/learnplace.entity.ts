@@ -38,6 +38,7 @@ export class LearnplaceEntity {
     @ManyToMany(type => AccordionEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,
+    cascadeRemove: false,
     eager: true
     })
     @JoinTable(<JoinTableOptions>{
@@ -54,8 +55,9 @@ export class LearnplaceEntity {
     accordionBlocks: Array<AccordionEntity>;
 
     @ManyToMany(type => TextblockEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
+        cascadeInsert: true,
+        cascadeUpdate: true,
+        cascadeRemove: false,
     eager: true
     })
     @JoinTable(<JoinTableOptions>{
@@ -72,8 +74,9 @@ export class LearnplaceEntity {
     textBlocks: Array<TextblockEntity>;
 
     @ManyToMany(type => PictureBlockEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
+        cascadeInsert: true,
+        cascadeUpdate: true,
+        cascadeRemove: false,
     eager: true
     })
     @JoinTable(<JoinTableOptions>{
@@ -91,8 +94,9 @@ export class LearnplaceEntity {
 
 
     @ManyToMany(type => LinkblockEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
+        cascadeInsert: true,
+        cascadeUpdate: true,
+        cascadeRemove: false,
     eager: true
     })
     @JoinTable(<JoinTableOptions>{
@@ -110,8 +114,9 @@ export class LearnplaceEntity {
 
 
     @ManyToMany(type => VideoBlockEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
+        cascadeInsert: true,
+        cascadeUpdate: true,
+        cascadeRemove: false,
     eager: true
     })
     @JoinTable(<JoinTableOptions>{

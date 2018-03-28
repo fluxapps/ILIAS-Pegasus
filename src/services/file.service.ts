@@ -1,7 +1,8 @@
-import {Injectable} from "@angular/core";
+import {Injectable, Inject} from "@angular/core";
 import {Events, Platform} from "ionic-angular";
 import {isNullOrUndefined} from "util";
 import {IllegalStateError} from "../error/errors";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
@@ -35,7 +36,9 @@ export class FileService {
                        protected footerToolbar: FooterToolbarService,
                        protected translate: TranslateService,
                        private readonly file: File,
-                       private readonly network: Network) {
+                       private readonly network: Network,
+                        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager
+                ) {
     }
 
 
@@ -148,6 +151,10 @@ export class FileService {
      */
     async remove(fileObject: ILIASObject): Promise<void> {
         const user: User = await User.find(fileObject.userId);
+        if(fileObject.isLearnplace()) {
+            await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
+            return;
+        }
         if (fileObject.data.hasOwnProperty("fileName")) {
           const storageLocation: string = this.getStorageLocation(user, fileObject);
 
@@ -176,7 +183,7 @@ export class FileService {
           const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
           iliasObjects.push(containerObject);
           const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
-            return iliasObject.type === "file";
+            return iliasObject.type === "file" || iliasObject.isLearnplace();
           });
           for(const fileObject of fileObjects)
             await this.remove(fileObject);
@@ -265,6 +272,7 @@ export class FileService {
                 });
                 let diskSpace: number = 0;
                 fileObjects.forEach(fileObject => {
+
                     const metaData = fileObject.data;
                     if (metaData.hasOwnProperty("fileVersionDateLocal") && metaData.fileVersionDateLocal || !inUse && metaData) {
                         Log.describe(this, "Found disk space usage: ", fileObject.data);

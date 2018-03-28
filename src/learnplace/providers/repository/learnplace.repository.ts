@@ -1,3 +1,4 @@
+import {AccordionEntity} from "../../entity/accordion.entity";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {Injectable, InjectionToken} from "@angular/core";
 import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
@@ -7,6 +8,10 @@ import {Optional} from "../../../util/util.optional";
 import {Logging} from "../../../services/logging/logging.service";
 import {Logger} from "../../../services/logging/logging.api";
 import {isDefined} from "ionic-angular/es2015/util/util";
+import {LinkblockEntity} from "../../entity/linkblock.entity";
+import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
+import {TextblockEntity} from "../../entity/textblock.entity";
+import {VideoBlockEntity} from "../../entity/videoblock.entity";
 
 /**
  * Describes a CRUD repository for {@link LearnplaceEntity}.
@@ -39,8 +44,20 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
 
     private logger: Logger = Logging.getLogger(TypeORMLearnplaceRepository.name);
 
+    private readonly textBlockRepository: TypeORMTextBlockRepositoryRepository;
+    private readonly pictureBlockRepository: TypeORMPictureBlockRepositoryRepository;
+    private readonly linkBlockRepository: TypeORMLinkBlockRepositoryRepository;
+    private readonly videoBlockRepository: TypeORMVideoBlockRepositoryRepository;
+    private readonly accordionRepository: TypeORMAccordionBlockRepositoryRepository;
+
     constructor(database: Database) {
         super(database, PEGASUS_CONNECTION_NAME);
+
+        this.textBlockRepository = new TypeORMTextBlockRepositoryRepository(database, PEGASUS_CONNECTION_NAME);
+        this.pictureBlockRepository = new TypeORMPictureBlockRepositoryRepository(database, PEGASUS_CONNECTION_NAME);
+        this.linkBlockRepository = new TypeORMLinkBlockRepositoryRepository(database, PEGASUS_CONNECTION_NAME);
+        this.videoBlockRepository = new TypeORMVideoBlockRepositoryRepository(database, PEGASUS_CONNECTION_NAME);
+        this.accordionRepository = new TypeORMAccordionBlockRepositoryRepository(database, PEGASUS_CONNECTION_NAME);
     }
 
     /**
@@ -84,6 +101,26 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
         }
     }
 
+    async delete(entity: LearnplaceEntity): Promise<void> {
+
+        // workaround cascade delete bug
+
+        entity.accordionBlocks.forEach(accordion => {
+            accordion.textBlocks.forEach(it => this.textBlockRepository.delete(it));
+            accordion.pictureBlocks.forEach(it => this.pictureBlockRepository.delete(it));
+            accordion.linkBlocks.forEach(it => this.linkBlockRepository.delete(it));
+            accordion.videoBlocks.forEach(it => this.videoBlockRepository.delete(it));
+        });
+
+        entity.textBlocks.forEach(it => this.textBlockRepository.delete(it));
+        entity.pictureBlocks.forEach(it => this.pictureBlockRepository.delete(it));
+        entity.linkBlocks.forEach(it => this.linkBlockRepository.delete(it));
+        entity.videoBlocks.forEach(it => this.videoBlockRepository.delete(it));
+        entity.accordionBlocks.forEach(it => this.accordionRepository.delete(it));
+
+        return super.delete(entity);
+    }
+
     protected getEntityName(): string { return "Learnplace" }
 
     protected getIdName(): string { return "id" }
@@ -93,4 +130,59 @@ interface RawLearnplace {
     learnplace_id: string;
     learnplace_objectId: number;
     learnplace_FK_user: number
+}
+
+class TypeORMTextBlockRepositoryRepository extends AbstractCRUDRepository<TextblockEntity, number> {
+
+    protected getEntityName(): string {
+        return "TextBlock";
+    }
+
+    protected getIdName(): string {
+        return "id";
+    }
+}
+
+class TypeORMPictureBlockRepositoryRepository extends AbstractCRUDRepository<PictureBlockEntity, number> {
+
+    protected getEntityName(): string {
+        return "PictureBlock";
+    }
+
+    protected getIdName(): string {
+        return "id";
+    }
+}
+
+class TypeORMLinkBlockRepositoryRepository extends AbstractCRUDRepository<LinkblockEntity, number> {
+
+    protected getEntityName(): string {
+        return "LinkBlock";
+    }
+
+    protected getIdName(): string {
+        return "id";
+    }
+}
+
+class TypeORMVideoBlockRepositoryRepository extends AbstractCRUDRepository<VideoBlockEntity, number> {
+
+    protected getEntityName(): string {
+        return "VideoBlock";
+    }
+
+    protected getIdName(): string {
+        return "id";
+    }
+}
+
+class TypeORMAccordionBlockRepositoryRepository extends AbstractCRUDRepository<AccordionEntity, number> {
+
+    protected getEntityName(): string {
+        return "Accordion";
+    }
+
+    protected getIdName(): string {
+        return "id";
+    }
 }

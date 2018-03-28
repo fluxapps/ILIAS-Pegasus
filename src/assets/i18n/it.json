@@ -1,220 +1,224 @@
 {
-  "test" : "test",
-  "Synchronize": "Sincronizza",
-  "synchronize": "sincronizza",
-  "save": "salva",
-  "Save": "Salva",
-  "User": "Utente",
-  "user": "utente",
-  "cancel": "Annulla",
-  "general": "Generale",
-  "new": "Nuovo",
-  "updated": "Aggiorna",
-  "synchronisation_in_progress": "Aincronizzazione in corso",
-  "deleting_files": "Sto eliminando i file",
-  "something_went_wrong": "Qualcosa č andato storto. Per favore, riprova pių tardi.",
-  "menu": "Menų",
-  "remove": "Elimina",
-  "no_items": "Al momento non ci sono elementi.",
-  "yes": "Sė",
-  "no": "No",
-  "no_title": "Nessun titolo",
-  "close": "Chiudi",
-  "object-list": {
-    "title" : "I miei corsi e i miei gruppi",
-    "content" : "Contenuto"
-  },
-  "page-layout": {
-    "group" : "Per questo gruppo sono disponibili informazioni ulteriori.",
-    "course" : "Per questo corso sono disponibili informazioni ulteriori.",
-    "folder" : "Per questo folder sono disponibili informazioni ulteriori.",
-    "default" : "Per questo oggetto sono disponibili informazioni ulteriori."
-  },
-  "timeline": {
-  "course": "Per questo corso é disponibile una Timeline.",
-  "group": "Per questo gruppo é disponibile una Timeline.",
-  "default": "Per questo oggetto é disponibile una Timeline."
-  },
-  "favorites": {
-    "title": "Preferiti"
-  },
-  "news": {
-    "title": "Notizie"
-  },
-  "new-objects": {
-    "title": "Nuovo",
-    "no_new_items": "Non ci sono nuovi elementi.",
-    "mark_as_seen": "Segna come giā visto"
-  },
-  "settings": {
-    "title": "Impostazioni",
-    "language": "Lingua",
-    "downloadSize": "Dimensione massima dei file per il download (MB)",
-    "downloadWLAN": "Scarica solo tramite WiFi",
-    "quotaSize": "Dimensione massima (MB)",
-    "settings_saved": "Impostazioni salvate",
-    "files_deleted": "File cancellati con successo.",
-    "delete_user_local_data_title": "Elimina i file locali per l'utente {{username}}",
-    "delete_user_local_data_text": "Sei sicuro/a di voler eliminare TUTTI i file locali sul dispositivo per questo utente?",
-    "delete_all_files": "Elimina TUTTI i file locali sul dispositivo.",
-    "delete_all_files_text": "Sei sicuro/a di voler eliminare TUTTI i file locali di TUTTI gli utenti su questo dispositivo?",
-    "summary": "Riepilogo",
-    "total": "Totale",
-    "users": "Utenti",
-    "deleting_files": "Sto eliminando i file..."
-  },
-  "info": {
-    "title": "Informazioni",
-    "guide": "Guida"
-  },
-  "logout": {
-    "title": "Logout",
-    "logged_out": "Logout effettuato"
-  },
-  "common": {
-    "synchronize" : "sincronizza"
-  },
-  "download": {
-    "title": "Download",
-    "something_went_wrong": "Qualcosa č andato storto! Per favore, riprova."
-  },
-  "actions": {
-    "view_in_ilias": "Vedi in ILIAS",
-    "mark_as_favorite": "Segna come preferito",
-    "download": "Scarica / Aggiorna",
-    "mark_as_offline_available": "Segna come disponibile offline",
-    "unmark_as_offline_available": "Segna come non disponible offline",
-    "synchronize": "Sincronizza",
-    "remove_local_files": "Remuovi file locali",
-    "removed_local_files": "File locali rimossi",
-    "remove_local_file": "Rimuovi file locale",
-    "download_and_open_in_external_app": "Scarica e Apri con una app esterna",
-    "unmark_as_favorite": "Rimuovi dai preferiti",
-    "open_in_external_app": "Apri con una app esterna",
-    "show_details": "Mostra dettagli",
-    "sync_already_running": "Una sicronizzazione č giā in corso.",
-    "sync_incomplete": "Qualcosa č andato storto: la sincronizzazione č incompleta.",
-    "offline_and_no_local_file": "Sei offline e nessun file č disponibile.",
-    "download_without_wlan": "Scarica senza WiFi.",
-    "download_without_wlan_continue": "Al momento non sei connesso al WiFi. Vuoi scaricare comunque?",
-    "download_without_disk_quota": "Spazio insufficiente",
-    "download_without_disk_quota_text": "Se scarichi questo file, supererai il limite impostato in Impostazioni. Vuoi continuare comunque?",
-    "remove_local_files_in": "Elimina file in {{title}}",
-    "remove_local_files_in_text": "Sei sicuro/a di voler eliminare tutti i file scaricati?",
-    "download_successful": "Download completato",
-    "cant_open_file": "Non ci sono applicazioni che possono aprire questo tipo di file.",
-    "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi.",
-      "server_response_validation_error": "Problema di comunicazione del server, assicurati di eseguire l'ultima app e riprova."
-  },
-  "details" : {
-    "last_update": "Ultimo aggiornamento",
-    "availability": "Disponibilitā",
-    "size": "Dimensione",
-    "version": "Versione",
-    "local_version_date": "Data del file sul dispositivo",
-    "remote_version_date": "Data del file su ILIAS",
-    "used_disk_space": "Spazio utilizzato su disco",
-    "potentially_used_disk_space": "Spazio sul disco stimato dopo la sincronizzazione",
-    "offline_available": "Disponibile offline",
-    "availabilities": {
-      "needs_download": "Necessita download",
-      "up-to-date": "Aggiornato",
-      "needs_update": "Necessita aggionamento"
-    }
-  },
-  "sync": {
-    "last_sync": "Ultima sincronizzazione",
-    "fetching_metadata": "Recupero dei metadati",
-    "fetching_news": "Recupero dei notizie",
-    "title": "Sincronizzazione",
-    "sync_incomplete": "Qualcosa č andato storto: La sincronizzazione potrebbe essere incompleta.",
-    "stopped_no_wlan": "I file nuovi o aggiornati non possono essere sincronizzati. Per favore, connettiti al WiFi",
-    "files_too_big": "I file nuovi o aggiornati non possono essere sincronizzati in quanto eccedono il limite impostato. Per favore, aumenta il limite nelle Impostazioni, oppure elimina alcuni file.",
-    "object_synced": "{{title}} č stato sincronizzato correttamente.",
-    "success": "Sincronizzazione completata.",
-    "download": "Download",
-    "sync_finished_text": "La sincronizzazione č terminata. Ci sono un totale di {{totalItems}} file contrassegnati. {{updated}} file sono stati scaricati alla versione pių recente. {{uptodate}} file sono ancora aggiornati e non necessitano di essere scaricati.",
-    "some_files_were_too_big": "Alcuni file sono troppo grandi. Aumenta il valore nelle Impostazioni o scarica i file manualmente.",
-    "no_more_space": "Lo spazio disponibile č stato superato e alcuni file potrebbero non essere stati scaricati. Elimina alcuni file o aumenta lo spazio disponibile per la sincronizzazione da Impostazioni."
-  },
-  "login": {
-    "title": "Login",
-    "hello":"Benvenuto/a in ILIAS Pegasus!",
-    "instructions":"Scegli la tua organizzazione",
-    "instructions2":"Scegli la tua organizzazione",
-    "login": "Login"
-  },
-  "object_type": {
-    "crs" : "Corso",
-    "grp" : "Gruppo",
-    "frm" : "Forum",
-    "fold": "Cartella",
-    "sess": "Sessione",
-    "catr": "Link a categoria",
-    "cat" : "Categoria",
-    "book": "Booking Pool",
-    "chatr":"Chat Room",
-    "file" : "File",
-    "webr" : "Weblink",
-    "feed" : "Webfeed",
-    "wiki" : "Wiki",
-    "blog" : "Blog",
-    "lm" : "Modulo",
-    "htlm" : "Modulo HTML",
-    "sahs" : "Learning Module",
-    "glo" : "Glossario",
-    "dcl" : "Data Collection",
-    "bibl" : "Bibliografia",
-    "mcst" : "Mediacast",
-    "mep" : "Mediapool",
-    "exc" : "Esercizio",
-    "tst" : "Test",
-    "qpl" : "Insieme di domande per i Test",
-    "mass" : "Assessment individuale",
-    "poll" : "Insieme di domande",
-    "svy" : "Sondaggio",
-    "spl" : "Insieme di domande per i Sondaggi",
-    "prtt" : "Template di Portfolio",
-    "xlel" : "Learn Location",
-    "xlvo" : "LiveVoting",
-    "xoct" : "OpenCast",
-    "xtst" : "Test Repository Object",
-    "xvid" : "Video Interattivo",
-    "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting",
-    "xflc" : "Flashcards",
-    "chtr" : "Chat",
-    "xxco" : "Contenuto esterno",
-    "xsrl": "luogo di apprendimento"
-  },
-  "learnplace": {
-    "map": {
-      "no_map": "Dieser Lernort besitzt keine Karte",
-      "too_far_away": "Sie sind nicht nahe genug am Lernort, um die Karte betrachten zu können"
+    "test" : "test",
+    "Synchronize": "Sincronizza",
+    "synchronize": "sincronizza",
+    "save": "salva",
+    "Save": "Salva",
+    "User": "Utente",
+    "user": "utente",
+    "cancel": "Annulla",
+    "general": "Generale",
+    "new": "Nuovo",
+    "updated": "Aggiorna",
+    "synchronisation_in_progress": "Aincronizzazione in corso",
+    "deleting_files": "Sto eliminando i file",
+    "something_went_wrong": "Qualcosa č andato storto. Per favore, riprova pių tardi.",
+    "menu": "Menų",
+    "remove": "Elimina",
+    "no_items": "Al momento non ci sono elementi.",
+    "yes": "Sė",
+    "no": "No",
+    "no_title": "Nessun titolo",
+    "close": "Chiudi",
+    "object-list": {
+        "title" : "I miei corsi e i miei gruppi",
+        "content" : "Contenuto"
     },
-    "block": {
-      "no_content": "Dieser Lernort besitzt keinen Inhalt",
-      "text": {
-        "too_far_away": "Sie sind nicht nahe genum am Lernort, um diesen Text lesen zu können"
-      },
-      "picture": {
-        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Bild ansehen zu können"
-      },
-      "link": {
-        "too_far_away": "Sie sind nicht nahe genug am Lernort, um diesen Link anklicken zu können",
-        "no_access": "Sie besitzen nicht die nötigen Zugriffsrechte für diesen Link"
-      },
-      "video": {
-        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Video ansehen zu können"
-      },
-      "accordion": {
-        "too_far_away": "Sie sind nicht nahe genug am Lernort, um dieses Accordion ansehen zu können"
-      }
+    "page-layout": {
+        "group" : "Per questo gruppo sono disponibili informazioni ulteriori.",
+        "course" : "Per questo corso sono disponibili informazioni ulteriori.",
+        "folder" : "Per questo folder sono disponibili informazioni ulteriori.",
+        "default" : "Per questo oggetto sono disponibili informazioni ulteriori."
+    },
+    "timeline": {
+        "course": "Per questo corso é disponibile una Timeline.",
+        "group": "Per questo gruppo é disponibile una Timeline.",
+        "default": "Per questo oggetto é disponibile una Timeline."
+    },
+    "favorites": {
+        "title": "Preferiti"
+    },
+    "news": {
+        "title": "Notizie"
+    },
+    "new-objects": {
+        "title": "Nuovo",
+        "no_new_items": "Non ci sono nuovi elementi.",
+        "mark_as_seen": "Segna come giā visto"
+    },
+    "settings": {
+        "title": "Impostazioni",
+        "language": "Lingua",
+        "downloadSize": "Dimensione massima dei file per il download (MB)",
+        "downloadWLAN": "Scarica solo tramite WiFi",
+        "quotaSize": "Dimensione massima (MB)",
+        "settings_saved": "Impostazioni salvate",
+        "files_deleted": "File cancellati con successo.",
+        "delete_user_local_data_title": "Elimina i file locali per l'utente {{username}}",
+        "delete_user_local_data_text": "Sei sicuro/a di voler eliminare TUTTI i file locali sul dispositivo per questo utente?",
+        "delete_all_files": "Elimina TUTTI i file locali sul dispositivo.",
+        "delete_all_files_text": "Sei sicuro/a di voler eliminare TUTTI i file locali di TUTTI gli utenti su questo dispositivo?",
+        "summary": "Riepilogo",
+        "total": "Totale",
+        "users": "Utenti",
+        "deleting_files": "Sto eliminando i file..."
+    },
+    "info": {
+        "title": "Informazioni",
+        "guide": "Guida"
+    },
+    "logout": {
+        "title": "Logout",
+        "logged_out": "Logout effettuato"
+    },
+    "common": {
+        "synchronize" : "sincronizza"
+    },
+    "download": {
+        "title": "Download",
+        "something_went_wrong": "Qualcosa č andato storto! Per favore, riprova."
+    },
+    "actions": {
+        "view_in_ilias": "Vedi in ILIAS",
+        "mark_as_favorite": "Segna come preferito",
+        "download": "Scarica / Aggiorna",
+        "mark_as_offline_available": "Segna come disponibile offline",
+        "unmark_as_offline_available": "Segna come non disponible offline",
+        "synchronize": "Sincronizza",
+        "remove_local_files": "Remuovi file locali",
+        "removed_local_files": "File locali rimossi",
+        "remove_local_file": "Rimuovi file locale",
+        "removed_local_file": "Local file removed",
+        "remove_local_learnplace": "Remove local learnplace",
+        "remove_local_learnplace_failed": "Learnplace removal failed.",
+        "removed_local_learnplace": "Local learnplace removed",
+        "download_and_open_in_external_app": "Scarica e Apri con una app esterna",
+        "unmark_as_favorite": "Rimuovi dai preferiti",
+        "open_in_external_app": "Apri con una app esterna",
+        "show_details": "Mostra dettagli",
+        "sync_already_running": "Una sicronizzazione č giā in corso.",
+        "sync_incomplete": "Qualcosa č andato storto: la sincronizzazione č incompleta.",
+        "offline_and_no_local_file": "Sei offline e nessun file č disponibile.",
+        "download_without_wlan": "Scarica senza WiFi.",
+        "download_without_wlan_continue": "Al momento non sei connesso al WiFi. Vuoi scaricare comunque?",
+        "download_without_disk_quota": "Spazio insufficiente",
+        "download_without_disk_quota_text": "Se scarichi questo file, supererai il limite impostato in Impostazioni. Vuoi continuare comunque?",
+        "remove_local_files_in": "Elimina file in {{title}}",
+        "remove_local_files_in_text": "Sei sicuro/a di voler eliminare tutti i file scaricati?",
+        "download_successful": "Download completato",
+        "cant_open_file": "Non ci sono applicazioni che possono aprire questo tipo di file.",
+        "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi.",
+        "server_response_validation_error": "Problema di comunicazione del server, assicurati di eseguire l'ultima app e riprova."
+    },
+    "details" : {
+        "last_update": "Ultimo aggiornamento",
+        "availability": "Disponibilitā",
+        "size": "Dimensione",
+        "version": "Versione",
+        "local_version_date": "Data del file sul dispositivo",
+        "remote_version_date": "Data del file su ILIAS",
+        "used_disk_space": "Spazio utilizzato su disco",
+        "potentially_used_disk_space": "Spazio sul disco stimato dopo la sincronizzazione",
+        "offline_available": "Disponibile offline",
+        "availabilities": {
+            "needs_download": "Necessita download",
+            "up-to-date": "Aggiornato",
+            "needs_update": "Necessita aggionamento"
+        }
+    },
+    "sync": {
+        "last_sync": "Ultima sincronizzazione",
+        "fetching_metadata": "Recupero dei metadati",
+        "fetching_news": "Recupero dei notizie",
+        "title": "Sincronizzazione",
+        "sync_incomplete": "Qualcosa č andato storto: La sincronizzazione potrebbe essere incompleta.",
+        "stopped_no_wlan": "I file nuovi o aggiornati non possono essere sincronizzati. Per favore, connettiti al WiFi",
+        "files_too_big": "I file nuovi o aggiornati non possono essere sincronizzati in quanto eccedono il limite impostato. Per favore, aumenta il limite nelle Impostazioni, oppure elimina alcuni file.",
+        "object_synced": "{{title}} č stato sincronizzato correttamente.",
+        "success": "Sincronizzazione completata.",
+        "download": "Download",
+        "sync_finished_text": "La sincronizzazione č terminata. Ci sono un totale di {{totalItems}} file contrassegnati. {{updated}} file sono stati scaricati alla versione pių recente. {{uptodate}} file sono ancora aggiornati e non necessitano di essere scaricati.",
+        "some_files_were_too_big": "Alcuni file sono troppo grandi. Aumenta il valore nelle Impostazioni o scarica i file manualmente.",
+        "no_more_space": "Lo spazio disponibile č stato superato e alcuni file potrebbero non essere stati scaricati. Elimina alcuni file o aumenta lo spazio disponibile per la sincronizzazione da Impostazioni."
+    },
+    "login": {
+        "title": "Login",
+        "hello":"Benvenuto/a in ILIAS Pegasus!",
+        "instructions":"Scegli la tua organizzazione",
+        "instructions2":"Scegli la tua organizzazione",
+        "login": "Login"
+    },
+    "object_type": {
+        "crs" : "Corso",
+        "grp" : "Gruppo",
+        "frm" : "Forum",
+        "fold": "Cartella",
+        "sess": "Sessione",
+        "catr": "Link a categoria",
+        "cat" : "Categoria",
+        "book": "Booking Pool",
+        "chatr":"Chat Room",
+        "file" : "File",
+        "webr" : "Weblink",
+        "feed" : "Webfeed",
+        "wiki" : "Wiki",
+        "blog" : "Blog",
+        "lm" : "Modulo",
+        "htlm" : "Modulo HTML",
+        "sahs" : "Learning Module",
+        "glo" : "Glossario",
+        "dcl" : "Data Collection",
+        "bibl" : "Bibliografia",
+        "mcst" : "Mediacast",
+        "mep" : "Mediapool",
+        "exc" : "Esercizio",
+        "tst" : "Test",
+        "qpl" : "Insieme di domande per i Test",
+        "mass" : "Assessment individuale",
+        "poll" : "Insieme di domande",
+        "svy" : "Sondaggio",
+        "spl" : "Insieme di domande per i Sondaggi",
+        "prtt" : "Template di Portfolio",
+        "xlel" : "Learn Location",
+        "xlvo" : "LiveVoting",
+        "xoct" : "OpenCast",
+        "xtst" : "Test Repository Object",
+        "xvid" : "Video Interattivo",
+        "xpdl" : "Etherpad",
+        "xavc" : "Adobe Connect Meeting",
+        "xflc" : "Flashcards",
+        "chtr" : "Chat",
+        "xxco" : "Contenuto esterno",
+        "xsrl": "luogo di apprendimento"
+    },
+    "learnplace": {
+        "map": {
+            "no_map": "This learnplace does not have a map",
+            "too_far_away": "You are too far away from the learnplace, to view the map"
+        },
+        "block": {
+            "no_content": "This learnplace has no content",
+            "text": {
+                "too_far_away": "You are too far away from the learnplace, to read this text"
+            },
+            "picture": {
+                "too_far_away": "You are too far away from the learnplace, to view this picture"
+            },
+            "link": {
+                "too_far_away": "You are too far away from the learnplace, to click on this link",
+                "no_access": "You don't have the access rights to this link"
+            },
+            "video": {
+                "too_far_away": "You are too far away from the learnplace, to play this video"
+            },
+            "accordion": {
+                "too_far_away": "You are too far away from the learnplace, to view this accordion"
+            }
+        }
+    },
+    "fallback": {
+        "browser": "You are leaving the ILIAS Pegasus App ",
+        "browser_ok": "OK, let's go!",
+        "browser_no": "No. return!"
     }
-  },
-  "fallback": {
-    "browser": "You are leaving the ILIAS Pegasus App ",
-    "browser_ok": "OK, let's go!",
-    "browser_no": "No. return!"
-  }
 }

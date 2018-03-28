@@ -1,7 +1,7 @@
 import {createConnection} from "typeorm";
 import {Inject, Injectable} from "@angular/core";
 import {
-    DATABASE_CONFIGURATION_ADAPTER, DatabaseConfigurationAdapter, DatabaseConnectionRegistry,
+    DATABASE_CONFIGURATION_ADAPTER, DatabaseBootstraper, DatabaseConfigurationAdapter, DatabaseConnectionRegistry,
     DatabaseOptions,
     DEFAULT_CONNECTION_NAME
 } from "./database.api";
@@ -54,8 +54,11 @@ export class Database {
         this.log.trace(() => `Create database connection: name=${connectionName}`);
         await createConnection(connection.getOptions());
         this.log.info(() => `Connection ${connectionName} is ready`);
-
-
+        if(connection.hasOwnProperty("init")) {
+            await <Promise<void>>(connection["init"]());
+            this.log.info(() => `Connection ${connectionName} bootstrapped`);
+        }
+        
         this.readyConnections.push(connectionName);
     }
 }

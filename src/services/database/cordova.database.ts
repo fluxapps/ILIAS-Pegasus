@@ -1,5 +1,5 @@
-import {CommonDatabaseOptions} from "./database.api";
-import {ConnectionOptions} from "typeorm";
+import {CommonDatabaseOptions, DatabaseBootstraper} from "./database.api";
+import {ConnectionOptions, QueryRunner} from "typeorm";
 import {CordovaConnectionOptions} from "typeorm/driver/cordova/CordovaConnectionOptions";
 
 /**
@@ -36,7 +36,7 @@ export interface CordovaDatabaseConnection extends CommonDatabaseOptions<Cordova
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection {
+export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection, DatabaseBootstraper {
 
   private database: string = "cordova_db";
   private location: string = "default";
@@ -82,4 +82,9 @@ export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection 
       synchronize: false
     };
   }
+
+
+    async init(queryRunner: QueryRunner): Promise<void> {
+      await queryRunner.query("PRAGMA foreign_keys = ON;");
+    }
 }

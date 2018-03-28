@@ -1,5 +1,5 @@
 import {Injectable, InjectionToken} from "@angular/core";
-import {ConnectionOptions} from "typeorm";
+import {ConnectionOptions, QueryRunner} from "typeorm";
 import {CordovaDatabaseConnection, CordovaDatabaseConnectionImpl} from "./cordova.database";
 import {NoSuchElementError} from "../../error/errors";
 
@@ -108,4 +108,20 @@ export interface CommonDatabaseOptions<T> extends DatabaseOptions {
    * @returns {T} the specific database connection
    */
   enableLogging(enable: boolean): T
+}
+
+/**
+ * Bootstrap database connection.
+ *
+ * @author nschaefli <ns@studer-raimann.ch>
+ * @version 1.0.0
+ */
+export interface DatabaseBootstraper {
+
+    /**
+     * Bootstraps connection after connection is established.
+     *
+     * @param {QueryRunner} queryRunner The query running which can be used to bootstrap the connection.
+     */
+    init(queryRunner: QueryRunner): Promise<void>;
 }

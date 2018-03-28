@@ -17,6 +17,7 @@ import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
@@ -54,6 +55,8 @@ export class FavoritesPage {
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
+                @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
