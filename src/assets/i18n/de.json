@@ -230,14 +230,8 @@
     "fallback": {
         "browser": "Sie verlassen nun die ILIAS Pegasus App",
         "browser_ok": "OK, auf zum Browser!",
-        "browser_no": "Nein. Zurück!"
+        "browser_no": "Nein. Zurück!",
+        "loading": "Lernort wird geladen",
+        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in disem Lernort. Daher kann dies kann mehrere Minuten dauern."
+      }
     }
-  },
-  "fallback": {
-    "browser": "Sie verlassen nun die ILIAS Pegasus App",
-    "browser_ok": "OK, auf zum Browser!",
-    "browser_no": "Nein. Zurück!",
-    "loading": "Lernort wird geladen",
-    "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in disem Lernort. Daher kann dies kann mehrere Minuten dauern."
-  }
-}
