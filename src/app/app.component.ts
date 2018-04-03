@@ -1,7 +1,7 @@
 import {Component, Inject, ViewChild} from "@angular/core";
 import {
   Platform, MenuController, Nav, Events, ToastController, Toast,
-  ToastOptions, Modal, ModalController
+  ToastOptions, Modal, ModalController, Config
 } from "ionic-angular";
 import {StatusBar} from "@ionic-native/status-bar";
 import {LoginPage} from "../pages/login/login";
@@ -71,6 +71,8 @@ export class MyApp {
    * @param {Network} network
    * @param {SplashScreen} splashScreen
    * @param {Database} database
+   * @param modal
+   * @param config
    * @param {DBMigration} dbMigration
    * @param {SQLite} sqlite
    */
@@ -87,6 +89,7 @@ export class MyApp {
     private readonly splashScreen: SplashScreen,
     private readonly database: Database,
     private readonly modal: ModalController,
+    private readonly config: Config,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite
   ) {
@@ -168,6 +171,9 @@ export class MyApp {
     await this.dbMigration.migrate();
 
     await this.setRootPage();
+
+    // overwrite ionic back button text with configured language
+    this.config.set("backButtonText", this.translate.instant("back"));
 
     this.splashScreen.hide();
 

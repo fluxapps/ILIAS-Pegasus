@@ -1,5 +1,6 @@
 {
     "test" : "test",
+    "back": "Indietro",
     "Synchronize": "Sincronizza",
     "synchronize": "sincronizza",
     "save": "salva",
@@ -68,14 +69,14 @@
         "guide": "Guida"
     },
     "logout": {
-        "title": "Logout",
-        "logged_out": "Logout effettuato"
+        "title": "Disconnettersi",
+        "logged_out": "Disconnesso"
     },
     "common": {
         "synchronize" : "sincronizza"
     },
     "download": {
-        "title": "Download",
+        "title": "Scaricare",
         "something_went_wrong": "Qualcosa č andato storto! Per favore, riprova."
     },
     "actions": {
@@ -88,10 +89,10 @@
         "remove_local_files": "Remuovi file locali",
         "removed_local_files": "File locali rimossi",
         "remove_local_file": "Rimuovi file locale",
-        "removed_local_file": "Local file removed",
-        "remove_local_learnplace": "Remove local learnplace",
-        "remove_local_learnplace_failed": "Learnplace removal failed.",
-        "removed_local_learnplace": "Local learnplace removed",
+        "removed_local_file": "File locale rimosso",
+        "remove_local_learnplace": "Rimuovi il luogo di apprendimento locale",
+        "remove_local_learnplace_failed": "La rimozione del Learnplace non è riuscita.",
+        "removed_local_learnplace": "Luoghi di apprendimento locali rimossi",
         "download_and_open_in_external_app": "Scarica e Apri con una app esterna",
         "unmark_as_favorite": "Rimuovi dai preferiti",
         "open_in_external_app": "Apri con una app esterna",
@@ -105,7 +106,7 @@
         "download_without_disk_quota_text": "Se scarichi questo file, supererai il limite impostato in Impostazioni. Vuoi continuare comunque?",
         "remove_local_files_in": "Elimina file in {{title}}",
         "remove_local_files_in_text": "Sei sicuro/a di voler eliminare tutti i file scaricati?",
-        "download_successful": "Download completato",
+        "download_successful": "Scarica completato",
         "cant_open_file": "Non ci sono applicazioni che possono aprire questo tipo di file.",
         "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi.",
         "server_response_validation_error": "Problema di comunicazione del server, assicurati di eseguire l'ultima app e riprova."
@@ -136,7 +137,7 @@
         "files_too_big": "I file nuovi o aggiornati non possono essere sincronizzati in quanto eccedono il limite impostato. Per favore, aumenta il limite nelle Impostazioni, oppure elimina alcuni file.",
         "object_synced": "{{title}} č stato sincronizzato correttamente.",
         "success": "Sincronizzazione completata.",
-        "download": "Download",
+        "download": "Scaricare",
         "sync_finished_text": "La sincronizzazione č terminata. Ci sono un totale di {{totalItems}} file contrassegnati. {{updated}} file sono stati scaricati alla versione pių recente. {{uptodate}} file sono ancora aggiornati e non necessitano di essere scaricati.",
         "some_files_were_too_big": "Alcuni file sono troppo grandi. Aumenta il valore nelle Impostazioni o scarica i file manualmente.",
         "no_more_space": "Lo spazio disponibile č stato superato e alcuni file potrebbero non essere stati scaricati. Elimina alcuni file o aumenta lo spazio disponibile per la sincronizzazione da Impostazioni."
@@ -193,32 +194,34 @@
     },
     "learnplace": {
         "map": {
-            "no_map": "This learnplace does not have a map",
-            "too_far_away": "You are too far away from the learnplace, to view the map"
+            "no_map": "Questo luogo di apprendimento non ha una mappa",
+            "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per visualizzare la mappa"
         },
         "block": {
-            "no_content": "This learnplace has no content",
+            "no_content": "Questo luogo di apprendimento non ha contenuti",
             "text": {
-                "too_far_away": "You are too far away from the learnplace, to read this text"
+                "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per leggere questo testo."
             },
             "picture": {
-                "too_far_away": "You are too far away from the learnplace, to view this picture"
+                "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per vedere questa immagine."
             },
             "link": {
-                "too_far_away": "You are too far away from the learnplace, to click on this link",
-                "no_access": "You don't have the access rights to this link"
+                "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per fare clic su questo link.",
+                "no_access": "Non hai i diritti di accesso a questo link."
             },
             "video": {
-                "too_far_away": "You are too far away from the learnplace, to play this video"
+                "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per riprodurre questo video."
             },
             "accordion": {
-                "too_far_away": "You are too far away from the learnplace, to view this accordion"
+                "too_far_away": "Sei troppo lontano dal luogo di apprendimento, per vedere questa fisarmonica"
             }
         }
     },
     "fallback": {
-        "browser": "You are leaving the ILIAS Pegasus App ",
-        "browser_ok": "OK, let's go!",
-        "browser_no": "No. return!"
+        "browser": "Stai uscendo dall'app ILIAS Pegasus",
+        "browser_ok": "Ok andiamo!",
+        "browser_no": "Senza ritorno!",
+        "loading": "luogo di apprendimento",
+        "loading_subtitle": "Aspetta un attimo. Se il punto di apprendimento contiene molti contenuti, potrebbe essere necessario del tempo per il download."
     }
 }

@@ -1,5 +1,5 @@
 import {Component, Inject} from "@angular/core";
-import {NavController, ToastController, ToastOptions, AlertController, Toast, Alert, AlertOptions} from "ionic-angular";
+import {NavController, ToastController, ToastOptions, AlertController, Toast, Alert, AlertOptions, Config} from "ionic-angular";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {log} from "util";
 import {ILIASObject} from "../../models/ilias-object";
@@ -46,7 +46,8 @@ export class SettingsPage {
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
                 public alert: AlertController,
                 public dataProvider: DataProvider,
-                public fileService: FileService) {
+                public fileService: FileService,
+                private readonly config: Config) {
     }
 
     ionViewDidEnter(): void {
@@ -119,23 +120,25 @@ export class SettingsPage {
         alert.present();
     }
 
-    saveSettings(): void {
+    async saveSettings(): Promise<void> {
         this.settings.downloadSize = Math.min(this.settings.downloadSize, 9999);
         this.settings.quotaSize = Math.min(this.settings.quotaSize, 99999);
 
         if (this.settings.userId) {
-            Log.write(this, "Saving settings.");
-            this.settings.save().then(() => {
-                Log.write(this, "Settings saved successfully.");
-                this.translate.use(this.settings.language).subscribe(() => {
-                    Log.write(this, "Switching language successful.");
-                    const toast: Toast = this.toast.create(<ToastOptions>{
-                        message: this.translate.instant("settings.settings_saved"),
-                        duration: 3000
-                    });
-                    toast.present();
-                });
+            this.log.debug(() => "Saving settings.");
+            await this.settings.save();
+
+            this.log.info(() => "Settings saved successfully.");
+            await this.translate.use(this.settings.language).toPromise();
+
+            this.log.trace(() => "Switching language successful.");
+            this.config.set("backButtonText", this.translate.instant("back"));
+
+            const toast: Toast = this.toast.create(<ToastOptions>{
+                message: this.translate.instant("settings.settings_saved"),
+                duration: 3000
             });
+            await toast.present();
         }
     }
 

@@ -37,10 +37,10 @@
         </h1>
       </ion-row>
       <ion-row padding>
-        <button ion-button round outline (click)="switchToLocation()" id="middle-button" color="white">Standort aktivieren</button>
+        <button ion-button round outline (click)="switchToLocation()" id="middle-button" color="white">{{'fallback.location.activate' | translate:{value: null} }}</button>
       </ion-row>
       <ion-row>
-        <button ion-button round clear block (click)="close()" id="middle-button" color="white">Nope, ich will zurück</button>
+        <button ion-button round clear block (click)="close()" id="middle-button" color="white">{{'fallback.location.back' | translate:{value: null} }}</button>
       </ion-row>
     </ion-grid>
 

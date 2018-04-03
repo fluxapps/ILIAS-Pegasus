@@ -1,5 +1,6 @@
 {
     "test": "der test",
+    "back": "Zurück",
     "Synchronize": "Synchronisieren",
     "synchronize": "Synchronisieren",
     "save": "speichern",
@@ -232,6 +233,10 @@
         "browser_ok": "OK, auf zum Browser!",
         "browser_no": "Nein. Zurück!",
         "loading": "Lernort wird geladen",
-        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in disem Lernort. Daher kann dies kann mehrere Minuten dauern."
+        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern.",
+        "location": {
+            "activate": "Standort aktivieren",
+            "back": "Nope, ich will zurück"
+        }
       }
     }
