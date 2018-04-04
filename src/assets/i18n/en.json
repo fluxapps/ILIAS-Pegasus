@@ -206,20 +206,20 @@
         "block": {
             "no_content": "This learnplace has no content",
             "text": {
-                "too_far_away": "You are too far away from the learnplace, to read this text"
+                "too_far_away": "You are too far away from the learnplace to read this text"
             },
             "picture": {
-                "too_far_away": "You are too far away from the learnplace, to view this picture"
+                "too_far_away": "You are too far away from the learnplace to view this picture"
             },
             "link": {
-                "too_far_away": "You are too far away from the learnplace, to click on this link",
+                "too_far_away": "You are too far away from the learnplace to click on this link",
                 "no_access": "You don't have the access rights to this link"
             },
             "video": {
-                "too_far_away": "You are too far away from the learnplace, to play this video"
+                "too_far_away": "You are too far away from the learnplace to play this video"
             },
             "accordion": {
-                "too_far_away": "You are too far away from the learnplace, to view this accordion"
+                "too_far_away": "You are too far away from the learnplace to view this accordion"
             }
         }
     },
