@@ -11,7 +11,7 @@
 //
 // App Shared Sass variables belong in app.variables.scss.
 
-@import url('https://fonts.googleapis.com/css?family=Raleway:400,600');
+@import "../assets/fonts/Raleway/Raleway"; // https://fonts.googleapis.com/css?family=Raleway:400,600
 
 .content, .ion-header, ion-navbar {
   font-family: 'Raleway', sans-serif !important;
@@ -41,7 +41,7 @@
   padding-top: 5px;
 }
 
-// Apply this class to buttons acting as action buttons in lists, e.g. object-list, favorites
+// Apply this class to buttons acting as action buttons in lists, e.g. objecurl(font/Raleway/Raleway-SemiBold.ttf) format('ttf');t-list, favorites
 .ilias-list-action-button {
   min-width: 35px;
   min-height: 35px;
