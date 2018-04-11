@@ -1,0 +1,15 @@
+<div class="ui sidebar vertical menu" style="background-color: #0d71bb">
+    {% for page in site.pages %}
+        <a class="item">
+            <h4>{{ page.title }}</h4>
+        </a>
+        {% for section in page.sections %}
+
+            <a class="item">
+                {{ section }}
+            </a>
+
+        {% endfor %}
+
+    {% endfor %}
+</div>
