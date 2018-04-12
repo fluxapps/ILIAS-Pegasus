@@ -5,12 +5,27 @@
 
 {% include sidebar.html %}
 <div class="pusher">
-{{ content }}
+    <div class="ui container">
+        {{ content }}
+    </div>
 </div>
 <script>
     $('#main-menu-toggle').click(function(event) {
-        $('.ui.sidebar').sidebar('toggle');
+        $('.ui.sidebar')
+            .sidebar('toggle')
+
     });
+
+    $(".ui.sidebar")
+        .sidebar("setting", "onVisible", function () {
+            $("#main-menu-toggle .icon").toggleClass("big times");
+            $("#main-menu-toggle .icon").toggleClass("big bars");
+        })
+        .sidebar("setting", "onHide", function () {
+            $("#main-menu-toggle .icon").toggleClass("big times");
+            $("#main-menu-toggle .icon").toggleClass("big bars");
+        })
+
 </script>
 </body>
 </html>

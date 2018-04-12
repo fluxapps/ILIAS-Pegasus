@@ -1,6 +1,7 @@
 ---
+landingPage: true
 layout: page
-title: getting started
+title: Getting Started
 sections:
     - hello
     - Jekyll Pegasus

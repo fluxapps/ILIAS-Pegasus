@@ -30,6 +30,18 @@ theme: minima
 plugins:
   - jekyll-feed
 
+collections:
+  docs:
+    permalink: "/:collection/:path/"
+    output: true
+
+defaults:
+- scope:
+    path: _docs
+    type: docs
+  values:
+    layout: page
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
