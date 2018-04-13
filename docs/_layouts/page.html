@@ -2,18 +2,27 @@
 layout: default
 ---
 
-<!-- header -->
-<div class="ui very padded grid">
 
-    <div id="main-menu-toggle" class="one wide column">
-        <i class="big bars icon"></i>
-    </div>
-    <div class="one wide column"></div>
-    <div class="twelve wide center aligned column">
-        <h1 class="ui header">{{ site.data.metadata.title }}</h1>
-    </div>
-    <div class="two wide column">
-        <h2 class="ui right aligned header">v{{ site.data.metadata.version }}</h2>
+
+<!-- header -->
+<div id="header" class="ui very padded sticky grid">
+
+    <!--<div id="main-menu-toggle" class="one wide column">-->
+        <!--<i class="big bars icon"></i>-->
+    <!--</div>-->
+    <!--<div class="one wide column"></div>-->
+    <!--<div class="twelve wide center aligned column">-->
+        <!--<h1 class="ui header">{{ site.data.metadata.title }}</h1>-->
+    <!--</div>-->
+    <!--<div class="two wide column">-->
+        <!--<h2 class="ui right aligned header">v{{ site.data.metadata.version }}</h2>-->
+    <!--</div>-->
+
+    <div class="sixteen wide center aligned column">
+        <h1 class="ui header">
+            {{ site.data.metadata.title }}
+            <div class="sub header">v{{ site.data.metadata.version }}</div>
+        </h1>
     </div>
 
 </div>
@@ -25,7 +34,7 @@ layout: default
 <div class="ui very padded grid">
 
     <!-- page content -->
-    <div class="twelve wide column">
+    <div id="page-sections" class="twelve wide column">
         {{ content }}
     </div>
 
@@ -61,7 +70,7 @@ layout: default
                         <h4 class="ui header"><a href="#{{ section | slugify }}">{{ section }}</a></h4>
 
                     {% endif %}
-                
+
 
                 {% endfor %}
 
@@ -73,7 +82,12 @@ layout: default
 
     <script>
         $("#table-of-contents")
-            .sticky()
+            .sticky({
+                context: "#page-sections"
+            });
+
+
+
     </script>
 
 </div>
