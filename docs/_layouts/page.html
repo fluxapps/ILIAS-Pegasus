@@ -35,6 +35,21 @@ layout: default
 
     <!-- page content -->
     <div id="page-sections" class="twelve wide column">
+
+        <div class="ui mini label">
+            Author{% if page.authors.size > 1 %}s{% endif %}:
+            <div class="detail">
+
+                {% if page.authors == nil or page.authors.size < 1 %}
+
+                    N/D
+
+                {% endif %}
+
+                {{ page.authors | join: ", " }}
+            </div>
+        </div>
+
         {{ content }}
     </div>
 

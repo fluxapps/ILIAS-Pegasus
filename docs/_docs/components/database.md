@@ -1,6 +1,8 @@
 ---
 title: Database
 menuHeading: Components
+authors:
+    - nmaerchy
 sections:
     - name: Connection
       children:

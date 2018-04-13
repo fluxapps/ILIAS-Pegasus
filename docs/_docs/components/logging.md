@@ -1,6 +1,8 @@
 ---
 title: Logging
 menuHeading: Components
+authors:
+    - nmaerchy
 sections:
     - Usage
     - Error logs
