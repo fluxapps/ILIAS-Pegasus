@@ -35,7 +35,7 @@
 
             {% for subPage in menu.items | sort %}
 
-                <a class="item" href="{{ subPage.url }}">
+                <a class="item {% if subPage.title == page.title %} active {% endif %}" href="{{ subPage.url }}">
                     {{ subPage.title }}
                 </a>
 
