@@ -34,12 +34,35 @@ layout: default
 
         <div id="table-of-contents" class="ui sticky segment">
 
-            <h4 class="ui header">Table of Contents</h4>
+            <h3 class="ui header">Table of Contents</h3>
+
+            <div class="ui divider"></div>
 
             <div class="ui vertical text menu">
 
                 {% for section in page.sections %}
-                <div class="item"><a href="#{{ section | slugify }}">{{ section }}</a></div>
+
+                    {% if section.children %}
+
+                         <h4 class="ui header"><a href="#{{ section.name | slugify }}">{{ section.name }}</a></h4>
+
+                        <div class="ui vertical text menu">
+
+                            {% for child in section.children %}
+
+                                <div class="item"><a href="#{{ child | slugify }}">{{child}}</a></div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <h4 class="ui header"><a href="#{{ section | slugify }}">{{ section }}</a></h4>
+
+                    {% endif %}
+                
+
                 {% endfor %}
 
             </div>
