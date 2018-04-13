@@ -2,8 +2,11 @@
 title: Database
 menuHeading: Components
 sections:
-    - Connection
-    - Connection Types
+    - name: Connection
+      children:
+        - Configuration
+        - Usage
+        - Connection Types
     - Migration
 ---
 
