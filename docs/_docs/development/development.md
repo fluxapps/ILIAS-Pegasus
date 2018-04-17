@@ -17,6 +17,7 @@ sections:
       - Emulate Android
       - Emulate iOS
       - Live Reload
+      - Display Logs
 ---
 # Development
 The aim of the development section is to show how the app can be run in a development environment
@@ -85,10 +86,10 @@ ionic cordova run --device ios
 The platform must be installed as well as configured with valid development certificates.
 
 ### Emulate Android
-Create a new phone with an android image. It is important to pick a recent image because the
-self updating web view is not updating unless its an emulator image with google play support.
-A standard web view without updates wont support all features required by the app and will 
-just display a white screen. 
+Create a new virtual device with a recent android image version. It is important to pick a recent 
+image because the self updating web view is not updating unless its an emulator image with google 
+play support. A standard web view without updates wont support all features required by the app 
+and will just display a white screen. 
 
 Run the following command to build a debug build of the app and 
 deploy it to the emulated android device.
@@ -96,6 +97,13 @@ deploy it to the emulated android device.
 ````bash
 ionic cordova emulate android --target="YOUR_DEVICE_NAME"
 ````
+
+#### Create new Virtual Device
+Open the folder "ILIAS-Pegasus/platforms/android" in android studio.
+Create a new virtual device in Android Studio "tools -> Android -> AVD Manager".
+
+The device name can be displayed by clicking the Actions drop down and select View Details.
+The name displayed next to the name label can be used as target name described in the chapter [Emulate Android](#emulate-android)
   
 ### Emulate iOS 
 The iOS emulators are already preconfigured and can be run without further configuration.
@@ -111,7 +119,7 @@ user interface. To enable the live reload append the option `-l` or `--livereloa
 build commands described in the chapters above.
 
 
-### Display logs
+### Display Logs
 Ionic is able to record logs and send them to the console where the standard output of the running ionic
 command. To enable it add `-cs` to the commands described above. This options are useable with the option
  described in the chapter [Live Reload](#live-reload).
