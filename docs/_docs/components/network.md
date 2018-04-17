@@ -34,7 +34,7 @@ The link builder enables the user to generate links which are interpreted by the
 
 ```typescript
 
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {LINK_BUILDER, LinkBuilder} from "src/services/link/link-builder.service";
 
 class YourClass {
     constructor(
