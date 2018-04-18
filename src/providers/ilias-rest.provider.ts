@@ -117,7 +117,7 @@ export interface DesktopData {
   link: string
   repoPath: Array<string>
 }
-
+//TODO: make description/items/title properties not nullable. Check null in Rest plugin.
 const desktopDataSchema: object = {
   "title": "desktop-data",
   "type": "array",
@@ -125,8 +125,8 @@ const desktopDataSchema: object = {
     "type": "object",
     "properties": {
       "objId": {"type": "string"},
-      "title": {"type": "string"},
-      "description": {"type": "string"},
+      "title": {"type": ["string", "null"]},
+      "description": {"type": ["string", "null"]},
       "hasPageLayout": {"type": "boolean"},
       "hasTimeline": {"type": "boolean"},
       "permissionType": {"type": "string"},
@@ -137,7 +137,7 @@ const desktopDataSchema: object = {
       "repoPath": {
         "type": "array",
         "items": {
-          "type": "string"
+          "type": ["string", "null"]
         }
       }
     },
