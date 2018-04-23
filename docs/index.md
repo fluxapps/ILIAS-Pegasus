@@ -111,10 +111,20 @@ Install the command line tools with:
 sudo xcode-select --install
 ```
 
-Afterwards install the `ios-deploy` package:
+
+Install the `ios-deploy` package:
 ```bash
 npm install -g ios-deploy
 ```
+iOS deploy can be used to deploy apps onto physical devices.
+
+
+Install the `ios-sim` package:
+```bash
+npm install -g ios-sim
+```
+iOS sim is used to start the iOS emulator with the specified app.
+
 
 Download the Cordova ios platform:
 ```bash
