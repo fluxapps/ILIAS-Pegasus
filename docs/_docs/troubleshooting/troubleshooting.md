@@ -10,6 +10,7 @@ sections:
       - Redirect not working after login
       - Blank login page
       - Google maps displays no map
+      - iOS emulator not starting after build
 ---
 # Troubleshooting
 
