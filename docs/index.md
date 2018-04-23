@@ -25,8 +25,8 @@ ILIAS installation.
 Files can be downloaded for convenient offline access while traveling. Furthermore learnplaces
 can be used to teach in an interactive and engaging way.
 
-This documentation has a strait focus on development, which should help interested developer to
-get started with the app.
+This documentation is intended for interested developers which would like to start developing code for the
+ILIAS Pegasus app.
 
 ## Setup the environment
 
