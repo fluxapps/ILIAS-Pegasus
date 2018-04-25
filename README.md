@@ -164,6 +164,13 @@ See the list of [contributors](https://github.com/your/project/contributors) who
 
 This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](LICENSE.md) file for details.
 
+## Acknowledgments
+We would also like to thank all the authors of the plugins and libraries we used!
+Please check the [package.json](package.json) or run the command bellow to see a list of all the plugins and libraries.
+```bash
+npm la --depth 0
+```
+
 ### Contact
 [info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
 <https://studer-raimann.ch> 
