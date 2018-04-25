@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 - Old Plugins
-- Chromium Support
+- Chromium Support (Crosswalk)
 - Dropped Support for Android < 4.4
 
 ## [Unreleased]
