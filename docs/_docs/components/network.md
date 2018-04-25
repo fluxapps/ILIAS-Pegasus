@@ -3,7 +3,15 @@ title: Network
 menuHeading: Components
 authors:
     - nschaefli
+    - nmaerchy
 sections:
+    - name: Http Client
+      children:
+        - Usage http client
+        - Get request
+        - Post request
+        - Request options
+        - Response
     - name: Link Builder
       children:
         - Injection
@@ -13,7 +21,141 @@ sections:
         - Course Timeline Links
         - Loading Page Link (Deprecated)
         - Login Page Link
+    - name: ILIAS rest
+      children:
+        - Configuration
+        - Usage ILIAS rest
+    - name: File transfer
+      children:
+        - File download
+        - File upload
 ---
+
+# Http Client
+
+ILIAS Pegasus provides a http client based on the Angular http client.
+
+**Features**
+* Promise based functions
+* Request retry
+* JSON validation with JSON schema
+* Response handling
+
+## Usage http client
+
+Inject the `HttpClient` in your service.
+
+```typescript
+
+@Injectable()
+export class MyClass {
+    
+    constructor(
+        private readonly httpClient: HttpClient
+    ) {}
+}
+```
+
+## Get request
+
+For a `GET` request use the `get` method.
+```typescript
+const response: HttpResponse = await this.httpClient.get("https://ilias.de");
+```
+
+## Post request
+
+For a POST request use the post method.
+```typescript
+const body: string = JSON.stringify(myBody);
+const response: HttpResponse = await this.httpClient.post("https://ilias.de", body);
+```
+
+> Assuming `myBody` is a JSON object containing the data you wanna post.
+
+## Request options
+
+You can pass optional request options to both, `GET` and `POST` requests:
+* headers
+* url parameters
+
+```typescript
+const response: HttpResponse = await this.httpClient.get("https://ilias.de", <RequestOptions>{
+        headers: [["Accept", "application/json"]],
+        urlParams: [["some_id", "5"], ["filter", "course"]]
+    });
+```
+
+Both `headers` and `urlParams` are optional.
+
+## Response
+
+A request returns the `HttpResponse` object. `HttpResponse` allows you to read the
+data from the response body or handle the response directly.
+
+### Response types
+
+You can get several types from the response:
+* JSON
+* text
+* ArrayBuffer
+
+```typescript
+
+const response: HttpResponse = await this.httpClient.get("http://ilias.de/rest-example");
+
+const exampleJSON: ExampleResponse = response.json<ExampleResponse>(jsonSchema);
+const exampleText: string = response.text();
+const exampleArrayBuffer: ArrayBuffer = response.arrayBuffer();
+```
+
+#### JSON
+
+To get the response as JSON you have to provide a JSON schema to match the response.
+The generic type of the `json` method must be an interface matching the given JSON schema.
+
+```typescript
+
+const jsonSchema: object = {
+    "title": "example response",
+    "type": "object",
+    "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "name": { "type": "string" },
+        "value": { "type": "boolean" }
+    },
+    "required": ["id", "name", "value"]
+}
+ 
+ 
+interface ExampleResponse {
+    readonly id: number;
+    readonly name: string;
+    readonly value: boolean
+}
+
+const exampleJSON: ExampleResponse = response.json<ExampleResponse>(jsonSchema);
+```
+
+Learn more about [JSON schema](http://json-schema.org/)
+
+### Response handling
+
+To handle the request you can use the `HttpResponse.handle` method.
+
+```typescript
+const response: HttpResponse = await this.httpClient.get("http://ilias.de/rest-example");
+ 
+const responseAsText: string = response.handle<string>(async(it): Promise<string> => {
+    return it.text();
+});
+```
+
+The given function will be invoked and its return value will be returned on the `handle` method.
+If the response was not successful, an appropriate error will be thrown.
+
+
+
 # Link Builder
 The link builder enables the user to generate links which are interpreted by the pegasus helper plugin.
 
@@ -130,4 +272,165 @@ this.linkBuilder.loginPage()
                 .build();
 ```  
 
+# ILIAS rest
 
+ILIAS Pegasus provides an interface for [ILIAS rest](https://github.com/hrz-unimr/Ilias.RESTPlugin) which 
+manages conditions of the rest api.
+
+**Features**
+* Manages the access token
+* Manages the authentication
+* Recognizes the ILIAS installation of the current user
+
+## Configuration
+You have to provide OAuth 2 data to ILIAS rest.
+
+**Step 1** - Implement the `OAuth2DataSupplier` interface
+
+```typescript
+@Injecable()
+export class MyOAuth2DataSupplier implements OAuth2DataSupplier {
+ 
+ 
+    async getCredentials(): Promise<ClientCredentials> {
+         
+        // Provide your data for the client credentials
+        return <ClientCredentials>{
+            clientId: "your client id",
+            clientSecret: "your client secret",
+            apiURL: "your url to the api",
+            accessTokenURL: "your url to get a new access token",
+            token: <Token>{
+                type: "Bearer",
+                accessToken: "your access token",
+                refreshToken: "your refresh token",
+                lastAccessTokenUpdate: 1513088463,
+                accessTokenTTL: 3600
+            }
+        }
+    }
+}
+```
+
+**Step 2** - Add your implementation to Angular providers
+```typescript
+{
+      provide: OAUTH2_DATA_SUPPLIER,
+      useClass: MyOAuth2DataSupplier
+    }
+```
+
+> Provide it with the `OAUTH2_DATA_SUPPLIER` inject token
+
+**Step 3** - Provide a `TokenResponseConsumer`
+
+The `TokenResponseConsumer` will be invoked, when a new access token is requested.
+You can write your own consumer to be notified, when a new token is requested.
+
+```typescript
+
+@Injectable()
+export class MyTokenResponseConsumer implements TokenResponseConsumer {
+     
+    accept(token: OAut2Token): Promise<void> {
+        
+        // Store the new tokens, do your stuff with the tokens
+    }
+}
+```
+
+And then provide your implementation in Angular.
+
+If you don't need to be notified when a new access token is requested, you can provide
+the `DefaultTokenResponseConsumer`, which is an empty implementation of the `TokenResponseConsumer`.
+
+```typescript
+{
+      provide: TOKEN_RESPONSE_CONSUMER,
+      useClass: DefaultTokenResponseConsumer
+}
+```
+
+## Usage ILIAS rest
+To access an ILIAS rest endpoint, use `ILIASRest`.
+
+```typescript
+
+@Injectable()
+export class MyILIASApi {
+ 
+ 
+    constructor(
+        @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest
+    ) {}
+ 
+ 
+    async getFileData(): Promise<Array<FileData>> {
+         
+        const response: HttpResponse = await this.iliasRest.get("/v1/file-data", <ILIASRequestOptions>{accept: "application/json"});
+ 
+        return response.handle<FileData>(async(it): Promise<FileData> =>
+            it.json<FileData>(fileDataJsonSchema);
+        );     
+    }
+}
+
+export interface FileData {
+    ...
+}
+ 
+ 
+const fileDataJsonSchema: object = {
+    ...
+};
+```
+
+You don't have to bother about a valid access token or the appropriate ILIAS installation.
+This is all managed by `ILIASRest`.
+
+# File transfer
+
+Technically, you can download files with the [Http Client](#http-client), but for
+performance issues, ILIAS Pegasus provides a native file transfer.
+
+## File download
+
+To download a file you can use the `FileDownloader`.
+
+```typescript
+export class MyService {
+    
+    constructor(
+        @Inject(FILE_DOWNLOADER) private readonly fileDownloader: FileDownloader
+    ) {}
+    
+    async downloadMyFile(): Promise<void> {
+        
+        await this.fileDownloader.download({
+            url: "http://example.com/myfile.txt",
+            filePath: "where/to/store/the/file.txt"
+        })
+    }
+}
+```
+
+## File upload
+
+To upload a file you can use the `FileUploader`.
+
+```typescript
+export class MyService {
+    
+    constructor(
+        @Inject(FILE_UPLOADER) private readonly fileUploader: FileUploader
+    ) {}
+    
+    async downloadMyFile(): Promise<void> {
+        
+        await this.fileDownloader.upload({
+            url: "http://example.com/fileupload",
+            filePath: "path/to/the/file.txt"
+        })
+    }
+}
+```
