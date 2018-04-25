@@ -1,5 +1,9 @@
 # ILIAS Pegasus
 
+ILIAS Pegasus is an app which is running on Android or iOS and integrate functions
+of the ILIAS learn management system. For example viewing courses or personal news.
+Furthermore it is possible to make files offline available to read them while offline.
+
 ## Getting Started
 These instructions will get the ILIAS Pegasus app up and running.
 
@@ -92,25 +96,27 @@ mv src/assets/config.json.template src/assets/config.json
 **Caution!** Never reuse a installation id, use a new one instead.
 
 ### iOS
+
 The iOS app can be build with the following command.
 ```bash
 ionic cordova build ios --release --prod
 ```
 
 ### Android
+
 There is a separate build script `./tools/build-android.sh` which can be
 used to build the Android release version. Execute the script in the root of the app
-project.
+project. Only Linux and macOS are currently supported by the build script.
 ```bash
 ./tools/build-android.sh
 ```
 
 There is a range of environment variables which can be used to run the Android build scripts.
-- ANDROID_BUILD_TOOLS_VERSION - Set the Android tools version which should be used for example "27.0.3"
-- KEYSTORE_PASSWORD - The password of the keystore which is used to sign the app, the script will ask for a password if empty.
-- KEY_STORE - The path to the keystore which should be used to sign the app.
-- OUTPUT_DIR - The directory which will contain the signed build of the Android app.
-- PROJECT_ROOT - The project root of the project which should be built, defaults to current working directory.
+- **ANDROID_BUILD_TOOLS_VERSION** - Set the Android tools version which should be used for example "27.0.3"
+- **KEYSTORE_PASSWORD** - The password of the keystore which is used to sign the app, the script will ask for a password if empty.
+- **KEY_STORE** - The path to the keystore which should be used to sign the app.
+- **OUTPUT_DIR** - The directory which will contain the signed build of the Android app.
+- **PROJECT_ROOT** - The project root of the project which should be built, defaults to current working directory.
 
 Example with options.
 ```bash
