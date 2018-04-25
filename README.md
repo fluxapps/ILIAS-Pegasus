@@ -83,6 +83,27 @@ The Android can be build with the same command.
 ionic cordova build android
 ```
 
+## Run the Tests
+
+### Lint
+The linter can be run as shown bellow.
+```bash
+npm run tslint
+```
+A lot of old code does not comply with the new code style rules checked by tslint, which 
+result in a lot of warnings.
+
+### Unit tests
+The unit tests can be run with the command shown bellow.
+```bash
+npm run karma:singlerun
+```
+
+If karma should keep running after the tests use the following command.
+```bash
+npm run karma
+```
+
 ## Deployment
 
 ### Configuration
