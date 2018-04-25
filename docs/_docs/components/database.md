@@ -10,6 +10,11 @@ sections:
         - Usage
         - Connection Types
     - Migration
+    - name: Repository
+      children:
+        - Structure
+        - Usage
+        - Custom methods
 ---
 
 # Connection
@@ -94,9 +99,9 @@ export class MyClass {
 The first time you invoke the `ready` method, your connection will be established.
 But you can invoke `ready` whenever you want to make sure, the connection is ready.
 
-> Because ILIAS Pegasus relies on TypeORM, the easiest way to get your connection
-> is the getConnection function of TypeORM.
+The most common usage of the connection is in a repository.
 
+Learn more about [Repository](#repository)
 
 ## Connection Types
 
@@ -198,3 +203,126 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
   }
 }
 ```
+
+# Repository
+
+ILIAS Pegasus provides generic repository classes. Repository has operations limited
+to one concrete entity.
+
+You can create a repository class for your specific entity almost without coding.
+ILIAS Pegasus provides you with generic CRUD repositories.
+
+## Structure
+
+![alt repository-structure]({{site.url}}/assets/img/repository_structure.png){:class="ui bordered image"}
+
+## Usage
+
+1. Create your repository interface and extend the `CRUDRepository` interface.
+2. Create your implementation of your interface and extend the class `AbstractCRUDRepository`.
+
+```typescript
+export interface MyRepository extends CRUDRepository<MyEntity, number> {}
+ 
+ 
+@Injectable()
+export class TypeORMMyRepository extends AbstractCRUDRepository<MyEntity, number> implements MyRepository {
+ 
+ 
+    constructor(database: Database) {
+        super(database)
+    }
+ 
+ 
+    // CRUD operations are implemented in AbstractCRUDRepository
+ 
+ 
+    // Provide the table name to AbstractCRUDRepository
+    protected getEntityName(): string { return "table_name" }
+ 
+ 
+    // Provide the id property name to AbstractCRUDRepository
+    protected getIdName(): string { return "id" }
+}
+```
+
+Your interface extends the `CRUDRepository` interface. You have to provide two generic
+types: the first type `T` is the type of your entity class and the second type `K` is
+the type of your primary key.
+
+Your implementation extends `AbstractCRUDRepository` where you have to provide the same
+generic types like in your interface. In addition you implement your repository interface.
+
+All the CRUD operations defined by the `CRUDRepository` interface are implemented
+in the `AbstractCRUDRepository`, so you don't have to write them yourself.
+
+In order to use the `AbstractCRUDRepository` you have to implement two methods,
+`getEntityName` and `getIdName`:
+
+`getEntityName` must return the name of the table.
+**Not** the name of your entity.
+
+`getIdName` must return the property name of your entity class, which represents the id of the entity.
+
+## Custom methods
+
+Sometimes CRUD operations are not enough and you have to implement a custom method.
+
+```typescript
+export interface MyRepository extends CRUDRepository<MyEntity, number> {
+    
+    findByName(name: string): Promise<Optional<MyEntity>>
+}
+ 
+ 
+@Injectable()
+export class TypeORMMyRepository extends AbstractCRUDRepository<MyEntity, number> implements MyRepository {
+ 
+    constructor(database: Database) {
+        super(database)
+    }
+ 
+    // Your custom method
+    async findByName(name: string): Promise<Optional<MyEntity>> {
+ 
+        try {
+         
+            await this.database.ready();
+ 
+ 
+            const result: MyEntity | null = await this.connection
+                .createQueryBuilder()
+                .select()
+                .from(MyEntity, "myEntity")
+                .where("myEntity.name = :name", {name: name})
+                .getOne();
+ 
+ 
+            return Optional.ofNullable(result);
+ 
+ 
+        } catch(error) {
+            throw new RepositoryError(Logging.getMessage(error, `Could not find MyEnity by name ${name}`));
+        }      
+    }
+ 
+    // Provide the entity name to AbstractCRUDRepository
+    protected getEntityName(): string { return "MyEntity" }
+ 
+ 
+    // Provide the id property name to AbstractCRUDRepository
+    protected getIdName(): string { return "id" }
+}
+```
+
+Declare your custom method in your repository interface and implement it
+in your implementation. For the database connection you have access to
+the `connection` field provided by the `AbstractCRUDRepository`.
+
+Learn more about the connection: <http://typeorm.io/#/select-query-builder/how-to-create-and-use-a-querybuilder>
+
+* You should not use TypeORM repositories, but the query builder.
+* You should throw a `RepositoryError` if the operation fails.
+* You should use the type `Optional`, if your operation can not find any result.
+* You should not use the type `Optional`, if your operation returns a collection.
+* You can await the database connection to make sure it is established.
