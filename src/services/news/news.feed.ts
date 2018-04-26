@@ -29,8 +29,7 @@ export class NewsItemModel {
     readonly newsContext: number,
     readonly title: string,
     readonly subtitle: string = "",
-    //readonly content: SafeHtml = "",
-    readonly content: string = "",
+    readonly content: SafeHtml = "",
     readonly createDate: Date = new Date(Date.now()),
     readonly updateDate: Date = new Date(Date.now())
   ){}
@@ -66,8 +65,7 @@ export class NewsFeedImpl implements NewsFeed {
       entity.newsContext,
       entity.title,
       entity.subtitle,
-        // this.sanitizer.bypassSecurityTrustHtml(entity.content),
-        entity.content,
+      this.sanitizer.bypassSecurityTrustHtml(entity.content),
       new Date(entity.createDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS),
       new Date(entity.updateDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS)
     );
