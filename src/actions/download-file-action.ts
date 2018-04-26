@@ -1,20 +1,19 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
+import {
+  ILIASObjectActionNoMessage, ILIASObjectActionSuccess, ILIASObjectActionResult, ILIASObjectAction, ILIASObjectActionAlert
+} from "./object-action";
 import {FileService} from "../services/file.service";
 import {TranslateService} from "ng2-translate/ng2-translate";
 import {Log} from "../services/log.service";
 import {User} from "../models/user";
 import {Settings} from "../models/settings";
-import {AlertController} from "ionic-angular/index";
-import {ILIASObjectActionNoMessage} from "./object-action";
-import {ILIASObjectActionSuccess} from "./object-action";
-import {ILIASObjectActionResult} from "./object-action";
+import {Alert, AlertController} from "ionic-angular";
 import {OfflineException} from "../exceptions/OfflineException";
 
 export class DownloadFileAction extends ILIASObjectAction {
 
 
-    public constructor(public title: string,
+    constructor(public title: string,
                        public fileObject: ILIASObject,
                        public file: FileService,
                        public translate: TranslateService,
@@ -23,38 +22,39 @@ export class DownloadFileAction extends ILIASObjectAction {
         this.title = title;
     }
 
-    public execute(): Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
         // Download is only executed if a newer version is available in ILIAS
-        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload)
+        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
-            return Promise.reject(new OfflineException());
+            throw new OfflineException("File requireds download and is offline at the same time.");
 
         if (this.fileObject.needsDownload)
             return this.wlanAndDownload();
 
-        return this.file.open(this.fileObject);
+        await this.file.open(this.fileObject);
+        return new ILIASObjectActionNoMessage();
     }
 
-    public wlanAndDownload(): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve, reject) => {
+    wlanAndDownload(): Promise<ILIASObjectActionResult> {
+        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
 
             User.find(this.fileObject.userId).then(user => {
                 Settings.findByUserId(user.id).then(settings => {
                     if (settings.shouldntDownloadBecauseOfWLAN()) {
-                        let alert = this.alerter.create({
+                        const alert: Alert = this.alerter.create({
                             title: this.translate.instant("actions.download_without_wlan"),
                             subTitle: this.translate.instant("actions.download_without_wlan_continue"),
                             buttons: [
                                 {
                                     text: this.translate.instant("cancel"),
-                                    role: 'cancel',
-                                    handler: () => {
+                                    role: "cancel",
+                                    handler: (): void => {
                                         resolve(new ILIASObjectActionNoMessage());
                                     }
                                 },
                                 {
-                                    text: 'Ok',
-                                    handler: () => {
+                                    text: "Ok",
+                                    handler: (): void => {
                                         this.download(resolve, reject);
                                     }
                                 }
@@ -70,17 +70,17 @@ export class DownloadFileAction extends ILIASObjectAction {
 
     }
 
-    public download(resolve, reject) {
+    download(resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void {
         this.file.download(this.fileObject, true).then(() => {
             resolve(new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful")));
         }, (error) => {
             Log.describe(this, "Could not download file: ", error);
-            reject(this.translate.instant("actions.offline_and_no_local_file"));
+            reject(new Error(this.translate.instant("actions.offline_and_no_local_file")));
         });
     };
 
-    public alert(): ILIASObjectActionAlert {
-        return null;
+    alert(): ILIASObjectActionAlert {
+        return undefined;
     }
 
 }

@@ -1,0 +1,48 @@
+<div class="ui sidebar vertical menu">
+
+
+    <!-- get our landing page -->
+    {% assign index = site.pages | where: "landingPage", true | first %}
+    <a class="item {% if page.landingPage %} active {% endif %}" href="{{ index.url }}">
+        <h4>{{ index.title }}</h4>
+    </a>
+
+    <!-- our root menu items -->
+    {% assign headings = site.data.menu %}
+    <!-- get our pages grouped by their menu-heading -->
+    {% assign grouped_pages = site.docs | group_by: "menuHeading" %}
+
+    {% for heading in headings %}
+
+        <!-- get our pages of the current root menu -->
+        {% assign menu = grouped_pages | where: "name", heading | first %}
+
+        <!-- if the pages of the current root level is only one, we do not render submenus -->
+        {% if (menu.items.size) == 1 %}
+
+            {% assign first = menu.items | first %} <!-- get the page -->
+
+            <a class="item {% if heading == page.menuHeading %} active {% endif %}" href="{{ first.url }}">
+                <h4>{{ heading }}</h4>
+            </a>
+
+        <!-- if we have more than one page of the current root level, we render submenus -->
+        {% else %}
+
+            <a class="item">
+                <h4>{{ heading }}</h4>
+            </a>
+
+            {% for subPage in menu.items | sort %}
+
+                <a class="item {% if subPage.title == page.title %} active {% endif %}" href="{{ subPage.url }}">
+                    {{ subPage.title }}
+                </a>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endfor %}
+
+</div>

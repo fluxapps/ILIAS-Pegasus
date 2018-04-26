@@ -4,4 +4,8 @@ import {Exception} from "./Exception";
  * to download with WLAN.
  */
 export class NoWLANException extends Exception {
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, NoWLANException.prototype);
+    }
 }

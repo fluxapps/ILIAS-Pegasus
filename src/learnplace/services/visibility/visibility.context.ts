@@ -1,67 +1,89 @@
-import {Block} from "../../block.model";
-import {AlwaysStrategy, NeverStrategy, VisibilityStrategy, VisibilityStrategyType} from "./visibility.strategy";
+import {
+  AfterVisitPlaceStrategy,
+  AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy, VisibilityStrategy,
+  VisibilityStrategyType
+} from "./visibility.strategy";
+import {Injectable} from "@angular/core";
+import {isUndefined} from "ionic-angular/es2015/util/util";
+import {IllegalStateError} from "../../../error/errors";
+import {Observable} from "rxjs/Observable";
 
 /**
- * Describes a context to revise a visibility on a block.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
- */
-export interface VisibilityContext {
-
-  /**
-   * Uses the given {@code block} in this context.
-   *
-   * @param {Block} block the block to use
-   */
-  use(block: Block): void
-}
-
-/**
- * Strategy context, that uses a specific {@link VisibilityStrategy} on a block.
+ * Describes an object that can be visible or not.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
- class VisibilityStrategyContext implements VisibilityContext{
-
-   constructor(
-     private readonly strategy: VisibilityStrategy
-   ) {}
-
-  /**
-   * Uses the given {@code block} with the set strategy on this context.
-   *
-   * @param {Block} block
-   */
-  use(block: Block): void { this.strategy.on(block) }
+export interface VisibilityAware {
+  visible: boolean;
 }
 
 /**
- * Factory class to create a {@link VisibilityContext} depending on a strategy.
+ * Helper class to apply a {@link VisibilityStrategy} on a {@link VisibilityAware} model.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @version 2.0.0
  */
- export class VisibilityContextFactory {
+@Injectable()
+export class VisibilityStrategyApplier {
 
-   private readonly strategies: Map<VisibilityStrategyType, VisibilityStrategyContext> = new Map();
+  private learnplaceId: string | undefined;
 
-   constructor(
-     alwaysStrategy: AlwaysStrategy,
-     neverStrategy: NeverStrategy
-   ) {
-     this.strategies.set(VisibilityStrategyType.ALWAYS, new VisibilityStrategyContext(alwaysStrategy));
-     this.strategies.set(VisibilityStrategyType.NEVER, new VisibilityStrategyContext(neverStrategy));
+ constructor(
+   private readonly alwaysStrategy: AlwaysStrategy,
+   private readonly neverStrategy: NeverStrategy,
+   private readonly onlyAtPlaceStrategy: OnlyAtPlaceStrategy,
+   private readonly afterVisitPlace: AfterVisitPlaceStrategy
+ ) {}
+
+  /**
+   * Setter for the learnplace that is used for the membership of models
+   * used in the {@link VisibilityStrategyApplier#apply} method.
+   *
+   * @param {string} id - the id of the learnplace
+   */
+  setLearnplace(id: string): void {
+     this.learnplaceId = id;
+  }
+
+  /**
+   * Applies the strategy matching the given {@code strategy} to the given {@code model}.
+   *
+   * If the setter {@link VisibilityStrategyApplier#setLearnplace} was not called,
+   * this method throws an {@link IllegalStateError}.
+   *
+   * @param {T} model - model to apply the strategy on
+   * @param {VisibilityStrategyType} strategy - the strategy type to use
+   *
+   * @throws {IllegalStateError} if the setter for the learnplace was not called
+   */
+   apply<T extends VisibilityAware>(model: T, strategy: VisibilityStrategyType): Observable<T> {
+
+      switch (strategy) {
+        case VisibilityStrategyType.ALWAYS:
+          return this.alwaysStrategy.on(model);
+        case VisibilityStrategyType.NEVER:
+          return this.neverStrategy.on(model);
+        case VisibilityStrategyType.ONLY_AT_PLACE:
+          this.requireLearnplace();
+          return this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
+        case VisibilityStrategyType.AFTER_VISIT_PLACE:
+          this.requireLearnplace();
+          return this.afterVisitPlace.membership(this.learnplaceId).on(model);
+      }
    }
 
   /**
-   * Creates a context with the given {@code strategy}.
-   *
-   * @param {VisibilityStrategyType} strategy the strategy type to use
-   * @returns {VisibilityContext}
+   * Shutdown the {@link OnlyAtPlaceStrategy} and {@link AfterVisitPlaceStrategy} by invoking their {@code shutdown} method.
    */
-   create(strategy: VisibilityStrategyType): VisibilityContext {
-     return this.strategies.get(strategy);
+  shutdown(): void {
+     this.onlyAtPlaceStrategy.shutdown();
+     this.afterVisitPlace.shutdown();
    }
- }
+
+   private requireLearnplace(): void {
+     if (isUndefined(this.learnplaceId)) {
+       throw new IllegalStateError(`Can not apply strategy without learnplace id: Call ${VisibilityStrategyApplier.name}#setLearnplace first`);
+     }
+   }
+}

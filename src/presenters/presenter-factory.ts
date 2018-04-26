@@ -4,14 +4,17 @@ import {CourseObjectPresenter} from "./course-presenter";
 import {FolderObjectPresenter} from "./folder-presenter";
 import {GroupObjectPresenter} from "./group-presenter";
 import {FileObjectPresenter} from "./file-presenter";
+import {LearnplaceObjectPresenter} from "./learnplace-presenter";
 
 export class ILIASObjectPresenterFactory {
-    public static instance(object:ILIASObject):ILIASObjectPresenter {
-        if (object.type == 'crs') return new CourseObjectPresenter(object);
-        if (object.type == 'fold') return new FolderObjectPresenter(object);
-        if (object.type == 'grp') return new GroupObjectPresenter(object);
+    static instance(object: ILIASObject): ILIASObjectPresenter {
+        if (object.type == "crs") return new CourseObjectPresenter(object);
+        if (object.type == "fold") return new FolderObjectPresenter(object);
+        if (object.type == "grp") return new GroupObjectPresenter(object);
 
-        if (object.type == 'file') return new FileObjectPresenter(object);
+        if (object.type == "file") return new FileObjectPresenter(object);
+        if (object.isLearnplace()) return new LearnplaceObjectPresenter(object);
+
 
         return new GenericILIASObjectPresenter(object);
     }

@@ -63,6 +63,9 @@ function getProdLoaders() {
 }
 
 const devConfig = {
+
+  bail: true,
+
   entry: process.env.IONIC_APP_ENTRY_POINT,
   output: {
     path: '{{BUILD}}',
@@ -108,6 +111,9 @@ const devConfig = {
 };
 
 const prodConfig = {
+
+  bail: true,
+
   entry: process.env.IONIC_APP_ENTRY_POINT,
   output: {
     path: '{{BUILD}}',

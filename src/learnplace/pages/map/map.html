@@ -1,20 +1,17 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-title>
-      <ion-icon name="pin"></ion-icon>
-      <!--TODO: Use lernplace name properly-->
-      Lernplace XY
+  <ion-navbar color="nobg-w" class="blue-gradient">
 
-    </ion-title>
-    <ion-buttons end>
-      <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content padding color="nobg-w">
 
-   <div #map id="map"></div>
+<ion-content padding color="nobg-w"class="blue-gradient">
+
+  <div *ngIf="map?.visible" #map id="map"></div>
+
+  <div *ngIf="!map?.visible" padding>
+
+    <h1 text-center>{{map?.getDescriptionLangVar() | translate}}</h1>
+      
+  </div>
 
 </ion-content>

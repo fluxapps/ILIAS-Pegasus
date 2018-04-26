@@ -12,6 +12,7 @@ log.txt
 *.map
 *.sourcemaps
 *.keystore
+*_config.json
 .vscode/
 npm-debug.log*
 
@@ -43,7 +44,8 @@ www/*
 !www/.placeholder
 bower_components
 src/assets/config.json
-src/assets/*.json
-build.sh
-build2.sh
+src/assets/testinstallation_config.json
+build*.sh
+
 bin
+simulation

@@ -1,0 +1,44 @@
+
+
+    #marker-icon{
+      padding-top: 25%;
+      height: auto !important;
+      width: 20vh !important;
+      margin: auto !important;
+      display: block !important;
+
+    }
+
+    #middle-button{
+      top: 10%;
+      // height: auto !important;
+      // width: 20vh !important;
+      margin: auto !important;
+      display: block !important;
+
+    }
+
+  .big-spinner {
+  // width: 400px;
+  // height: 400px;
+  stroke: #FFFFFF;
+  fill: #FFFFFF;
+}
+
+.loading-subtitle{
+  color: white;
+}
+
+.walking-pony{
+  animation: walking-lefttoright;
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+  // position: absolute;
+  margin-left: -20%;
+}
+
+@keyframes walking-lefttoright {
+  0%   {   margin-left: -20%; }
+  // 50% {   padding-left: 50%; }
+  100%   {   margin-left: 150%; }
+}

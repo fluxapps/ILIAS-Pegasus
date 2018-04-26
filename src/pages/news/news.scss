@@ -1,0 +1,44 @@
+news {
+  // ion-content{@include linear-gradient(left,$clouds);
+  //   -webkit-background-size: cover;
+  //   -moz-background-size: cover;
+  //   background-size: cover;
+  // }
+
+    #marker-icon{
+      padding-top: 25%;
+      height: auto !important;
+      width: 20vh !important;
+      margin: auto !important;
+      display: block !important;
+
+    }
+
+    #middle-button{
+      top: 10%;
+      // height: auto !important;
+      // width: 20vh !important;
+      margin: auto !important;
+      display: block !important;
+
+    }
+
+    .date-note {
+    font-size: 0.2em;
+    // align-self: flex-start;
+    // margin-top: 14px;
+
+  }
+
+  .info-text{
+    font-size: 0.7em;
+    white-space: pre-line;
+
+  }
+
+  .news-title{
+    width:100%;
+    white-space: pre-line;
+  }
+
+}

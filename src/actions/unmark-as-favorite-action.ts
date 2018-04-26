@@ -5,11 +5,11 @@ import {ILIASObjectActionResult} from "./object-action";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
-    public constructor(public title:string, public object:ILIASObject) {
+    constructor(public title: string, public object: ILIASObject) {
         super();
     }
 
-    public execute():Promise<ILIASObjectActionResult> {
+    execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
             this.object.isFavorite = false;
             this.object.save().then(() => {
@@ -20,7 +20,7 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
         });
     }
 
-    public alert():ILIASObjectActionAlert|any {
+    alert(): ILIASObjectActionAlert|any {
         return null;
     }
 }

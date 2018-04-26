@@ -1,195 +1,242 @@
 {
-  "test": "der test",
-  "Synchronize": "Synchronisieren",
-  "synchronize": "Synchronisieren",
-  "save": "speichern",
-  "Save": "Speichern",
-  "User": "Benutzer*innen",
-  "user": "Benuzter",
-  "cancel": "Abbrechen",
-  "general": "Allgemein",
-  "new": "Neu",
-  "updated": "Aktualisiert",
-  "synchronisation_in_progress": "Synchronisation",
-  "deleting_files": "Dateien werden gelöscht",
-  "something_went_wrong": "Es ist etwas schiefgelaufen, versuchen Sie es später erneut.",
-  "menu": "Menu",
-  "remove": "Entfernen",
-  "no_items": "Es sind keine Einträge vorhanden",
-  "yes": "Ja",
-  "no": "Nein",
-  "no_title": "Kein Titel",
-  "close": "Schliessen",
-  "today": "Heute",
-  "yesterday": "Gestern",
-  "object-list": {
-    "title" : "Meine Kurse & Gruppen",
-    "content" : "Inhalt"
-  },
-  "page-layout": {
-    "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
-    "course" : "Für diesen Kurs sind zusätzliche Informationen verfügbar.",
-    "folder" : "Für diesen Ordner sind zusätzliche Informationen verfügbar.",
-    "default" : "Für dieses Objekt sind zusätzliche Informationen verfügbar."
-  },
-  "timeline": {
-    "course": "Für diesen Kurs ist eine Timeline verfügbar.",
-    "group": "Für diese Gruppe ist eine Timeline verfügbar.",
-    "default": "Für dieses Objeckt ist eine Timeline verfügbar."
-  },
-  "favorites": {
-    "title": "Favoriten"
-  },
-  "new-objects": {
-    "title": "Neue Inhalte",
-    "no_new_items": "Keine neuen Inhalte verfügbar.",
-    "mark_as_seen": "Als gesehen markieren"
-  },
-  "settings": {
-    "title": "Einstellungen",
-    "language": "Sprache",
-    "downloadSize": "Max. Dateigrösse für Download (MB)",
-    "downloadWLAN": "Nur im WLAN laden",
-    "quotaSize": "Verfügbarer Speicher (MB)",
-    "settings_saved": "Einstellungen gespeichert",
-    "files_deleted": "Dateien erfolgreich gelöscht",
-    "delete_user_local_data_title": "Löschen von Dateien auf dem Gerät für Benutzer*in {{username}}",
-    "delete_user_local_data_text": "Wollen Sie wirklich alle lokalen Dateien auf dem Gerät von diesem Benutzer*in löschen?",
-    "delete_all_files": "Löschen aller Dateien auf dem Gerät",
-    "delete_all_files_text": "Wollen Sie wirklich alle lokalen Dateien aller Benutzer*innen auf diesem Gerät löschen?",
-    "summary": "Zusammenfassung",
-    "total": "Total",
-    "users": "Benutzer*innen",
-    "deleting_files": "Dateien werden gelöscht"
-  },
-  "info": {
-    "title": "Info",
-    "guide": "Anleitung",
-    "instructions1": "Wenn du auf der Startseite 'Meine Kurse und Gruppen' bist, kannst du die Kurse und Gruppen als offline Verfügbar markieren. Sie werden mit einer grauen Wolke gekennzeichnet. Sobald die Dateien synchronisiert wurden, wird die Wolke blau.",
-    "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder wenn ein Kurs als offline Verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch einen Klick auf 'Synchronisieren' auf der Seite 'Meine Kurse und Gruppen'."
-  },
-  "logout": {
-    "title": "Logout",
-    "logged_out": "Logout erfolgreich"
-  },
-  "common": {
-    "synchronize" : "Synchronisieren"
-  },
-  "download": {
-    "title": "Download",
-    "something_went_wrong": "Etwas ist schiefgelaufen, versuchen Sie es später erneut!"
-  },
-  "actions": {
-    "view_in_ilias": "In ILIAS anzeigen",
-    "mark_as_favorite": "Als Favoriten markieren",
-    "download": "Download / Aktualisieren",
-    "mark_as_offline_available": "Als offline verfügbar markieren",
-    "unmark_as_offline_available": "Nicht mehr Synchron halten",
+    "test": "der test",
+    "back": "Zurück",
+    "Synchronize": "Synchronisieren",
     "synchronize": "Synchronisieren",
-    "remove_local_files": "Lokale Dateien entfernen",
-    "removed_local_files": "Lokale Dateien entfernt",
-    "remove_local_file": "Lokale Datei entfernen",
-    "download_and_open_in_external_app": "Herunterladen und in externem App öffnen",
-    "unmark_as_favorite": "Von Favoriten entfernen",
-    "open_in_external_app": "In externem App öffnen",
-    "show_details": "Zeige Details",
-    "sync_incomplete": "Es ist etwas schiefgelaufen. Die Synchronisation ist unter Umständen unvollständig",
-    "offline_and_no_local_file": "Sie sind offline und keine lokale Datei ist verfügbar.",
-    "download_without_wlan": "Download ohne WLAN",
-    "download_without_wlan_continue": "Sie sind im Moment nicht im WLAN, wollen Sie die Datei trotzdem herunterladen?",
-    "download_without_disk_quota": "Kein Speicherplatz",
-    "download_without_disk_quota_text": "Wenn Sie diese Datei herunterladen überschreiten Sie den zur Verfügung stehenden Platz, der in den Einstellungen definiert wurde, wollen Sie trotzdem fortfahren?",
-    "download_with_file_too_big": "Datei zu gross",
-    "download_with_file_too_big_text": "Diese Datei ist grösser als die angegebene maximale Dateigrösse in den Einstellungen, wollen Sie trotzdem fortfahren?",
-    "remove_local_files_in": "Dateien löschen von {{title}}",
-    "remove_local_files_in_text": "Sind Sie sicher, dass Sie alle heruntergeladenen Dateien löschen wollen?",
-    "download_successful": "Datei wurde heruntergeladen",
-    "cant_open_file": "Es wurde keine Applikation gefunden, die diesen Dateityp öffnen kann.",
-    "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut oder loggen Sie sich erneut ein."
-  },
-  "details" : {
-    "last_update": "Letztes Update",
-    "availability": "Vefügbarkeit",
-    "size": "Grösse",
-    "version": "Version",
-    "used_disk_space": "Belegter Platz auf Gerät",
-    "local_version_date": "Datum Datei auf Gerät",
-    "remote_version_date": "Datum Datei in ILIAS",
-    "potentially_used_disk_space": "Benötigter Platz nach Synchronisation (geschätzt)",
-    "offline_available": "Offline verfügbar",
-    "availabilities": {
-      "needs_download": "Benötigt Download",
-      "up-to-date": "Aktuell",
-      "needs_update": "Benötigt Aktualisierung"
-    }
-  },
-  "sync": {
-    "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
-    "last_sync": "Letzte Synchronisation",
-    "fetching_metadata": "Metadaten werden aktualisiert",
-    "title": "Synchronisation",
-    "sync_incomplete": "Etwas ist schiefgelaufen, die Synchronisation ist unter Umständen unvollständig.",
-    "stopped_no_wlan": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da Sie zur Zeit nicht mit dem WLAN verbunden sind.",
-    "files_too_big": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da der eingestellte max. Speicherplatz überschritten wird. Erhöhen Sie die Quota oder Löschen Sie einige Dateien.",
-    "object_synced": "{{title}} wurde erfolgreich synchronisiert.",
-    "success": "Synchronisation erfolgreich abgeschlossen.",
-    "download": "Download",
-    "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
-    "some_files_were_too_big": "Einige Dateien waren zu gross und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigrösse in den Einstellungen oder laden Sie die Datei manuell herunter.",
-    "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
-    "pull_to_sync": "zum Aktualisieren herunterziehen"
-  },
-  "login": {
-    "title": "Login",
-    "hello":"Willkommen zu ILIAS Pegasus!",
-    "instructions":"Wähle deine Installation.",
-    "login": "Anmelden"
-  },
-  "object_type": {
-    "crs" : "Kurs",
-    "grp" : "Gruppe",
-    "frm" : "Forum",
-    "fold": "Ordner",
-    "sess": "Sitzung",
-    "catr": "Kategorie-Referenz",
-    "crsr": "Kurs-Referenz",
-    "cat" : "Kategorie",
-    "book": "Buchungspool",
-    "chatr":"Chatraum",
-    "file" : "Datei",
-    "webr" : "Weblink",
-    "feed" : "Webfeed",
-    "wiki" : "Wiki",
-    "blog" : "Blog",
-    "lm" : "Lernmodul",
-    "htlm" : "Lernmodul",
-    "sahs" : "Lernmodul",
-    "glo" : "Glossar",
-    "dcl" : "Datensammlung",
-    "bibl" : "Literaturliste",
-    "mcst" : "Mediacast",
-    "mep" : "Medienpool",
-    "exc" : "Übung",
-    "tst" : "Test",
-    "qpl" : "Fragenpool für Tests",
-    "mass" : "Individuelle Bewertung",
-    "poll" : "Abstimmung",
-    "svy" : "Umfrage",
-    "spl" : "Fragenpool für Umfragen",
-    "prtt" : "Portfoliovorlage",
-    "xlel" : "Lernort",
-    "xlvo" : "LiveVoting",
-    "xoct" : "OpenCast",
-    "xtst" : "Test Magazin Objekt",
-    "xvid" : "Interaktives Video",
-    "xpdl" : "Etherpad",
-    "xavc" : "Adobe Connect Meeting",
-    "xflc" : "Lernkarten",
-    "chtr" : "Chatraum",
-    "xxco" : "Externer Inhalt"
+    "save": "speichern",
+    "Save": "Speichern",
+    "User": "Benutzer*innen",
+    "user": "Benuzter",
+    "cancel": "Abbrechen",
+    "general": "Allgemein",
+    "new": "Neu",
+    "updated": "Aktualisiert",
+    "synchronisation_in_progress": "Synchronisation",
+    "deleting_files": "Dateien werden gelöscht",
+    "something_went_wrong": "Es ist etwas schiefgelaufen, versuchen Sie es später erneut.",
+    "menu": "Menu",
+    "remove": "Entfernen",
+    "no_items": "Es sind keine Einträge vorhanden",
+    "yes": "Ja",
+    "no": "Nein",
+    "no_title": "Kein Titel",
+    "close": "Schliessen",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "object-list": {
+        "title" : "Meine Kurse & Gruppen",
+        "content" : "Inhalt"
+    },
+    "page-layout": {
+        "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
+        "course" : "Für diesen Kurs sind zusätzliche Informationen verfügbar.",
+        "folder" : "Für diesen Ordner sind zusätzliche Informationen verfügbar.",
+        "default" : "Für dieses Objekt sind zusätzliche Informationen verfügbar."
+    },
+    "timeline": {
+        "course": "Für diesen Kurs ist eine Timeline verfügbar.",
+        "group": "Für diese Gruppe ist eine Timeline verfügbar.",
+        "default": "Für dieses Objeckt ist eine Timeline verfügbar."
+    },
+    "favorites": {
+        "title": "Favoriten"
+    },
+    "news": {
+        "title": "Nachrichten"
+    },
+    "new-objects": {
+        "title": "Neue Inhalte",
+        "no_new_items": "Keine neuen Inhalte verfügbar.",
+        "mark_as_seen": "Als gesehen markieren"
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "language": "Sprache",
+        "downloadSize": "Max. Dateigrösse für Download (MB)",
+        "downloadWLAN": "Nur im WLAN laden",
+        "quotaSize": "Verfügbarer Speicher (MB)",
+        "settings_saved": "Einstellungen gespeichert",
+        "files_deleted": "Dateien erfolgreich gelöscht",
+        "delete_user_local_data_title": "Löschen von Dateien auf dem Gerät für Benutzer*in {{username}}",
+        "delete_user_local_data_text": "Wollen Sie wirklich alle lokalen Dateien auf dem Gerät von diesem Benutzer*in löschen?",
+        "delete_all_files": "Löschen aller Dateien auf dem Gerät",
+        "delete_all_files_text": "Wollen Sie wirklich alle lokalen Dateien aller Benutzer*innen auf diesem Gerät löschen?",
+        "summary": "Zusammenfassung",
+        "total": "Total",
+        "users": "Benutzer*innen",
+        "deleting_files": "Dateien werden gelöscht"
+    },
+    "info": {
+        "title": "Info",
+        "guide": "Anleitung",
+        "instructions1": "Wenn du auf der Startseite 'Meine Kurse und Gruppen' bist, kannst du die Kurse und Gruppen als offline Verfügbar markieren. Sie werden mit einer grauen Wolke gekennzeichnet. Sobald die Dateien synchronisiert wurden, wird die Wolke blau.",
+        "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder wenn ein Kurs als offline Verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch ein herunterziehen (Pull to Refresh) der Seite 'Meine Kurse und Gruppen'."
+    },
+    "logout": {
+        "title": "Logout",
+        "logged_out": "Logout erfolgreich"
+    },
+    "common": {
+        "synchronize" : "Synchronisieren"
+    },
+    "download": {
+        "title": "Download",
+        "something_went_wrong": "Etwas ist schiefgelaufen, versuchen Sie es später erneut!"
+    },
+    "actions": {
+        "view_in_ilias": "In ILIAS anzeigen",
+        "mark_as_favorite": "Als Favoriten markieren",
+        "download": "Download / Aktualisieren",
+        "mark_as_offline_available": "Als offline verfügbar markieren",
+        "unmark_as_offline_available": "Nicht mehr Synchron halten",
+        "synchronize": "Synchronisieren",
+        "remove_local_files": "Lokale Dateien entfernen",
+        "removed_local_files": "Lokale Dateien entfernt",
+        "remove_local_file": "Lokale Datei entfernen",
+        "removed_local_file": "Lokale Datei entfernt",
+        "remove_local_learnplace": "Lokaler Lernort entfernen",
+        "remove_local_learnplace_failed": "Lokaler Lernort konnte nicht entfernt werden",
+        "removed_local_learnplace": "Lokaler Lernort entfernt",
+        "download_and_open_in_external_app": "Herunterladen und in externem App öffnen",
+        "unmark_as_favorite": "Von Favoriten entfernen",
+        "open_in_external_app": "In externem App öffnen",
+        "show_details": "Zeige Details",
+        "sync_incomplete": "Es ist etwas schiefgelaufen. Die Synchronisation ist unter Umständen unvollständig",
+        "offline_and_no_local_file": "Sie sind offline und keine lokale Datei ist verfügbar.",
+        "download_without_wlan": "Download ohne WLAN",
+        "download_without_wlan_continue": "Sie sind im Moment nicht im WLAN, wollen Sie die Datei trotzdem herunterladen?",
+        "download_without_disk_quota": "Kein Speicherplatz",
+        "download_without_disk_quota_text": "Wenn Sie diese Datei herunterladen überschreiten Sie den zur Verfügung stehenden Platz, der in den Einstellungen definiert wurde, wollen Sie trotzdem fortfahren?",
+        "download_with_file_too_big": "Datei zu gross",
+        "download_with_file_too_big_text": "Diese Datei ist grösser als die angegebene maximale Dateigrösse in den Einstellungen, wollen Sie trotzdem fortfahren?",
+        "remove_local_files_in": "Dateien löschen von {{title}}",
+        "remove_local_files_in_text": "Sind Sie sicher, dass Sie alle heruntergeladenen Dateien löschen wollen?",
+        "download_successful": "Datei wurde heruntergeladen",
+        "cant_open_file": "Es wurde keine Applikation gefunden, die diesen Dateityp öffnen kann.",
+        "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut oder loggen Sie sich erneut ein.",
+        "server_response_validation_error": "Es besteht ein Problem mit der Server Kommunikation, dies kann durch eine veraltete App Version verursacht werden."
+    },
+    "details" : {
+        "last_update": "Letztes Update",
+        "availability": "Vefügbarkeit",
+        "size": "Grösse",
+        "version": "Version",
+        "used_disk_space": "Belegter Platz auf Gerät",
+        "local_version_date": "Datum Datei auf Gerät",
+        "remote_version_date": "Datum Datei in ILIAS",
+        "potentially_used_disk_space": "Benötigter Platz nach Synchronisation (geschätzt)",
+        "offline_available": "Offline verfügbar",
+        "availabilities": {
+            "needs_download": "Benötigt Download",
+            "up-to-date": "Aktuell",
+            "needs_update": "Benötigt Aktualisierung"
+        }
+    },
+    "sync": {
+        "sync_already_running": "Es ist bereits eine Synchronisation am laufen.",
+        "last_sync": "Letzte Synchronisation",
+        "fetching_metadata": "Metadaten werden aktualisiert",
+        "fetching_news": "News werden aktualisiert",
+        "title": "Synchronisation",
+        "sync_incomplete": "Etwas ist schiefgelaufen, die Synchronisation ist unter Umständen unvollständig.",
+        "stopped_no_wlan": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da Sie zur Zeit nicht mit dem WLAN verbunden sind.",
+        "files_too_big": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da der eingestellte max. Speicherplatz überschritten wird. Erhöhen Sie die Quota oder Löschen Sie einige Dateien.",
+        "object_synced": "{{title}} wurde erfolgreich synchronisiert.",
+        "success": "Synchronisation erfolgreich abgeschlossen.",
+        "download": "Download",
+        "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
+        "some_files_were_too_big": "Einige Dateien waren zu gross und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigrösse in den Einstellungen oder laden Sie die Datei manuell herunter.",
+        "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
+        "pull_to_sync": "zum Aktualisieren herunterziehen"
+    },
+    "login": {
+        "title": "Login",
+        "hello":"Willkommen zu ILIAS Pegasus!",
+        "instructions":"Wähle deine Installation.",
+        "login": "Anmelden"
+    },
+    "object_type": {
+        "crs" : "Kurs",
+        "grp" : "Gruppe",
+        "frm" : "Forum",
+        "fold": "Ordner",
+        "sess": "Sitzung",
+        "catr": "Kategorie-Referenz",
+        "crsr": "Kurs-Referenz",
+        "cat" : "Kategorie",
+        "book": "Buchungspool",
+        "chatr":"Chatraum",
+        "file" : "Datei",
+        "webr" : "Weblink",
+        "feed" : "Webfeed",
+        "wiki" : "Wiki",
+        "blog" : "Blog",
+        "lm" : "Lernmodul",
+        "htlm" : "Lernmodul",
+        "sahs" : "Lernmodul",
+        "glo" : "Glossar",
+        "dcl" : "Datensammlung",
+        "bibl" : "Literaturliste",
+        "mcst" : "Mediacast",
+        "mep" : "Medienpool",
+        "exc" : "Übung",
+        "tst" : "Test",
+        "qpl" : "Fragenpool für Tests",
+        "mass" : "Individuelle Bewertung",
+        "poll" : "Abstimmung",
+        "svy" : "Umfrage",
+        "spl" : "Fragenpool für Umfragen",
+        "prtt" : "Portfoliovorlage",
+        "xlel" : "Lernort",
+        "xlvo" : "LiveVoting",
+        "xoct" : "OpenCast",
+        "xtst" : "Test Magazin Objekt",
+        "xvid" : "Interaktives Video",
+        "xpdl" : "Etherpad",
+        "xavc" : "Adobe Connect Meeting",
+        "xflc" : "Lernkarten",
+        "chtr" : "Chatraum",
+        "xxco" : "Externer Inhalt",
+        "xsrl": "Lernort"
 
-  },
-  "message": {
-    "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
-  }
-}
+    },
+    "message": {
+        "back_to_exit": "Erneut zurück drücken, um die Anwendung zu verlassen."
+    },
+    "learnplace": {
+        "map": {
+            "no_map": "Dieser Lernort besitzt keine Karte",
+            "too_far_away": "Du bist nicht nahe genug am Lernort um die Karte betrachten zu können"
+        },
+        "block": {
+            "no_content": "Dieser Lernort besitzt keinen Inhalt",
+            "text": {
+                "too_far_away": "Du bist nicht nahe genug am Lernort um diesen Text lesen zu können"
+            },
+            "picture": {
+                "too_far_away": "Du bist nicht nahe genug am Lernort um dieses Bild ansehen zu können"
+            },
+            "link": {
+                "too_far_away": "Du bist nicht nahe genug am Lernort um diesen Link anklicken zu können",
+                "no_access": "Du besitzt nicht die nötigen Zugriffsrechte für diesen Link"
+            },
+            "video": {
+                "too_far_away": "Du bist nicht nahe genug am Lernort um dieses Video ansehen zu können"
+            },
+            "accordion": {
+                "too_far_away": "Du bist nicht nahe genug am Lernort um dieses Akkordeon ansehen zu können"
+            }
+        }
+    },
+    "fallback": {
+        "browser": "Du verlässt nun die ILIAS Pegasus App",
+        "browser_ok": "OK, auf zum Browser!",
+        "browser_no": "Nein. Zurück!",
+        "loading": "Lernort wird geladen",
+        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern.",
+        "location": {
+            "activate": "Standort aktivieren",
+            "back": "Nope, ich will zurück"
+        }
+      }
+    }

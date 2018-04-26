@@ -1,53 +1,66 @@
-import {Component} from '@angular/core';
-import {NavController, ActionSheetController} from 'ionic-angular';
-import {ILIASObject} from "../../models/ilias-object";
-import {Favorites} from "../../models/favorites";
-import {FileService} from "../../services/file.service";
-import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
-import {OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
-import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {ILIASObjectAction} from "../../actions/object-action";
-import { TranslateService } from "ng2-translate/src/translate.service";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {User} from "../../models/user";
-import {ILIASObjectActionSuccess} from "../../actions/object-action";
-import {AlertController} from "ionic-angular";
-import {ToastController} from "ionic-angular";
-import {Job} from "../../services/footer-toolbar.service";
-import {Log} from "../../services/log.service";
-import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
-import {OfflineException} from "../../exceptions/OfflineException";
-import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
-import {RESTAPIException} from "../../exceptions/RESTAPIException";
-import {ILIASLinkBuilder, TokenUrlConverter} from "../../services/url-converter.service";
+import {Component, Inject} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
-
+import {
+    ActionSheet,
+    ActionSheetButton,
+    ActionSheetController,
+    ActionSheetOptions,
+    AlertController,
+    NavController,
+    Toast,
+    ToastController,
+    ToastOptions,
+    ModalController,
+} from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
+import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
+import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
+import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
+import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
+import {Favorites} from "../../models/favorites";
+import {ILIASObject} from "../../models/ilias-object";
+import {User} from "../../models/user";
+import {Builder} from "../../services/builder.base";
+import {FileService} from "../../services/file.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {Log} from "../../services/log.service";
 
 
 @Component({
-    templateUrl: 'favorites.html'
+    templateUrl: "favorites.html"
 })
 export class FavoritesPage {
 
-    public favorites:ILIASObject[] = null;
+    private favorites: Array<ILIASObject> = [];
 
-    public actionSheetActive = false;
+    private actionSheetActive: boolean = false;
 
-    public rootParents = [];
+    private rootParents: Array<Promise<string>> = [];
 
-    constructor(public nav:NavController,
-                public file:FileService,
-                public actionSheet:ActionSheetController,
-                public translate:TranslateService,
-                public footerToolbar:FooterToolbarService,
-                public alert:AlertController,
-                public toast:ToastController,
-                private readonly urlConverter: TokenUrlConverter,
-                private readonly browser: InAppBrowser) {
-    }
+    constructor(public nav: NavController,
+                public file: FileService,
+                public actionSheet: ActionSheetController,
+                public translate: TranslateService,
+                public footerToolbar: FooterToolbarService,
+                public alert: AlertController,
+                public toast: ToastController,
+                private modal: ModalController,
+                private readonly browser: InAppBrowser,
+                @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
+                private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
+                private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
+                @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
+    ) {}
 
-    public ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.loadFavorites();
     }
 
@@ -55,10 +68,10 @@ export class FavoritesPage {
      * Execute primary action of given object
      * @param iliasObject
      */
-    public onClick(iliasObject:ILIASObject) {
+    onClick(iliasObject: ILIASObject): void {
         if (this.actionSheetActive) return;
         // let primaryAction = this.objectActions.getPrimaryAction(iliasObject);
-        let primaryAction = this.getPrimaryAction(iliasObject);
+        const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
         // When executing the primary action, we reset the isNew state
         if (iliasObject.isNew || iliasObject.isUpdated) {
@@ -68,62 +81,25 @@ export class FavoritesPage {
         }
     }
 
-    public executeAction(action:ILIASObjectAction):void {
-        let hash = action.instanceId();
+    executeAction(action: ILIASObjectAction): void {
+        const hash: number = action.instanceId();
         this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
             this.handleActionResult(result);
             this.footerToolbar.removeJob(hash);
-        }).catch((error:CantOpenFileTypeException) => {
-            if(error instanceof CantOpenFileTypeException) {
-                this.showAlert(this.translate.instant("actions.cant_open_file"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-        }).catch(error => {
-            if(error instanceof OfflineException) {
-                this.showAlert(this.translate.instant("actions.offline_and_no_local_file"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-        }).catch(error => {
-            if(error instanceof RESTAPIException) {
-                this.showAlert(this.translate.instant("actions.server_not_reachable"));
-                this.footerToolbar.removeJob(hash);
-                return Promise.resolve();
-            }
-            return Promise.reject(error);
-
-        }).catch((message) => {
-            if (message) {
-                Log.describe(this, "action gone wrong: ", message);
-            }
-            this.showAlert(this.translate.instant("something_went_wrong"));
+        }).catch((error) => {
+            Log.describe(this, "action gone wrong: ", error);
             this.footerToolbar.removeJob(hash);
+            throw error;
         });
     }
 
-    protected showAlert(message) {
-        let alert = this.alert.create({
-            title: message,
-            buttons: [
-                {
-                    text: this.translate.instant("close"),
-                    role: 'cancel'
-                }
-                ]
-        });
-        alert.present();
-    }
-
-    protected handleActionResult(result) {
+    private handleActionResult(result: ILIASObjectActionResult): void {
         this.loadFavorites();
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {
             if (result.message) {
-                let toast = this.toast.create({
+                const toast: Toast = this.toast.create(<ToastOptions>{
                     message: result.message,
                     duration: 3000
                 });
@@ -136,19 +112,18 @@ export class FavoritesPage {
      * Show action sheet for the given object
      * @param object
      */
-    public showActions(object:ILIASObject) {
+    showActions(object: ILIASObject): void {
         this.actionSheetActive = true;
-        let actionButtons = [];
-        // let actions = this.objectActions.getActions(object, ILIASObjectActionsService.CONTEXT_ACTION_MENU);
-        let actions:ILIASObjectAction[] = [
+        const actionButtons: Array<ActionSheetButton> = [];
+        const actions: Array<ILIASObjectAction> = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), object, this.nav),
-            new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(object.link), this.urlConverter, this.browser),
+            this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(object.refId)),
             new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), object)
         ];
         actions.forEach(action => {
             actionButtons.push({
                 text: action.title,
-                handler: () => {
+                handler: (): void => {
                     this.executeAction(action);
                     this.actionSheetActive = false;
                 }
@@ -156,13 +131,13 @@ export class FavoritesPage {
         });
         actionButtons.push({
             text: this.translate.instant("cancel"),
-            handler: () => {
+            handler: (): void => {
                 this.actionSheetActive = false;
             }
         });
-        let actionSheet = this.actionSheet.create({
-            'title': object.title,
-            'buttons': actionButtons
+        const actionSheet: ActionSheet = this.actionSheet.create(<ActionSheetOptions>{
+            "title": object.title,
+            "buttons": actionButtons
         });
         actionSheet.onDidDismiss(() => {
             this.actionSheetActive = false;
@@ -170,17 +145,33 @@ export class FavoritesPage {
         actionSheet.present();
     }
 
-    protected getPrimaryAction(iliasObject:ILIASObject):ILIASObjectAction {
-        if (iliasObject.isContainer()) {
-            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
-        }
-        if (iliasObject.type == 'file') {
-            return new DownloadAndOpenFileExternalAction(this.translate.instant("actions.download_and_open_in_external_app"), iliasObject, this.file, this.translate, this.alert);
-        }
-        return new OpenObjectInILIASAction(this.translate.instant("actions.view_in_ilias"), new ILIASLinkBuilder(iliasObject.link), this.urlConverter, this.browser);
+    protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
+      if (iliasObject.isLinked()) {
+        return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
+      }
+
+      if (iliasObject.isContainer()) {
+        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+      }
+
+      if (iliasObject.isLearnplace()) {
+        return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title, this.modal);
+      }
+
+      if (iliasObject.type == "file") {
+        return new DownloadAndOpenFileExternalAction(
+          this.translate.instant("actions.download_and_open_in_external_app"),
+          iliasObject,
+          this.file,
+          this.translate,
+          this.alert
+        );
+      }
+
+      return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
     }
 
-    protected loadFavorites() {
+    protected loadFavorites(): void {
         this.footerToolbar.addJob(Job.LoadFavorites, "");
         User.currentUser().then((user) => {
             Favorites.findByUserId(user.id).then(favorites => {

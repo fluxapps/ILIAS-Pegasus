@@ -4,12 +4,15 @@
 
 let webpack = require("webpack");
 let path = require("path");
-
+console.log(__dirname);
 module.exports = {
+
+  bail: true,
+
   devtool: 'inline-source-map',
 
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
   },
 
   // rules for how to load specific file types
@@ -40,7 +43,15 @@ module.exports = {
       root('./src'), // location of your src
       {} // a map of your routes
     )
-  ]
+  ],
+
+  // Some libraries import Node modules but don't use them in the browser.
+  // Tell Webpack to provide empty mocks for them so importing them works.
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };
 
 function root(localPath) {

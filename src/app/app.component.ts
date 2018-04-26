@@ -1,47 +1,58 @@
-import { Component, ViewChild } from '@angular/core';
-import { Platform, MenuController, Nav, Events} from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
-import {LoginPage} from '../pages/login/login';
-import {SettingsPage} from '../pages/settings/settings';
-import {FavoritesPage} from '../pages/favorites/favorites';
-import {InfoPage} from '../pages/info/info';
-import {MigrationsService} from "../services/migrations.service";
+import {Component, Inject, ViewChild} from "@angular/core";
+import {
+  Platform, MenuController, Nav, Events, ToastController, Toast,
+  ToastOptions, Modal, ModalController, Config
+} from "ionic-angular";
+import {StatusBar} from "@ionic-native/status-bar";
+import {LoginPage} from "../pages/login/login";
+import {SettingsPage} from "../pages/settings/settings";
+import {FavoritesPage} from "../pages/favorites/favorites";
+import {InfoPage} from "../pages/info/info";
 import {ObjectListPage} from "../pages/object-list/object-list";
-import {FooterToolbarService} from "../services/footer-toolbar.service";
+import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
-import {Log} from "../services/log.service";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
 import {Network} from "@ionic-native/network";
-import { TranslateService } from "ng2-translate/src/translate.service";
-import {ToastController} from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
 import {SynchronizationService} from "../services/synchronization.service";
-import {ModalController} from "ionic-angular";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {SQLite} from "@ionic-native/sqlite";
-import {Job} from "../services/footer-toolbar.service";
-import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
-
+import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
+import {SplashScreen} from "@ionic-native/splash-screen";
+import {Database} from "../services/database/database";
+import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
+import {Logger} from "../services/logging/logging.api";
+import {Logging} from "../services/logging/logging.service";
+import getMessage = Logging.getMessage;
+import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
+import {NewsPage} from "../pages/news/news";
+import {LoadingPage} from "./fallback/loading/loading.component";
 
 @Component({
-    templateUrl: 'app.html'
+  templateUrl: "app.html"
 })
 export class MyApp {
-    @ViewChild(Nav) nav:Nav;
 
-    rootPage:any;
+  @ViewChild(Nav) nav: Nav;
 
-    public objectListPage = ObjectListPage;
-    public favoritesPage = FavoritesPage;
-    public newObjectsPage = NewObjectsPage;
-    public settingsPage = SettingsPage;
-    public infoPage = InfoPage;
-    public loginPage = LoginPage;
-    public loggedIn = false;
-    /**
-     * The current logged in user
-     */
-    protected user:User;
+  rootPage: {};
+
+  objectListPage: object = ObjectListPage;
+  favoritesPage: object = FavoritesPage;
+  newObjectsPage: object = NewObjectsPage;
+  settingsPage: object = SettingsPage;
+  infoPage: object = InfoPage;
+  loginPage: object = LoginPage;
+  newsPage: object = NewsPage;
+  LoadingPage: object = LoadingPage;
+  loggedIn: boolean = false;
+  /**
+   * The current logged in user
+   */
+  private user: User;
+
+  private readonly log: Logger = Logging.getLogger(MyApp.name);
 
   /**
    *
@@ -51,244 +62,242 @@ export class MyApp {
    *
    * @param {Platform} platform
    * @param {MenuController} menu
-   * @param {MigrationsService} migrations
    * @param {FooterToolbarService} footerToolbar
    * @param {TranslateService} translate
    * @param {Events} event
    * @param {ToastController} toast
    * @param {SynchronizationService} sync
-   * @param {ModalController} modal
    * @param {StatusBar} statusBar
    * @param {Network} network
+   * @param {SplashScreen} splashScreen
+   * @param {Database} database
+   * @param modal
+   * @param config
+   * @param {DBMigration} dbMigration
    * @param {SQLite} sqlite
    */
-    constructor(public platform:Platform,
-                public menu:MenuController,
-                public migrations:MigrationsService,
-                public footerToolbar:FooterToolbarService,
-                public translate:TranslateService,
-                public event:Events,
-                public toast:ToastController,
-                public sync:SynchronizationService,
-                public modal:ModalController,
-                private readonly statusBar: StatusBar,
-                private readonly network: Network,
-                sqlite: SQLite
-    ) {
+  constructor(
+    readonly footerToolbar: FooterToolbarService,
+    private readonly platform: Platform,
+    private readonly menu: MenuController,
+    private readonly translate: TranslateService,
+    private readonly event: Events,
+    private readonly toast: ToastController,
+    private readonly sync: SynchronizationService,
+    private readonly statusBar: StatusBar,
+    private readonly network: Network,
+    private readonly splashScreen: SplashScreen,
+    private readonly database: Database,
+    private readonly modal: ModalController,
+    private readonly config: Config,
+    @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
+    sqlite: SQLite
+  ) {
 
-      // Set members on classes which are not injectable
-      Settings.NETWORK = this.network;
-      SQLiteDatabaseService.SQLITE = sqlite;
+    // Set members on classes which are not injectable
+    Settings.NETWORK = this.network;
+    SQLiteDatabaseService.SQLITE = sqlite;
 
+    // init after platform is ready and native stuff is available
+    this.platform.ready().then(() => {
 
-        //we initialize the app => db migration, //get global events.
-        this.initializeApp()
-            .then(() => this.loadCurrentUser())
-            .then(() => {
-                (<any> navigator).splashscreen.hide();
-            })
-			.then(() => {
-				this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-        		this.sync.execute()
-			})
-			.then(() => {
-				this.footerToolbar.removeJob(Job.Synchronize);
-        		return Promise.resolve()
-			})
+      this.log.info(() => "Platform is ready");
 
-			// .then(sync.hasUnfinishedSync)
-            // .then(() => sync.execute())
-            // .then(syncResult => {
-            //     if (syncResult.objectsLeftOut.length > 0) {
-            //         let syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-            //         syncModal.present();
-            //     } else {
-            //         let toast = this.toast.create({
-            //             message: this.translate.instant("sync.success"),
-            //             duration: 3000
-            //         });
-            //         toast.present();
-            //     }
-            // })
-            // SYNC Nur wenn och eine offen war, lasse dies drin, wird vielleicht nochmals gebraucht ;)
-            // .catch(exception => {
-            //     if (exception == "NoSyncOpenException") {
-            //         Log.write(this, "No sync running.");
-            //         return Promise.resolve();
-            //     }
-            //     return Promise.reject(exception);
-            // }) // The NoSyncOpeNException is used to cancel the chain, we just log that there's nothing more to do.
-            .catch(error => {
-                Log.error(this, error)
-            }); // Any Errors occuring during initialization get logged.
+      return this.initializeApp();
+
+    }).catch((error) => {
+            const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
+            const errorType: string = (error instanceof Error) ? error.name : "N/a";
+            this.log.warn(() => `Could not initialize app. Error type: ${errorType} Message: ${message}`)
+    });
+  }
+
+  /**
+   * Opens the given {@code page}.
+   *
+   * If the page is an {@link ObjectListPage}, it wll be set as root page.
+   * If the previous page is an {@link ObjectListPage}, the given page will be pushed to the nav.
+   * Otherwise the nav will be popped and than the given page will be pushed.
+   *
+   * @param {object} page - the page to open
+   */
+  async openPage(page: object): Promise<void> {
+
+    await this.menu.close();
+
+    if (page == ObjectListPage) {
+      await this.nav.setRoot(page);
+    } else {
+
+      //check if we navigating the object list
+      if (this.nav.last().component == ObjectListPage) {
+        //preserve history
+        await this.nav.push(page);
+      } else {
+        //we are navigating over the menu remove history
+        await this.nav.push(page);
+        await this.nav.remove(1);
+      }
     }
+  }
 
-    initializeApp():Promise<any> {
-        return this.platform.ready().then(() => {
-            Log.write(this, "Platform ready.");
-            // Okay, so the platform is ready and our plugins are available.
-            // Here you can do any higher level native things you might need.
-            this.statusBar.styleLightContent();
-            this.handleGlobalEvents();
+  /**
+   * ONLY FOR TESTING PURPOSES!!!
+   *
+   * Push the page you wanna open to the nav.
+   */
+  openTestpage(): void {
+    this.menu.close();
+    this.nav.push(LoadingPage);
 
-			this.defineBackButtonAction();
+  }
+  // presentLoading(): void {
+  //   this.menu.close();
+  //   let loadingModal = this.modalCtrl.create(LoadingPage);
+  //   loadingModal.present();
+  // }
 
-            return this.handleMigrations();
-        });
+  /**
+   * Initialize everything that has to be done on start up.
+   */
+  private async initializeApp(): Promise<void> {
+
+    this.log.info(() => "Initialize app");
+    this.statusBar.styleLightContent();
+    this.subscribeOnGlobalEvents();
+    this.defineBackButtonAction();
+
+    await this.database.ready(PEGASUS_CONNECTION_NAME);
+    await this.dbMigration.migrate();
+
+    await this.setRootPage();
+
+    // overwrite ionic back button text with configured language
+    this.config.set("backButtonText", this.translate.instant("back"));
+
+    this.splashScreen.hide();
+
+    this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+    await this.sync.execute();
+    this.footerToolbar.removeJob(Job.Synchronize);
+  }
+
+  /**
+   * Subscribes on global events that are used.
+   */
+  private subscribeOnGlobalEvents(): void {
+
+    this.event.subscribe("doLogout", () => this.logout());
+
+    this.event.subscribe("login", () => this.setRootPage());
+
+    this.event.subscribe("logout", () => this.loggedIn = false);
+
+    this.network.onDisconnect().subscribe(() => this.footerToolbar.offline = true);
+
+    this.network.onConnect().subscribe(() => this.footerToolbar.offline = false);
+  }
+
+  /**
+   * Sets the root page depending on the current user.
+   *
+   * If no current user is found, the {@link LoginPage} will be
+   * set as the root page.
+   */
+  private async setRootPage(): Promise<void> {
+
+    try {
+
+      const user: User = await User.currentUser();
+      this.loggedIn = true;
+      this.user = user;
+      await this.configureTranslation(user);
+      await this.nav.setRoot(this.objectListPage);
+
+    } catch(error) {
+
+      this.configureDefaultTranslation();
+      this.rootPage = this.loginPage;
     }
+  }
 
-    handleMigrations():Promise<any> {
-        // return this.migrations.reverse(1).then( () => {
-            return this.executeAllMigrations();
-        // });
-    }
+  /**
+   * Configures the {@link TranslateService} depending on the given {@code user}.
+   *
+   * @param {User} user - the user to read its configured language
+   */
+  private async configureTranslation(user: User): Promise<void> {
 
-    protected loadCurrentUser():Promise<User> {
-        return User.currentUser()
-            .then(user => {
-                this.loggedIn = true;
-                this.user = user;
-                return this.translateConfig(user);
-            }, () => {
-                this.translateConfigDefault();
-                this.rootPage = LoginPage;
-                (<any> navigator).splashscreen.hide();
-                Log.write(this, "No user found.");
-                return Promise.reject("No user found.");
-            })
-            .then(user => {
-                Log.write(this, "set root page to object list page");
-                this.nav.setRoot(ObjectListPage);
-                return Promise.resolve(user);
-            });
-    }
+    const setting: Settings = await Settings.findByUserId(user.id);
 
-    private executeAllMigrations() {
-        return this.migrations.executeAll().catch(error => {
-            Log.write(this, "Some migrations were rejected...");
-            Log.error(this, error);
-        });
-    };
+    this.translate.use(setting.language);
+    this.translate.setDefaultLang("de");
+  }
 
-    handleGlobalEvents() {
-        this.event.subscribe("doLogout", () => {
-            this.logout();
-        });
+  /**
+   * Configures the {@link TranslateService} by the {@link navigator}.
+   */
+  private configureDefaultTranslation(): void {
 
-        // TODO: we need a user service...
-        this.event.subscribe("login", () => {
-            // this.loggedIn = true;
-            // this.nav.setRoot(ObjectListPage);
-            this.loadCurrentUser()
-				.then((user) => {
-					// setTimeout(() => {
-					// 	this.sync.execute()
-					// }, 2000);
-				})
-        });
-        this.event.subscribe("logout", () => {
-            this.loggedIn = false;
-        });
-        this.network.onDisconnect().subscribe(() => {
-            this.footerToolbar.offline = true;
-        });
-        this.network.onConnect().subscribe(() => {
-            this.footerToolbar.offline = false;
-        });
-    }
+    let userLang: string = navigator.language.split("-")[0];
+    userLang = /(de|en)/gi.test(userLang) ? userLang : "de";
 
-    protected logout() {
+    // this language will be used as a fallback when a translation isn't found in the current language
+    this.translate.setDefaultLang("de");
+    this.translate.use(userLang);
+  }
+
+  /**
+   * Performs all steps to log out the user.
+   */
+  async logout(): Promise<void> {
+    await this.menu.close();
+
+    const user: User = await User.currentUser();
+    user.accessToken = null;
+    user.refreshToken = null;
+
+    await user.save();
+
+    this.loggedIn = false;
+    await this.nav.setRoot(LoginPage);
+
+    const toast: Toast = this.toast.create(<ToastOptions>{
+      message: this.translate.instant("logout.logged_out"),
+      duration: 3000
+    });
+    await toast.present();
+  }
+
+  /**
+   * Registers a action for the back button.
+   */
+  private defineBackButtonAction(): void {
+
+    let backbuttonTapped: number = 0;
+
+    this.platform.registerBackButtonAction(() => {
+      if (this.menu.isOpen()) {
         this.menu.close();
-
-        User.currentUser().then(user => {
-            user.accessToken = null;
-            user.refreshToken = null;
-            user.save().then(() => {
-                // this.event.publish("logout");
-                this.loggedIn = false;
-                this.nav.setRoot(LoginPage);
-            }).catch(err => {
-                Log.error(this, err);
-            });
-        });
-
-        let toast = this.toast.create({
-            message: this.translate.instant("logout.logged_out"),
+        return;
+      }
+      if (!this.nav.canGoBack()) {
+        if (backbuttonTapped == 0) {
+          backbuttonTapped = 1;
+          const toast: Toast = this.toast.create({
+            message: this.translate.instant("message.back_to_exit"),
             duration: 3000
-        });
-        toast.present();
-    }
-
-    translateConfig(user:User):Promise<User> {
-        return Settings.findByUserId(user.id).then(settings => {
-            Log.write(this, "Using settings language: " + settings.language);
-            this.translate.use(settings.language);
-            this.translate.setDefaultLang('de');
-            return Promise.resolve(user);
-        });
-    }
-
-    translateConfigDefault():void {
-        Log.write(this, "Using Default translation.");
-        let userLang = navigator.language.split('-')[0]; // use navigator lang if available
-        userLang = /(de|en)/gi.test(userLang) ? userLang : 'de';
-
-        // this language will be used as a fallback when a translation isn't found in the current language
-        this.translate.setDefaultLang('de');
-        this.translate.use(userLang);
-    }
-
-    public openPage(page) {
-        // close the menu when clicking a link from the menu
-        this.menu.close();
-
-        if (page == ObjectListPage) {
-        	// ObjectListPage is set to root
-        	this.nav.setRoot(page);
+          });
+          toast.present();
+          setTimeout(() => {
+            backbuttonTapped = 0;
+          }, 3000);
         } else {
-        	// when coming from an ObjectListPage, just push
-        	if (this.nav.last().component == ObjectListPage) {
-				this.nav.push(page);
-			} else {
-        		// else pop previous and push
-				this.nav.pop().then( () => {this.nav.push(page)})
-			}
-		}
-
-    }
-
-    openTestpage(): void {
-      this.menu.close();
-      this.nav.push(TabsPage);
-    }
-
-	/**
-	 *
-	 */
-	protected defineBackButtonAction() {
-    	let backbutton_tapped = 0;
-		this.platform.registerBackButtonAction( () => {
-			if (this.menu.isOpen()) {
-				this.menu.close();
-				return;
-			}
-			if (!this.nav.canGoBack()) {
-				if (backbutton_tapped == 0) {
-					backbutton_tapped = 1;
-					let toast = this.toast.create({
-						message: this.translate.instant('message.back_to_exit'),
-						duration: 3000
-					});
-					toast.present();
-					setTimeout( () => {
-						backbutton_tapped = 0;
-					}, 3000);
-				} else {
-					this.platform.exitApp();
-				}
-			} else {
-				this.nav.pop();
-			}
-		});
-	}
+          this.platform.exitApp();
+        }
+      } else {
+        this.nav.pop();
+      }
+    });
+  }
 }

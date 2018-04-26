@@ -1,6 +1,6 @@
 import {
-  GeoCoordinate, MapBuilder, MapEvaluationError,
-  StandardMap
+  CameraOptions,
+  GeoCoordinate, MapBuilder, MapEvaluationError
 } from "../../src/services/map.service";
 import * as chaiAsPromised from "chai-as-promised";
 
@@ -32,7 +32,7 @@ describe("a map builder", () => {
 
 				// Arrange
         const builder: MapBuilder = new MapBuilder();
-        builder.camera(<GeoCoordinate>{longitude: 500, latitude: 500});
+        builder.camera(<CameraOptions>{position: <GeoCoordinate>{longitude: 500, latitude: 500}});
 
 				// Assert
         chai.expect(builder.build()) // Act

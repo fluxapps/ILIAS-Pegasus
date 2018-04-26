@@ -1,7 +1,11 @@
 <ion-header>
-    <ion-navbar color="primary">
+    <ion-navbar color="nobg-w" class=blue-gradient>
+        <!-- <ion-avatar item-start> -->
+
+        <!-- </ion-avatar> -->
         <ion-title>
-          <ion-icon name="ios-book"></ion-icon>
+          <!-- <img src="./assets/icon/icon_crs_white.svg" style="display:inline-block" height="23px" class=title-image> -->
+          <!-- <ion-icon name="ios-book"></ion-icon> -->
           {{ pageTitle }}
         </ion-title>
         <ion-buttons end>
@@ -14,8 +18,8 @@
 <ion-content class="object-list">
   <ion-refresher
           (ionRefresh)="startSync($event)"
-            closeDuration="400"
-            pullMin="150">
+            [closeDuration]="400"
+            [pullMin]="150">
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
         pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
@@ -28,12 +32,14 @@
   <ion-list  class="ilias-object-list">
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
-        <ion-icon [name]=pageLayout.icon item-start=""></ion-icon>
+        <ion-avatar item-start>
+            <img [src]="pageLayout.icon">
+        </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
       <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
-        <ion-icon [name]=timeline.icon item-start=""></ion-icon>
+        <ion-icon [name]=timeline.icon item-start></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
     </div>
@@ -46,12 +52,12 @@
 
     <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
 
-      <ion-icon [name]=object.presenter.icon() item-left class="badge-container">
-
-        <ion-badge *ngIf="object.isLinked()" color="light" class="badge-link">
-          <ion-icon name="open-outline"></ion-icon>
-        </ion-badge>
-      </ion-icon>
+      <ion-avatar item-start>
+          <img [src]="object.presenter.icon()">
+          <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
+            <img src="./assets/icon/icon_webr.svg" class="badge-img">
+          </ion-badge>
+      </ion-avatar>
 
       <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
       {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
@@ -59,7 +65,7 @@
         <ion-badge color="light" *ngIf="object.isFavorite">
           <ion-icon color="primary" name="star"></ion-icon>
         </ion-badge>
-        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
           <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
         </ion-badge>
 

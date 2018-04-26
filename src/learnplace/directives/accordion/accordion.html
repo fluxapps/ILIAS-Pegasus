@@ -1,0 +1,35 @@
+<ion-card class="accordion" *ngIf="accordion.visible">
+
+  <ion-card-content>
+
+    <ion-card-title (click)="toggle()">
+
+      <ion-icon *ngIf="!expanded" name="arrow-forward"></ion-icon>
+      <ion-icon *ngIf="expanded" name="arrow-down"></ion-icon>
+
+      {{accordion.title}}
+    </ion-card-title>
+
+
+    <div #expandWrapper [@expanded]="expanded">
+
+      <div *ngFor="let block of accordion.blocks">
+        <text-block *ngIf="(block | async).isRichtext()" [value]="block"></text-block>
+        <picture-block *ngIf="(block | async).isPicture()" [value]="block"></picture-block>
+        <video-block *ngIf="(block | async).isVideo()" [value]="block"></video-block>
+        <link-block *ngIf="(block | async).isLink()" [value]="block"></link-block>
+      </div>
+
+    </div>
+
+  </ion-card-content>
+
+</ion-card>
+
+<ion-card *ngIf="!accordion.visible" color=primary>
+
+  <ion-card-content>
+    {{"learnplace.block.accordion.too_far_away" | translate}}
+  </ion-card-content>
+
+</ion-card>

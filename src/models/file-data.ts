@@ -10,54 +10,54 @@ export class FileData extends ActiveRecord {
     /**
      * Internal ID of the corresponding ILIASObject
      */
-    public iliasObjectId: number;
+    iliasObjectId: number;
 
     /**
      * File name, including file extension
      */
-    public fileName: string;
+    fileName: string;
 
     /**
      * File size in bytes
      */
-    public fileSize: number;
+    fileSize: number;
 
     /**
      * File type, e.g. application/pdf
      */
-    public fileType: string;
+    fileType: string;
 
     /**
      * Extension, e.g. pdf
      */
-    public fileExtension: string;
+    fileExtension: string;
 
     /**
      * Last version date (create date of file object) in ILIAS
      */
-    public fileVersionDate: string;
+    fileVersionDate: string;
 
     /**
      * Last version date from file on device
      * Note: This date is set to fileVersionDate after a successful download. Meaning: If the date is set, the file
      * is also existing on the local device. If fileVersionDate > fileVersionDateLocal, a new version is available in ILIAS
      */
-    public fileVersionDateLocal: string;
+    fileVersionDateLocal: string;
 
-    constructor(id = 0) {
-        super(id, new SQLiteConnector('files', [
-            'iliasObjectId',
-            'fileName',
-            'fileSize',
-            'fileType',
-            'fileExtension',
-            'fileVersionDate',
-            'fileVersionDateLocal',
+    constructor(id: number = 0) {
+        super(id, new SQLiteConnector("files", [
+            "iliasObjectId",
+            "fileName",
+            "fileSize",
+            "fileType",
+            "fileExtension",
+            "fileVersionDate",
+            "fileVersionDateLocal",
         ]));
     }
 
-    public needsDownload() {
-        if (!this.hasOwnProperty('fileVersionDateLocal')) {
+    needsDownload(): boolean {
+        if (!this.hasOwnProperty("fileVersionDateLocal")) {
             return true;
         }
         if (!this.fileVersionDateLocal) {
@@ -71,13 +71,13 @@ export class FileData extends ActiveRecord {
      * @param iliasObjectId
      * @returns {Promise<FileData>}
      */
-    public static find(iliasObjectId: number): Promise<FileData> {
+    static find(iliasObjectId: number): Promise<FileData> {
         return SQLiteDatabaseService.instance()
             .then(db => {
-                return db.query('SELECT * FROM files WHERE iliasObjectId = ?', [iliasObjectId]);
+                return db.query("SELECT * FROM files WHERE iliasObjectId = ?", [iliasObjectId]);
             })
             .then((response: any) => {
-                let fileData = new FileData();
+                const fileData = new FileData();
                 if (response.rows.length == 0) {
                     fileData.iliasObjectId = iliasObjectId;
                 } else {
@@ -92,7 +92,7 @@ export class FileData extends ActiveRecord {
      * @param user
      * @returns {Promise<number>}
      */
-    public static getTotalDiskSpaceForUser(user:User): Promise<number> {
+    static getTotalDiskSpaceForUser(user: User): Promise<number> {
         return SQLiteDatabaseService.instance()
             .then(db => {
                 return db.query("SELECT SUM(files.fileSize) AS diskSpace FROM users " +
@@ -101,7 +101,7 @@ export class FileData extends ActiveRecord {
                     "WHERE users.id = ? AND files.fileVersionDateLocal is NOT NULL GROUP BY users.id", [user.id]);
             })
             .then((response: any) => {
-                let diskSpace = 0;
+                let diskSpace: number = 0;
                 if (response.rows.length) {
                     diskSpace = response.rows.item(0).diskSpace;
                 }
@@ -113,14 +113,14 @@ export class FileData extends ActiveRecord {
      * Returns the total disk space used by files on this device over all users and installations
      * @returns {Promise<number>}
      */
-    public static getTotalDiskSpace(): Promise<number> {
+    static getTotalDiskSpace(): Promise<number> {
         return SQLiteDatabaseService.instance()
             .then(db => {
-                return db.query('SELECT * FROM files WHERE fileVersionDateLocal is NOT NULL');
+                return db.query("SELECT * FROM files WHERE fileVersionDateLocal is NOT NULL");
             })
             .then((response: any) => {
-                let usedDiskSpace = 0;
-                for (let i = 0; i < response.rows.length; i++) {
+                let usedDiskSpace: number = 0;
+                for (let i: number = 0; i < response.rows.length; i++) {
                     usedDiskSpace += response.rows.item(i).fileSize;
                 }
                 return Promise.resolve(usedDiskSpace);
@@ -132,7 +132,7 @@ export class FileData extends ActiveRecord {
      * @returns {boolean}
      */
     isUpdated(): boolean {
-        return this.hasOwnProperty('fileVersionDateLocal') && this.fileVersionDateLocal && this.needsDownload();
+        return this.hasOwnProperty("fileVersionDateLocal") && this.fileVersionDateLocal && this.needsDownload();
     }
 
 }

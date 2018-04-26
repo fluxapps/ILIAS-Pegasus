@@ -1,32 +1,48 @@
-<ion-menu side="right" persistent="true" [content]="content">
+<ion-menu side="right" persistent="true" [content]="content" type="reveal">
 
-    <ion-header>
+    <!-- <ion-header >
         <ion-toolbar color="nobg-w">
                 <ion-title>{{ 'menu' | translate:[] }}</ion-title>
         </ion-toolbar>
-    </ion-header>
+    </ion-header> -->
 
-    <ion-content id="menu-container">
+    <ion-content id="menu-container" class=blue-gradient-invert>
         <ion-list>
-            <button *ngIf="!loggedIn" ion-item (click)="openPage(loginPage)" color="nobg-w">
-              <ion-icon name="log-in"></ion-icon>
+            <button *ngIf="!loggedIn" ion-item (click)="openPage(loginPage)" color="nobg-w" >
+              <ion-avatar item-start>
+                 <img src="./assets/icon/icon_auth_new.svg">
+             </ion-avatar>
                 {{ 'login.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(objectListPage)" color="nobg-w">
-              <ion-icon name="ios-book"></ion-icon>
+              <ion-avatar item-start>
+                    <img src="./assets/icon/icon_crs_white.svg">
+                </ion-avatar>
                 {{ 'object-list.title' | translate:[]}}
             </button>
-            <button *ngIf="loggedIn" ion-item (click)="openPage(favoritesPage)" color="nobg-w">
-              <ion-icon name="star"></ion-icon>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(favoritesPage)" color="nobg-w" >
+              <ion-avatar item-start>
+                    <img src="./assets/icon/icon_rate_10_new.svg">
+                </ion-avatar>
                 {{ 'favorites.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(newObjectsPage)" color="nobg-w">
-              <ion-icon name="stopwatch"></ion-icon>
+              <ion-avatar item-start>
+                  <img src="./assets/icon/icon_exc_001.svg">
+              </ion-avatar>
                 {{ 'new-objects.title' | translate:[]}}
             </button>
+            <button *ngIf="loggedIn" ion-item (click)="openPage(newsPage)" color="nobg-w">
+              <ion-avatar item-start>
+                  <img src="./assets/icon/icon_exc_white.svg">
+              </ion-avatar>
+              {{ 'news.title' | translate:[]}}
+            </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(settingsPage)" color="nobg-w">
-              <ion-icon name="flask"></ion-icon>
-                {{ 'settings.title' | translate:[]}}
+              <ion-avatar item-start>
+                  <img src="./assets/icon/icon_adm_new.svg">
+              </ion-avatar>
+              {{ 'settings.title' | translate:[]}}
             </button>
 
             <!-- <button *ngIf="loggedIn" ion-item (click)="openTestpage()" color="nobg-w">
@@ -35,11 +51,15 @@
             </button> -->
 
             <button ion-item (click)="openPage(infoPage)" color="nobg-w">
-              <ion-icon name="information-circle"></ion-icon>
+              <ion-avatar item-start>
+                  <img src="./assets/icon/icon_info_new.svg">
+              </ion-avatar>
                 {{ 'info.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="logout()" color="nobg-w">
-              <ion-icon name="log-out"></ion-icon>
+              <ion-avatar item-start>
+                 <img src="./assets/icon/icon_auth_new.svg">
+             </ion-avatar>
                 {{ 'logout.title' | translate:[]}} {{ user.iliasLogin }}
             </button>
         </ion-list>

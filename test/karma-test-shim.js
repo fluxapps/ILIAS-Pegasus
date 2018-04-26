@@ -3,6 +3,12 @@
  * Is needed to load dependencies that AngularJS needs as well as our own spec files.
  */
 
+import {useStandard} from "../src/standard";
+import {isUndefined} from "ionic-angular/es2015/util/util";
+
+// load standard.ts to enable its global declarations
+useStandard();
+
 Error.stackTraceLimit = Infinity;
 
 require('core-js/es6');
@@ -16,6 +22,14 @@ require('zone.js/dist/sync-test');
 require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
 require("zone.js/dist/mocha-patch");
+
+const encoding = require("text-encoding");
+if(isUndefined(window.TextDecoder))
+  window.TextDecoder = encoding.TextDecoder;
+
+if(isUndefined(window.TextEncoder))
+  window.TextEncoder = encoding.TextEncoder;
+
 
 // configure chai
 let chai = require("chai");

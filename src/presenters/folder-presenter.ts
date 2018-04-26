@@ -1,12 +1,12 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
 
 export class FolderObjectPresenter extends GenericILIASObjectPresenter {
-    
-    icon():string {
-        return 'folder';
+
+    icon(): string {
+        return "./assets/icon/icon_fold.svg";
     }
 
-    showTypeAsText():boolean {
+    showTypeAsText(): boolean {
         return false;
     }
 }
