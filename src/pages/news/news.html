@@ -35,7 +35,7 @@
 
       <h2 class="news-title">{{newsPresenter[0].title}}</h2>
       <p class="info-text">{{newsPresenter[0].subtitle}}</p>
-      <p class="info-text">{{newsPresenter[0].content}}</p>
+      <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
       <ion-note class="date-note" item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
     </ion-item>
   </div>

@@ -1,4 +1,5 @@
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+import {SafeHtml, DomSanitizer} from "@angular/platform-browser";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
@@ -28,6 +29,7 @@ export class NewsItemModel {
     readonly newsContext: number,
     readonly title: string,
     readonly subtitle: string = "",
+    //readonly content: SafeHtml = "",
     readonly content: string = "",
     readonly createDate: Date = new Date(Date.now()),
     readonly updateDate: Date = new Date(Date.now())
@@ -45,15 +47,17 @@ export class NewsFeedImpl implements NewsFeed {
 
   private static readonly UNIX_TIME_MULTIPLIER_MILIS: number = 1000;
 
-  constructor(
-    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
-  ) {}
+    constructor(
+        private readonly sanitizer: DomSanitizer,
+        @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository
+    ) {}
 
 
   async fetchAllForCurrentUser(): Promise<Array<NewsItemModel>> {
     const activeUser: User = await User.findActiveUser();
     const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
-    return user.news.map(this.mapToModel);
+    const mapToModel: (entity: NewsEntity) => NewsItemModel = this.mapToModel.bind(this);
+    return user.news.map(mapToModel);
   }
 
   private mapToModel(entity: NewsEntity): NewsItemModel {
@@ -62,7 +66,8 @@ export class NewsFeedImpl implements NewsFeed {
       entity.newsContext,
       entity.title,
       entity.subtitle,
-      entity.content,
+        // this.sanitizer.bypassSecurityTrustHtml(entity.content),
+        entity.content,
       new Date(entity.createDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS),
       new Date(entity.updateDate * NewsFeedImpl.UNIX_TIME_MULTIPLIER_MILIS)
     );

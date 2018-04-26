@@ -64,7 +64,6 @@ import {InfoPage} from "../pages/info/info";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
-import {NewsPage} from "../pages/news/news";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {ObjectListPage} from "../pages/object-list/object-list";
 import {SettingsPage} from "../pages/settings/settings";
@@ -105,7 +104,6 @@ import {RESOURCE_LINK_BUILDER, ResourceLinkBuilder, ResourceLinkBuilderImpl} fro
 import {TIMELINE_LINK_BUILDER, TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
-import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 import {NEWS_SYNCHRONIZATION, NewsSynchronizationImpl} from "../services/news/news.synchronization";
 import {SynchronizationService} from "../services/synchronization.service";
 import {MyApp} from "./app.component";
@@ -131,7 +129,6 @@ import {HTTP} from "@ionic-native/http";
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
-    NewsPage,
     LoadingPage,
 
     /* from src/learnplace */
@@ -157,6 +154,7 @@ import {HTTP} from "@ionic-native/http";
     IonicModule.forRoot(MyApp),
     BrowserModule,
     BrowserAnimationsModule,
+
     HttpModule,
     HttpClientModule,
     TranslateModule.forRoot({
@@ -176,7 +174,7 @@ import {HTTP} from "@ionic-native/http";
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
-    NewsPage,
+    //NewsPage,
     LoadingPage,
 
     /* from src/learnplace */
@@ -248,11 +246,6 @@ import {HTTP} from "@ionic-native/http";
     DatabaseConnectionRegistry,
     Database,
 
-    /* from src/services/news/news.feed */
-    {
-      provide: NEWS_FEED,
-      useClass: NewsFeedImpl
-    },
     /* from src/services/news/news.synchronization */
     {
       provide: NEWS_SYNCHRONIZATION,

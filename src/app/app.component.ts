@@ -1,33 +1,28 @@
 import {Component, Inject, ViewChild} from "@angular/core";
-import {
-  Platform, MenuController, Nav, Events, ToastController, Toast,
-  ToastOptions, Modal, ModalController, Config
-} from "ionic-angular";
+import {Network} from "@ionic-native/network";
+import {SplashScreen} from "@ionic-native/splash-screen";
+import {SQLite} from "@ionic-native/sqlite";
 import {StatusBar} from "@ionic-native/status-bar";
-import {LoginPage} from "../pages/login/login";
-import {SettingsPage} from "../pages/settings/settings";
-import {FavoritesPage} from "../pages/favorites/favorites";
-import {InfoPage} from "../pages/info/info";
-import {ObjectListPage} from "../pages/object-list/object-list";
-import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
-import {NewObjectsPage} from "../pages/new-objects/new-objects";
+import {Config, Events, MenuController, ModalController, Nav, Platform, Toast, ToastController, ToastOptions} from "ionic-angular";
+import {TranslateService} from "ng2-translate/src/translate.service";
+import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
-import {Network} from "@ionic-native/network";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {SynchronizationService} from "../services/synchronization.service";
+import {FavoritesPage} from "../pages/favorites/favorites";
+import {InfoPage} from "../pages/info/info";
+import {LoginPage} from "../pages/login/login";
+import {NewObjectsPage} from "../pages/new-objects/new-objects";
+import {ObjectListPage} from "../pages/object-list/object-list";
+import {SettingsPage} from "../pages/settings/settings";
 import {SQLiteDatabaseService} from "../services/database.service";
-import {SQLite} from "@ionic-native/sqlite";
-import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
-import {SplashScreen} from "@ionic-native/splash-screen";
 import {Database} from "../services/database/database";
-import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
+import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
-import getMessage = Logging.getMessage;
-import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
-import {NewsPage} from "../pages/news/news";
+import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
+import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
+import getMessage = Logging.getMessage;
 
 @Component({
   templateUrl: "app.html"
@@ -44,7 +39,7 @@ export class MyApp {
   settingsPage: object = SettingsPage;
   infoPage: object = InfoPage;
   loginPage: object = LoginPage;
-  newsPage: object = NewsPage;
+  newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
   LoadingPage: object = LoadingPage;
   loggedIn: boolean = false;
   /**
