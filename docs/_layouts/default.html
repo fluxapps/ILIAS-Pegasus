@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include head.html %}
+<body>
+
+{% include sidebar.html %}
+<div class="pusher">
+
+    <div id="main-menu-toggle" class="ui left floated black big right attached sticky button" style="top: 46px">
+        <i class="bars icon"></i>
+    </div>
+
+    <div class="ui container">
+        {{ content }}
+    </div>
+</div>
+<script>
+    $('#main-menu-toggle').click(function(event) {
+        $('.ui.sidebar')
+            .sidebar('toggle')
+
+    });
+
+    $(".ui.sidebar")
+        .sidebar("setting", "onVisible", function () {
+            $("#main-menu-toggle").hide();
+            // $("#main-menu-toggle .icon").toggleClass("big times");
+            // $("#main-menu-toggle .icon").toggleClass("big bars");
+        })
+        .sidebar("setting", "onHidden", function () {
+            $("#main-menu-toggle").show();
+            // $("#main-menu-toggle .icon").toggleClass("big times");
+            // $("#main-menu-toggle .icon").toggleClass("big bars");
+        });
+
+    $("#main-menu-toggle")
+        .sticky();
+
+</script>
+</body>
+</html>

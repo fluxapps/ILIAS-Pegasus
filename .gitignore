@@ -12,6 +12,7 @@ log.txt
 *.map
 *.sourcemaps
 *.keystore
+*_config.json
 .vscode/
 npm-debug.log*
 
