@@ -7,7 +7,7 @@ import {VisibilityStrategyType} from "./visibility/visibility.strategy";
  * Contains information to display a map.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 2.0.0
+ * @since 2.0.0
  */
 export class MapModel implements VisibilityAware {
 
@@ -41,7 +41,7 @@ export class MapModel implements VisibilityAware {
  * Enumerator for all available block types.
  *
  * @author nmaerchy <nm@studer-raiann.ch>
- * @version 1.0.0
+ * @since 2.0.0
  */
 export enum BlockType {
   FEEDBACK,
@@ -62,7 +62,7 @@ export enum BlockType {
  * Base class for all specific block types. Shares common attributes over all blocks.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.3.0
+ * @since 2.0.0
  */
 export class BlockModel implements VisibilityAware {
 
@@ -87,7 +87,7 @@ export class BlockModel implements VisibilityAware {
  * Model class for a text block.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @since 2.0.0
  */
 export class TextBlockModel extends BlockModel {
 
@@ -101,7 +101,7 @@ export class TextBlockModel extends BlockModel {
  * Model class for a picture block.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @since 2.0.0
  */
 export class PictureBlockModel extends BlockModel {
 
@@ -118,7 +118,7 @@ export class PictureBlockModel extends BlockModel {
  * Model class for link block.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 0.0.1
+ * @since 2.0.0
  */
 export class LinkBlockModel extends BlockModel {
 
@@ -132,7 +132,7 @@ export class LinkBlockModel extends BlockModel {
  * Model class for a video block
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @since 2.0.0
  */
 export class VideoBlockModel extends BlockModel {
 
@@ -146,7 +146,7 @@ export class VideoBlockModel extends BlockModel {
  * Model class for an accordion block
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
+ * @since 2.0.0
  */
 export class AccordionBlockModel extends BlockModel {
 
@@ -154,7 +154,7 @@ export class AccordionBlockModel extends BlockModel {
     sequence: number,
     readonly title: string,
     readonly expanded: boolean,
-    readonly blocks: Array<Observable<BlockModel>>,
+    readonly blocks: Observable<Array<BlockModel>>,
   ) {
     super(sequence, false, BlockType.ACCORDION)
   }

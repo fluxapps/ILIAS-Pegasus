@@ -14,9 +14,7 @@ import {isDefined} from "ionic-angular/es2015/util/util";
 export class VideoBlock implements OnInit, OnDestroy {
 
   @Input("value")
-  readonly observableVideoBlock: Observable<VideoBlockModel>;
-
-  videoBlock: VideoBlockModel | undefined = undefined;
+  readonly videoBlock: VideoBlockModel;
 
   private videoBlockSubscription: Subscription | undefined = undefined;
 
@@ -29,10 +27,10 @@ export class VideoBlock implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.videoBlockSubscription = this.observableVideoBlock.subscribe(it => {
-      this.videoBlock = it;
-      this.detectorRef.detectChanges();
-    })
+    // this.videoBlockSubscription = this.observableVideoBlock.subscribe(it => {
+    //   this.videoBlock = it;
+    //   this.detectorRef.detectChanges();
+    // })
   }
 
   ngOnDestroy(): void {

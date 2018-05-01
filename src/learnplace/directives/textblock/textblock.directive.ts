@@ -11,9 +11,7 @@ import {isDefined} from "ionic-angular/es2015/util/util";
 export class TextBlock implements OnInit, OnDestroy {
 
   @Input("value")
-  readonly observableTextBlock: Observable<TextBlockModel>;
-
-  textBlock: TextBlockModel | undefined = undefined;
+  readonly textBlock: TextBlockModel;
 
   private textBlockSubscription: Subscription | undefined = undefined;
 
@@ -22,10 +20,10 @@ export class TextBlock implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.textBlockSubscription = this.observableTextBlock.subscribe(it => {
-      this.textBlock = it;
-      this.detectorRef.detectChanges();
-    })
+    // this.textBlockSubscription = this.observableTextBlock.subscribe(it => {
+    //   this.textBlock = it;
+    //   this.detectorRef.detectChanges();
+    // })
   }
 
   ngOnDestroy(): void {
