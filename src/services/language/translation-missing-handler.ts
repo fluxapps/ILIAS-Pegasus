@@ -1,5 +1,5 @@
-import {MissingTranslationHandler, MissingTranslationHandlerParams, TranslateService} from "ng2-translate";
 import {Injectable} from "@angular/core";
+import {MissingTranslationHandler, MissingTranslationHandlerParams} from "ng2-translate";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 
