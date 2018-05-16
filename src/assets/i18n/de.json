@@ -158,6 +158,7 @@
     "object_type": {
         "crs" : "Kurs",
         "grp" : "Gruppe",
+        "grpr" : "Gruppe-Referenz",
         "frm" : "Forum",
         "fold": "Ordner",
         "sess": "Sitzung",

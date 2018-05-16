@@ -151,7 +151,9 @@
     },
     "object_type": {
         "crs" : "Corso",
+        "crsr": "Riferimento del corso",
         "grp" : "Gruppo",
+        "grpr" : "Riferimento di gruppo",
         "frm" : "Forum",
         "fold": "Cartella",
         "sess": "Sessione",

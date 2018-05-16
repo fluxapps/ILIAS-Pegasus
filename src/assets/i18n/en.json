@@ -154,7 +154,9 @@
     },
     "object_type": {
         "crs" : "Course",
+        "crsr": "Course Reference",
         "grp" : "Group",
+        "grpr" : "Group Reference",
         "frm" : "Forum",
         "fold": "Folder",
         "sess": "Session",
