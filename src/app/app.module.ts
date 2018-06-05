@@ -15,7 +15,7 @@ import {StatusBar} from "@ionic-native/status-bar";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Toast} from "@ionic-native/toast";
 import {IonicApp, IonicErrorHandler, IonicModule, ModalController, NavController, Platform} from "ionic-angular";
-import {TranslateModule, TranslateService} from "ng2-translate/ng2-translate";
+import {TranslateModule, TranslateService, MissingTranslationHandler} from "ng2-translate/ng2-translate";
 import {TranslateLoader, TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
@@ -88,6 +88,7 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {FileService} from "../services/file.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
+import {PegasusMissingTranslationHandler} from "../services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../services/link/default.builder";
 import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
 import {
@@ -462,7 +463,8 @@ import {HTTP} from "@ionic-native/http";
 
     IonicErrorHandler,
     {provide: ErrorHandler, useClass: PegasusErrorHandler},
-      <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false}
+      <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
+      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false}
   ],
   exports: [
     TranslateModule
