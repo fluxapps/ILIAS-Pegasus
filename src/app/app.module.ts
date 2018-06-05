@@ -61,6 +61,7 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {FavoritesPage} from "../pages/favorites/favorites";
 import {InfoPage} from "../pages/info/info";
+import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
@@ -130,6 +131,7 @@ import {HTTP} from "@ionic-native/http";
     SyncFinishedModal,
     ModalPage,
     LoadingPage,
+    OnboardingPage,
 
     /* from src/learnplace */
     MapPage,
@@ -176,6 +178,7 @@ import {HTTP} from "@ionic-native/http";
     SyncFinishedModal,
     //NewsPage,
     LoadingPage,
+    OnboardingPage,
 
     /* from src/learnplace */
     MapPage,

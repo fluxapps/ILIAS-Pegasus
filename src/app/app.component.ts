@@ -23,6 +23,7 @@ import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
 import getMessage = Logging.getMessage;
+import { OnboardingPage } from "../pages/onboarding/onboarding";
 
 @Component({
   templateUrl: "app.html"
@@ -39,6 +40,7 @@ export class MyApp {
   settingsPage: object = SettingsPage;
   infoPage: object = InfoPage;
   loginPage: object = LoginPage;
+  onboardingPage: object = OnboardingPage;
   newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
   LoadingPage: object = LoadingPage;
   loggedIn: boolean = false;
@@ -143,7 +145,7 @@ export class MyApp {
    */
   openTestpage(): void {
     this.menu.close();
-    this.nav.push(LoadingPage);
+    this.nav.push(OnboardingPage);
 
   }
   // presentLoading(): void {
@@ -213,6 +215,7 @@ export class MyApp {
 
       this.configureDefaultTranslation();
       this.rootPage = this.loginPage;
+      this.presentOnboardingModal();
     }
   }
 
@@ -294,5 +297,15 @@ export class MyApp {
         this.nav.pop();
       }
     });
+  }
+
+ // tslint:disable-next-line:typedef
+ presentOnboardingModal() {
+    // tslint:disable-next-line:typedef
+    const onboardingModal = this.modal.create(OnboardingPage,
+      undefined,
+      { cssClass: "modal-fullscreen" }
+    );
+    onboardingModal.present();
   }
 }

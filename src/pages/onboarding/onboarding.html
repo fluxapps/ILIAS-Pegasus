@@ -1,0 +1,72 @@
+<ion-header color="nobg-w">
+  
+</ion-header>
+<ion-content padding color=nobg-w class=blue-gradient>
+  <ion-slides ion-fixed #slides class=white-text>
+			<ion-slide>
+					<img class="logo" src="assets/img/pony.png">
+					<h1 class=huge-header text-center>{{ 'onboarding.title1' | translate:[]}}</h1>
+					<ion-grid>
+						<ion-row>
+							<ion-col col-3 text-right>
+									<img class="logo" src="assets/icon/icon_file.svg">
+							</ion-col>
+							<ion-col col-9 class=grid-text>
+								{{ 'onboarding.function1' | translate:[]}}	
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col col-3 text-right>
+									<img class="logo" src="assets/icon/icon_more.svg">
+							</ion-col>
+							<ion-col col-9 class=grid-text>
+								{{ 'onboarding.function2' | translate:[]}}	
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col col-3 text-right>
+									<img class="logo" src="assets/icon/icon_auth.svg">
+						</ion-col>
+							<ion-col col-9 class=grid-text>
+								{{ 'onboarding.function3' | translate:[]}}	
+							</ion-col>
+						</ion-row>
+	
+					</ion-grid>
+	
+						<button ion-button round color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+				</ion-slide>
+
+      <ion-slide class="start-slide" padding class=white-text>
+					<img src="assets/img/decentralized.svg" class="decentral">
+          <h1 class=huge-header text-center>{{ 'onboarding.title2' | translate:[]}}</h1>
+          <p class="central-text" text-center>
+            {{ 'onboarding.concept1' | translate:[]}}
+					</p>
+					<p class="central-text" text-center>
+						{{ 'onboarding.concept2' | translate:[]}}
+							<a href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</a>
+						</p>
+				
+          <button ion-button round color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+      </ion-slide>
+
+      <ion-slide class="bordeaux-gradient" padding>
+        	<img src="assets/icon/ios-lock.svg" class="lock">
+        <h1 class=huge-header text-center>{{ 'onboarding.title3' | translate:[]}}</h1>
+        <p class=central-text text-center>
+			{{ 'onboarding.datasecurity1' | translate:[]}}
+					<a href="https://www.ilias-pegasus.de/datenschutz/">{{ 'onboarding.datasecurity2' | translate:[]}}</a>
+        </p>
+        <p class=central-text text-center>
+			{{ 'onboarding.datasecurity3' | translate:[]}}
+				</p>
+				<a href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
+        <p class=central-text>
+        </p>
+          <button ion-button round  color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</button>
+      </ion-slide>
+      
+
+  </ion-slides>
+</ion-content>

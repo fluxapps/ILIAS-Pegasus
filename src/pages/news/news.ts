@@ -15,6 +15,7 @@ import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed"
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
+
 /**
  * Generated class for the NewsComponent component.
  *

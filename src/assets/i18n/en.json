@@ -68,7 +68,9 @@
     },
     "info": {
         "title": "Info",
-        "guide": "Guide"
+        "guide": "Guide",
+        "instructions1": "If you're on the Home page 'My Courses and Groups' you can mark the courses and groups as 'available Offline'. They are marked with a gray cloud. Once the files are synced, the cloud turns blue.",
+        "instructions2": "The synchronization will start automatically each time the app is started or if a course has been marked as Available Offline. Manual synchronization can also be started by dragging (Pull to Refresh) the 'My Courses and Groups' page."
     },
     "logout": {
         "title": "Logout",
@@ -110,7 +112,7 @@
         "download_successful": "Download successful",
         "cant_open_file": "There's no application that could open this filetype.",
         "server_not_reachable": "We cannot reach the server, please try again later or try logging in again.",
-        "server_response_validation_error": "Server communication issue, please make sure to run the latest app and try again."
+        "server_response_validation_error": "Server communication issue, please make sure to run the latest app and try again. Try login out and log in again-"
     },
     "details" : {
         "last_update": "Last update",
@@ -232,5 +234,20 @@
         "browser_no": "No. return!",
         "loading": "Learnplace",
         "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download."
+    },
+    "onboarding": {
+      "title1": "Whith the help of ILIAS Pegasus you can:",
+        "function1": "access your ILIAS courses on your smartphone.",
+        "function2": "make your courses & files available offline.",
+        "function3": "log in once and stay logged in.",
+        "title2": "A decentralized app",
+        "concept1": "The Pegasus app connects you to the ILIAS installation of your institution, university or school.",
+        "concept2": "If your institution did not join yet, contact us",
+        "title3":"Your data is safe!",
+        "datasecurity1": "Your data will only be stored on your device. The app does not collect any personal information. If you want to check this in detail, you will find here the",
+        "datasecurity2": "privacy policy",
+        "datasecurity3": "ILIAS Pegasus is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
+        "next":"next",
+        "start": "Let's go"    
     }
 }
