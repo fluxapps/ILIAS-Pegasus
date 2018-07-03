@@ -26,7 +26,8 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
 
     async execute(): Promise<ILIASObjectActionResult> {
 
-        const loadingPage: Modal = this.modalController.create(LoadingPage);
+        const loadingPage: Modal = this.modalController.create(LoadingPage,undefined,
+            { cssClass: "modal-fullscreen" });
         await loadingPage.present();
         try {
             await this.loader.load(this.learnplaceObjectId);
