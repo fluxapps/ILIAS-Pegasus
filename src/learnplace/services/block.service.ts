@@ -15,29 +15,36 @@ import {LinkblockEntity} from "../entity/linkblock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {Observable} from "rxjs/Observable";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 2.0.0
+ * @since 2.0.0
  */
 export interface BlockService {
 
     /**
-     * Returns all block types related to the given {@code learnplaceObjectId}.
-     * The returned array is ordered by the {@link BlockModel#sequence} property.
+     * Returns all blocks related to the learnplace matching the given {@code learnplaceObjectId}.
+     * The blocks are ordered by the {@link BlockModel#sequence} property.
      *
-     * The returned array contains {@link Observable} for each block.
+     * The return blocks are wrapped in an {@link Observable}. The observable never completes,
+     * but can be stopped by the {@link BlockService#shutdown} method.
      *
-     * @param {number} learnplaceObjectId - ILIAS object id
+     * The returned observable emits a new ordered array every time when a visibility of a block changes.
      *
-     * @returns {Promise<Array<Observable<BlockModel>>>} an ordered array of observables for each block type
+     * @param {number} learnplaceObjectId - ILIAS object id of the laernplace
+     *
+     * @returns {Observable<Array<BlockModel>>} an ordered array wrapped in an observable
+     *
+     * @since 2.0.1
      */
-    getBlocks(learnplaceObjectId: number): Promise<Array<Observable<BlockModel>>>
+    getBlockList(learnplaceObjectId: number): Observable<Array<BlockModel>>
 
     /**
-     * Shutdown every depending or async task which can be occurred by the {@link BlockService#getBlocks} method.
+     * Shutdown every depending or async task which can be occurred by the {@link BlockService#getBlockList} method.
      */
     shutdown(): void;
 }
@@ -47,10 +54,12 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * Manages the visibility of all blocks by using a {@link VisibilityStrategy}.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
- * @version 2.0.1
+ * @since 2.0.0
  */
 @Injectable()
 export class VisibilityManagedBlockService implements BlockService {
+
+    private readonly log: Logger = Logging.getLogger(VisibilityManagedBlockService.name);
 
     constructor(
         @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
@@ -60,40 +69,39 @@ export class VisibilityManagedBlockService implements BlockService {
     ) {}
 
     /**
-     * Returns an array of observables for each block of the learnplace
-     * matching the given {@code learnplaceObjectId}.
+     * Returns all blocks related to the learnplace matching the given {@code learnplaceObjectId}.
+     * The blocks are ordered by the {@link BlockModel#sequence} property.
      *
-     * The array is sorted by the {@code sequence} property of each block.
+     * The return blocks are wrapped in an {@link Observable}. The observable never completes,
+     * but can be stopped by the {@link BlockService#shutdown} method.
      *
-     * @param {number} learnplaceObjectId - ILIAS object id of the learnplace
+     * The returned observable emits a new ordered array every time when a visibility of a block changes.
      *
-     * @return {Promise<Array<Observable<BlockModel>>>} sorted array of observables of a specific block
+     * @param {number} learnplaceObjectId - ILIAS object id of the laernplace
+     *
+     * @returns {Observable<Array<BlockModel>>} an ordered array wrapped in an observable
+     *
+     * @since 2.0.1
      */
-    async getBlocks(learnplaceObjectId: number): Promise<Array<Observable<BlockModel>>> {
+    getBlockList(learnplaceObjectId: number): Observable<Array<BlockModel>> {
 
         const learnplaceEntity: Observable<LearnplaceEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser())
             .mergeMap(user => this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, user.get().id))
             .map(it => it.get())
             .do(it => this.strategyApplier.setLearnplace(it.id));
 
-        return Observable.merge(
-            this.mapTextblocks(learnplaceEntity.mergeMap(it => Observable.of(...it.textBlocks))),
-            this.mapPictureBlocks(learnplaceEntity.mergeMap(it => Observable.of(...it.pictureBlocks))),
-            this.mapLinkBlocks(learnplaceEntity.mergeMap(it => Observable.of(...it.linkBlocks))),
-            this.mapVideoBlocks(learnplaceEntity.mergeMap(it => Observable.of(...it.videoBlocks))),
-            this.mapAccordionBlock(learnplaceEntity.mergeMap(it => Observable.of(...it.accordionBlocks)))
-        ).toArray().toPromise();
+        return learnplaceEntity.mergeMap(it => {
 
+            this.log.trace(() => `Map blocks of learnplace: id=${it.id}`);
 
-
-        // return [
-        //     ...this.mapTextblocks(learnplace.textBlocks),
-        //     ...this.mapPictureBlocks(learnplace.pictureBlocks),
-        //     ...this.mapLinkBlocks(learnplace.linkBlocks),
-        //     ...this.mapVideoBlocks(learnplace.videoBlocks),
-        //     ...this.mapAccordionBlock(learnplace.accordionBlocks)
-        // ].sort((a, b) => a[0] - b[0])
-        //     .map(it => it[1]);
+            return Observable.combineLatest<BlockModel>(
+                ...this.mapTextblocks(it.textBlocks),
+                ...this.mapPictureBlocks(it.pictureBlocks),
+                ...this.mapLinkBlocks(it.linkBlocks),
+                ...this.mapVideoBlocks(it.videoBlocks),
+                ...this.mapAccordionBlock(it.accordionBlocks)
+            ).map(it => it.sort((a, b) => a.sequence - b.sequence))
+        });
     }
 
     /**
@@ -103,108 +111,62 @@ export class VisibilityManagedBlockService implements BlockService {
         this.strategyApplier.shutdown();
     }
 
-    private mapTextblocks(textBlocks: Observable<TextblockEntity>): Observable<Observable<TextBlockModel>> {
+    private mapTextblocks(textBlockList: Array<TextblockEntity>): Array<Observable<TextBlockModel>> {
 
-        return textBlocks
+        return textBlockList
             .map(it => {
                 const model: TextBlockModel = new TextBlockModel(it.sequence, this.sanitizer.bypassSecurityTrustHtml(it.content));
                 return this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
             });
-
-        //
-        //
-        // return textBlocks.map<[number, Observable<TextBlockModel>]>(it => {
-        //     const model: TextBlockModel = new TextBlockModel(it.sequence, this.sanitizer.bypassSecurityTrustHtml(it.content));
-        //     const observable: Observable<TextBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-        //     return [it.sequence, observable];
-        // });
     }
 
-    private mapPictureBlocks(pictureBlocks: Observable<PictureBlockEntity>): Observable<Observable<PictureBlockModel>> {
+    private mapPictureBlocks(pictureBlockList: Array<PictureBlockEntity>): Array<Observable<PictureBlockModel>> {
 
-        return pictureBlocks
+        return pictureBlockList
             .map(it => {
                 const model: PictureBlockModel = new PictureBlockModel(it.sequence, it.title, it.description, it.thumbnail, it.url);
                 return this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
             });
-
-
-        // return pictureBlocks.map<[number, Observable<PictureBlockModel>]>(it => {
-        //     const model: PictureBlockModel = new PictureBlockModel(it.sequence, it.title, it.description, it.thumbnail, it.url);
-        //     const observable: Observable<PictureBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-        //     return [it.sequence, observable];
-        // });
     }
 
-    private mapLinkBlocks(linkBlocks: Observable<LinkblockEntity>): Observable<Observable<LinkBlockModel>> {
+    private mapLinkBlocks(linkBlockList: Array<LinkblockEntity>): Array<Observable<LinkBlockModel>> {
 
-        return linkBlocks
+        return linkBlockList
             .map(it => {
                 const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
                 return this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
             });
-
-
-        // return linkBlocks.map<[number, Observable<LinkBlockModel>]>(it => {
-        //     const model: LinkBlockModel = new LinkBlockModel(it.sequence, it.refId);
-        //     const observable: Observable<LinkBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-        //     return [it.sequence, observable];
-        // })
     }
 
-    private mapVideoBlocks(videoBlocks: Observable<VideoBlockEntity>): Observable<Observable<VideoBlockModel>> {
+    private mapVideoBlocks(videoBlockList: Array<VideoBlockEntity>): Array<Observable<VideoBlockModel>> {
 
-        return videoBlocks
+        return videoBlockList
             .map(it => {
                 const model: VideoBlockModel = new VideoBlockModel(it.sequence, it.url);
                 return this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
             });
-
-
-        // return videoBlocks.map<[number, Observable<VideoBlockModel>]>(it => {
-        //     const model: VideoBlockModel = new VideoBlockModel(it.sequence, it.url);
-        //     const observable: Observable<VideoBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-        //     return [it.sequence, observable];
-        // })
     }
 
-    private mapAccordionBlock(accordionBlocks: Observable<AccordionEntity>): Observable<Observable<AccordionBlockModel>> {
+    private mapAccordionBlock(accordionBlockList: Array<AccordionEntity>): Array<Observable<AccordionBlockModel>> {
 
-        const blockLists: Observable<Array<Observable<BlockModel>>> = accordionBlocks.mergeMap(it => Observable.merge(
-                this.mapTextblocks(Observable.of(...it.textBlocks)),
-                this.mapPictureBlocks(Observable.of(...it.pictureBlocks)),
-                this.mapLinkBlocks(Observable.of(...it.linkBlocks)),
-                this.mapVideoBlocks(Observable.of(...it.videoBlocks))
-            ).toArray<Observable<BlockModel>>()
-        );
+        return accordionBlockList
+            .map(accordion => {
 
-        return Observable.forkJoin(blockLists, accordionBlocks, (blockList, accordion) => {
+                const blockList: Observable<Array<BlockModel>> = Observable.combineLatest<BlockModel>(
+                    ...this.mapTextblocks(accordion.textBlocks),
+                    ...this.mapPictureBlocks(accordion.pictureBlocks),
+                    ...this.mapLinkBlocks(accordion.linkBlocks),
+                    ...this.mapVideoBlocks(accordion.videoBlocks)
+                ).map(it => it.sort((a, b) => a.sequence - b.sequence));
 
-            const model: AccordionBlockModel = new AccordionBlockModel(
-                accordion.sequence,
-                accordion.title,
-                accordion.expanded,
-                blockList
-            );
+                const model: AccordionBlockModel = new AccordionBlockModel(
+                    accordion.sequence,
+                    accordion.title,
+                    accordion.expanded,
+                    blockList
+                );
 
-            return this.strategyApplier.apply(model, VisibilityStrategyType[accordion.visibility.value]);
-        });
-
-        // return accordions.map<[number, Observable<AccordionBlockModel>]>(it => {
-        //     const model: AccordionBlockModel = new AccordionBlockModel(
-        //         it.sequence,
-        //         it.title,
-        //         it.expanded,
-        //         [
-        //             ...this.mapTextblocks(it.textBlocks),
-        //             ...this.mapPictureBlocks(it.pictureBlocks),
-        //             ...this.mapLinkBlocks(it.linkBlocks),
-        //             ...this.mapVideoBlocks(it.videoBlocks)
-        //         ].sort((a, b) => a[0] - b[0])
-        //             .map(it => it[1])
-        //     );
-        //     const observable: Observable<AccordionBlockModel> = this.strategyApplier.apply(model, VisibilityStrategyType[it.visibility.value]);
-        //     return [it.sequence, observable];
-        // })
+                return this.strategyApplier.apply(model, VisibilityStrategyType[accordion.visibility.value]);
+            })
     }
 }

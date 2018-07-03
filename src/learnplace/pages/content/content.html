@@ -6,7 +6,7 @@
 
 <ion-content padding-vertical color="nobg-w">
 
-  <div *ngIf="blockList.length == 0" padding>
+  <div *ngIf="(blockList | async)?.length == 0" padding>
     <ion-card color=primary>
       <ion-card-content>
         <h1 text-center>{{"learnplace.block.no_content" | translate}}</h1>
@@ -14,13 +14,13 @@
     </ion-card>
   </div>
 
-  <div *ngFor="let block of blockList">
+  <div *ngFor="let block of (blockList | async)">
 
-    <text-block *ngIf="(block | async)?.isRichtext()" [value]="block"></text-block>
-    <picture-block *ngIf="(block | async)?.isPicture()" [value]="block"></picture-block>
-    <video-block *ngIf="(block | async)?.isVideo()" [value]="block"></video-block>
-    <link-block *ngIf="(block | async)?.isLink()" [value]="block"></link-block>
-    <accordion-block *ngIf="(block | async)?.isAccordion()" [value]="block"></accordion-block>
+    <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
+    <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
+    <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
+    <link-block *ngIf="block.isLink()" [value]="block"></link-block>
+    <accordion-block *ngIf="block.isAccordion()" [value]="block"></accordion-block>
 
   </div>
 

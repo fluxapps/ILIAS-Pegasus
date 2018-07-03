@@ -15,7 +15,7 @@ import {StatusBar} from "@ionic-native/status-bar";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Toast} from "@ionic-native/toast";
 import {IonicApp, IonicErrorHandler, IonicModule, ModalController, NavController, Platform} from "ionic-angular";
-import {TranslateModule, TranslateService} from "ng2-translate/ng2-translate";
+import {TranslateModule, TranslateService, MissingTranslationHandler} from "ng2-translate/ng2-translate";
 import {TranslateLoader, TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
@@ -61,10 +61,10 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {FavoritesPage} from "../pages/favorites/favorites";
 import {InfoPage} from "../pages/info/info";
+import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
-import {NewsPage} from "../pages/news/news";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {ObjectListPage} from "../pages/object-list/object-list";
 import {SettingsPage} from "../pages/settings/settings";
@@ -88,6 +88,7 @@ import {DiagnosticUtil} from "../services/device/hardware-features/diagnostics.u
 import {Hardware} from "../services/device/hardware-features/hardware-feature.service";
 import {FileService} from "../services/file.service";
 import {FooterToolbarService} from "../services/footer-toolbar.service";
+import {PegasusMissingTranslationHandler} from "../services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../services/link/default.builder";
 import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
 import {
@@ -105,7 +106,6 @@ import {RESOURCE_LINK_BUILDER, ResourceLinkBuilder, ResourceLinkBuilderImpl} fro
 import {TIMELINE_LINK_BUILDER, TimelineLinkBuilder, TimelineLinkBuilderImpl} from "../services/link/timeline.builder";
 import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.api";
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
-import {NEWS_FEED, NewsFeedImpl} from "../services/news/news.feed";
 import {NEWS_SYNCHRONIZATION, NewsSynchronizationImpl} from "../services/news/news.synchronization";
 import {SynchronizationService} from "../services/synchronization.service";
 import {MyApp} from "./app.component";
@@ -131,8 +131,8 @@ import {HTTP} from "@ionic-native/http";
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
-    NewsPage,
     LoadingPage,
+    OnboardingPage,
 
     /* from src/learnplace */
     MapPage,
@@ -157,6 +157,7 @@ import {HTTP} from "@ionic-native/http";
     IonicModule.forRoot(MyApp),
     BrowserModule,
     BrowserAnimationsModule,
+
     HttpModule,
     HttpClientModule,
     TranslateModule.forRoot({
@@ -176,8 +177,9 @@ import {HTTP} from "@ionic-native/http";
     ObjectDetailsPage,
     LoginPage,
     SyncFinishedModal,
-    NewsPage,
+    //NewsPage,
     LoadingPage,
+    OnboardingPage,
 
     /* from src/learnplace */
     MapPage,
@@ -248,11 +250,6 @@ import {HTTP} from "@ionic-native/http";
     DatabaseConnectionRegistry,
     Database,
 
-    /* from src/services/news/news.feed */
-    {
-      provide: NEWS_FEED,
-      useClass: NewsFeedImpl
-    },
     /* from src/services/news/news.synchronization */
     {
       provide: NEWS_SYNCHRONIZATION,
@@ -466,7 +463,8 @@ import {HTTP} from "@ionic-native/http";
 
     IonicErrorHandler,
     {provide: ErrorHandler, useClass: PegasusErrorHandler},
-      <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false}
+      <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
+      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false}
   ],
   exports: [
     TranslateModule

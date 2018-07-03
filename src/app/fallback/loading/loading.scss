@@ -42,3 +42,46 @@
   // 50% {   padding-left: 50%; }
   100%   {   margin-left: 150%; }
 }
+
+.custom-spinner {
+  margin: 100px auto 0;
+  width: 200px;
+  text-align: center;
+}
+
+.custom-spinner > div {
+  width: 60px;
+  height: 60px;
+  // background-color: color($colors, primary, base);
+  background-image: url("/assets/img/molly_pony_white.svg");
+
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.custom-spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.custom-spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% { 
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}

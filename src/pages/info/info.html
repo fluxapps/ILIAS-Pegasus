@@ -1,7 +1,7 @@
 <ion-header>
-  <ion-navbar color="primary">
+  <ion-navbar color="nobg-w" class=blue-gradient>
     <ion-title>
-      <!-- <ion-icon name="information-circle"></ion-icon> -->
+      {{'info.title' | translate:{value: null} }}
     </ion-title>
     <ion-buttons end>
       <button ion-button menuToggle>
@@ -25,14 +25,16 @@
       <ion-card no-margin>
         <ion-card-header>ILIAS Pegasus</ion-card-header>
         <ion-card-content>
-          <p>Version 2.0.0</p>
+          <p>Version 2.0.1</p>
         </ion-card-content>
       </ion-card>
       <ion-card no-margin>
         <ion-card-header>Anregungen und Hinweise zu Fehlern</ion-card-header>
         <ion-card-content>
-          <p>Hast du einen Fehler gefunden? Bitte helfe uns die App zu verbessern. Melde dich bei:
-            <a href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</a></p>
+          <p>Hast du einen Fehler gefunden? Bitte helfe uns die App zu verbessern. Melde dich bei:</p>
+            <!-- <button ion-button (click)="browse('mailto:support@ilias-pegasus.de')"> -->
+            <p>support@ilias-pegasus.de</p>
+          <!-- </button> -->
         </ion-card-content>
       </ion-card>
       <!--KARTE INHALT-->
@@ -43,7 +45,7 @@
         </ion-card-content>
       </ion-card>
       <!--KARTE STURA-->
-      <ion-card>
+      <ion-card no-margin>
         <ion-item text-wrap>
           <ion-avatar item-start>
             <img src="assets/img/stura.jpg">
