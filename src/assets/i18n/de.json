@@ -114,7 +114,7 @@
         "download_successful": "Datei wurde heruntergeladen",
         "cant_open_file": "Es wurde keine Applikation gefunden, die diesen Dateityp öffnen kann.",
         "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut oder loggen Sie sich erneut ein.",
-        "server_response_validation_error": "Es besteht ein Problem mit der Server Kommunikation, dies kann durch eine veraltete App Version verursacht werden."
+        "server_response_validation_error": "Es besteht ein Problem mit der Server Kommunikation, dies kann durch eine veraltete App Version verursacht werden. Falls der Fehler bestehen bleibt, versuche Dich auszulogen und neu einzulogen."
     },
     "details" : {
         "last_update": "Letztes Update",
@@ -158,6 +158,7 @@
     "object_type": {
         "crs" : "Kurs",
         "grp" : "Gruppe",
+        "grpr" : "Gruppe-Referenz",
         "frm" : "Forum",
         "fold": "Ordner",
         "sess": "Sitzung",
@@ -174,6 +175,7 @@
         "lm" : "Lernmodul",
         "htlm" : "Lernmodul",
         "sahs" : "Lernmodul",
+        "iass" : "Individuelle Bewertung",
         "glo" : "Glossar",
         "dcl" : "Datensammlung",
         "bibl" : "Literaturliste",
@@ -238,5 +240,20 @@
             "activate": "Standort aktivieren",
             "back": "Nope, ich will zurück"
         }
+      },
+      "onboarding": {
+        "title1": "Mit ILIAS Pegasus kannst Du:",
+        "function1": "Deine ILIAS Kursunterlagen auf Deinem Smartphone nutzen.",
+        "function2": "Deine Kurse & Dateien offline verfügbar machen.",
+        "function3": "Dich einmal einloggen und bleibst dann immer eingeloggt.",
+        "title2": "Eine dezentrale App",
+        "concept1": "Die Pegasus App verbindet Dich mit der ILIAS Installation Deiner Institution, Uni oder Schule. Und nur mit dieser.",
+        "concept2": "Wenn Deine Institution noch nicht mitmacht, schreib uns doch an",
+        "title3":"Deine Daten sind sicher!",
+        "datasecurity1": "Deine Daten werden nur auf Deinem Gerät gespeichert. Die App erhebt keinerlei personenbezogene Daten. Wenn Du dies im Detail prüfen möchtest, findest Du hier die",
+        "datasecurity2": "Datenschutzerklärung",
+        "datasecurity3": "ILIAS Pegasus ist ein Open Source Projekt. Wenn Du Dich selbst überzeugen möchtest, was die App tut, dann kannst Du hier den Code einsehen:",
+        "next":"Weiter",
+        "start": "Los geht's"
       }
     }

@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, Inject} from "@angular/core";
-import {Modal, ModalController, Refresher} from "ionic-angular";
+import {AfterViewInit, Component, Inject, SecurityContext, OnInit} from "@angular/core";
+import {Modal, ModalController, Refresher, IonicPage} from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {ILIASObjectAction} from "../../actions/object-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
@@ -15,17 +15,19 @@ import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed"
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
+
 /**
  * Generated class for the NewsComponent component.
  *
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
+@IonicPage()
 @Component({
     selector: "newsPresenters",
     templateUrl: "news.html"
 })
-export class NewsPage implements AfterViewInit {
+export class NewsPage implements OnInit {
 
     newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
     private readonly log: Logger = Logging.getLogger(NewsPage.name);
@@ -42,11 +44,9 @@ export class NewsPage implements AfterViewInit {
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
-
-    ngAfterViewInit(): void {
+    ngOnInit(): void {
         this.log.debug(() => "News view initialized.");
-        this.fetchPresenterNewsTuples().then(
-            (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
+        this.reloadView();
     }
 
     openNews(id: number, context: number): void {
@@ -68,6 +68,12 @@ export class NewsPage implements AfterViewInit {
     async startSync(refresher: Refresher): Promise<void> {
         await this.executeSync();
         refresher.complete();
+        this.reloadView();
+    }
+
+    reloadView(): void {
+        this.fetchPresenterNewsTuples().then(
+            (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
     }
 
     // ------------------- object-list duplicate----------------------------
