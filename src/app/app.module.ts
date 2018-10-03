@@ -63,6 +63,7 @@ import {FavoritesPage} from "../pages/favorites/favorites";
 import {InfoPage} from "../pages/info/info";
 import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {LoginPage} from "../pages/login/login";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
@@ -128,6 +129,7 @@ import {HTTP} from "@ionic-native/http";
     InfoPage,
     ObjectDetailsPage,
     LoginPage,
+    SynchronizationPage,
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
@@ -176,6 +178,7 @@ import {HTTP} from "@ionic-native/http";
     InfoPage,
     ObjectDetailsPage,
     LoginPage,
+    SynchronizationPage,
     SyncFinishedModal,
     //NewsPage,
     LoadingPage,

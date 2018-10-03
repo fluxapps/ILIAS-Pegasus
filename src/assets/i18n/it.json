@@ -228,7 +228,9 @@
         "browser_ok": "Ok andiamo!",
         "browser_no": "Senza ritorno!",
         "loading": "luogo di apprendimento",
-        "loading_subtitle": "Aspetta un attimo. Se il punto di apprendimento contiene molti contenuti, potrebbe essere necessario del tempo per il download."
+        "loading_subtitle": "Aspetta un attimo. Se il punto di apprendimento contiene molti contenuti, potrebbe essere necessario del tempo per il download.",
+        "synchronization": "<it>Welcome!</it>",
+        "synchronization_subtitle": "<it>Please wait a few seconds while we synchronize your ILIAS-account.</it>"
     },
     "onboarding": {
         "title1": "Whith the help of ILIAS Pegasus you can:",

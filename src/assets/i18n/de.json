@@ -236,6 +236,8 @@
         "browser_no": "Nein. Zurück!",
         "loading": "Lernort wird geladen",
         "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern.",
+        "synchronization": "Hallo!",
+        "synchronization_subtitle": "Bitte warte einige Sekunden während wir dein ILIAS-Profil synchronisieren.",
         "location": {
             "activate": "Standort aktivieren",
             "back": "Nope, ich will zurück"
