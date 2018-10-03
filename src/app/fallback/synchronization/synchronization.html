@@ -14,18 +14,8 @@
 
   <ion-label text-wrap text-center>{{'fallback.synchronization_subtitle' | translate:{value: null} }}</ion-label>
 
+  <ion-spinner color="white" *ngIf="footerToolbar.isLoading"></ion-spinner>
+
+  <ion-label text-wrap text-center>{{ footerToolbar.loadingText }}</ion-label>
+
 </ion-content>
-
-<ion-footer>
-    <ion-toolbar>
-
-        <ion-buttons left>
-            <button ion-button>
-                <ion-spinner *ngIf="footerToolbar.isLoading"></ion-spinner>
-            </button>
-        </ion-buttons>
-
-        <div>{{ footerToolbar.loadingText }}</div>
-
-    </ion-toolbar>
-</ion-footer>
