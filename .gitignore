@@ -12,6 +12,7 @@ log.txt
 *.map
 *.sourcemaps
 *.keystore
+*.jks
 *_config.json
 .vscode/
 npm-debug.log*
@@ -46,6 +47,7 @@ bower_components
 src/assets/config.json
 src/assets/testinstallation_config.json
 build*.sh
+iq_config.xml
 
 bin
 simulation

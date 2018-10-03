@@ -1,9 +1,12 @@
-<ion-header color="nobg-w">
-  
-</ion-header>
+
 <ion-content padding color=nobg-w class=blue-gradient>
-  <ion-slides ion-fixed #slides class=white-text>
+  <ion-slides #slides class=white-text>
 			<ion-slide>
+					<ion-header color="nobg-w" no-shadow no-border>
+							<ion-buttons end>
+							<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+							</ion-buttons>
+						</ion-header>
 					<img class="logo" src="assets/img/pony.png">
 					<h1 class=huge-header text-center>{{ 'onboarding.title1' | translate:[]}}</h1>
 					<ion-grid>
@@ -38,6 +41,11 @@
 				</ion-slide>
 
       <ion-slide class="start-slide" padding class=white-text>
+			<ion-header color="nobg-w" no-shadow no-border>
+					<ion-buttons end>
+					<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+					</ion-buttons>
+				</ion-header>
 					<img src="assets/img/decentralized.svg" class="decentral">
           <h1 class=huge-header text-center>{{ 'onboarding.title2' | translate:[]}}</h1>
           <p class="central-text" text-center>
@@ -52,6 +60,11 @@
       </ion-slide>
 
       <ion-slide class="bordeaux-gradient" padding>
+			<ion-header color="nobg-w" no-shadow no-border>
+					<ion-buttons end>
+					<button ion-button clear color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</button>
+					</ion-buttons>
+				</ion-header>
         	<img src="assets/icon/ios-lock.svg" class="lock">
         <h1 class=huge-header text-center>{{ 'onboarding.title3' | translate:[]}}</h1>
         <p class=central-text text-center>

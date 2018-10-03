@@ -101,7 +101,8 @@ export interface StandardMap {
 
   fromLatLngToPoint(latLng: ILatLng): Promise<object>
 
-  fromPointToLatLng(point: object): Promise<LatLng>
+  
+  fromPointToLatLng(point: Array<number>): Promise<LatLng>
 
   setMyLocationEnabled(enabled: boolean): void
 
@@ -194,7 +195,7 @@ class StandardMapBinding implements StandardMap {
     return this.map.fromLatLngToPoint(latLng);
   }
 
-  async fromPointToLatLng(point: object): Promise<LatLng> {
+  async fromPointToLatLng(point: Array<number>): Promise<LatLng> {
     return this.map.fromPointToLatLng(point);
   }
 
@@ -333,7 +334,7 @@ export class MapBuilder {
     });
 
     console.log(JSON.stringify(this.binding));
-    const googleMap: GoogleMap = new GoogleMap(this.binding, <GoogleMapOptions>{
+    const googleMap: GoogleMap = GoogleMaps.create(this.binding, <GoogleMapOptions>{
       camera: this.cameraPosition,
       controls: this.defaultControls,
       gestures: this.defaultGestures

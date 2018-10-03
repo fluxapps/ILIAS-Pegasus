@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="200002" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="2.0.0.0002" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="202001" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="2.0.2.0001" version="2.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
@@ -120,14 +120,17 @@
     <plugin name="com-sarriaroman-photoviewer" spec="^1.1.16" />
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="cordova-plugin-streaming-media" spec="git+https://github.com/nchutchind/cordova-plugin-streaming-media.git" />
-    <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps">
+    <plugin name="com.googlemaps.ios" spec="https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk" />
+    <plugin name="cordova-plugin-googlemaps" spec="^2.2.8">
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
         <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
+
     <allow-navigation href="http://192.168.99.79:8100" />
     <allow-navigation href="http://localhost:8100" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="7.1.1" />
+
 </widget>
