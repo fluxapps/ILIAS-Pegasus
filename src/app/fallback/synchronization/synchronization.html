@@ -1,0 +1,31 @@
+<ion-header no-border>
+  <ion-navbar color="nobg-w">
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="login" color="nobg-w">
+
+  <img src="assets/img/molly_pony_white.svg" alt="" id="pony">
+
+  <h1 text-center>{{'fallback.synchronization' | translate:{value: null} }}</h1>
+
+  <br>
+
+  <ion-label text-wrap text-center>{{'fallback.synchronization_subtitle' | translate:{value: null} }}</ion-label>
+
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+
+        <ion-buttons left>
+            <button ion-button>
+                <ion-spinner *ngIf="footerToolbar.isLoading"></ion-spinner>
+            </button>
+        </ion-buttons>
+
+        <div>{{ footerToolbar.loadingText }}</div>
+
+    </ion-toolbar>
+</ion-footer>

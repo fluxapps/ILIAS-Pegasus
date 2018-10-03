@@ -233,7 +233,9 @@
         "browser_ok": "OK, let's go!",
         "browser_no": "No. return!",
         "loading": "Learnplace",
-        "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download."
+        "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download.",
+        "synchronization": "Welcome!",
+        "synchronization_subtitle": "Please wait a few seconds while we synchronize your ILIAS-account."
     },
     "onboarding": {
       "title1": "Whith the help of ILIAS Pegasus you can:",

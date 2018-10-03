@@ -3,7 +3,7 @@
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.99.79:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -114,21 +114,23 @@
     </plugin>
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="polarcape-cordova-plugin-document-handler" spec="^1.0.12" />
-    <plugin name="cordova-plugin-streaming-media" spec="^1.0.2" />
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
     <plugin name="com-sarriaroman-photoviewer" spec="^1.1.16" />
-    <plugin name="com.hutchind.cordova.plugins.streamingmedia" />
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
-    <plugin name="cordova-plugin-googlemaps" spec="https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps">
+    <plugin name="cordova-plugin-streaming-media" spec="git+https://github.com/nchutchind/cordova-plugin-streaming-media.git" />
+    <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps">
         <variable name="API_KEY_FOR_ANDROID" value="YOUR_API_KEY_FOR_ANDROID" />
         <variable name="API_KEY_FOR_IOS" value="YOUR_API_KEY_FOR_IOS" />
-        <variable name="PLAY_SERVICES_VERSION" value="11.8.0" />
-        <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.0" />
         <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
-    <engine name="android" spec="7.1.0" />
+    <allow-navigation href="http://192.168.99.79:8100" />
+    <allow-navigation href="http://localhost:8100" />
+    <platform name="android">
+        <hook src="hooks/copy-build-extras-gradle.js" type="before_build" />
+    </platform>
     <engine name="ios" spec="4.5.4" />
+    <engine name="android" spec="7.0.0" />
 </widget>

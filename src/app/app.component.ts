@@ -22,6 +22,7 @@ import {Logging} from "../services/logging/logging.service";
 import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
 import { OnboardingPage } from "../pages/onboarding/onboarding";
 
@@ -43,6 +44,7 @@ export class MyApp {
   onboardingPage: object = OnboardingPage;
   newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
   LoadingPage: object = LoadingPage;
+  SynchronizationPage: object = SynchronizationPage;
   loggedIn: boolean = false;
   /**
    * The current logged in user

@@ -51,6 +51,7 @@ import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
+import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
 @Component({
@@ -277,6 +278,7 @@ export class ObjectListPage {
                 this.log.debug(() => "Unable to sync because sync is already running.");
                 return;
             }
+            const syncModal: Modal = this.displaySyncScreen();
             Log.write(this, "Sync start", [], []);
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
@@ -291,6 +293,7 @@ export class ObjectListPage {
 
             //maybe some objects came in new.
             this.footerToolbar.removeJob(Job.Synchronize);
+            this.hideSyncScreen(syncModal);
 
         } catch (error) {
 
@@ -545,5 +548,19 @@ export class ObjectListPage {
             this.footerToolbar.removeJob(hash);
             throw error;
         });
+    }
+
+    displaySyncScreen(): Modal {
+        if(this.objects.length)
+            return undefined;
+
+        const syncModal: Modal = this.modal.create(SynchronizationPage, {}, {enableBackdropDismiss: false});
+        syncModal.present();
+        return syncModal;
+    }
+
+    hideSyncScreen(syncModal: Modal): void {
+        if(syncModal)
+            syncModal.dismiss();
     }
 }
