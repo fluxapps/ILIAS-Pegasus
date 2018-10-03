@@ -243,7 +243,7 @@ export class FileService {
         const user: User = await User.currentUser();
         this.log.debug(() => `Opening file on iOS: ${this.getStorageLocation(user, fileObject)}${fileObject.data.fileName}`);
 
-      window["DocumentHandler"].previewFileFromUrlOrPath(
+      window["DocumentViewer"].previewFileFromUrlOrPath(
           (msg) => {
             this.log.trace(() => `Existing file successfully opened on iOS with message "${msg}"`);
           },
