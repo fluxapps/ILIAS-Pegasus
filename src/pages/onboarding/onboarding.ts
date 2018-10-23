@@ -1,6 +1,7 @@
 import {Component, ViewChild} from "@angular/core";
 import {NavController, ViewController} from "ionic-angular";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {ThemeProvider} from "../../providers/theme";
 
 /*
   Generated class for the InfoPage page.
@@ -19,6 +20,7 @@ export class OnboardingPage {
 
   constructor(public navCtrl: NavController,
     public viewCtrl: ViewController,
+    private readonly theme: ThemeProvider
   ) {
 
   }
@@ -31,5 +33,4 @@ export class OnboardingPage {
     this.viewCtrl.dismiss();
   }
 
-  
 }

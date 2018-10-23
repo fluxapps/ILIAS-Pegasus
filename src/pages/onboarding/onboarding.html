@@ -1,5 +1,5 @@
 
-<ion-content padding color=nobg-w class=blue-gradient>
+<ion-content padding color=nobg-w class=onboarding>
   <ion-slides #slides class=white-text>
 			<ion-slide>
 					<ion-header color="nobg-w" no-shadow no-border>
@@ -7,12 +7,12 @@
 							<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
 							</ion-buttons>
 						</ion-header>
-					<img class="logo" src="assets/img/pony.png">
+					<img class="logo" [src]="theme.getAsset('img/welcome.png')">
 					<h1 class=huge-header text-center>{{ 'onboarding.title1' | translate:[]}}</h1>
 					<ion-grid>
 						<ion-row>
 							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_file.svg">
+									<img class="logo" [src]="theme.getAsset('icon/icon_file.svg')">
 							</ion-col>
 							<ion-col col-9 class=grid-text>
 								{{ 'onboarding.function1' | translate:[]}}	
@@ -20,15 +20,15 @@
 						</ion-row>
 						<ion-row>
 							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_more.svg">
+									<img class="logo" [src]="theme.getAsset('icon/icon_more.svg')">
 							</ion-col>
 							<ion-col col-9 class=grid-text>
 								{{ 'onboarding.function2' | translate:[]}}	
 							</ion-col>
 						</ion-row>
 						<ion-row>
-							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_auth.svg">
+						<ion-col col-3 text-right>
+									<img class="logo" [src]="theme.getAsset('icon/icon_auth.svg')">
 						</ion-col>
 							<ion-col col-9 class=grid-text>
 								{{ 'onboarding.function3' | translate:[]}}	
@@ -46,10 +46,10 @@
 					<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
 					</ion-buttons>
 				</ion-header>
-					<img src="assets/img/decentralized.svg" class="decentral">
+					<img [src]="theme.getAsset('img/decentralized.svg')" class="decentral">
           <h1 class=huge-header text-center>{{ 'onboarding.title2' | translate:[]}}</h1>
           <p class="central-text" text-center>
-            {{ 'onboarding.concept1' | translate:[]}}
+            {{ 'onboarding.concept1' | translate:[] }}
 					</p>
 					<p class="central-text" text-center>
 						{{ 'onboarding.concept2' | translate:[]}}
@@ -65,7 +65,7 @@
 					<button ion-button clear color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</button>
 					</ion-buttons>
 				</ion-header>
-        	<img src="assets/icon/ios-lock.svg" class="lock">
+        	<img [src]="theme.getAsset('icon/ios-lock.svg')" class="lock">
         <h1 class=huge-header text-center>{{ 'onboarding.title3' | translate:[]}}</h1>
         <p class=central-text text-center>
 			{{ 'onboarding.datasecurity1' | translate:[]}}

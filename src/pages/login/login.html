@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content padding class="login" color="nobg-w">
   <!-- <ion-card> -->
-    <img src="assets/img/molly_pony_white.svg" alt="" id="pony">
+    <img [src]="theme.getAsset('img/login.svg')" alt="" id="pony">
     <!-- <ion-card-header> -->
       <h1 text-center>{{ 'login.hello' | translate:[]}}</h1>
       <br>

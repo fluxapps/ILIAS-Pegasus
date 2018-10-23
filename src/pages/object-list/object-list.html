@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="nobg-w" class=blue-gradient>
+    <ion-navbar color="nobg-w" class=primary-gradient>
         <!-- <ion-avatar item-start> -->
 
         <!-- </ion-avatar> -->
@@ -33,7 +33,7 @@
     <div class="" *ngIf="parent != undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
         <ion-avatar item-start>
-            <img [src]="pageLayout.icon">
+            <img [src]="pageLayout.icon"><!-- TODO make relative? -->
         </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
@@ -50,12 +50,12 @@
     <!-- </ion-item-divider> -->
     </ion-list-header>
 
-    <ion-item text-wrap *ngFor="let object of objects" (click)="onClick(object)">
+    <ion-item text-wrap class="bottom-line" *ngFor="let object of objects" (click)="onClick(object)">
 
       <ion-avatar item-start>
-          <img [src]="object.presenter.icon()">
+          <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
           <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
-            <img src="./assets/icon/icon_webr.svg" class="badge-img">
+            <img [src]="theme.getAsset('icon/icon_webr.svg')" class="badge-img">
           </ion-badge>
       </ion-avatar>
 

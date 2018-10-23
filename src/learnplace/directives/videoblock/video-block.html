@@ -1,6 +1,6 @@
 <ion-card *ngIf="videoBlock.visible">
   <ion-card-content (click)="play()">
-    <img src="./assets/icon/play-video.svg">
+    <img [src]="theme.getAsset('icon/play-video.svg')">
   </ion-card-content>
 </ion-card>
 

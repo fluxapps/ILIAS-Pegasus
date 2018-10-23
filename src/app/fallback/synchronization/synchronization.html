@@ -6,7 +6,7 @@
 
 <ion-content padding class="login" color="nobg-w">
 
-  <img src="assets/img/molly_pony_white.svg" alt="" id="pony">
+  <img [src]="theme.getAsset('img/molly_pony_white.svg')" alt="" id="pony">
 
   <h1 text-center>{{'fallback.synchronization' | translate:{value: null} }}</h1>
 

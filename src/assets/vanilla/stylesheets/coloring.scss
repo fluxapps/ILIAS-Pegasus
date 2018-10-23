@@ -1,0 +1,48 @@
+// CSS coloring for the theme
+// --------------------------------------------------
+
+// colors
+
+$colors: (
+    primary:    #4a668b,
+    secondary:  #6EA03C,
+    danger:     #FA8228,
+    light:      #f4f4f4,
+    lightish:   #a9a9a9,
+    dark:       #222,
+    favorite:   #69BB7B,
+    nobg-w: (
+        base: transparent,
+        contrast: #ffffff,
+    ),
+    nobg-blue: (
+        base: transparent,
+        contrast: #12466F,
+    ),
+    light-blue: (
+        base: #f4f4f4,
+        contrast: #12466F,
+    ),
+    white:   #FFFFFF,
+);
+
+// gradients
+
+$gradient-col1: map_get($colors, primary);
+$gradient-col2: #003c66;
+
+.primary-gradient {
+    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col2);
+    color:white;
+}
+
+.primary-gradient-inverted {
+    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col2);
+    color:white;
+}
+
+// misc
+
+.white-text {
+    color: white;
+}

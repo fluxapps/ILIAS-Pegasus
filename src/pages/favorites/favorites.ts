@@ -29,6 +29,7 @@ import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {Log} from "../../services/log.service";
+import {ThemeProvider} from "../../providers/theme";
 
 
 @Component({
@@ -57,7 +58,8 @@ export class FavoritesPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
+                private readonly theme: ThemeProvider
     ) {}
 
     ionViewDidLoad(): void {
