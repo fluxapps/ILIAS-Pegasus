@@ -81,7 +81,7 @@ ion-content.settings {
 // pages/login
 // --------------------------------------------------
 .login {
-    background-image: url("assets/branded/img/bg_giraffe_001.svg"), $primary-gradient;
+    background-image: url("../assets/branded/img/bg_login.svg"), $primary-gradient;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -103,12 +103,24 @@ ion-content.settings {
     }
 
     .transparent-header {
-        border-color: #f9b000;
+        border-color: map_get($colors, primary);
         background-image: none !important;
-        color: #f9b000;
+        color: map_get($colors, primary);
     }
 
     a, img {
+        align-self: flex-end;
+        position: absolute;
+        bottom: 3%;
+    }
+
+    .vertical-align-content > * {
+        display: flex!important;
+        align-content: center!important;
+        align-items: center!important;
+    }
+
+    .vertical-align-content a, .vertical-align-content img {
         align-self: flex-end;
         position: absolute;
         bottom: 3%;
@@ -238,14 +250,14 @@ ion-content.settings {
             //padding-right: 4%;
         }
         &.icon {
-            width:20%;
+            width: 20%;
         }
-        &.decentral{
+        &.decentral {
             width: 60%;
             padding-top: 10px;
         }
-        &.lock{
-            width:40%;
+        &.lock {
+            width: 40%;
         }
     }
 
@@ -300,7 +312,7 @@ ion-content.settings {
     // stuff from branded
 
     .flag_1 {
-        height:20vw;
+        height: 20vw;
         width: 30vw;
         margin: auto;
         -webkit-animation: wobble-hor-bottom 30s infinite both;
@@ -475,7 +487,7 @@ ion-content.settings {
     line-height: 1.8em;
     text-align: center;
 
-    #pony {
+    #sync_pony {
         margin-left: 20%;
         margin-right: 20%;
         max-height: 40%;

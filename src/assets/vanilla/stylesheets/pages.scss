@@ -20,6 +20,8 @@
 // ...
 //
 
+@import "app";
+
 // pages/favorites
 // --------------------------------------------------
 .favorites {}
@@ -81,19 +83,40 @@ ion-content.settings {
 // pages/login
 // --------------------------------------------------
 .login {
-    @extend .primary-gradient;
+    @extend .primary-gradient-inverted;
     line-height: 1.8em;
     text-align: center;
+    text-align: center;
+    display: flex!important;
+    align-content: center!important;
+    align-items: center!important;
 
     #pony {
-        margin-left: 20%;
-        margin-right: 20%;
-        max-height: 40%;
+        margin-left: 50%;
+        margin-right: 5%;
     }
 
     #version-if-footer {
         font-size: 1em;
         opacity: 0.2;
+    }
+
+    a, img {
+        align-self: flex-end;
+        position: absolute;
+        bottom: 3%;
+    }
+
+    .vertical-align-content > * {
+        display: flex!important;
+        align-content: center!important;
+        align-items: center!important;
+    }
+
+    .vertical-align-content a, .vertical-align-content img {
+        align-self: flex-end;
+        position: absolute;
+        vertical-align: center;
     }
 
 }
@@ -424,7 +447,7 @@ ion-content.settings {
     line-height: 1.8em;
     text-align: center;
 
-    #pony {
+    #sync_pony {
         margin-left: 20%;
         margin-right: 20%;
         max-height: 40%;

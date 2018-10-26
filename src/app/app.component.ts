@@ -313,4 +313,5 @@ export class MyApp {
     );
     onboardingModal.present();
   }
+
 }

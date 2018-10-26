@@ -6,7 +6,7 @@ export class ThemeProvider {
     private readonly theme: string;
 
     constructor() {
-        this.theme = "vanilla";
+        this.theme = "branded";
     }
 
     getAsset(file: string, depth: number = 0, quotes: boolean = false): string {
