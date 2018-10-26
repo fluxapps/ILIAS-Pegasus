@@ -25,11 +25,11 @@ import {LoadingPage} from "./fallback/loading/loading.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
 import { OnboardingPage } from "../pages/onboarding/onboarding";
-import {ThemeProvider} from "../providers/theme";
+import {BrandingProvider} from "../providers/branding";
 
 @Component({
   templateUrl: "app.html",
-  providers: [ThemeProvider]
+  providers: [BrandingProvider]
 })
 export class MyApp {
 
@@ -93,7 +93,7 @@ export class MyApp {
     private readonly config: Config,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite,
-    private readonly theme: ThemeProvider
+    private readonly theme: BrandingProvider
   ) {
 
     // Set members on classes which are not injectable

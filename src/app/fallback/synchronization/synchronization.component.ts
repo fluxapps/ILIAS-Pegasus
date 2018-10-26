@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import {FooterToolbarService} from "../../../services/footer-toolbar.service";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
-import {ThemeProvider} from "../../../providers/theme";
+import {BrandingProvider} from "../../../providers/branding";
 
 @Component({
   templateUrl: "synchronization.html"
@@ -9,7 +9,7 @@ import {ThemeProvider} from "../../../providers/theme";
 export class SynchronizationPage {
 
   constructor(readonly footerToolbar: FooterToolbarService,
-              private readonly theme: ThemeProvider) {
+              private readonly theme: BrandingProvider) {
 
   }
 

@@ -769,13 +769,13 @@ select.ui.dropdown {
        Loading
 ---------------------*/
 
-.ui.loading.dropdown > i.icon {
+.ui.page_loading.dropdown > i.icon {
   height: @relative14px !important;
 }
-.ui.loading.selection.dropdown > i.icon {
+.ui.page_loading.selection.dropdown > i.icon {
   padding: @relative21px @relative18px !important;
 }
-.ui.loading.dropdown > i.icon:before {
+.ui.page_loading.dropdown > i.icon:before {
   position: absolute;
   content: '';
   top: 50%;
@@ -788,7 +788,7 @@ select.ui.dropdown {
   border-radius: @circularRadius;
   border: @loaderLineWidth solid @loaderFillColor;
 }
-.ui.loading.dropdown > i.icon:after {
+.ui.page_loading.dropdown > i.icon:after {
   position: absolute;
   content: '';
   top: 50%;
@@ -810,8 +810,8 @@ select.ui.dropdown {
 }
 
 /* Coupling */
-.ui.loading.dropdown.button > i.icon:before,
-.ui.loading.dropdown.button > i.icon:after {
+.ui.page_loading.dropdown.button > i.icon:before,
+.ui.page_loading.dropdown.button > i.icon:after {
   display: none;
 }
 
@@ -841,21 +841,21 @@ select.ui.dropdown {
         Loading
 ----------------------*/
 
-.ui.loading.dropdown > .text {
+.ui.page_loading.dropdown > .text {
   transition: none;
 }
 
 /* Used To Check Position */
-.ui.dropdown .loading.menu {
+.ui.dropdown .page_loading.menu {
   display: block;
   visibility: hidden;
   z-index: @loadingZIndex;
 }
-.ui.dropdown > .loading.menu {
+.ui.dropdown > .page_loading.menu {
   left: 0px !important;
   right: auto !important;
 }
-.ui.dropdown > .menu .loading.menu {
+.ui.dropdown > .menu .page_loading.menu {
   left: 100% !important;
   right: auto !important;
 }

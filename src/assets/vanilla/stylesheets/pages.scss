@@ -20,27 +20,25 @@
 // ...
 //
 
-@import "app";
-
 // pages/favorites
 // --------------------------------------------------
-.favorites {}
+.page_favorites {}
 
 // pages/object-details
 // --------------------------------------------------
-.object-details {}
+.page_object_details {}
 
 // pages/sync-finished-modal
 // --------------------------------------------------
-.logout {}
+.page_logout {}
 
 // pages/modal
 // --------------------------------------------------
-.logout {}
+.page_logout {}
 
 // pages/settings
 // --------------------------------------------------
-ion-content.settings {
+ion-content.page_settings {
 
     .list > .item-block:first-child {
         border: none;
@@ -67,7 +65,7 @@ ion-content.settings {
 
 // pages/info
 // --------------------------------------------------
-.info {
+.page_info {
 
     ion-card {
         margin: 20px 0;
@@ -78,11 +76,11 @@ ion-content.settings {
 
 // pages/news
 // --------------------------------------------------
-.news {}
+.page_news {}
 
 // pages/login
 // --------------------------------------------------
-.login {
+.page_login {
     @extend .primary-gradient-inverted;
     line-height: 1.8em;
     text-align: center;
@@ -90,11 +88,6 @@ ion-content.settings {
     display: flex!important;
     align-content: center!important;
     align-items: center!important;
-
-    #pony {
-        margin-left: 50%;
-        margin-right: 5%;
-    }
 
     #version-if-footer {
         font-size: 1em;
@@ -126,7 +119,7 @@ ion-content.settings {
 
 // pages/object-list
 // --------------------------------------------------
-.object-list {
+.page_object_list {
 
     .invisiblePlaceholder {
         visibility: hidden;
@@ -168,7 +161,7 @@ ion-content.settings {
 
 // learnplace_map
 // --------------------------------------------------
-.learnplace_map {
+.page_learnplace_map {
     @extend .primary-gradient;
 
     ion-app._gmaps_cdv_ .nav-decor {
@@ -191,7 +184,7 @@ ion-content.settings {
 
 // learnplace_content
 // --------------------------------------------------
-.learnplace_content {
+.page_learnplace_content {
 
     ion-content {
         h1 {
@@ -214,7 +207,7 @@ ion-content.settings {
 
 // learnplace_accordion
 // --------------------------------------------------
-.learnplace_accordion {
+.page_learnplace_accordion {
 
     accordion-block {
         // remove the margin of ion-card inside the accordion
@@ -229,7 +222,7 @@ ion-content.settings {
 
 // pages/onboarding
 // --------------------------------------------------
-.onboarding {
+.page_onboarding {
     @extend .primary-gradient;
 
     img { //TODO check, had to tune
@@ -302,7 +295,7 @@ ion-content.settings {
 
 // app/fallback/open-browser/leave-app.dialog.scss
 // --------------------------------------------------
-.leave-app-dialog {
+.page_leave_app_dialog {
     @extend .primary-gradient;
 
     #webr-icon {
@@ -324,7 +317,7 @@ ion-content.settings {
 
 // app/fallback/location/location-fallbackscreen.scss
 // --------------------------------------------------
-.location-fallbackscreen {
+.page_location_fallbackscreen {
 
     #marker-icon {
         padding-top: 25%;
@@ -348,7 +341,7 @@ ion-content.settings {
 
 // app/fallback/loading/loading.scss
 // --------------------------------------------------
-.loading {
+.page_loading {
     @extend .primary-gradient;
 
     #marker-icon {
@@ -375,7 +368,7 @@ ion-content.settings {
         color: white;
     }
 
-    .walking-pony {
+    .walking-mascot {
         animation: walking-lefttoright;
         animation-duration: 8s;
         animation-iteration-count: infinite;
@@ -400,7 +393,7 @@ ion-content.settings {
     .custom-spinner > div {
         width: 60px;
         height: 60px;
-        //background-image: url("../../assets/img/molly_pony_white.svg");
+        //background-image: url("../../assets/img/molly_pony_white.svg"); TODO: get the spinner working
 
         border-radius: 100%;
         display: inline-block;
@@ -442,12 +435,12 @@ ion-content.settings {
 
 // app/fallback/synchronization/synchronization.scss
 // --------------------------------------------------
-.synchronization {
+.page_synchronization {
     @extend .primary-gradient;
     line-height: 1.8em;
     text-align: center;
 
-    #sync_pony {
+    #sync-img {
         margin-left: 20%;
         margin-right: 20%;
         max-height: 40%;

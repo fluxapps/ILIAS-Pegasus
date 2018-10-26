@@ -5,7 +5,7 @@ import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../con
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
 import {Toast} from "@ionic-native/toast";
 import {Log} from "../../services/log.service";
-import {ThemeProvider} from "../../providers/theme";
+import {BrandingProvider} from "../../providers/branding";
 
 @Component({
     templateUrl: "login.html",
@@ -26,10 +26,11 @@ export class LoginPage {
                 public toast: Toast,
                 public event: Events,
                 private readonly browser: InAppBrowser,
-                private readonly theme: ThemeProvider
+                private readonly theme: BrandingProvider
     ) {
 
       this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));
+      this.installationId = this.theme.getILIASInstallationId();
     }
 
     login() {

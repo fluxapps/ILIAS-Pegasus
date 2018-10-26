@@ -1,4 +1,4 @@
-<ion-content padding class="login vertical-align-content" color="nobg-w">
+<ion-content padding class="page_login vertical-align-content" color="nobg-w">
 
     <ion-grid>
         <ion-row>
@@ -13,11 +13,11 @@
         </ion-row>
 
         <ion-row justify-content-center>
-            <button ion-button color="white"  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
+            <button ion-button color="white" (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
         </ion-row>
 
         <ion-row justify-content-center id="flex-bottom">
-            <img [src]="theme.getAsset('img/login.svg')" alt="" />
+            <img [src]="theme.getAsset('img/login.svg')" alt=""/>
             <a> Version 2.0.2</a>
         </ion-row>
     </ion-grid>

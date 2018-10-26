@@ -2,7 +2,7 @@ import {Component} from "@angular/core";
 import {NavController} from "ionic-angular";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {LinkBuilder} from "../../services/link/link-builder.service";
-import {ThemeProvider} from "../../providers/theme";
+import {BrandingProvider} from "../../providers/branding";
 
 /*
   Generated class for the InfoPage page.
@@ -20,7 +20,7 @@ export class InfoPage {
   constructor(
     public nav: NavController,
     private readonly browser: InAppBrowser,
-    private readonly theme: ThemeProvider
+    private readonly theme: BrandingProvider
   ) {}
 
   call(number) {
