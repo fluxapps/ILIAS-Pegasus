@@ -60,4 +60,4 @@ The structure also helps to separate the concerns of custom and core types.
 ## Known Issues
 ### Database migrations
 The database migration in its current form can't be separated in the custom type folder
-and must be created as described in the [database component documentation]({% link _docs/components/database.md %}).
+and must be created as described in the [database component documentation]({{site.baseurl}}{% link _docs/components/database.md %}).

@@ -3,7 +3,7 @@
 
     <!-- get our landing page -->
     {% assign index = site.pages | where: "landingPage", true | first %}
-    <a class="item {% if page.landingPage %} active {% endif %}" href="{{ index.url }}">
+    <a class="item {% if page.landingPage %} active {% endif %}" href="{{ index.url | absolute_url}}">
         <h4>{{ index.title }}</h4>
     </a>
 
@@ -22,7 +22,7 @@
 
             {% assign first = menu.items | first %} <!-- get the page -->
 
-            <a class="item {% if heading == page.menuHeading %} active {% endif %}" href="{{ first.url }}">
+            <a class="item {% if heading == page.menuHeading %} active {% endif %}" href="{{ first.url | absolute_url}}">
                 <h4>{{ heading }}</h4>
             </a>
 
@@ -35,7 +35,7 @@
 
             {% for subPage in menu.items | sort %}
 
-                <a class="item {% if subPage.title == page.title %} active {% endif %}" href="{{ subPage.url }}">
+                <a class="item {% if subPage.title == page.title %} active {% endif %}" href="{{ subPage.url | absolute_url}}">
                     {{ subPage.title }}
                 </a>
 

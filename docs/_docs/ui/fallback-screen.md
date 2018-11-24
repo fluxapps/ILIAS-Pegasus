@@ -12,7 +12,7 @@ sections:
 Fallback screens are popup-like overlays which will be shown, if ILIAS Pegasus
 don't have access to a feature it requires, like the location.
 
-A fallback screen will be shown automatically when [Hardware Features]({{ site.url }}/docs/components/hardware-features) are used.
+A fallback screen will be shown automatically when [Hardware Features]({{ site.baseurl }}{% link _docs/components/hardware-features.md %}) are used.
 
 ```typescript
 @Component({...})

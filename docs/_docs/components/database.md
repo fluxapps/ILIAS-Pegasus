@@ -214,7 +214,7 @@ ILIAS Pegasus provides you with generic CRUD repositories.
 
 ## Structure
 
-![alt repository-structure]({{site.url}}/assets/img/repository_structure.png){:class="ui bordered image"}
+![alt repository-structure]({{"/assets/img/repository_structure.png"  | absolute_url}}){:class="ui bordered image"}
 
 ## Usage
 
