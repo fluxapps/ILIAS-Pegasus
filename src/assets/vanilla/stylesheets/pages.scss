@@ -28,14 +28,6 @@
 // --------------------------------------------------
 .page_object_details {}
 
-// pages/sync-finished-modal
-// --------------------------------------------------
-.page_logout {}
-
-// pages/modal
-// --------------------------------------------------
-.page_logout {}
-
 // pages/settings
 // --------------------------------------------------
 ion-content.page_settings {
@@ -74,10 +66,6 @@ ion-content.page_settings {
 
 }
 
-// pages/news
-// --------------------------------------------------
-.page_news {}
-
 // pages/login
 // --------------------------------------------------
 .page_login {
@@ -114,9 +102,6 @@ ion-content.page_settings {
 
 }
 
-// pages/new-objects
-// --------------------------------------------------
-
 // pages/object-list
 // --------------------------------------------------
 .page_object_list {
@@ -149,7 +134,7 @@ ion-content.page_settings {
         bottom: 55%;
     }
 
-    .badge-img{
+    .badge-logo{
         height:25px;
     }
 
@@ -393,7 +378,7 @@ ion-content.page_settings {
     .custom-spinner > div {
         width: 60px;
         height: 60px;
-        //background-image: url("../../assets/img/molly_pony_white.svg"); TODO: get the spinner working
+        // background-image: url("../../assets/vanilla/img/mascot.svg"); // TODO: get the spinner working
 
         border-radius: 100%;
         display: inline-block;
@@ -440,7 +425,7 @@ ion-content.page_settings {
     line-height: 1.8em;
     text-align: center;
 
-    #sync-img {
+    #sync-logo {
         margin-left: 20%;
         margin-right: 20%;
         max-height: 40%;

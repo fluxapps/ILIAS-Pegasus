@@ -28,14 +28,6 @@
 // --------------------------------------------------
 .page_object_details {}
 
-// pages/sync-finished-modal
-// --------------------------------------------------
-.page_logout {}
-
-// pages/modal
-// --------------------------------------------------
-.page_logout {}
-
 // pages/settings
 // --------------------------------------------------
 ion-content.page_settings {
@@ -73,10 +65,6 @@ ion-content.page_settings {
     }
 
 }
-
-// pages/news
-// --------------------------------------------------
-.page_news {}
 
 // pages/login
 // --------------------------------------------------
@@ -128,9 +116,6 @@ ion-content.page_settings {
 
 }
 
-// pages/new-objects
-// --------------------------------------------------
-
 // pages/object-list
 // --------------------------------------------------
 .page_object_list {
@@ -163,7 +148,7 @@ ion-content.page_settings {
         bottom: 55%;
     }
 
-    .badge-img {
+    .badge-logo {
         height:25px;
     }
 
@@ -487,7 +472,7 @@ ion-content.page_settings {
     line-height: 1.8em;
     text-align: center;
 
-    #sync-img {
+    #sync-logo {
         margin-left: 20%;
         margin-right: 20%;
         max-height: 40%;

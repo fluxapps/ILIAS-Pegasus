@@ -1,9 +1,10 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
+import {BrandingProvider} from "../providers/branding";
 
 export class GroupObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return "./assets/icon/icon_grp.svg";
+        return BrandingProvider.instance().getAsset("icon/icon_group.svg");
     }
 
     showTypeAsText(): boolean {
