@@ -4,7 +4,7 @@ import {BrandingProvider} from "../providers/branding";
 export class LearnplaceObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/icon_xsrl.svg");
+        return BrandingProvider.instance().getAsset("icon/obj_location.svg");
     }
 
     showTypeAsText(): boolean {

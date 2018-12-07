@@ -57,7 +57,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
     ) {}
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/icon_webr.svg");
+        return BrandingProvider.instance().getAsset("icon/obj_link.svg");
     }
 
     title(): string {

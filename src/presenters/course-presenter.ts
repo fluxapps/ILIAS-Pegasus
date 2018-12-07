@@ -4,7 +4,7 @@ import {BrandingProvider} from "../providers/branding";
 export class CourseObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/icon_crs.svg");
+        return BrandingProvider.instance().getAsset("icon/obj_course.svg");
     }
 
     showTypeAsText(): boolean {

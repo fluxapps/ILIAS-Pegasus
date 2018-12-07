@@ -10,37 +10,37 @@
         <ion-list>
             <button *ngIf="!loggedIn" ion-item (click)="openPage(loginPage)" color="nobg-w" >
               <ion-avatar item-start>
-                 <img [src]="theme.getAsset('icon/icon_key.svg')">
+                 <img [src]="theme.getAsset('icon/menu_key.svg')">
              </ion-avatar>
                 {{ 'login.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(objectListPage)" color="nobg-w">
               <ion-avatar item-start>
-                    <img [src]="theme.getAsset('icon/icon_course.svg')">
+                    <img [src]="theme.getAsset('icon/menu_course.svg')">
                 </ion-avatar>
                 {{ 'object-list.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(favoritesPage)" color="nobg-w" >
               <ion-avatar item-start>
-                    <img [src]="theme.getAsset('icon/icon_favourites.svg')">
+                    <img [src]="theme.getAsset('icon/menu_favourites.svg')">
                 </ion-avatar>
                 {{ 'favorites.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(newObjectsPage)" color="nobg-w">
               <ion-avatar item-start>
-                  <img [src]="theme.getAsset('icon/icon_new_content.svg')">
+                  <img [src]="theme.getAsset('icon/menu_new_content.svg')">
               </ion-avatar>
                 {{ 'new-objects.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(newsPage)" color="nobg-w">
               <ion-avatar item-start>
-                  <img [src]="theme.getAsset('icon/icon_news.svg')">
+                  <img [src]="theme.getAsset('icon/menu_news.svg')">
               </ion-avatar>
               {{ 'news.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="openPage(settingsPage)" color="nobg-w">
               <ion-avatar item-start>
-                  <img [src]="theme.getAsset('icon/icon_settings.svg')">
+                  <img [src]="theme.getAsset('icon/menu_settings.svg')">
               </ion-avatar>
               {{ 'settings.title' | translate:[]}}
             </button>
@@ -52,13 +52,13 @@
 
             <button ion-item (click)="openPage(infoPage)" color="nobg-w">
               <ion-avatar item-start>
-                  <img [src]="theme.getAsset('icon/icon_info.svg')">
+                  <img [src]="theme.getAsset('icon/menu_info.svg')">
               </ion-avatar>
                 {{ 'info.title' | translate:[]}}
             </button>
             <button *ngIf="loggedIn" ion-item (click)="logout()" color="nobg-w">
               <ion-avatar item-start>
-                 <img [src]="theme.getAsset('icon/icon_key.svg')">
+                 <img [src]="theme.getAsset('icon/menu_key.svg')">
              </ion-avatar>
                 {{ 'logout.title' | translate:[]}} {{ user.iliasLogin }}
             </button>

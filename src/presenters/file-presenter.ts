@@ -5,7 +5,7 @@ import {BrandingProvider} from "../providers/branding";
 export class FileObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/icon_file.svg");
+        return BrandingProvider.instance().getAsset("icon/obj_file.svg");
     }
 
     title(): string {

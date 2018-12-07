@@ -2,15 +2,16 @@
     <ion-navbar color="nobg-w"></ion-navbar>
 </ion-header>
 <ion-content class=page_loading color="nobg-w">
-    <div class="custom-spinner">
-        <!-- TODO: get custom-spinner working -->
-        <div class="bounce1"></div>
-        <div class="bounce2"></div>
-        <div class="bounce3"></div>
-    </div>
 
     <!-- <img src="assets/img/walking_pony.png"  class="walking-pony"> -->
     <ion-grid>
+
+      <ion-row>
+        <ion-col>
+          <ion-spinner class="centered"></ion-spinner>
+        </ion-col>
+      </ion-row>
+
       <ion-row justify-content-center padding>
         <!-- <h1 text-center color="white">
           <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading" class=big-spinner></ion-spinner>
