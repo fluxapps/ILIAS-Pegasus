@@ -3,6 +3,7 @@ import {
   MarkerOptions, MyLocation, MyLocationOptions, VisibleRegion
 } from "@ionic-native/google-maps";
 import {isUndefined} from "util";
+import {BrandingProvider} from "../providers/branding";
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -231,6 +232,7 @@ class StandardMapBinding implements StandardMap {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
+
 export class MapBuilder {
 
   private cameraPosition?: CameraPosition<ILatLng>;
@@ -287,7 +289,7 @@ export class MapBuilder {
     this.markerOptions = <MarkerOptions>{
       title: marker.title,
       icon: {
-          "url": "assets/icon/icon_xsrl.png",
+          "url": BrandingProvider.instance().getAsset("icon/obj_location.svg"),
             },
       animation: "DROP",
       position: <ILatLng>{

@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="nobg-w" class=blue-gradient>
+    <ion-navbar color="nobg-w" class=primary-gradient>
       <ion-buttons left>
       </ion-buttons>
         <ion-title>
@@ -31,7 +31,7 @@
     <ion-item (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)">
       <!-- <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon> -->
       <ion-avatar item-start>
-          <img src="{{newsPresenter[1].icon()}}">
+          <img src="{{newsPresenter[1].icon()}}"><!-- TODO make relative? -->
       </ion-avatar>
 
       <h2 class="news-title">{{newsPresenter[0].title}}</h2>

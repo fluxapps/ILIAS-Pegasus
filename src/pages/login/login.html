@@ -1,41 +1,25 @@
-<ion-header no-border>
-  <ion-navbar color="nobg-w">
+<ion-content padding class="page_login vertical-align-content" color="nobg-w">
 
-    <!-- <ion-buttons end>
-      <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons> -->
-  </ion-navbar>
-</ion-header>
-<ion-content padding class="login" color="nobg-w">
-  <!-- <ion-card> -->
-    <img src="assets/img/molly_pony_white.svg" alt="" id="pony">
-    <!-- <ion-card-header> -->
-      <h1 text-center>{{ 'login.hello' | translate:[]}}</h1>
-      <br>
-    <!-- </ion-card-header> -->
-    <!-- <ion-card-content> -->
-      <!-- <h4>{{ 'login.instructions' | translate:[]}}</h4> -->
+    <ion-grid>
+        <ion-row>
+            <ion-item color="nobg-w">
+                <ion-label text-center>{{ 'login.instructions' | translate:[]}}</ion-label>
+                <ion-select [(ngModel)]="installationId">
+                    <ion-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+            <br>
+        </ion-row>
 
-    <!-- </ion-card-content> -->
-    <ion-item color="nobg-w">
-      <ion-label>{{ 'login.instructions' | translate:[]}}</ion-label>
-      <ion-select [(ngModel)]="installationId">
-        <ion-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}
-        </ion-option>
-      </ion-select>
-    </ion-item>
-    <br>
+        <ion-row justify-content-center>
+            <button ion-button color="white" (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
+        </ion-row>
 
-    <!-- <h4>{{ 'login.instructions2' | translate:[]}}</h4> -->
-    <ion-col>
-      <button ion-button full block (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
-    </ion-col>
-  <!-- </ion-card> -->
-
-    <ion-item no-lines text-align:center color="nobg-w" id="version-if-footer">
-        Version 2.0.2
-      </ion-item>
+        <ion-row justify-content-center id="flex-bottom">
+            <img [src]="theme.getAsset('img/login.svg')" alt=""/>
+            <a> Version 2.0.2</a>
+        </ion-row>
+    </ion-grid>
 
 </ion-content>

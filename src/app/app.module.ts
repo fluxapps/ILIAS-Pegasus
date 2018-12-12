@@ -118,6 +118,7 @@ import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {HTTP} from "@ionic-native/http";
+import {BrandingProvider} from "../providers/branding";
 
 @NgModule({
   declarations: [
@@ -457,7 +458,8 @@ import {HTTP} from "@ionic-native/http";
     Geolocation,
     PhotoViewer,
     StreamingMedia,
-      HTTP,
+    HTTP,
+    BrandingProvider,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
