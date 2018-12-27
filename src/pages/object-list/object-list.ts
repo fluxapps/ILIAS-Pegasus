@@ -54,11 +54,16 @@ import {SynchronizationService, SyncResults} from "../../services/synchronizatio
 import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 import {BrandingProvider} from "../../providers/branding";
+import { ScrollHideConfig } from "../../directives/scroll-hide/scroll-hide";
+
 
 @Component({
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
+
+  footerScrollConfig: ScrollHideConfig = { cssProperty: "margin-bottom", maxValue: undefined };
+  headerScrollConfig: ScrollHideConfig = { cssProperty: "margin-top", maxValue: 50 };
 
     /**
      * Objects under the given parent object

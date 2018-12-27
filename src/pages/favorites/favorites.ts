@@ -62,7 +62,7 @@ export class FavoritesPage {
                 private readonly theme: BrandingProvider
     ) {}
 
-    ionViewDidLoad(): void {
+    ionViewWillEnter(): void {
         this.loadFavorites();
     }
 

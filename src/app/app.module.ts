@@ -60,7 +60,7 @@ import {
     VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.service";
 import {FavoritesPage} from "../pages/favorites/favorites";
-import {InfoPage} from "../pages/info/info";
+// import {InfoPage} from "../pages/info/info";
 import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {LoginPage} from "../pages/login/login";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
@@ -119,15 +119,20 @@ import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.compone
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {HTTP} from "@ionic-native/http";
 import {BrandingProvider} from "../providers/branding";
+// import { DirectivesModule } from "../directives/directives.module";
+import { ScrollHideDirective } from "../directives/scroll-hide/scroll-hide";
+import { TabmenuPage } from "../pages/tabmenu/tabmenu";
+import { LogoutProvider } from '../providers/logout/logout';
 
 @NgModule({
   declarations: [
     MyApp,
+    TabmenuPage,
     ObjectListPage,
     FavoritesPage,
     NewObjectsPage,
     SettingsPage,
-    InfoPage,
+    // InfoPage,
     ObjectDetailsPage,
     LoginPage,
     SynchronizationPage,
@@ -154,12 +159,16 @@ import {BrandingProvider} from "../providers/branding";
     RoamingFallbackScreen,
     LeaveAppDialog,
 
-    HardwareFeaturePage
+    HardwareFeaturePage,
+    ScrollHideDirective
   ],
   imports: [
     IonicModule.forRoot(MyApp),
     BrowserModule,
     BrowserAnimationsModule,
+
+    //* import Directives*//
+    // DirectivesModule,
 
     HttpModule,
     HttpClientModule,
@@ -172,11 +181,12 @@ import {BrandingProvider} from "../providers/branding";
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    TabmenuPage,
     ObjectListPage,
     FavoritesPage,
     NewObjectsPage,
     SettingsPage,
-    InfoPage,
+    // InfoPage,
     ObjectDetailsPage,
     LoginPage,
     SynchronizationPage,
@@ -198,7 +208,9 @@ import {BrandingProvider} from "../providers/branding";
     RoamingFallbackScreen,
     LeaveAppDialog,
 
-    HardwareFeaturePage
+    HardwareFeaturePage,
+
+    
   ],
   providers: [
 
@@ -469,7 +481,8 @@ import {BrandingProvider} from "../providers/branding";
     IonicErrorHandler,
     {provide: ErrorHandler, useClass: PegasusErrorHandler},
       <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
-      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false}
+      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
+    LogoutProvider
   ],
   exports: [
     TranslateModule

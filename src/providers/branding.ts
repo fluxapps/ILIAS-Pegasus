@@ -13,7 +13,7 @@ const brands: { [key: string]: BrandObject; } = {
 @Injectable()
 export class BrandingProvider {
     private static staticInstance: BrandingProvider = undefined;
-    private readonly selectedBrand: string = "branded";
+    private readonly selectedBrand: string = "vanilla";
 
     static instance(): BrandingProvider {
         if (!BrandingProvider.staticInstance)

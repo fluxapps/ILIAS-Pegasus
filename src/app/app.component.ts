@@ -9,7 +9,7 @@ import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
 import {FavoritesPage} from "../pages/favorites/favorites";
-import {InfoPage} from "../pages/info/info";
+// import {InfoPage} from "../pages/info/info";
 import {LoginPage} from "../pages/login/login";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectListPage} from "../pages/object-list/object-list";
@@ -26,6 +26,7 @@ import {SynchronizationPage} from "./fallback/synchronization/synchronization.co
 import getMessage = Logging.getMessage;
 import { OnboardingPage } from "../pages/onboarding/onboarding";
 import {BrandingProvider} from "../providers/branding";
+import { TabmenuPage } from "../pages/tabmenu/tabmenu";
 
 @Component({
   templateUrl: "app.html",
@@ -36,12 +37,12 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: {};
-
+  tabmenuPage: object = TabmenuPage;
   objectListPage: object = ObjectListPage;
   favoritesPage: object = FavoritesPage;
   newObjectsPage: object = NewObjectsPage;
   settingsPage: object = SettingsPage;
-  infoPage: object = InfoPage;
+  // infoPage: object = InfoPage;
   loginPage: object = LoginPage;
   onboardingPage: object = OnboardingPage;
   newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
@@ -165,7 +166,7 @@ export class MyApp {
   private async initializeApp(): Promise<void> {
 
     this.log.info(() => "Initialize app");
-    this.statusBar.styleLightContent();
+    this.statusBar.styleLightContent();    ;
     this.subscribeOnGlobalEvents();
     this.defineBackButtonAction();
 
@@ -214,7 +215,7 @@ export class MyApp {
       this.loggedIn = true;
       this.user = user;
       await this.configureTranslation(user);
-      await this.nav.setRoot(this.objectListPage);
+      await this.nav.setRoot(this.tabmenuPage);
 
     } catch(error) {
 

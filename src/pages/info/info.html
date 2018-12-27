@@ -1,22 +1,17 @@
 <ion-header>
   <ion-navbar color="nobg-w" class=primary-gradient>
     <ion-title>
-      {{'info.title' | translate:{value: null} }}
+      <!-- {{'info.title' | translate:{value: null} }} -->
     </ion-title>
-    <ion-buttons end>
-      <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-content padding class="page_info">
   <ion-segment [(ngModel)]="tab">
     <ion-segment-button value="info">
-      {{'info.title' | translate:{value: null} }}
+      <!-- {{'info.title' | translate:{value: null} }} -->
     </ion-segment-button>
     <ion-segment-button value="guide">
-      {{'info.guide' | translate:{value: null} }}
+      <!-- {{'info.guide' | translate:{value: null} }} -->
     </ion-segment-button>
   </ion-segment>
   <div [ngSwitch]="tab">
@@ -135,7 +130,7 @@
     <ion-list *ngSwitchCase="'guide'">
       <ion-card>
         <ion-card-content>
-          <p>{{ 'info.instructions1' | translate:[]}}</p>
+          <!-- <p>{{ 'info.instructions1' | translate:[]}}</p> -->
           <!--<p>-->
           <div>
             <div class="centered">
@@ -144,7 +139,7 @@
             </div>
           </div>
           <!--</p>-->
-          <p>{{ 'info.instructions2' | translate:[]}}</p>
+          <!-- <p>{{ 'info.instructions2' | translate:[]}}</p> -->
         </ion-card-content>
       </ion-card>
     </ion-list>
