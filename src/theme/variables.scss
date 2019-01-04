@@ -2,7 +2,10 @@
 // http://ionicframework.com/docs/v2/theming/
 
 @import "ionic.globals";
-@import "../assets/branded/stylesheets/theme";
+// NOTE: The script './set_theme.js' searches for '@HOOK ...' and replaces the line thereafter to set the theme
+// You may need to also edit './set_theme.js' when changing this line
+// @HOOK import_theme
+@import "../assets/urversity/stylesheets/theme";
 
 // Ionicons
 // --------------------------------------------------

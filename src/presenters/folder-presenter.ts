@@ -1,10 +1,10 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
-import {BrandingProvider} from "../providers/branding";
+import {ThemeProvider} from "../providers/theme";
 
 export class FolderObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/obj_folder.svg");
+        return ThemeProvider.instance().getAsset("icon/obj_folder.svg");
     }
 
     showTypeAsText(): boolean {

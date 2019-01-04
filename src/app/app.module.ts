@@ -118,7 +118,7 @@ import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {HTTP} from "@ionic-native/http";
-import {BrandingProvider} from "../providers/branding";
+import {ThemeProvider} from "../providers/theme";
 
 @NgModule({
   declarations: [
@@ -459,7 +459,7 @@ import {BrandingProvider} from "../providers/branding";
     PhotoViewer,
     StreamingMedia,
     HTTP,
-    BrandingProvider,
+    ThemeProvider,
 
     /* from src/services/device/hardware-features */
     Diagnostic,

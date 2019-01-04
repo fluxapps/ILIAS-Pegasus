@@ -7,7 +7,7 @@ import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
 import {isDefined} from "ionic-angular/es2015/util/util";
 import {LinkBuilder} from "../../../services/link/link-builder.service";
-import {BrandingProvider} from "../../../providers/branding";
+import {ThemeProvider} from "../../../providers/theme";
 
 @Component({
   selector: "video-block",
@@ -25,7 +25,7 @@ export class VideoBlock implements OnInit, OnDestroy {
     private readonly file: File,
     private readonly streaming: StreamingMedia,
     private readonly detectorRef: ChangeDetectorRef,
-    private readonly theme: BrandingProvider
+    private readonly theme: ThemeProvider
   ) {}
 
 

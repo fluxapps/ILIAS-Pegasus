@@ -1,11 +1,11 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
-import {BrandingProvider} from "../providers/branding";
+import {ThemeProvider} from "../providers/theme";
 
 export class FileObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/obj_file.svg");
+        return ThemeProvider.instance().getAsset("icon/obj_file.svg");
     }
 
     title(): string {

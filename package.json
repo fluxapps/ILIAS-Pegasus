@@ -76,6 +76,7 @@
     "jsonschema": "^1.2.2",
     "ng2-translate": "^5.0.0",
     "polarcape-cordova-plugin-document-handler": "^1.0.14",
+    "run": "1.4.0",
     "rxjs": "^5.5.6",
     "text-encoding": "^0.6.4",
     "typeorm": "^0.1.16",

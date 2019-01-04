@@ -53,7 +53,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
 import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
-import {BrandingProvider} from "../../providers/branding";
+import {ThemeProvider} from "../../providers/theme";
 
 @Component({
     templateUrl: "object-list.html",
@@ -98,7 +98,7 @@ export class ObjectListPage {
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: BrandingProvider
+                private readonly theme: ThemeProvider
     ) {
         this.parent = params.get("parent");
 
