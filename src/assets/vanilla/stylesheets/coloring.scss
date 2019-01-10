@@ -39,7 +39,7 @@ $gradient-col2: #003c66;
 }
 
 .primary-gradient-inverted {
-    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col2);
+    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
     color:white;
 }
 

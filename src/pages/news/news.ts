@@ -27,7 +27,9 @@ import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
     selector: "newsPresenters",
     templateUrl: "news.html"
 })
-export class NewsPage implements OnInit {
+export class NewsPage 
+// implements OnInit 
+{
 
     newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
     private readonly log: Logger = Logging.getLogger(NewsPage.name);
@@ -44,10 +46,15 @@ export class NewsPage implements OnInit {
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
-    ngOnInit(): void {
+    ionViewWillEnter(): void {
         this.log.debug(() => "News view initialized.");
         this.reloadView();
     }
+
+    // ngOnInit(): void {
+    //     this.log.debug(() => "News view initialized.");
+    //     this.reloadView();
+    // }
 
     openNews(id: number, context: number): void {
         this.log.debug(() => `open news with id ${id}, context id ${context}`);

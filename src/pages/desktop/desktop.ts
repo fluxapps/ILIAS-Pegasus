@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { ObjectListPage } from "../object-list/object-list";
 import { Page } from "ionic-angular/navigation/nav-util";
+import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 
 /**
  * Generated class for the DesktopPage page.
@@ -18,6 +19,7 @@ import { Page } from "ionic-angular/navigation/nav-util";
 export class DesktopPage {
 
   objectListPage: Page = ObjectListPage;
+  readonly installations: Array<ILIASInstallation> = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
@@ -25,5 +27,9 @@ export class DesktopPage {
   async switchTabs(tab: number): Promise<void> {
       this.navCtrl.parent.select(tab);
     }
+  async openILIASRepository(): Promise<void>{
+    //Open repo in Browser inApp for iOS, external for Android
+
+  }
 
 }

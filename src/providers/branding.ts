@@ -6,7 +6,7 @@ interface BrandObject {
 }
 
 const brands: { [key: string]: BrandObject; } = {
-    "vanilla": {assets_folder: "vanilla", ilias_id: 7},
+    "vanilla": {assets_folder: "vanilla", ilias_id: undefined},
     "branded": {assets_folder: "branded", ilias_id: undefined}
 };
 

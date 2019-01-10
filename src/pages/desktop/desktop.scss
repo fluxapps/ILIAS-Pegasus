@@ -34,13 +34,14 @@ page-desktop {
         // background-position: top left;
         background-size: 100vw ;
         background-repeat: no-repeat;
+        // background-color: map_get($colors, primary);
     }
 
     .tile-image{
         height: auto;
         width: 60%;
         // position: absolute;
-        left: -20%;
+        // left: -20%;
 
         margin: auto;
         display: block;
@@ -48,8 +49,10 @@ page-desktop {
     }
 
     .tile{
-    opacity: 0.9;
+    // opacity: 0.9;
     backdrop-filter: blur(5px);
+    // box-shadow: none;
+    // border-radius: 25%;
     // border-radius: 5%;
     // width: 100%;
     // box-shadow: none !important;
@@ -70,5 +73,10 @@ page-desktop {
         border-bottom: 1px solid white; 
 
     }
+
+    ion-col{
+        // background: gray;
+        // border:thin solid color($colors, primary, base);;
+      }
 
 }
