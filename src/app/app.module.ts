@@ -122,7 +122,8 @@ import {BrandingProvider} from "../providers/branding";
 // import { DirectivesModule } from "../directives/directives.module";
 import { ScrollHideDirective } from "../directives/scroll-hide/scroll-hide";
 import { TabmenuPage } from "../pages/tabmenu/tabmenu";
-import { LogoutProvider } from '../providers/logout/logout';
+import { LogoutProvider } from "../providers/logout/logout";
+import { ExecuteSyncProvider } from "../providers/execute-sync/execute-sync";
 
 @NgModule({
   declarations: [
@@ -482,7 +483,8 @@ import { LogoutProvider } from '../providers/logout/logout';
     {provide: ErrorHandler, useClass: PegasusErrorHandler},
       <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
       <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
-    LogoutProvider
+    LogoutProvider,
+    ExecuteSyncProvider
   ],
   exports: [
     TranslateModule

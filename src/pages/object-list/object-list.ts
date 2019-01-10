@@ -55,6 +55,7 @@ import {SynchronizationPage} from "../../app/fallback/synchronization/synchroniz
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 import {BrandingProvider} from "../../providers/branding";
 import { ScrollHideConfig } from "../../directives/scroll-hide/scroll-hide";
+import { ExecuteSyncProvider } from "../../providers/execute-sync/execute-sync";
 
 
 @Component({
@@ -103,7 +104,8 @@ export class ObjectListPage {
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: BrandingProvider
+                private readonly theme: BrandingProvider,
+                private readonly executeSyncCtrl: ExecuteSyncProvider
     ) {
         this.parent = params.get("parent");
 
@@ -278,6 +280,8 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     private async executeSync(): Promise<void> {
+
+        // this.executeSyncCtrl.executeSync();
 
         try {
 
@@ -570,4 +574,6 @@ export class ObjectListPage {
         if(syncModal)
             syncModal.dismiss();
     }
+
+   
 }

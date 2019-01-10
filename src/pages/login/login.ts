@@ -6,6 +6,7 @@ import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-nati
 import {Toast} from "@ionic-native/toast";
 import {Log} from "../../services/log.service";
 import {BrandingProvider} from "../../providers/branding";
+import { ExecuteSyncProvider } from "../../providers/execute-sync/execute-sync";
 
 @Component({
     templateUrl: "login.html",
@@ -26,7 +27,8 @@ export class LoginPage {
                 public toast: Toast,
                 public event: Events,
                 private readonly browser: InAppBrowser,
-                private readonly theme: BrandingProvider
+                public  theme: BrandingProvider,
+                private readonly executeSyncCtrl: ExecuteSyncProvider
     ) {
 
       this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));
@@ -53,6 +55,7 @@ export class LoginPage {
                     this.saveUser(data[0], data[1], data[2], data[3]).then(() => {
                         Log.write(this, "User saved.");
                         browser.close();
+                        this.executeSyncCtrl.executeSync();
                     }, (err) => {
                         Log.error(this, err);
                         browser.close();

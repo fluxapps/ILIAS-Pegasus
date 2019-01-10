@@ -14,11 +14,7 @@ import {CommonModule} from "@angular/common";
     imports: [
         IonicPageModule.forChild(NewsPage),
         CommonModule,
-        TranslateModule.forRoot({
-            provide: TranslateLoader,
-            useFactory: (http: Http): TranslateStaticLoader => new TranslateStaticLoader(http, "./assets/i18n", ".json"),
-            deps: [Http]
-        })
+        TranslateModule
     ],
     providers: [
         /* from src/services/news/news.feed */

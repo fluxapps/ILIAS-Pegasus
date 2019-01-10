@@ -253,7 +253,9 @@ export class MyApp {
 
   /**
    * Performs all steps to log out the user.
-   */
+   */ 
+
+   //TODO: Delete as it is now in logout provider
   async logout(): Promise<void> {
     await this.menu.close();
 
