@@ -4,5 +4,5 @@
     "cordova": {}
   },
   "type": "ionic-angular",
-  "pro_id": "ch.studerraimann.ilias.offline"
+  "id": "ch.studerraimann.ilias.offline"
 }
