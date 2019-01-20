@@ -35,12 +35,10 @@ plugins/ios.json
 $RECYCLE.BIN/
 
 bin/android-*-unsigned.apk
-ch_studerraimann_ilias_offline.keystore
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 www_back/
-www/build
 www/*
 !www/.placeholder
 bower_components
