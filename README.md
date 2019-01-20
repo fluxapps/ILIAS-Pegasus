@@ -4,6 +4,8 @@ ILIAS Pegasus is an app which is running on Android or iOS and integrate functio
 of the ILIAS learn management system. For example viewing courses or personal news.
 Furthermore it is possible to make files offline available to read them while offline.
 
+[![Build status](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_apis/build/status/ILIAS-Pegasus-CI)](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_build/latest?definitionId=1)
+
 ## Getting Started
 These instructions will get the ILIAS Pegasus app up and running.
 
