@@ -9,6 +9,8 @@
  * DEFAULT: the default theme when '--theme' is not set is 'vanilla'
  */
 
+const fs = require('fs');
+
 module.exports = function(context) {
     // get the theme
     let ind = context.cmdLine.indexOf('--theme');
@@ -25,13 +27,13 @@ module.exports = function(context) {
     setLine('src/providers/theme.ts', '@HOOK selectedTheme', `    private readonly selectedTheme: string = "${theme}";`);
 
     // replace folder with resources
-    let copydir = require("copy-dir");
-    copydir.sync(`src/assets/${theme}/resources`, "resources");
+    deleteDirSync("resources");
+    fs.mkdirSync("resources");
+    copyDirSync(`src/assets/${theme}/resources`, "resources");
 }
 
 // open the file at file_path, search for the marker-string and replace the line thereafter with new_line
 function setLine(file_path, marker, new_line) {
-    const fs = require('fs');
     let lines = fs.readFileSync(file_path,'utf8').split("\n");
     for(var i = 0; i < lines.length; i++) {
         if (lines[i].indexOf(marker) !== -1) {
@@ -42,4 +44,34 @@ function setLine(file_path, marker, new_line) {
     }
 
     console.log(`hook(set_theme.js) WARNING: unable to find marker "${marker}" in file ${file_path}`);
+}
+
+// delete directory
+function deleteDirSync(path) {
+    if(fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function(file){
+            let itemPath = path + "/" + file;
+            if(fs.lstatSync(itemPath).isDirectory())
+                deleteDirSync(itemPath);
+            else
+                fs.unlinkSync(itemPath);
+        });
+        fs.rmdirSync(path);
+    }
+}
+
+// copy directory
+function copyDirSync(path_from, path_to) {
+    if(fs.existsSync(path_from)) {
+        fs.readdirSync(path_from).forEach(function(file){
+            let itemPath_from = path_from + "/" + file;
+            let itemPath_to = path_to + "/" + file;
+            if(fs.lstatSync(itemPath_from).isDirectory()) {
+                fs.mkdirSync(itemPath_to);
+                copyDirSync(itemPath_from, itemPath_to);
+            } else {
+                fs.writeFileSync(itemPath_to, fs.readFileSync(itemPath_from));
+            }
+        });
+    }
 }
