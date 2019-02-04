@@ -20,7 +20,7 @@ export class ThemeProvider {
     // NOTE: The script './set_theme.js' searches for '@HOOK ...' and replaces the line thereafter to set the theme
     // You may need to also edit './set_theme.js' when changing this line
     // @HOOK selectedTheme
-    private readonly selectedTheme: string = "urversity";
+    private readonly selectedTheme: string = "vanilla";
 
     static instance(): ThemeProvider {
         if (ThemeProvider.staticInstance == undefined)

@@ -429,8 +429,8 @@ ion-content.page_settings {
         color: white;
     }
 
-    ion-spinner {
-        color: white;
+    ion-spinner svg * {
+        stroke: white !important;
     }
 
 }
