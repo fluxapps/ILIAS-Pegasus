@@ -1,21 +1,11 @@
-<ion-header>
+<ion-header [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
     <ion-navbar color="nobg-w" class=primary-gradient>
-        <!-- <ion-avatar item-start> -->
-
-        <!-- </ion-avatar> -->
         <ion-title>
-          <!-- <img src="./assets/icon/icon_crs_white.svg" style="display:inline-block" height="23px" class=title-image> -->
-          <!-- <ion-icon name="ios-book"></ion-icon> -->
           {{ pageTitle }}
         </ion-title>
-        <ion-buttons end>
-            <button ion-button menuToggle>
-                <ion-icon name="menu"></ion-icon>
-            </button>
-        </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content class="page_object_list">
+<ion-content class="page_object_list" #pageContent fullscreen >
   <ion-refresher
           (ionRefresh)="startSync($event)"
             [closeDuration]="400"
@@ -63,7 +53,7 @@
       {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
       <p class="object-flags">
         <ion-badge color="light" *ngIf="object.isFavorite">
-          <ion-icon color="primary" name="star"></ion-icon>
+          <ion-icon color="primary" name="ai-star"></ion-icon>
         </ion-badge>
         <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
           <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
@@ -100,13 +90,14 @@
     <ion-row>
       <ion-col>
         <ion-spinner class="centered"></ion-spinner>
+        <span text-center>{{ footerToolbar.loadingText }}</span>
       </ion-col>
     </ion-row>
   </ion-grid>
 
 </ion-content>
 
-<ion-footer>
+<!-- <ion-footer >
   <ion-toolbar>
     <ion-buttons left>
       <button ion-button>
@@ -116,4 +107,4 @@
     <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
     <div *ngIf="!footerToolbar.isLoading">{{ 'sync.last_sync' | translate:[] }}: {{ sync.lastSyncString }}</div>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->

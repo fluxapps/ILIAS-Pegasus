@@ -1,0 +1,82 @@
+page-desktop {
+    ion-grid {
+        // margin-top: 10vh;
+        width: 100%;
+      }
+    
+    //   ion-row {
+    //     height: 50%;
+    //     border: 2px solid black;
+    //   }
+    //   .tile-top-left {
+        
+    //     border-right: 1px solid map_get($colors, primary);
+    //     border-bottom: 1px solid map_get($colors, primary);
+    //   }
+    //   .tile-top-right {
+        
+    //     border-right: 1px solid map_get($colors, primary);
+    //     border-bottom: 1px solid map_get($colors, primary);
+    //   }
+
+    ion-card-header {
+        font-weight: 800 !important;
+    }
+
+      ion-icon {
+        font-size: 6em; //Preferred size here
+    }
+
+    .desktop-content{
+        // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
+        background-image: url('../assets/vanilla/img/header.svg');
+        // background-color: map_get($colors, primary);
+        // background-position: top left;
+        background-size: 100vw ;
+        background-repeat: no-repeat;
+        // background-color: map_get($colors, primary);
+    }
+
+    .tile-image{
+        height: auto;
+        width: 60%;
+        // position: absolute;
+        // left: -20%;
+
+        margin: auto;
+        display: block;
+
+    }
+
+    .tile{
+    // opacity: 0.9;
+    backdrop-filter: blur(5px);
+    // box-shadow: none;
+    // border-radius: 25%;
+    // border-radius: 5%;
+    // width: 100%;
+    // box-shadow: none !important;
+    // border-right: 1px solid white;
+    // border-bottom: 1px solid white;
+    // margin-left: 0 !important;
+    // margin-right: 0 !important;
+    }
+
+    .tile-course{
+        // background-image: linear-gradient(to top left, #538132, #74a029);  
+        // border-right: 1px solid white;
+        // border-bottom: 1px solid white;
+    }
+
+    .tile-fav{
+        // background-image: linear-gradient(to top left, #ff8e2c, #e66e1e); 
+        border-bottom: 1px solid white; 
+
+    }
+
+    ion-col{
+        // background: gray;
+        // border:thin solid color($colors, primary, base);;
+      }
+
+}

@@ -82,23 +82,58 @@ ion-content.page_settings {
         opacity: 0.2;
     }
 
-    a, img {
-        align-self: flex-end;
-        position: absolute;
-        bottom: 3%;
+    .huge-login-header {
+        padding-top: 5%;
+        padding-bottom: 5%;
+        font-weight: 800;
+        font-size: 2.2em;
+        color: white;
     }
 
-    .vertical-align-content > * {
-        display: flex!important;
-        align-content: center!important;
-        align-items: center!important;
+    .login-top-logo-row{
+        height: 20vh;
     }
 
-    .vertical-align-content a, .vertical-align-content img {
-        align-self: flex-end;
-        position: absolute;
-        vertical-align: center;
+    .login-welcome-row{
+        height: 10vh;
     }
+
+    .login-version-row{
+        height: 30vh;
+    }
+
+    .login-bottom-image{
+        display: none;
+    }
+
+    .styled-bottom-row{
+        background-image: url('../assets/vanilla/img/header.svg');
+        background-size: 100vw ;
+        background-repeat: no-repeat;
+        height: 30vh;
+    }
+    .login-top-image{
+        // display: none;
+        
+    }
+
+    // a, img {
+    //     align-self: flex-end;
+    //     position: absolute;
+    //     bottom: 3%;
+    // }
+
+    // .vertical-align-content > * {
+    //     display: flex!important;
+    //     align-content: center!important;
+    //     align-items: center!important;
+    // }
+
+    // .vertical-align-content a, .vertical-align-content img {
+    //     align-self: flex-end;
+    //     position: absolute;
+    //     vertical-align: center;
+    // }
 
 }
 
@@ -112,10 +147,6 @@ ion-content.page_settings {
 
     .invisibleBackGround {
         background-color: transparent;
-    }
-
-    .scroll-content {
-        padding: 0 !important;
     }
 
     .footer {
@@ -285,7 +316,7 @@ ion-content.page_settings {
 
     #webr-icon {
         height: auto !important;
-        width: 30vh !important;
+        width: 20vh !important;
         margin: auto !important;
         display: block !important;
     }
@@ -297,6 +328,10 @@ ion-content.page_settings {
     a {
         color: white;
     }
+
+    // .fallback-icon{
+    //     height: 20vw;
+    // }
 
 }
 
@@ -374,3 +409,5 @@ ion-content.page_settings {
     }
 
 }
+
+

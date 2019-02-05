@@ -1,8 +1,9 @@
 import {Component} from "@angular/core";
-import {NavController} from "ionic-angular";
+import {NavController, IonicPage, NavParams} from "ionic-angular";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {LinkBuilder} from "../../services/link/link-builder.service";
 import {BrandingProvider} from "../../providers/branding";
+
 
 /*
   Generated class for the InfoPage page.
@@ -10,22 +11,25 @@ import {BrandingProvider} from "../../providers/branding";
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 */
+@IonicPage()
 @Component({
-  templateUrl: "info.html"
+  selector: "page-info",
+  templateUrl: "info.html",
 })
 export class InfoPage {
 
   tab: string = "info";
 
   constructor(
-    public nav: NavController,
+    public navCtrl: NavController,
+    public navParams: NavParams,
     private readonly browser: InAppBrowser,
-    private readonly theme: BrandingProvider
+    private readonly theme: BrandingProvider,
   ) {}
 
-  call(number) {
-    (<any> window).location = number;
-  }
+  // call(number) {
+  //   (<any> window).location = number;
+  // }
 
   browse(page) {
     this.browser.create(page, "_system");

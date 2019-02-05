@@ -1,10 +1,18 @@
-<ion-content padding class="page_login vertical-align-content" color="nobg-w">
+<ion-content no-padding class="page_login" color="nobg-w">
 
-    <ion-grid>
-        <ion-row>
+    <ion-grid padding-top>
+        <ion-row justify-content-center class=login-top-logo-row>
+                <img [src]="theme.getAsset('img/login.svg')" alt="" class="login-top-image"/>
+        </ion-row>
+
+        <ion-row padding-top justify-content-center align-items-center	 class=login-welcome-row>
+                <h1 class=huge-login-header text-center>{{ 'login.hello' | translate:[]}}</h1>
+        </ion-row>
+
+        <ion-row padding justify-content-center align-items-end	 class=login-institution-row>
             <ion-item color="nobg-w">
-                <ion-label text-center>{{ 'login.instructions' | translate:[]}}</ion-label>
-                <ion-select [(ngModel)]="installationId">
+                <ion-label stacked text-center></ion-label>
+                <ion-select [(ngModel)]="installationId" interface="action-sheet" text-center placeholder="{{ 'login.instructions' | translate:[]}}" >
                     <ion-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}
                     </ion-option>
                 </ion-select>
@@ -16,9 +24,14 @@
             <button ion-button color="white" (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
         </ion-row>
 
-        <ion-row justify-content-center id="flex-bottom">
-            <img [src]="theme.getAsset('img/login.svg')" alt=""/>
-            <a> Version 2.0.2</a>
+        <ion-row padding justify-content-center align-items-end class=login-version-row>
+            <!-- <ion-item color="nobg-w" text-center no-lines> -->
+                Version 2.0.2
+            <!-- </ion-item> -->
+        </ion-row>
+
+        <ion-row justify-content-center class=styled-bottom-row>
+            <img [src]="theme.getAsset('img/login.svg')" alt="" class="login-bottom-image"/>
         </ion-row>
     </ion-grid>
 
