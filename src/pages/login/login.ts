@@ -1,12 +1,12 @@
 import {Component, Inject} from "@angular/core";
-import {NavController, Platform, Events} from "ionic-angular";
-import {User} from "../../models/user";
-import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
 import {Toast} from "@ionic-native/toast";
+import {Events, NavController, Platform} from "ionic-angular";
+import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+import {User} from "../../models/user";
+import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
+import {ThemeProvider} from "../../providers/theme";
 import {Log} from "../../services/log.service";
-import {BrandingProvider} from "../../providers/branding";
-import { ExecuteSyncProvider } from "../../providers/execute-sync/execute-sync";
 
 @Component({
     templateUrl: "login.html",
@@ -27,8 +27,8 @@ export class LoginPage {
                 public toast: Toast,
                 public event: Events,
                 private readonly browser: InAppBrowser,
-                public  theme: BrandingProvider,
-                private readonly executeSyncCtrl: ExecuteSyncProvider
+                private readonly executeSyncCtrl: ExecuteSyncProvider,
+                private readonly theme: ThemeProvider,
     ) {
 
       this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));

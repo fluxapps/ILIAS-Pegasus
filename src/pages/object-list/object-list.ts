@@ -53,18 +53,12 @@ import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
 import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
-import {BrandingProvider} from "../../providers/branding";
-import { ScrollHideConfig } from "../../directives/scroll-hide/scroll-hide";
-import { ExecuteSyncProvider } from "../../providers/execute-sync/execute-sync";
-
+import {ThemeProvider} from "../../providers/theme";
 
 @Component({
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
-
-  footerScrollConfig: ScrollHideConfig = { cssProperty: "margin-bottom", maxValue: undefined };
-  headerScrollConfig: ScrollHideConfig = { cssProperty: "margin-top", maxValue: 50 };
 
     /**
      * Objects under the given parent object
@@ -104,8 +98,7 @@ export class ObjectListPage {
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: BrandingProvider,
-                private readonly executeSyncCtrl: ExecuteSyncProvider
+                private readonly theme: ThemeProvider
     ) {
         this.parent = params.get("parent");
 
@@ -280,8 +273,6 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     private async executeSync(): Promise<void> {
-
-        // this.executeSyncCtrl.executeSync();
 
         try {
 
@@ -574,6 +565,4 @@ export class ObjectListPage {
         if(syncModal)
             syncModal.dismiss();
     }
-
-   
 }

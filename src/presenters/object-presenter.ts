@@ -2,7 +2,7 @@ import {ILIASObject} from "../models/ilias-object";
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 import {FileService} from "../services/file.service";
 import {Log} from "../services/log.service";
-import {BrandingProvider} from "../providers/branding";
+import {ThemeProvider} from "../providers/theme";
 
 /**
  * Decorator to present data of ILIASObjects in the view.
@@ -57,7 +57,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
     ) {}
 
     icon(): string {
-        return BrandingProvider.instance().getAsset("icon/obj_link.svg");
+        return ThemeProvider.instance().getAsset("icon/obj_link.svg");
     }
 
     title(): string {

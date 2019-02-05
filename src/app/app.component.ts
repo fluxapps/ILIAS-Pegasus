@@ -9,11 +9,13 @@ import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
 import {FavoritesPage} from "../pages/favorites/favorites";
-// import {InfoPage} from "../pages/info/info";
 import {LoginPage} from "../pages/login/login";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectListPage} from "../pages/object-list/object-list";
+import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
+import {TabmenuPage} from "../pages/tabmenu/tabmenu";
+import {ThemeProvider} from "../providers/theme";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Database} from "../services/database/database";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
@@ -24,13 +26,10 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
-import { OnboardingPage } from "../pages/onboarding/onboarding";
-import {BrandingProvider} from "../providers/branding";
-import { TabmenuPage } from "../pages/tabmenu/tabmenu";
 
 @Component({
   templateUrl: "app.html",
-  providers: [BrandingProvider]
+  providers: [ThemeProvider]
 })
 export class MyApp {
 
@@ -42,7 +41,6 @@ export class MyApp {
   favoritesPage: object = FavoritesPage;
   newObjectsPage: object = NewObjectsPage;
   settingsPage: object = SettingsPage;
-  // infoPage: object = InfoPage;
   loginPage: object = LoginPage;
   onboardingPage: object = OnboardingPage;
   newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
@@ -56,28 +54,29 @@ export class MyApp {
 
   private readonly log: Logger = Logging.getLogger(MyApp.name);
 
-  /**
-   *
-   * This constructor sets on classes which are not injectable yet
-   * member instances. This is a workaround for Ionic 3 update with
-   * the current app architecture. This will be changed on release 2.0.0.
-   *
-   * @param {Platform} platform
-   * @param {MenuController} menu
-   * @param {FooterToolbarService} footerToolbar
-   * @param {TranslateService} translate
-   * @param {Events} event
-   * @param {ToastController} toast
-   * @param {SynchronizationService} sync
-   * @param {StatusBar} statusBar
-   * @param {Network} network
-   * @param {SplashScreen} splashScreen
-   * @param {Database} database
-   * @param modal
-   * @param config
-   * @param {DBMigration} dbMigration
-   * @param {SQLite} sqlite
-   */
+    /**
+     *
+     * This constructor sets on classes which are not injectable yet
+     * member instances. This is a workaround for Ionic 3 update with
+     * the current app architecture. This will be changed on release 2.0.0.
+     *
+     * @param {Platform} platform
+     * @param {MenuController} menu
+     * @param {FooterToolbarService} footerToolbar
+     * @param {TranslateService} translate
+     * @param {Events} event
+     * @param {ToastController} toast
+     * @param {SynchronizationService} sync
+     * @param {StatusBar} statusBar
+     * @param {Network} network
+     * @param {SplashScreen} splashScreen
+     * @param {Database} database
+     * @param modal
+     * @param config
+     * @param {DBMigration} dbMigration
+     * @param {SQLite} sqlite
+     * @param theme
+     */
   constructor(
     readonly footerToolbar: FooterToolbarService,
     private readonly platform: Platform,
@@ -94,7 +93,7 @@ export class MyApp {
     private readonly config: Config,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite,
-    private readonly theme: BrandingProvider
+    readonly theme: ThemeProvider
   ) {
 
     // Set members on classes which are not injectable
@@ -166,7 +165,7 @@ export class MyApp {
   private async initializeApp(): Promise<void> {
 
     this.log.info(() => "Initialize app");
-    this.statusBar.styleLightContent();    ;
+    this.statusBar.styleLightContent();
     this.subscribeOnGlobalEvents();
     this.defineBackButtonAction();
 
@@ -253,7 +252,7 @@ export class MyApp {
 
   /**
    * Performs all steps to log out the user.
-   */ 
+   */
 
    //TODO: Delete as it is now in logout provider
   async logout(): Promise<void> {

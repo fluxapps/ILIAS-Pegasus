@@ -1,4 +1,4 @@
-import {BrandingProvider} from "../providers/branding";
+import {ThemeProvider} from "../providers/theme";
 
 /**
  * Holds the the styling information, if an ILIAS object has a page layout.
@@ -6,7 +6,7 @@ import {BrandingProvider} from "../providers/branding";
 
 export class PageLayout {
 
-  readonly icon: string = BrandingProvider.instance().getAsset("icon/info.svg");
+  readonly icon: string = ThemeProvider.instance().getAsset("icon/info.svg");
   readonly text: string;
 
   constructor(
