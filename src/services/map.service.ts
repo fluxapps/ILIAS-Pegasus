@@ -192,7 +192,7 @@ class StandardMapBinding implements StandardMap {
 
   async clear(): Promise<void> { return this.map.clear() }
 
-  async fromLatLngToPoint(latLng: ILatLng): Promise<object> {
+  async fromLatLngToPoint(latLng: LatLng): Promise<object> {
     return this.map.fromLatLngToPoint(latLng);
   }
 

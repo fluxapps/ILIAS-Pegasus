@@ -1,19 +1,21 @@
-<ion-header [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
-    <ion-navbar color="nobg-w" class=primary-gradient>
+<ion-header >
+    <ion-navbar color="header-element">
         <ion-title>
           {{ pageTitle }}
         </ion-title>
     </ion-navbar>
 </ion-header>
-<ion-content class="page_object_list" #pageContent fullscreen >
+<ion-content  class="page_object_list" >
   <ion-refresher
           (ionRefresh)="startSync($event)"
             [closeDuration]="400"
-            [pullMin]="150">
+            [pullMin]="150"
+            >
     <ion-refresher-content id="refresher-content"
         pullingIcon="arrow-down"
         pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
-        refreshingText="{{ footerToolbar.loadingText }}">
+        refreshingText="{{ footerToolbar.loadingText }}"
+        text-center>
      </ion-refresher-content>
   </ion-refresher>
 
@@ -34,13 +36,13 @@
       </ion-item>
     </div>
     <ion-item-group>
-    <ion-list-header no-lines color="light-blue" class="list-header-item">
+    <!-- <ion-list-header no-lines color="light-blue" class="list-header-item"> -->
     <!-- <ion-item-divider color="light"> -->
-      {{"object-list.content" | translate: []}}
+      <!-- {{"object-list.content" | translate: []}} -->
     <!-- </ion-item-divider> -->
-    </ion-list-header>
+    <!-- </ion-list-header> -->
 
-    <ion-item text-wrap class="bottom-line" *ngFor="let object of objects" (click)="onClick(object)">
+    <ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 
       <ion-avatar item-start>
           <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
@@ -53,7 +55,7 @@
       {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
       <p class="object-flags">
         <ion-badge color="light" *ngIf="object.isFavorite">
-          <ion-icon color="primary" name="ai-star"></ion-icon>
+          <ion-icon color="primary" name="ai-favorites"></ion-icon>
         </ion-badge>
         <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
           <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
