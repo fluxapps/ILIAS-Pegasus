@@ -1,12 +1,10 @@
 import {Component, Inject} from "@angular/core";
-import {IonicPage, NavController, NavParams} from "ionic-angular";
-import {Page} from "ionic-angular/navigation/nav-util";
+import {IonicPage, NavController} from "ionic-angular";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ILIASInstallation} from "../../config/ilias-config";
 import {BrandingProvider} from "../../providers/branding";
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {ObjectListPage} from "../object-list/object-list";
 
 /**
  * Generated class for the DesktopPage page.
@@ -22,12 +20,10 @@ import {ObjectListPage} from "../object-list/object-list";
 })
 export class DesktopPage {
 
-  objectListPage: Page = ObjectListPage;
   readonly installations: Array<ILIASInstallation> = [];
 
   constructor(
       public navCtrl: NavController,
-      public navParams: NavParams,
       private readonly theme: BrandingProvider,
       @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
       private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
