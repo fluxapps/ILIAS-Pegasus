@@ -2,7 +2,7 @@ import {Component, Inject} from "@angular/core";
 import {IonicPage, NavController} from "ionic-angular";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ILIASInstallation} from "../../config/ilias-config";
-import {BrandingProvider} from "../../providers/branding";
+import {ThemeProvider} from "../../providers/theme";
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 
@@ -24,7 +24,7 @@ export class DesktopPage {
 
   constructor(
       public navCtrl: NavController,
-      private readonly theme: BrandingProvider,
+      readonly theme: ThemeProvider,
       @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
       private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
       @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
