@@ -19,39 +19,39 @@
 </ion-header>
 
 
-<ion-content class="desktop-content" >
+<ion-content class="page_desktop" >
 
       <ion-grid no-padding>
           <ion-row>
             <ion-col col-12 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
-              <ion-card class="tile tile-course" (click)="switchTabs(1)" >
+              <ion-card class="tile tile-cours" (click)="switchTabs(1)" >
                   <!-- <ion-icon name="ai-crs-outline" ></ion-icon> -->
-                  <img class=tile-image src="assets/vanilla/icon/desktop_course.svg">
-                  <ion-card-header text-uppercase > KURSE & Gruppen </ion-card-header>
+                  <img class=tile-image [src]="theme.getAsset('icon/desktop_course.svg')">
+                  <ion-card-header text-uppercase class=tile-title > KURSE & Gruppen </ion-card-header>
               </ion-card>
             </ion-col>
             <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
                 <ion-card class=tile (click)="switchTabs(3)">
-                    <img class=tile-image src="assets/vanilla/icon/desktop_favourites.svg">
-                    <ion-card-header> FAVORITEN </ion-card-header>
+                    <img class=tile-image [src]="theme.getAsset('icon/desktop_favourites.svg')">
+                    <ion-card-header class=tile-title> FAVORITEN </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center >
                 <ion-card class="tile" (click)="switchTabs(2)">
-                    <img class=tile-image src="assets/vanilla/icon/desktop_news.svg">
-                    <ion-card-header text-uppercase > news </ion-card-header>
+                    <img class=tile-image [src]="theme.getAsset('icon/desktop_news.svg')">
+                    <ion-card-header text-uppercase class=tile-title> news </ion-card-header>
                 </ion-card>
               </ion-col>
               <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
                   <ion-card class="tile" (click)="openILIASRepository()">
-                      <img class=tile-image src="assets/vanilla/icon/desktop_root.svg">
-                      <ion-card-header text-uppercase > Magazin </ion-card-header>
+                      <img class=tile-image [src]="theme.getAsset('icon/desktop_repository.svg')">
+                      <ion-card-header text-uppercase class=tile-title> Magazin </ion-card-header>
                   </ion-card>
               </ion-col>
               <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
                 <ion-card class="tile" (click)="switchTabs(4)">
-                    <img class=tile-image src="assets/vanilla/icon/desktop_menu.svg">
-                    <ion-card-header text-uppercase > Menu </ion-card-header>
+                    <img class=tile-image [src]="theme.getAsset('icon/desktop_menu.svg')">
+                    <ion-card-header text-uppercase class=tile-title> Menu </ion-card-header>
                 </ion-card>
             </ion-col>
           </ion-row>

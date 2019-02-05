@@ -4,15 +4,18 @@
       <ion-icon name="pin"></ion-icon>
       {{title}}
     </ion-title>
-    <ion-buttons end>
+    <!-- <ion-buttons end>
       <button ion-button menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
+
+
+  
 </ion-header>
 
-<ion-tabs #learnplace color=primary>
+<ion-tabs #learnplace tabsPlacement="top"  class="learnplace-tabs">
   <ion-tab [root]="mapPage" [rootParams]="mapPageParams" tabTitle="Map" tabIcon="map"></ion-tab>
   <ion-tab [root]="contentPage" [rootParams]="contentPageParams" tabTitle="Content" tabIcon="book"></ion-tab>
 </ion-tabs>

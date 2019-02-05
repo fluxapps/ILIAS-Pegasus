@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="nobg-w" class=primary-gradient>
+    <ion-navbar color="header-element">
         <ion-title>
           <!-- <ion-icon name="flask"></ion-icon> -->
           {{'settings.title' | translate:{value: null} }}
@@ -7,7 +7,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding class="page_settings">
-    <ion-segment [(ngModel)]="settingsMode">
+    <ion-segment [(ngModel)]="settingsMode" color="button-element">
         <ion-segment-button value="general">
             {{'general' | translate:[] }}
         </ion-segment-button>
@@ -19,7 +19,7 @@
     <div [ngSwitch]="settingsMode">
         <ion-list *ngSwitchCase="'general'" class="general">
             <div *ngIf="settings">
-                <ion-item text-wrap>
+                <ion-item text-wrap color="list-element">
                     <ion-label>{{'settings.language' | translate:[] }}</ion-label>
                     <ion-select [(ngModel)]="settings.language">
                         <ion-option value="en">English</ion-option>
@@ -27,7 +27,7 @@
                         <ion-option value="it">Italiano</ion-option>
                     </ion-select>
                 </ion-item>
-                <ion-item text-wrap>
+                <ion-item text-wrap color="list-element">
                     <ion-label>
                         {{'settings.downloadSize' | translate:[] }}
                     </ion-label>
@@ -36,13 +36,13 @@
                     </ion-input>
                     <button item-righ>MB</button>
                 </ion-item>
-                <ion-item text-wrap>
+                <ion-item text-wrap color="list-element">
                     <ion-label>
                         {{'settings.downloadWLAN' | translate:[] }}
                     </ion-label>
                     <ion-toggle [(ngModel)]="settings.downloadWlan"></ion-toggle>
                 </ion-item>
-                <ion-item text-wrap>
+                <ion-item text-wrap color="list-element">
                     <ion-label>
                         {{'settings.quotaSize' | translate:[] }}
                     </ion-label>
@@ -50,7 +50,7 @@
                                [(ngModel)]="settings.quotaSize"></ion-input>
                 </ion-item>
                 <ion-col>
-                    <button ion-button full block (click)="saveSettings()">{{'Save' | translate:{value: null} }}
+                    <button ion-button full block (click)="saveSettings()" color="button-element">{{'Save' | translate:{value: null} }}
                     </button>
                 </ion-col>
             </div>
@@ -66,8 +66,8 @@
         <ion-list *ngSwitchCase="'users'">
             <div padding-top *ngIf="settings">
             <ion-item-group *ngFor="let installation of installationsWithUsers">
-                <ion-item-divider>{{installation.title}}</ion-item-divider>
-                <ion-item *ngFor="let userDiskSpace of usersPerInstallation[installation.id]" button-right>
+                <ion-item-divider color="list-element">{{installation.title}}</ion-item-divider>
+                <ion-item *ngFor="let userDiskSpace of usersPerInstallation[installation.id]" button-right color="list-element">
                     <ion-label [ngClass]="{'activeUser' : userDiskSpace.user.id == loggedInUser.id}">{{userDiskSpace.user.iliasLogin}} ({{userDiskSpace.diskSpace | fileSize}})</ion-label>
                     <button class="ilias-list-action-button" ion-button round color="light" item-right
                             (click)="deleteLocalUserDataPrompt(userDiskSpace.user)">
@@ -76,8 +76,8 @@
                 </ion-item>
             </ion-item-group>
             <ion-item-group>
-                <ion-item-divider color="light">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
-                <ion-item button-right>
+                <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
+                <ion-item button-right color="list-element">
                     <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' |
                         translate:[] }}:
                         {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}

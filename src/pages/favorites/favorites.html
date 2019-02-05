@@ -1,19 +1,19 @@
 <ion-header class=orange-gradient>
-    <ion-navbar color=nobg-w class=primary-gradient>
+    <ion-navbar color=header-element>
         <ion-title>
             {{ 'favorites.title' | translate:{value: null} }}
         </ion-title>
     </ion-navbar>
 </ion-header>
 
-<ion-content padding class="page_favorites page_object_list">
+<ion-content no-padding class="page_favorites page_object_list">
 
     <ion-list text-wrap *ngIf="favorites && favorites.length == 0 && footerToolbar.isLoading == false">
         <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
     </ion-list>
 
     <ion-list class="ilias-object-list">
-        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)">
+        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)"  color="list-element">
 
                 <ion-avatar item-start>
                         <img [src]="object.presenter.icon()"><!-- TODO make relative? -->

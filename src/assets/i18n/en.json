@@ -229,7 +229,7 @@
         }
     },
     "fallback": {
-        "browser": "You are leaving the ILIAS Pegasus App ",
+        "browser": "You are leaving the ILIAS App ",
         "browser_ok": "OK, let's go!",
         "browser_no": "No. return!",
         "loading": "Learnplace",
@@ -238,7 +238,7 @@
         "synchronization_subtitle": "Please wait a few seconds while we synchronize your ILIAS-account."
     },
     "onboarding": {
-      "title1": "Whith the help of ILIAS Pegasus you can:",
+      "title1": "With the help of this app you can:",
         "function1": "access your ILIAS courses on your smartphone.",
         "function2": "make your courses & files available offline.",
         "function3": "log in once and stay logged in.",

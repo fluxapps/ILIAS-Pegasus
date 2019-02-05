@@ -16,8 +16,12 @@
 
 $text-color:        #000;
 $background-color:  #fff;
-$tabs-ios-tab-icon-color-active: map_get($colors, primary);
-$tabs-ios-tab-icon-color: #a9a9a9;
+// $tabs-ios-tab-icon-color-active: map_get($colors, primary);
+// $tabs-ios-tab-icon-color: #a9a9a9;
+$tabs-ios-tab-icon-color-active: map_get($colors, primary) !important;
+$tabs-ios-tab-icon-color: #a9a9a9 !important;
+$tabs-ios-border: 0.5px solid #a9a9a9 !important;
+$tabs-ios-tab-icon-size: 35px !important;
 
 
 $refresher-text-font-size: 1em;
@@ -113,4 +117,11 @@ $refresher-text-font-size: 1em;
     // background-color: map_get($colors, primary);
     background-size: 100% 25% ;
     background-repeat: no-repeat;
+}
+
+.learnplace-tabs{
+
+    $tabs-ios-tab-icon-color-active: map_get($colors, primary);
+    $tabs-ios-tab-icon-color: #942a2a;
+    
 }
