@@ -1,0 +1,255 @@
+{
+    "test" : "le test",
+    "back": "Back",
+    "Synchronize": "Synchronize",
+    "synchronize": "Synchronize",
+    "save": "save",
+    "Save": "Save",
+    "User": "User",
+    "user": "user",
+    "cancel": "Cancel",
+    "general": "General",
+    "new": "New",
+    "updated": "Updated",
+    "synchronisation_in_progress": "Synchronization in progress",
+    "deleting_files": "Deleting files",
+    "something_went_wrong": "Something went wrong, try again later.",
+    "menu": "Menu",
+    "remove": "Remove",
+    "no_items": "There are currently no entries.",
+    "yes": "Yes",
+    "no": "No",
+    "no_title": "No title",
+    "close": "Close",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "object-list": {
+        "title" : "My Courses & Groups",
+        "content" : "Content"
+    },
+    "page-layout": {
+        "group" : "Additional information available for this group.",
+        "course" : "Additional information available for this course.",
+        "folder" : "Additional information available for this folder.",
+        "default" : "Additional information available for this object."
+    },
+    "timeline": {
+        "course": "Timeline availabe for this course.",
+        "group": "Timeline available for this group.",
+        "default": "Timeline available for this object."
+    },
+    "favorites": {
+        "title": "Favorites"
+    },
+    "news": {
+        "title": "News"
+    },
+    "new-objects": {
+        "title": "New Content",
+        "no_new_items": "There is no new content.",
+        "mark_as_seen": "Mark as seen"
+    },
+    "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "downloadSize": "Max. size of files for download (MB)",
+        "downloadWLAN": "Download only in WLAN",
+        "quotaSize": "Max. Quota Size (MB)",
+        "settings_saved": "Settings Saved",
+        "files_deleted": "Files deleted successfully",
+        "delete_user_local_data_title": "Delete local files for user {{username}}",
+        "delete_user_local_data_text": "Are you sure you want to delete all local files on the device for this user?",
+        "delete_all_files": "Delete all local files on device",
+        "delete_all_files_text": "Are you sure you want to delete all local of all users on this device?",
+        "summary": "Summary",
+        "total": "Total",
+        "users": "User",
+        "deleting_files": "Deleting files"
+    },
+    "info": {
+        "title": "Info",
+        "guide": "Guide",
+        "instructions1": "If you're on the Home page 'My Courses and Groups' you can mark the courses and groups as 'available Offline'. They are marked with a gray cloud. Once the files are synced, the cloud turns blue.",
+        "instructions2": "The synchronization will start automatically each time the app is started or if a course has been marked as Available Offline. Manual synchronization can also be started by dragging (Pull to Refresh) the 'My Courses and Groups' page."
+    },
+    "logout": {
+        "title": "Logout",
+        "logged_out": "Logout successful"
+    },
+    "common": {
+        "synchronize" : "synchronize"
+    },
+    "download": {
+        "title": "Download",
+        "something_went_wrong": "Something went wrong! Try again soon."
+    },
+    "actions": {
+        "view_in_ilias": "View in ILIAS",
+        "mark_as_favorite": "Mark as favorite",
+        "download": "Download / Update",
+        "mark_as_offline_available": "Mark as offline available",
+        "unmark_as_offline_available": "Unmark as offline available",
+        "synchronize": "Synchronize",
+        "remove_local_files": "Remove local files",
+        "removed_local_files": "Local files removed",
+        "remove_local_file": "Remove local file",
+        "removed_local_file": "Local file removed",
+        "remove_local_learnplace": "Remove local learnplace",
+        "remove_local_learnplace_failed": "Learnplace removal failed.",
+        "removed_local_learnplace": "Local learnplace removed",
+        "download_and_open_in_external_app": "Download and Open with external app",
+        "unmark_as_favorite": "Remove from favorites",
+        "open_in_external_app": "Open with external app",
+        "show_details": "Show Details",
+        "sync_incomplete": "Something went wrong: The synchronisation is incomplete.",
+        "offline_and_no_local_file": "You are offline and no local file is available.",
+        "download_without_wlan": "Download without WLAN",
+        "download_without_wlan_continue": "You are currently not connected to a WLAN. Do you want to download anyway?",
+        "download_without_disk_quota": "No Disk Space",
+        "download_without_disk_quota_text": "If you download this file, you will exceed the disk space specified in the settings. Do you want to download anyway?",
+        "remove_local_files_in": "Delete files in {{title}}",
+        "remove_local_files_in_text": "Are you sure you want to delete all downloaded files?",
+        "download_successful": "Download successful",
+        "cant_open_file": "There's no application that could open this filetype.",
+        "server_not_reachable": "We cannot reach the server, please try again later or try logging in again.",
+        "server_response_validation_error": "Server communication issue, please make sure to run the latest app and try again. Try login out and log in again-"
+    },
+    "details" : {
+        "last_update": "Last update",
+        "availability": "Availability",
+        "size": "Size",
+        "version": "Version",
+        "local_version_date": "Date of file on device",
+        "remote_version_date": "Date of file in ILIAS",
+        "used_disk_space": "Used disk space",
+        "potentially_used_disk_space": "Estimated disk space usage after synchronisation",
+        "offline_available": "Offline available",
+        "availabilities": {
+            "needs_download": "Needs download",
+            "up-to-date": "Up-to-date",
+            "needs_update": "Needs update"
+        }
+    },
+    "sync": {
+        "sync_already_running": "A synchronization is already in progress.",
+        "last_sync": "Last synchronization",
+        "fetching_metadata": "Fetching metadata",
+        "fetching_news": "Fetching news",
+        "title": "Synchronization",
+        "sync_incomplete": "Something went wrong: The synchronization may be incomplete.",
+        "stopped_no_wlan": "New or updated files cannot be synchronized. Please connect to a WLAN",
+        "files_too_big": "New or updated files cannot be synchronized, they exceed the max. Quota. Please increase the quota in the settings or delete some files.",
+        "object_synced": "{{title}} has been synchronized successfully.",
+        "success": "Synchronization completed.",
+        "download": "Download",
+        "sync_finished_text": "The synchronization terminated. There are a total of {{totalItems}} marked files. {{updated}} files have been downloaded to the newest version. {{uptodate}} files are still up to date and don't need to be downloaded.",
+        "some_files_were_too_big": "Some files were too big. Increase the max. file size in the settings or download the files manually.",
+        "no_more_space": "The disk space exceeded and some files couldn't be downloaded. Delete some files or increase the disk space available to the synchronization in the settings.",
+        "pull_to_sync": "Pull to refresh"
+    },
+    "login": {
+        "title": "Login",
+        "hello":"Welcome to ILIAS Pegasus!",
+        "instructions":"Choose your institution",
+        "instructions2":"Choose your institution",
+        "login": "Login"
+    },
+    "object_type": {
+        "crs" : "Course",
+        "crsr": "Course Reference",
+        "grp" : "Group",
+        "grpr" : "Group Reference",
+        "frm" : "Forum",
+        "fold": "Folder",
+        "sess": "Session",
+        "catr": "Category Reference",
+        "cat" : "Category",
+        "book": "Booking Pool",
+        "chatr":"Chat Room",
+        "file" : "File",
+        "webr" : "Weblink",
+        "feed" : "Webfeed",
+        "wiki" : "Wiki",
+        "blog" : "Blog",
+        "lm" : "Learning Module",
+        "htlm" : "Learning Module",
+        "sahs" : "Learning Module",
+        "iass" : "Individual Assessment",
+        "glo" : "Glossary",
+        "dcl" : "Data Collection",
+        "bibl" : "Bibliography",
+        "mcst" : "Mediacast",
+        "mep" : "Mediapool",
+        "exc" : "Exercise",
+        "tst" : "Test",
+        "qpl" : "Question Pool Test",
+        "mass" : "Individual Assessment",
+        "poll" : "Poll",
+        "svy" : "Survey",
+        "spl" : "Question Pool Survey",
+        "prtt" : "Portfolio Template",
+        "xlel" : "Learn Location",
+        "xlvo" : "LiveVoting",
+        "xoct" : "OpenCast",
+        "xtst" : "Test Repository Object",
+        "xvid" : "Interactive Video",
+        "xpdl" : "Etherpad",
+        "xavc" : "Adobe Connect Meeting",
+        "xflc" : "Flashcards",
+        "chtr" : "Chatroom",
+        "xxco" : "Remote content",
+        "xsrl": "Learnplace"
+    },
+    "message": {
+        "back_to_exit": "Press back again to exit."
+    },
+    "learnplace": {
+        "map": {
+            "no_map": "This learnplace does not have a map",
+            "too_far_away": "You are too far away from the learnplace, to view the map"
+        },
+        "block": {
+            "no_content": "This learnplace has no content",
+            "text": {
+                "too_far_away": "You are too far away from the learnplace to read this text"
+            },
+            "picture": {
+                "too_far_away": "You are too far away from the learnplace to view this picture"
+            },
+            "link": {
+                "too_far_away": "You are too far away from the learnplace to click on this link",
+                "no_access": "You don't have the access rights to this link"
+            },
+            "video": {
+                "too_far_away": "You are too far away from the learnplace to play this video"
+            },
+            "accordion": {
+                "too_far_away": "You are too far away from the learnplace to view this accordion"
+            }
+        }
+    },
+    "fallback": {
+        "browser": "You are leaving the ILIAS App ",
+        "browser_ok": "OK, let's go!",
+        "browser_no": "No. return!",
+        "loading": "Learnplace",
+        "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download.",
+        "synchronization": "Welcome!",
+        "synchronization_subtitle": "Please wait a few seconds while we synchronize your ILIAS-account."
+    },
+    "onboarding": {
+      "title1": "With the help of this app you can:",
+        "function1": "access your ILIAS courses on your smartphone.",
+        "function2": "make your courses & files available offline.",
+        "function3": "log in once and stay logged in.",
+        "title2": "A decentralized app",
+        "concept1": "The Pegasus app connects you to the ILIAS installation of your institution, university or school.",
+        "concept2": "If your institution did not join yet, contact us",
+        "title3":"Your data is safe!",
+        "datasecurity1": "Your data will only be stored on your device. The app does not collect any personal information. If you want to check this in detail, you will find here the",
+        "datasecurity2": "privacy policy",
+        "datasecurity3": "ILIAS Pegasus is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
+        "next":"next",
+        "start": "Let's go"    
+    }
+}

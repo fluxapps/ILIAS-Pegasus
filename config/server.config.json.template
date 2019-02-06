@@ -1,0 +1,22 @@
+{
+  "installations": [
+    {
+      "id": 1,
+      "title": "test uni",
+      "url": "https://ilias.example.org",
+      "clientId": "default",
+      "apiKey": "ilias_pegasus",
+      "apiSecret": "{YOUR CLIENT SECRETE}",
+      "accessTokenTTL": 3600000
+    },
+    {
+      "id": 2,
+      "title": "other university name",
+      "url": "https://other-ilias.example.org",
+      "clientId": "default",
+      "apiKey": "ilias_pegasus",
+      "apiSecret": "{YOUR CLIENT SECRETE}",
+      "accessTokenTTL": 3600000
+    }
+  ]
+}

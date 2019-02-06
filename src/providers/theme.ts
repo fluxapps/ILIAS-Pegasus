@@ -11,7 +11,7 @@ export class ThemeProvider {
     // NOTE: The script "./set_theme.js" searches for "@HOOK ..." and replaces the line thereafter to set the theme
     // You may need to also edit "./set_theme.js" when changing this line
     // @HOOK selectedTheme
-    private readonly theme: ThemeObject = { assets_dir: "vanilla" };
+    private static readonly theme: ThemeObject = { assets_dir: "vanilla" };
 
     static instance(): ThemeProvider {
         if (ThemeProvider.staticInstance == undefined)
@@ -20,6 +20,6 @@ export class ThemeProvider {
     }
 
     getAsset(file: string): string {
-        return `assets/${this.theme.assets_dir}/${file}`;
+        return `assets/${ThemeProvider.theme.assets_dir}/${file}`;
     }
 }

@@ -16,6 +16,7 @@ const FS = require("fs");
 module.exports = function(context) {
     let theme = getTheme(context);
     generateConfigFile(theme);
+    generateLangFiles(theme);
     setLinesInScripts(theme);
     replaceResources(theme);
 }
@@ -40,8 +41,8 @@ function getTheme(context) {
 
 // generate "src/assets/config.json"
 function generateConfigFile(theme) {
-    let config_server = JSON.parse(FS.readFileSync("config/server.config.json", "utf8")).installations;
-    let config_brand = JSON.parse(FS.readFileSync(`src/assets/${theme}/config.json`, "utf8"));
+    let config_server = loadJSON("config/server.config.json", "utf8").installations;
+    let config_brand = loadJSON(`src/assets/${theme}/config.json`);
     let config_out = { "installations": [] };
 
     for (let i in config_brand.ilais_installation_ids) {
@@ -57,13 +58,25 @@ function generateConfigFile(theme) {
         console.warn(msg);
     }
 
-    FS.writeFileSync("src/assets/config.json", JSON.stringify(config_out));
+    writeJSON("src/assets/config.json", config_out);
+}
+
+// generate language-files from a global and a theme-specific source
+function generateLangFiles(theme) {
+    FS.readdirSync("src/assets/i18n_global").forEach(function(file) {
+        let lng_tree = loadJSON(`src/assets/i18n_global/${file}`);
+        let path_lng_mod = `src/assets/${theme}/i18n/${file}`;
+        if(FS.existsSync(path_lng_mod)) {
+            insert(loadJSON(path_lng_mod), lng_tree);
+        }
+        writeJSON(`src/assets/i18n/${file}`, lng_tree);
+    });
 }
 
 // set lines in scripts
 function setLinesInScripts(theme) {
     setLine("src/theme/variables.scss", "@HOOK import_theme", `@import "../assets/${theme}/stylesheets/theme";`);
-    setLine("src/providers/theme.ts", "@HOOK selectedTheme", `    private readonly theme: ThemeObject = { assets_dir: "${theme}" };`);
+    setLine("src/providers/theme.ts", "@HOOK selectedTheme", `    private static readonly theme: ThemeObject = { assets_dir: "${theme}" };`);
 }
 
 // replace folder with resources
@@ -75,7 +88,7 @@ function replaceResources(theme) {
 
 // open the file at file_path, search for the marker-string and replace the line thereafter with new_line
 function setLine(file_path, marker, new_line) {
-    let lines = FS.readFileSync(file_path,"utf8").split("\n");
+    let lines = FS.readFileSync(file_path, "utf8").split("\n");
     for(var i = 0; i < lines.length; i++) {
         if (lines[i].indexOf(marker) !== -1) {
             lines[i+1] = new_line;
@@ -90,7 +103,7 @@ function setLine(file_path, marker, new_line) {
 // delete directory
 function deleteDirSync(path) {
     if(FS.existsSync(path)) {
-        FS.readdirSync(path).forEach(function(file){
+        FS.readdirSync(path).forEach(function(file) {
             let itemPath = path + "/" + file;
             if(FS.lstatSync(itemPath).isDirectory())
                 deleteDirSync(itemPath);
@@ -104,7 +117,7 @@ function deleteDirSync(path) {
 // copy directory
 function copyDirSync(path_from, path_to) {
     if(FS.existsSync(path_from)) {
-        FS.readdirSync(path_from).forEach(function(file){
+        FS.readdirSync(path_from).forEach(function(file) {
             let itemPath_from = path_from + "/" + file;
             let itemPath_to = path_to + "/" + file;
             if(FS.lstatSync(itemPath_from).isDirectory()) {
@@ -115,4 +128,28 @@ function copyDirSync(path_from, path_to) {
             }
         });
     }
+}
+
+// insert-operation for an object-tree of strings
+function insert(source, target) {
+    for(let key in source) {
+        if (typeof(source[key]) === "string") {
+            target[key] = source[key];
+        } else {
+            if(!target.hasOwnProperty(key)) {
+                target[key] = {};
+            }
+            insert(source[key], target[key]);
+        }
+    }
+}
+
+// load and parse a json-file
+function loadJSON(file) {
+    return JSON.parse(FS.readFileSync(file, "utf8"));
+}
+
+// stringify and write a json-file
+function writeJSON(file, data) {
+    FS.writeFileSync(file, JSON.stringify(data));
 }
