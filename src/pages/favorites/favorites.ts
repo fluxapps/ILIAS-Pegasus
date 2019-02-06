@@ -59,7 +59,7 @@ export class FavoritesPage {
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: ThemeProvider
+                readonly theme: ThemeProvider
     ) {}
 
     ionViewWillEnter(): void {

@@ -418,4 +418,8 @@ ion-content.page_settings {
         opacity: 0.2;
     }
 
+    ion-spinner svg * {
+        stroke: white !important;
+    }
+
 }

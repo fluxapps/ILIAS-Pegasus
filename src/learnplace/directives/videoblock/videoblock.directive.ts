@@ -25,7 +25,7 @@ export class VideoBlock implements OnInit, OnDestroy {
     private readonly file: File,
     private readonly streaming: StreamingMedia,
     private readonly detectorRef: ChangeDetectorRef,
-    private readonly theme: ThemeProvider
+    readonly theme: ThemeProvider
   ) {}
 
 

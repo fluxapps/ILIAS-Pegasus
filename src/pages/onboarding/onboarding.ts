@@ -20,7 +20,7 @@ export class OnboardingPage {
 
   constructor(public navCtrl: NavController,
     public viewCtrl: ViewController,
-    private readonly theme: ThemeProvider
+    readonly theme: ThemeProvider
   ) {
 
   }

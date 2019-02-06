@@ -9,7 +9,7 @@ import {ThemeProvider} from "../../../providers/theme";
 export class SynchronizationPage {
 
   constructor(readonly footerToolbar: FooterToolbarService,
-              private readonly theme: ThemeProvider) {
+              readonly theme: ThemeProvider) {
 
   }
 

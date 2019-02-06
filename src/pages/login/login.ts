@@ -28,11 +28,12 @@ export class LoginPage {
                 public event: Events,
                 private readonly browser: InAppBrowser,
                 private readonly executeSyncCtrl: ExecuteSyncProvider,
-                private readonly theme: ThemeProvider,
+                readonly theme: ThemeProvider,
     ) {
-
-      this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));
-      this.installationId = this.theme.getILIASInstallationId();
+      this.configProvider.loadConfig().then(config => {
+          this.installations.push(...config.installations);
+          this.installationId = this.installations[0].id;
+      });
     }
 
     login() {

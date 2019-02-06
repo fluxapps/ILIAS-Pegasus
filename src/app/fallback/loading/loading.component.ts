@@ -9,6 +9,6 @@ export class LoadingPage {
 
     constructor(
         readonly footerToolbar: FooterToolbarService,
-        private readonly theme: ThemeProvider
+        readonly theme: ThemeProvider
     ) {}
 }
