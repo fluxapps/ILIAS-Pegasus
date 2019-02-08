@@ -1,12 +1,10 @@
-import {ThemeProvider} from "../providers/theme";
-
 /**
  * Holds the the styling information, if an ILIAS object has a page layout.
  */
 
 export class PageLayout {
 
-  readonly icon: string = ThemeProvider.instance().getAsset("icon/info.svg");
+  readonly icon: string = "assets/icon/info.svg";
   readonly text: string;
 
   constructor(

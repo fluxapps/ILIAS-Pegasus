@@ -1,7 +1,6 @@
 import {Component} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {IonicPage} from "ionic-angular";
-import {ThemeProvider} from "../../providers/theme";
 
 /*
   Generated class for the InfoPage page.
@@ -19,8 +18,7 @@ export class InfoPage {
   tab: string = "info";
 
   constructor(
-    private readonly browser: InAppBrowser,
-    readonly theme: ThemeProvider
+    private readonly browser: InAppBrowser
   ) {}
 
   // call(number) {
