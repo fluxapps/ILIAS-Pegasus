@@ -33,6 +33,9 @@ plugins/
 plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
+src/assets/*
+resources
+
 
 bin/android-*-unsigned.apk
 .DS_Store
