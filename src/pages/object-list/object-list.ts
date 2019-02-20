@@ -346,6 +346,7 @@ export class ObjectListPage {
         }
 
         if (iliasObject.isContainer()) {
+            this.sync.execute(iliasObject, true);
             return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
         }
 

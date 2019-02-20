@@ -25,7 +25,7 @@ export class SynchronizationService {
     private user: User;
 
 
-    private syncQueue: Array<{ object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }> = [];
+    private syncQueue: Array<{ object: ILIASObject, liveLoad: boolean, resolver: Resolve<SyncResults>, rejecter }> = [];
 
     lastSync: Date;
     lastSyncString: string;
@@ -47,9 +47,10 @@ export class SynchronizationService {
      * If iliasObject is null, executes a global sync (data is fetched for all objects marked as offline available)
      * If iliasObject is given, only fetches data for the given object
      * @param iliasObject
+     * @param liveLoad
      * @returns {any}
      */
-    execute(iliasObject: ILIASObject = undefined): Promise<SyncResults> {
+    execute(iliasObject: ILIASObject = undefined, liveLoad: boolean = false): Promise<SyncResults> {
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == undefined) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
@@ -62,6 +63,7 @@ export class SynchronizationService {
             });
             this.syncQueue.push({
                 object: iliasObject,
+                liveLoad: liveLoad,
                 resolver: resolver,
                 rejecter: rejecter
             });
@@ -76,16 +78,19 @@ export class SynchronizationService {
                 return this.syncStarted(this.user.id);
             })
             .then( () => {
-                if(iliasObject) {
-                    return this.executeContainerSync(iliasObject);
+                if (liveLoad) {
+                    return this.executeLiveLoad(iliasObject);
                 } else {
-                	// console.log('executeGlobalSync');
-                    return this.executeGlobalSync();
+                    if (iliasObject) {
+                        return this.executeContainerSync(iliasObject);
+                    } else {
+                        return this.executeGlobalSync();
+                    }
                 }
             }).then((syncResult) => {
                 if(this.syncQueue.length > 0) {
                     const sync = this.syncQueue.pop();
-                    this.execute(sync.object)
+                    this.execute(sync.object, sync.liveLoad)
                         .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
                         }).catch(error => {
@@ -326,6 +331,18 @@ export class SynchronizationService {
               })
           ))
       );
+    }
+
+    private async executeLiveLoad(parent: ILIASObject): Promise<SyncResults> {
+        const iliasObjects: Array<ILIASObject> = (parent == undefined) ?
+            await this.dataProvider.getDesktopData(this.user) :
+            await this.dataProvider.getObjectData(parent, this.user, false); // TODO recursion ? to which level ?
+
+        const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
+        await this.downloadLearnplaces(iliasObjects).toPromise(); // TODO necessary ?
+        await this.syncEnded(this.user.id);
+
+        return syncResults;
     }
 
     private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {

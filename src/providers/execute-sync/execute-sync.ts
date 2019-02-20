@@ -53,7 +53,7 @@ export class ExecuteSyncProvider {
           Log.write(this, "Sync start", [], []);
           this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-          const syncResult: SyncResults = await this.sync.execute();
+          const syncResult: SyncResults = await this.sync.execute(undefined, true);
           this.calculateChildrenMarkedAsNew();
 
           // We have some files that were marked but not downloaded. We need to explain why and open a modal.
@@ -73,6 +73,7 @@ export class ExecuteSyncProvider {
           throw error;
       }
   }
+
    // TODO: Refactor method to make sure it returns a Promise<void>
    private calculateChildrenMarkedAsNew(): void {
     // Container objects marked as offline available display the number of new children as badge
