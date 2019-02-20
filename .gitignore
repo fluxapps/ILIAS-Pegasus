@@ -16,6 +16,7 @@ log.txt
 *_config.json
 .vscode/
 npm-debug.log*
+server.config.json
 
 .idea/
 .sourcemaps/

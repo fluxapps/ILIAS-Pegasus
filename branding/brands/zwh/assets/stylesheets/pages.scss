@@ -133,7 +133,14 @@
     background-repeat: no-repeat;
     // background-color: map_get($colors, primary);
 
+    .privacy-iq{
+        display: none
+    }
+    .privacy-pegasus{
+        display: none
+    }
 }
+
 
 // pages/settings
 // --------------------------------------------------
@@ -172,6 +179,16 @@ ion-content.page_settings {
         margin: 20px 0;
         width: 100%;
     }
+
+    .version-card{
+        display:none;
+    }
+
+    .reporting-card{
+        display:none;
+    }
+
+
 
 }
 
@@ -293,6 +310,10 @@ ion-content.page_settings {
         font-weight: 900;
     }
 
+    .list-element{
+        background: #999;
+    }
+
 }
 
 // learnplace_map
@@ -363,7 +384,7 @@ ion-content.page_settings {
 
     img { //TODO check, had to tune
         &.logo {
-            width: 80%;
+            height: 10vh;
             padding-left: 5%;
             //padding-right: 4%;
         }
@@ -392,8 +413,7 @@ ion-content.page_settings {
         padding-right: 15%;
         font-weight: 600;
         color: white;
-
-        font-size: 0.8em;
+        font-size: 1vmax;
     }
 
     .flagtoflag {
@@ -403,8 +423,9 @@ ion-content.page_settings {
 
     .grid-text {
         font-weight: 600;
-        font-size: 0.8em;
-        padding-bottom: 6%;
+        font-size: 1vmax;
+        padding-left: 3%;
+        // padding-bottom: 6%;
         text-align: left;
         padding-right: 5%;
     }
@@ -427,7 +448,12 @@ ion-content.page_settings {
         background-color: map-get($colors, primary);
     }
 
+    .onboarding-grid{
+        height: 125px;
+    }
+
 }
+
 
 // app/fallback/open-browser/leave-app.dialog.scss
 // --------------------------------------------------
@@ -529,10 +555,7 @@ ion-content.page_settings {
         opacity: 0.2;
     }
 
-    ion-spinner svg * {
-        stroke: white !important;
-    }
-
 }
+
 
 

@@ -83,7 +83,7 @@ $refresher-text-font-size: 1em;
 
     // background-color: #fff;
     // opacity: 0.95;
-    backdrop-filter: blur(5px);
+    // backdrop-filter: blur(5px);
         // color:white;
     // border: none
 }
@@ -117,8 +117,21 @@ $refresher-text-font-size: 1em;
   }
 
   .list-element{
-      border: 2px solid white;
-        margin-bottom: 1em;
-  }
+    background-color: transparent !important;
+    backdrop-filter: brightness(200%);
+    backdrop-filter: saturate(80%);
+    border: 2px solid  white !important;
+    margin-bottom: 1em !important;
+}
+
+header{
+
+    border: 0px !important;
+    border-bottom-color: transparent !important;
+    background-image: none !important;
+    border-bottom: none !important;
+
+}
+
 
 

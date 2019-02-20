@@ -6,14 +6,14 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content no-padding class="page_favorites page_object_list">
+<ion-content class="page_favorites page_object_list">
 
     <ion-list text-wrap *ngIf="favorites && favorites.length == 0 && footerToolbar.isLoading == false">
-        <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
+        <ion-item color="list-element">{{ 'no_items' | translate:[] }}</ion-item>
     </ion-list>
 
     <ion-list class="ilias-object-list">
-        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)"  color="list-element">
+        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)"  color="list-element" class="list-element">
 
                 <ion-avatar item-start>
                         <img [src]="object.presenter.icon()"><!-- TODO make relative? -->

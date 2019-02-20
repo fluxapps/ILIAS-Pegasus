@@ -23,14 +23,14 @@
 
   <ion-list  class="ilias-object-list">
     <div class="" *ngIf="parent != undefined">
-      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
         <ion-avatar item-start>
             <img [src]="pageLayout.icon"><!-- TODO make relative? -->
         </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
-      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()" color="list-element" class="list-element">
         <ion-icon [name]=timeline.icon item-start></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
@@ -82,7 +82,7 @@
       </button>
     </ion-item>
 
-    <ion-item text-wrap="" *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == false">
+    <ion-item text-wrap="" *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == false" color="list-element">
       {{ 'no_items' | translate:[] }}
     </ion-item>
   </ion-item-group>
