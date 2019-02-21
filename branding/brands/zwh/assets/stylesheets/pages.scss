@@ -47,7 +47,7 @@
         // background-position: top left;
         background-size: 100vw ;
         background-repeat: no-repeat;
-        @extend .primary-gradient-inverted;
+        @extend .primary-gradient;
         // background-color: map_get($colors, primary);
     
 
@@ -123,7 +123,7 @@
 
 
 .page_menu {
-    @extend .primary-gradient;
+    @extend  .primary-gradient-inverted;
 
     // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
     // background-image: url('../assets/vanilla/img/header.svg');
@@ -145,7 +145,7 @@
 // pages/settings
 // --------------------------------------------------
 ion-content.page_settings {
-    @extend .primary-gradient;
+    @extend .primary-gradient-inverted;
 
     .list > .item-block:first-child {
         border: none;
@@ -173,7 +173,7 @@ ion-content.page_settings {
 // pages/info
 // --------------------------------------------------
 .page_info {
-    @extend .primary-gradient;
+    @extend .primary-gradient-inverted;
 
     ion-card {
         margin: 20px 0;
@@ -195,7 +195,7 @@ ion-content.page_settings {
 // pages/login
 // --------------------------------------------------
 .page_login {
-    @extend .primary-gradient-inverted;
+    @extend .primary-gradient;
     line-height: 1.8em;
     text-align: center;
     text-align: center;
@@ -269,7 +269,7 @@ ion-content.page_settings {
 
 
 .page_news{
-    @extend .primary-gradient-inverted;
+    @extend .primary-gradient;
 
 }
 
