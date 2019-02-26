@@ -12,6 +12,12 @@ with CMD = 'prepare ...', 'build ...', 'run ...' or 'emulate ...'
 
 this will prepare the app, where the hook-script './branding/set_brand.js' will set the customization and generate a log-file at './branding/set_brand.log'
 
+in order for the script to work properly
+
+* __either__ the directories 'resources' and 'src/assets' must be empty and the file 'src/theme/variables.scss' has the same content as 'src/theme/variables.scss.template'
+
+* __or__ a command as above has been run successfully before
+
 # structure for each brand
 
 the following structure of directories and files must be provided for each brand
