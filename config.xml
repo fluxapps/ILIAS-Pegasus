@@ -5,7 +5,6 @@
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
     <content src="index.html" />
     <access origin="*" />
-    <hook src="branding/set_brand.js" type="before_prepare" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />

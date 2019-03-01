@@ -4,19 +4,11 @@ this directory contains the data that is customizable for the different brands o
 
 each brand is defined by a directory 'brands/[BRAND_NAME]'
 
-in order to apply the customization to the app, use the following command
+in order to set the branding of the app, use the following command
 
-    ionic cordova CMD -- --theme=[BRAND_NAME]
+    npm run setbrand -- --brand=[BRAND_NAME]
 
-with CMD = 'prepare ...', 'build ...', 'run ...' or 'emulate ...'
-
-this will prepare the app, where the hook-script './branding/set_brand.js' will set the customization and generate a log-file at './branding/set_brand.log'
-
-in order for the script to work properly
-
-* __either__ the directories 'resources' and 'src/assets' must be empty and the file 'src/theme/variables.scss' has the same content as 'src/theme/variables.scss.template'
-
-* __or__ a command as above has been run successfully before
+the script './branding/set_brand.js' will set the customization and generate a log-file at './branding/set_brand.log'
 
 # structure for each brand
 
@@ -26,6 +18,7 @@ the following structure of directories and files must be provided for each brand
 * [BRAND_NAME]/assets
 * [BRAND_NAME]/assets/stylesheets/theme.scss
 * [BRAND_NAME]/resources
+* [BRAND_NAME]/build.json
 * [BRAND_NAME]/config.json
 
 # config
@@ -93,8 +86,12 @@ in addition, the variable '$ionicons-font-path' will be set to match the content
 
 # icons and images
 
-the directories '[BRAND_NAME]/assets/icon' and '[BRAND_NAME]/assets/img' must contain the concerned assets that are used by the app
+the directories '[BRAND_NAME]/assets/icon' and '[BRAND_NAME]/assets/img' must contain the assets that are used by the app
 
 # resources
 
 the directory '[BRAND_NAME]/resources' contains the splash screens and icons for android and ios, it will be placed at './resources'
+
+# release builds
+
+the file [BRAND_NAME]/build.json contains information that is used for IOS release builds

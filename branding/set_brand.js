@@ -1,56 +1,58 @@
-/* DESCRIPTION: This script is used as a hook that is declared in "config.xml"
- * -> replace the folder ./resources with the icon and splash screen with the one corresponding to the chosen theme
- * -> replace the folder ./src/assets with the one corresponding to the chosen theme
- * -> generate "src/assets/config.json" with the required ILIAS installations from "branding/common/config/server.config.json"
- * -> generate language files in "src/assets/i18n" by inserting theme-specific changes to the files in "branding/common/i18n"
+/* DESCRIPTION: This script sets the branding of the app, it
+ * -> replaces the folder ./resources with the icon and splash screen with the one corresponding to the chosen brand
+ * -> replaces the folder ./src/assets with the one corresponding to the chosen brand
+ * -> replaces the file ./build.json used for IOS release builds
+ * -> generates "src/assets/config.json" with the required ILIAS installations from "branding/common/config/server.config.json"
+ * -> generates language files in "src/assets/i18n" by inserting brand-specific changes to the files in "branding/common/i18n"
  *
- * USAGE: the theme can be set via the "--theme"-tag
- * ionic cordova CMD -- --theme=[BRAND_NAME]
- * with CMD = 'prepare ...', 'build ...', 'run ...' or 'emulate ...'
+ * USAGE: the brand can be set via the "--brand"-tag
+ * npm run setbrand -- --brand=[BRAND_NAME]
  */
 
 const FS = require("fs");
 let console_log = "";
+execute();
 
-module.exports = function(context) {
-    let theme = "";
+function execute() {
+    let brand = "";
     try {
-        theme = getTheme(context);
-        replaceDirectory(`branding/brands/${theme}/resources`, "resources");
-        replaceDirectory(`branding/brands/${theme}/assets`, "src/assets");
-        generateConfigFile(theme);
-        generateLangFiles(theme);
-        generateVariablesScssFile();
-    } catch (e) {
+        brand = getBrand();
+        setDirectoryContent("resources", `branding/brands/${brand}/resources`);
+        setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
+        setFile("build.json", `branding/brands/${brand}/build.json`);
+        generateConfigFile(brand);
+        generateLangFiles(brand);
+        consoleOut("(set_brand.js) DONE");
+    } catch(e) {
         console_log += e.stack;
-        throw (e);
+        throw(e);
     } finally {
-        writeLog(theme);
+        writeLog(brand);
     }
 }
 
-// get theme from command-line or set to default
-function getTheme(context) {
-    let ind = context.cmdLine.indexOf("--theme");
-    let theme = context.cmdLine.substring(ind + 8).split(" ")[0];
-
-    if (ind === -1) {
-        let msg = "hook(set_brand.js) WARNING: flag for setting the theme not found. ";
-        msg += "use as 'ionic cordova CMD -- --theme=[BRAND_NAME]' with CMD = 'prepare ...', 'build ...', 'run ...' or 'emulate ...'";
-        throw new Error(msg);
+// get brand from command-line
+function getBrand() {
+    // find and check the "--brand"-tag
+    for (let i = 0; i < process.argv.length; i++) {
+        let list = process.argv[i].split('=');
+        if (list[0] === "--brand") {
+            let brand = list[1];
+            if (!FS.existsSync(`branding/brands/${brand}`))
+                throw new Error(`(set_brand.js) the directory 'branding/brands/${brand}' for the brand '${brand}' does not exist`);
+            consoleOut(`(set_brand.js) setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
+            return brand;
+        }
     }
-    if (!FS.existsSync(`branding/brands/${theme}`)) {
-        throw new Error(`hook(set_brand.js) WARNING: the directory 'branding/brands/${theme}' for the theme '${theme}' does not exist`);
-    }
 
-    consoleOut(`hook(set_brand.js) setting theme to '${theme}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
-    return theme;
+    // if the tag does not exist, throw an error
+    throw new Error("(set_brand.js) flag for setting the brand not found. use as 'npm run setbrand -- --brand=[BRAND_NAME]'");
 }
 
 // generate "src/assets/config.json"
-function generateConfigFile(theme) {
+function generateConfigFile(brand) {
     let config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
-    let config_brand = loadJSON(`branding/brands/${theme}/config.json`);
+    let config_brand = loadJSON(`branding/brands/${brand}/config.json`);
     let config_out = { "installations": [] };
 
     for (let i in config_brand.ilias_installation_ids) {
@@ -61,46 +63,37 @@ function generateConfigFile(theme) {
     }
 
     if (config_out.installations.length !== config_brand.ilias_installation_ids.length) {
-        let msg = `hook(set_brand.js) WARNING: unable to match all ilias installation ids in ${JSON.stringify(config_brand.ilias_installation_ids)} . `;
-        msg += `this selection of ids is set in 'src/assets/${theme}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
+        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(config_brand.ilias_installation_ids)} . `;
+        msg += `this selection of ids is set in 'src/assets/${brand}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
         throw new Error(msg);
     }
 
     writeJSON("src/assets/config.json", config_out);
 }
 
-// generate language-files from a global and a theme-specific source
-function generateLangFiles(theme) {
+// generate language-files from a global and a brand-specific source
+function generateLangFiles(brand) {
     FS.readdirSync("branding/common/i18n").forEach(function(file) {
         let lng_tree = loadJSON(`branding/common/i18n/${file}`);
-        let path_lng_mod = `branding/brands/${theme}/assets/i18n/${file}`;
+        let path_lng_mod = `branding/brands/${brand}/assets/i18n/${file}`;
 
-        if(FS.existsSync(path_lng_mod))
+        if (FS.existsSync(path_lng_mod))
             insert(loadJSON(path_lng_mod), lng_tree);
 
         const path = "src/assets/i18n";
-        if(!FS.existsSync(path))
+        if (!FS.existsSync(path))
             FS.mkdirSync(path);
         writeJSON(`${path}/${file}`, lng_tree);
     });
 }
 
-// generate the stylesheet-file "src/theme/variables.scss"
-function generateVariablesScssFile() {
-    const content = `
-    @import "ionic.globals";
-    @import "../assets/stylesheets/theme";
-    $ionicons-font-path: "../assets/fonts";
-    @import "ionicons";`;
-
-    const path = "src/theme";
-    if(!FS.existsSync(path))
-        FS.mkdirSync(path);
-    FS.writeFileSync(`${path}/variables.scss`, content);
+// set file at target to the one at source
+function setFile(path_to, path_from) {
+    FS.writeFileSync(path_to, FS.readFileSync(path_from));
 }
 
-// replace directory at target with the one at source
-function replaceDirectory(path_from, path_to) {
+// set directory at target to the one at source
+function setDirectoryContent(path_to, path_from) {
     deleteDirSync(path_to);
     FS.mkdirSync(path_to);
     copyDirSync(path_from, path_to);
@@ -108,10 +101,10 @@ function replaceDirectory(path_from, path_to) {
 
 // delete directory
 function deleteDirSync(path) {
-    if(FS.existsSync(path)) {
+    if (FS.existsSync(path)) {
         FS.readdirSync(path).forEach(function(file) {
             let itemPath = path + "/" + file;
-            if(FS.lstatSync(itemPath).isDirectory())
+            if (FS.lstatSync(itemPath).isDirectory())
                 deleteDirSync(itemPath);
             else
                 FS.unlinkSync(itemPath);
@@ -122,11 +115,11 @@ function deleteDirSync(path) {
 
 // copy directory
 function copyDirSync(path_from, path_to) {
-    if(FS.existsSync(path_from)) {
+    if (FS.existsSync(path_from)) {
         FS.readdirSync(path_from).forEach(function(file) {
             let itemPath_from = path_from + "/" + file;
             let itemPath_to = path_to + "/" + file;
-            if(FS.lstatSync(itemPath_from).isDirectory()) {
+            if (FS.lstatSync(itemPath_from).isDirectory()) {
                 FS.mkdirSync(itemPath_to);
                 copyDirSync(itemPath_from, itemPath_to);
             } else {
@@ -142,7 +135,7 @@ function insert(source, target) {
         if (typeof(source[key]) === "string") {
             target[key] = source[key];
         } else {
-            if(!target.hasOwnProperty(key)) {
+            if (!target.hasOwnProperty(key)) {
                 target[key] = {};
             }
             insert(source[key], target[key]);
@@ -166,16 +159,16 @@ function consoleOut(msg) {
     console_log += msg + "\n";
 }
 
-// generates a log for this hook at src/assets/branding.log
-function writeLog(theme) {
-    let log = `content automatically generated by the hook 'set_brand.js'
+// generates a log for this script at src/assets/branding.log
+function writeLog(brand) {
+    let log = `content automatically generated by the script './branding/set_brand.js'
 
-THEME ......... ${theme}
-RESOURCES ..... branding/brands/${theme}/resources => resources
-ASSETS ........ branding/brands/${theme}/assets => src/assets
-CONFIG ........ branding/common/config/server.config.json + branding/brands/${theme}/config.json => src/assets/config.json
-LANGUAGE ...... branding/common/i18n/* + branding/brands/${theme}/assets/i18n/* => src/assets/i18n/*
-STYLESHEET .... src/theme/variables.scss
+BRAND ......... ${brand}
+RESOURCES ..... branding/brands/${brand}/resources => resources
+ASSETS ........ branding/brands/${brand}/assets => src/assets
+CONFIG ........ branding/common/config/server.config.json + branding/brands/${brand}/config.json => src/assets/config.json
+LANGUAGE ...... branding/common/i18n/* + branding/brands/${brand}/assets/i18n/* => src/assets/i18n/*
+BUILD ......... branding/brands/${brand}/build.json => build.json
 
 CONSOLE OUTPUT
 ${console_log}`;
