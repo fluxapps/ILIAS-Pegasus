@@ -4,6 +4,7 @@
  * -> replaces the file ./build.json used for IOS release builds
  * -> generates "src/assets/config.json" with the required ILIAS installations from "branding/common/config/server.config.json"
  * -> generates language files in "src/assets/i18n" by inserting brand-specific changes to the files in "branding/common/i18n"
+ * -> sets the field id in "config.xml"
  *
  * USAGE: the brand can be set via the "--brand"-tag
  * npm run setbrand -- --brand=[BRAND_NAME]
@@ -17,11 +18,13 @@ function execute() {
     let brand = "";
     try {
         brand = getBrand();
+        let config = loadJSON(`branding/brands/${brand}/config.json`);
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
         setFile("build.json", `branding/brands/${brand}/build.json`);
-        generateConfigFile(brand);
+        generateConfigFile(brand, config);
         generateLangFiles(brand);
+        setIdInConfig(config);
         consoleOut("(set_brand.js) DONE");
     } catch(e) {
         console_log += e.stack;
@@ -50,20 +53,19 @@ function getBrand() {
 }
 
 // generate "src/assets/config.json"
-function generateConfigFile(brand) {
+function generateConfigFile(brand, config) {
     let config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
-    let config_brand = loadJSON(`branding/brands/${brand}/config.json`);
     let config_out = { "installations": [] };
 
-    for (let i in config_brand.ilias_installation_ids) {
+    for (let i in config.ilias_installation_ids) {
         for (let j in config_server) {
-            if (config_brand.ilias_installation_ids[i] === config_server[j].id)
+            if (config.ilias_installation_ids[i] === config_server[j].id)
                 config_out.installations.push(config_server[j]);
         }
     }
 
-    if (config_out.installations.length !== config_brand.ilias_installation_ids.length) {
-        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(config_brand.ilias_installation_ids)} . `;
+    if (config_out.installations.length !== config.ilias_installation_ids.length) {
+        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(config.ilias_installation_ids)} . `;
         msg += `this selection of ids is set in 'src/assets/${brand}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
         throw new Error(msg);
     }
@@ -85,6 +87,20 @@ function generateLangFiles(brand) {
             FS.mkdirSync(path);
         writeJSON(`${path}/${file}`, lng_tree);
     });
+}
+
+// set the field id in "conifg.xml"
+function setIdInConfig(config) {
+    let lines = FS.readFileSync("config.xml", "utf8").split("\n");
+    for(let i = 0; i < lines.length; i++) {
+        if (lines[i].indexOf("<widget ") !== -1) {
+            let ind0 = lines[i].indexOf("id=") + 4;
+            let ind1 = lines[i].indexOf('"', ind0);
+            lines[i] = `${lines[i].substring(0, ind0)}${config.condig_id}${lines[i].substring(ind1)}`;
+            FS.writeFileSync("config.xml", lines.join("\n"));
+            return;
+        }
+    }
 }
 
 // set file at target to the one at source

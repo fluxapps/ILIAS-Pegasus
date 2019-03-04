@@ -27,13 +27,17 @@ the file '[BRAND_NAME]/config.json' contains information that is used by the hoo
 
 __template__
 
+
 ```
 {
-  "ilias_installation_ids": []
+  "ilias_installation_ids": [],
+  "condig_id": ""
 }
 ```
 
 the array 'ilias_installation_ids' contains ids that correspond to ILIAS-installations, declared in './branding/common/config/server.config.json'
+
+the string 'condig_id' is used as the value for the field 'widget/id' in 'config.xml'
 
 only the chosen entries will be available on the login-screen in the customized app, and the first id sets the default installation for the login
 
@@ -44,6 +48,7 @@ the basis all brands is set in './branding/common/i18n'
 if brand-specific translations are needed, they can be defined in '[BRAND_NAME]/assets/i18n', where a file with the same name as the one that should be modified must be placed
 
 __example usage__
+
 * './branding/common/i18n/en.json'
 
 ```
