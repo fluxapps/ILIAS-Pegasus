@@ -18,6 +18,7 @@ import {
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
 import {Subscriber} from "rxjs/Subscriber";
+import {Profiler} from "../util/profiler";
 
 @Injectable()
 export class SynchronizationService {
@@ -50,7 +51,7 @@ export class SynchronizationService {
      * @param liveLoad
      * @returns {any}
      */
-    execute(iliasObject: ILIASObject = undefined, liveLoad: boolean = false): Promise<SyncResults> {
+     execute(iliasObject: ILIASObject = undefined, liveLoad: boolean = false): Promise<SyncResults> {
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == undefined) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
@@ -334,14 +335,19 @@ export class SynchronizationService {
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<SyncResults> {
+        const id: string = ((parent) ? parent.refId : 0).toString();
+        Profiler.add("", true, "liveLoad", id);
+
         const iliasObjects: Array<ILIASObject> = (parent == undefined) ?
             await this.dataProvider.getDesktopData(this.user) :
-            await this.dataProvider.getObjectData(parent, this.user, false); // TODO recursion ? to which level ?
+            await this.dataProvider.getObjectData(parent, this.user, false);
+        Profiler.add("dataProvider.getObjectData", false, "liveLoad", id);
 
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
-        await this.downloadLearnplaces(iliasObjects).toPromise(); // TODO necessary ?
+        await this.downloadLearnplaces(iliasObjects).toPromise();
         await this.syncEnded(this.user.id);
-
+        Profiler.add("syncEnded", false, "liveLoad", id);
+        Profiler.print("liveLoad");
         return syncResults;
     }
 

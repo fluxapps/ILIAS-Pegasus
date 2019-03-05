@@ -284,7 +284,7 @@ export class ObjectListPage {
             Log.write(this, "Sync start", [], []);
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-            const syncResult: SyncResults = await this.sync.execute();
+            const syncResult: SyncResults = await this.sync.execute(this.parent, true);
             this.calculateChildrenMarkedAsNew();
 
             // We have some files that were marked but not downloaded. We need to explain why and open a modal.

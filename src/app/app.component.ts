@@ -26,10 +26,12 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
+import {Profiler} from "../util/profiler";
+
 
 @Component({
   templateUrl: "app.html",
-  providers: [ThemeProvider]
+  providers: [ThemeProvider, Profiler]
 })
 export class MyApp {
 

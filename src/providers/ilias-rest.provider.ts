@@ -8,6 +8,8 @@ import {ILIAS_REST, ILIASRequestOptions, ILIASRest, TOKEN_MANAGER, TokenManager}
 import {HttpResponse} from "./http";
 import {File, FileEntry, Entry, Flags} from "@ionic-native/file";
 import {ClientCredentials, OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier} from "./ilias/ilias.rest-api";
+import * as fs from "fs";
+import {Profiler} from "../util/profiler";
 
 const DEFAULT_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
@@ -44,10 +46,12 @@ export class ILIASRestProvider {
     }
 
     async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = 0): Promise<Array<DesktopData>> {
-
+      Profiler.add("", true, "REST/getObjectData", parentRefId.toString());
       const opt: ILIASRequestOptions = (recursive)? {accept: "application/json", urlParams: [["recursive", "1"]]} : DEFAULT_OPTIONS;
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/objects/${parentRefId}`, opt);
+      Profiler.add("iliasRest.get-done", false, "REST/getObjectData", parentRefId.toString());
+      Profiler.print("REST/getObjectData");
 
       return response.handle(it =>
         it.json<Array<DesktopData>>(desktopDataSchema)
@@ -55,8 +59,11 @@ export class ILIASRestProvider {
     }
 
     async getFileData(refId: number, user: User, timeout: number = 0): Promise<FileData> {
+      Profiler.add("", true, "REST/getFileData", refId.toString());
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
+      Profiler.add("iliasRest.get-done", false, "REST/getFileData", refId.toString());
+      Profiler.print("REST/getFileData");
 
       return response.handle(it =>
         it.json<FileData>(fileShema)

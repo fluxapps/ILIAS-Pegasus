@@ -5,6 +5,7 @@ import {ILIASObject} from "../models/ilias-object";
 import {DesktopItem} from "../models/desktop-item";
 import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
 import {Log} from "../services/log.service";
+import {Profiler} from "../util/profiler";
 
 @Injectable()
 export class DataProvider {
@@ -35,9 +36,21 @@ export class DataProvider {
      */
     getObjectData(parentObject: ILIASObject, user: User, recursive: boolean, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         //TODO: we want to update the meta data just once.
+        Profiler.add("", true, "PD/getObjectData", parentObject.refId.toString());
         return this.rest.getObjectData(parentObject.refId, user, recursive)
-            .then((data) => this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles))
-            .then(objects => objects.sort(ILIASObject.compare));
+            .then((data) => {
+                Profiler.add("rest.getObjectData-done", false, "PD/getObjectData", parentObject.refId.toString());
+                return this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles)
+            })
+            .then(objects => {
+                Profiler.add("storeILIASObjects-done", false, "PD/getObjectData", parentObject.refId.toString());
+                return objects.sort(ILIASObject.compare)
+            })
+            .then((result) => {
+                Profiler.add("objects.sort-done", false, "PD/getObjectData", parentObject.refId.toString());
+                Profiler.print("PD/getObjectData");
+                return result;
+            });
     }
 
     /**
