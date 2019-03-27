@@ -52,6 +52,8 @@ export class SynchronizationService {
      * @returns {any}
      */
      execute(iliasObject: ILIASObject = undefined, liveLoad: boolean = false): Promise<SyncResults> {
+        Profiler.addCall("execute");
+        Profiler.printCalls();
         Log.write(this, "Sync started!");
         if (this._isRunning && iliasObject == undefined) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
@@ -70,8 +72,6 @@ export class SynchronizationService {
             });
             return promise;
         }
-
-        this.events.publish("sync:start");
 
         return User.currentUser()
             .then(user => {
@@ -306,9 +306,15 @@ export class SynchronizationService {
         });
     }
 
-    private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
+    async executeNewsSync(): Promise<void> {
         await this.newsSynchronization.synchronize();
         await this.visitJournalSynchronization.synchronize();
+        await this.syncEnded(this.user.id);
+    }
+
+    private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
+        //await this.newsSynchronization.synchronize();
+        //await this.visitJournalSynchronization.synchronize();
 
         const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
         iliasObjects.push(container);
@@ -335,30 +341,46 @@ export class SynchronizationService {
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<SyncResults> {
+
+        try {
+            this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
+        } finally {
+            this.footerToolbar.removeJob(Job.MetaDataFetch);
+        }
+
+        Profiler.addCall("executeLiveLoad");
         const id: string = ((parent) ? parent.refId : 0).toString();
         Profiler.add("", true, "liveLoad", id);
 
-        const iliasObjects: Array<ILIASObject> = (parent == undefined) ?
-            await this.dataProvider.getDesktopData(this.user) :
-            await this.dataProvider.getObjectData(parent, this.user, false);
+        let iliasObjects: Array<ILIASObject>;
+
+        try {
+            iliasObjects = (parent == undefined) ?
+                await this.dataProvider.getDesktopData(this.user) :
+                await this.dataProvider.getObjectData(parent, this.user, false);
+        } catch(e) {
+            console.log("CATCHING ERR");
+        }
+
         Profiler.add("dataProvider.getObjectData", false, "liveLoad", id);
 
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
         await this.downloadLearnplaces(iliasObjects).toPromise();
-        await this.syncEnded(this.user.id);
         Profiler.add("syncEnded", false, "liveLoad", id);
-        Profiler.print("liveLoad");
+        await this.syncEnded(this.user.id);
+
         return syncResults;
     }
 
     private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {
+        Profiler.addCall("executeGlobalSync");
         // Run sync for all objects marked as "offline available"
         Log.write(this, "Fetching offline available objects.");
 
         try {
           this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
-          await this.newsSynchronization.synchronize();
-          await this.visitJournalSynchronization.synchronize();
+          //await this.newsSynchronization.synchronize();
+          //await this.visitJournalSynchronization.synchronize();
         }
         finally {
           this.footerToolbar.removeJob(Job.MetaDataFetch);

@@ -9,9 +9,18 @@ interface LogEntry {
 @Injectable()
 export class Profiler {
 
-    static enabled: boolean = true;
     private static staticInstance: Profiler = undefined;
-    private static logs: object = {lists: []};
+    static enabled: boolean = false;
+    private static printInterval: NodeJS.Timer = setInterval(function() {
+        if(!Profiler.enabled) {
+            clearInterval(Profiler.printInterval)
+        } else {
+            Profiler.print();
+            Profiler.printCalls();
+        }
+    }, 10000);
+    private static timeStamps: object = {lists: []};
+    private static callList: Array<string> = [];
 
     static instance(): Profiler {
         if(Profiler.staticInstance == undefined)
@@ -22,20 +31,20 @@ export class Profiler {
     static add(name: string, reset: boolean = false, list: string = "default", id: string = "default"): void {
         if(!Profiler.enabled) return;
 
-        if(!Profiler.logs.hasOwnProperty(list)) {
-            Profiler.logs["lists"].push(list);
-            Profiler.logs[list] = {ids: [id]};
+        if(!Profiler.timeStamps.hasOwnProperty(list)) {
+            Profiler.timeStamps["lists"].push(list);
+            Profiler.timeStamps[list] = {ids: [id]};
             reset = true;
         }
 
-        if(!Profiler.logs[list].hasOwnProperty(id)) {
-            Profiler.logs[list].ids.push(id);
-            Profiler.logs[list][id] = [];
+        if(!Profiler.timeStamps[list].hasOwnProperty(id)) {
+            Profiler.timeStamps[list].ids.push(id);
+            Profiler.timeStamps[list][id] = [];
             reset = true;
             name = `id ${id}`;
         }
 
-        Profiler.logs[list][id].push({
+        Profiler.timeStamps[list][id].push({
             t: (new Date()).getTime(),
             name: name,
             reset: reset
@@ -50,17 +59,17 @@ export class Profiler {
             return (v >= 10) ? ((v >= 100) ? s : "0" + s) : "00" + s;
         }
 
-        if(!Profiler.logs.hasOwnProperty(list)) {
+        if(!Profiler.timeStamps.hasOwnProperty(list)) {
             console.log("(@profiler) WARNING: did not find any entries");
             return;
         }
 
-        if(!Profiler.logs[list].hasOwnProperty(id)) {
+        if(!Profiler.timeStamps[list].hasOwnProperty(id)) {
             console.log("(@profiler) WARNING: did not find any entries");
             return;
         }
 
-        const log: Array<LogEntry> = Profiler.logs[list][id];
+        const log: Array<LogEntry> = Profiler.timeStamps[list][id];
         let t0: number, dt: number;
         for(let i: number = 0; i < log.length; i++) {
 
@@ -84,23 +93,63 @@ export class Profiler {
         if(clear) Profiler.clear(list);
     }
 
-    static print(list: string = "default", clear: boolean = false): void {
+    static printList(list: string = "default", clear: boolean = false): void {
         if(!Profiler.enabled) return;
 
-        console.log(`PROFILE LIST '${list}'`);
+        console.log(`PROFILE_LIST ${list}`);
         console.log("time[s] tint[s] perc[%] name");
 
-        for(let i: number = 0; i < Profiler.logs[list].ids.length; i++) {
-            this.printId(list, Profiler.logs[list].ids[i], clear);
+        for(let i: number = 0; i < Profiler.timeStamps[list].ids.length; i++) {
+            this.printId(list, Profiler.timeStamps[list].ids[i], clear);
             console.log("~");
         }
+    }
+
+    static print(clear: boolean = false): void {
+        if(!Profiler.enabled) return;
+
+        for(let i: number = 0; i < Profiler.timeStamps["lists"].length; i++) {
+            this.printList(Profiler.timeStamps["lists"][i], clear);
+            console.log("~");
+        }
+    }
+
+    static periodicPrints(dt: number): void {
+        if(!Profiler.enabled) return;
+
+        if(dt) Profiler.printInterval = setInterval(function() {
+            Profiler.print();
+            Profiler.printCalls()
+        }, dt);
+        else clearInterval(Profiler.printInterval);
     }
 
     static clear(list: string = undefined, id: string = undefined): void {
         if(!Profiler.enabled) return;
 
-        (id && list) ? delete Profiler.logs[list][id] :
-            (list) ? delete Profiler.logs[list] :
-                Profiler.logs = {lists: []};
+        (id && list) ? delete Profiler.timeStamps[list][id] :
+            (list) ? delete Profiler.timeStamps[list] :
+                Profiler.timeStamps = {lists: []};
     }
+
+    static addCall(name: string): void {
+        if(!Profiler.enabled) return;
+
+        Profiler.callList.push(name);
+    }
+
+    static printCalls(): void {
+        if(!Profiler.enabled) return;
+
+        console.log("CALL_LIST");
+        for (let i: number = 0; i < Profiler.callList.length; i++)
+            console.log(Profiler.callList[i]);
+    }
+
+    static clearCalls(): void {
+        if(!Profiler.enabled) return;
+
+        Profiler.callList = [];
+    }
+
 }

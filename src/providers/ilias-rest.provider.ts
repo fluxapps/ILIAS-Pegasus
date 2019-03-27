@@ -51,7 +51,6 @@ export class ILIASRestProvider {
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/objects/${parentRefId}`, opt);
       Profiler.add("iliasRest.get-done", false, "REST/getObjectData", parentRefId.toString());
-      Profiler.print("REST/getObjectData");
 
       return response.handle(it =>
         it.json<Array<DesktopData>>(desktopDataSchema)
@@ -63,7 +62,6 @@ export class ILIASRestProvider {
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
       Profiler.add("iliasRest.get-done", false, "REST/getFileData", refId.toString());
-      Profiler.print("REST/getFileData");
 
       return response.handle(it =>
         it.json<FileData>(fileShema)

@@ -31,6 +31,10 @@ export class DesktopPage {
   ) { }
 
   async switchTabs(tab: number): Promise<void> {
+      //if(tab == 1)
+
+      //if(tab == 3)
+
       this.navCtrl.parent.select(tab);
   }
 

@@ -182,7 +182,7 @@ export class MyApp {
     this.splashScreen.hide();
 
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-    await this.sync.execute();
+    await this.sync.execute(undefined, true);
     this.footerToolbar.removeJob(Job.Synchronize);
   }
 

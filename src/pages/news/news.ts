@@ -47,6 +47,7 @@ export class NewsPage
     ) {}
 
     ionViewWillEnter(): void {
+        this.startNewsSync();
         this.log.debug(() => "News view initialized.");
         this.reloadView();
     }
@@ -72,9 +73,9 @@ export class NewsPage
      * @param {Refresher} refresher
      * @returns {Promise<void>}
      */
-    async startSync(refresher: Refresher): Promise<void> {
-        await this.executeSync();
-        refresher.complete();
+    async startNewsSync(refresher: Refresher = undefined): Promise<void> {
+        await this.executeNewsSync();
+        if (refresher) refresher.complete();
         this.reloadView();
     }
 
@@ -83,7 +84,7 @@ export class NewsPage
             (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
     }
 
-    // ------------------- object-list duplicate----------------------------
+    // ------------------- object-list duplicate ----------------------------
     private executeAction(action: ILIASObjectAction): void {
         const hash: number = action.instanceId();
         this.footerToolbar.addJob(hash, "");
@@ -97,11 +98,11 @@ export class NewsPage
     }
 
     /**
-     * executes global sync
+     * executes news sync
      *
      * @returns {Promise<void>}
      */
-    private async executeSync(): Promise<void> {
+    private async executeNewsSync(): Promise<void> {
 
         try {
 
@@ -113,13 +114,7 @@ export class NewsPage
             this.log.info(() => "Sync start");
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-            const syncResult: SyncResults = await this.sync.execute();
-
-            // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-            if (syncResult.objectsLeftOut.length > 0) {
-                const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-                await syncModal.present();
-            }
+            await this.sync.executeNewsSync();
 
             //maybe some objects came in new.
             this.footerToolbar.removeJob(Job.Synchronize);

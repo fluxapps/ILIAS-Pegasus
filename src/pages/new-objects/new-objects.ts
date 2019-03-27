@@ -389,7 +389,7 @@ export class NewObjectsPage {
             return Promise.reject(error);
         }).catch(error => {
             if (error instanceof RESTAPIException) {
-                this.showAlert(this.translate.instant("actions.server_not_reachable"));
+                // this.showAlert(this.translate.instant("actions.server_not_reachable"));
                 this.footerToolbar.removeJob(hash);
                 return Promise.resolve();
             }

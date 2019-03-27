@@ -35,7 +35,7 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
             })
             .then( () => this.object.needsDownload = true )
             .then( () => this.object.save() )
-            .then( () => this.syncService.execute(this.object))
+            .then( () => this.syncService.execute(this.object, true))
             .then( (syncResult) =>  {
                 if(syncResult.objectsLeftOut.length > 0 ) {
                     return this.modal.create(SyncFinishedModal, {syncResult: syncResult}).present();

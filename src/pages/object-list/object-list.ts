@@ -117,6 +117,11 @@ export class ObjectListPage {
         this.initEventListeners();
     }
 
+    ionViewWillEnter(): void {
+        this.startSync(undefined);
+        this.log.debug(() => "News view initialized.");
+    }
+
     /**
      * Opens the parent object in ILIAS.
      */
@@ -169,7 +174,7 @@ export class ObjectListPage {
             .then(() => {
 
                 if (this.objects.length == 0 && this.parent == undefined) {
-                    this.executeSync();
+                    this.executeLiveLoad();
                 }
             });
     }
@@ -263,8 +268,8 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     async startSync(refresher: Refresher): Promise<void> {
-        refresher.complete();
-        await this.executeSync();
+        if(refresher) refresher.complete();
+        await this.executeLiveLoad();
     }
 
     /**
@@ -272,7 +277,7 @@ export class ObjectListPage {
      *
      * @returns {Promise<void>}
      */
-    private async executeSync(): Promise<void> {
+    private async executeLiveLoad(): Promise<void> {
 
         try {
 
@@ -280,7 +285,7 @@ export class ObjectListPage {
                 this.log.debug(() => "Unable to sync because sync is already running.");
                 return;
             }
-            const syncModal: Modal = this.displaySyncScreen();
+            //const syncModal: Modal = this.displaySyncScreen();
             Log.write(this, "Sync start", [], []);
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
@@ -295,7 +300,7 @@ export class ObjectListPage {
 
             //maybe some objects came in new.
             this.footerToolbar.removeJob(Job.Synchronize);
-            this.hideSyncScreen(syncModal);
+            //this.hideSyncScreen(syncModal);
 
         } catch (error) {
 
