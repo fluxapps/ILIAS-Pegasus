@@ -46,11 +46,11 @@ export class ILIASRestProvider {
     }
 
     async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = 0): Promise<Array<DesktopData>> {
-      Profiler.add("", true, "REST/getObjectData", parentRefId.toString());
+      Profiler.addTimestamp("", true, "REST/getObjectData", parentRefId.toString());
       const opt: ILIASRequestOptions = (recursive)? {accept: "application/json", urlParams: [["recursive", "1"]]} : DEFAULT_OPTIONS;
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/objects/${parentRefId}`, opt);
-      Profiler.add("iliasRest.get-done", false, "REST/getObjectData", parentRefId.toString());
+      Profiler.addTimestamp("iliasRest.get-done", false, "REST/getObjectData", parentRefId.toString());
 
       return response.handle(it =>
         it.json<Array<DesktopData>>(desktopDataSchema)
@@ -58,10 +58,10 @@ export class ILIASRestProvider {
     }
 
     async getFileData(refId: number, user: User, timeout: number = 0): Promise<FileData> {
-      Profiler.add("", true, "REST/getFileData", refId.toString());
+      Profiler.addTimestamp("", true, "REST/getFileData", refId.toString());
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
-      Profiler.add("iliasRest.get-done", false, "REST/getFileData", refId.toString());
+      Profiler.addTimestamp("iliasRest.get-done", false, "REST/getFileData", refId.toString());
 
       return response.handle(it =>
         it.json<FileData>(fileShema)

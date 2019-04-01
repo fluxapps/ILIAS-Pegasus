@@ -1,5 +1,4 @@
 import {Inject, Injectable} from "@angular/core";
-import {ILIASObjectActionError} from "../actions/object-action";
 import {ILIASObject} from "../models/ilias-object";
 import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
@@ -17,7 +16,6 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
-import {Subscriber} from "rxjs/Subscriber";
 import {Profiler} from "../util/profiler";
 
 @Injectable()
@@ -27,6 +25,7 @@ export class SynchronizationService {
 
 
     private syncQueue: Array<{ object: ILIASObject, liveLoad: boolean, resolver: Resolve<SyncResults>, rejecter }> = [];
+    private syncQueueLiveLoad: Array<{ object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }> = [];
 
     lastSync: Date;
     lastSyncString: string;
@@ -45,16 +44,12 @@ export class SynchronizationService {
 
     /**
      * Execute synchronization
-     * If iliasObject is null, executes a global sync (data is fetched for all objects marked as offline available)
+     * If iliasObject is undefined, executes sync for desktop-data
      * If iliasObject is given, only fetches data for the given object
      * @param iliasObject
-     * @param liveLoad
      * @returns {any}
      */
-     execute(iliasObject: ILIASObject = undefined, liveLoad: boolean = false): Promise<SyncResults> {
-        Profiler.addCall("execute");
-        Profiler.printCalls();
-        Log.write(this, "Sync started!");
+    liveLoad(iliasObject: ILIASObject = undefined): Promise<SyncResults> {
         if (this._isRunning && iliasObject == undefined) {
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
         } else if(this._isRunning) {
@@ -64,9 +59,8 @@ export class SynchronizationService {
                 resolver = resolve;
                 rejecter = reject;
             });
-            this.syncQueue.push({
+            this.syncQueueLiveLoad.push({
                 object: iliasObject,
-                liveLoad: liveLoad,
                 resolver: resolver,
                 rejecter: rejecter
             });
@@ -78,36 +72,26 @@ export class SynchronizationService {
                 this.user = user;
                 return this.syncStarted(this.user.id);
             })
-            .then( () => {
-                if (liveLoad) {
-                    return this.executeLiveLoad(iliasObject);
-                } else {
-                    if (iliasObject) {
-                        return this.executeContainerSync(iliasObject);
-                    } else {
-                        return this.executeGlobalSync();
-                    }
-                }
-            }).then((syncResult) => {
-                if(this.syncQueue.length > 0) {
-                    const sync = this.syncQueue.pop();
-                    this.execute(sync.object, sync.liveLoad)
+            .then( () => this.executeLiveLoad(iliasObject))
+            .then((syncResult) => {
+                if(this.syncQueueLiveLoad.length > 0) {
+                    const sync: { object: ILIASObject; resolver: Resolve<SyncResults>; rejecter } = this.syncQueueLiveLoad.pop();
+                    this.liveLoad(sync.object)
                         .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
                         }).catch(error => {
-                            sync.rejecter(error);
+                        sync.rejecter(error);
                     });
                 }
                 this.events.publish("sync:complete");
                 return Promise.resolve(syncResult);
             })
-            .catch( (error) => {
-                // we catch any occuring errors in the process so we can turn off the sync status.
-                // then we delegate for any view to be able to recatch the exception.
-                this.syncEnded(this.user.id);
-                this.events.publish("sync:complete");
-                return Promise.reject(error);
-            });
+            .catch( (error) =>
+                this.syncEnded(this.user.id).then( () => {
+                    this.events.publish("sync:complete");
+                    return Promise.reject(error);
+                })
+            );
     }
 
     get isRunning() {
@@ -229,14 +213,14 @@ export class SynchronizationService {
                     let currentlyUsedSpace: number = space;
 
                     // make sure to only sync files.
-                    const fileObjects = iliasObjects.filter(iliasObject => {
+                    const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
                         return iliasObject.type == "file";
                     });
 
                     // We sort all objects to know which to download and which to leave out.
                     fileObjects.forEach(fileObject => {
                         if (fileObject.needsDownload) {
-                            const fileSize = parseInt(fileObject.data.fileSize);
+                            const fileSize: number = parseInt(fileObject.data.fileSize, 10);
                             if (currentlyUsedSpace + fileSize <= availableSpace) {
                                 if (fileSize <= settings.downloadSize * 1000 * 1000) {
                                     downloads.push(fileObject);
@@ -253,13 +237,13 @@ export class SynchronizationService {
                     });
 
                     // We make a copy of the files to download, as the list gets decreased in the download process
-                    const totalDownloads = downloads.length;
-                    const allDownloads = downloads.slice(0); // This is the javascript's clone function....
+                    const totalDownloads: number = downloads.length;
+                    const allDownloads: Array<ILIASObject> = downloads.slice(0); // This is the javascript's clone function....
 
                     // We set the job to downloading and add a listener to track the progress.
                     this.footerToolbar.addJob(Job.FileDownload, `${this.translate.instant("sync.download")} 0/${totalDownloads}`);
                     const progressListener = (outstandingDownloads: number) => {
-                        this.footerToolbar.addJob(Job.FileDownload, this.translate.instant("sync.download") + " " + (totalDownloads - outstandingDownloads) + "/" + totalDownloads);
+                        this.footerToolbar.addJob(Job.FileDownload, `${this.translate.instant("sync.download")} ${totalDownloads - outstandingDownloads}/${totalDownloads}`);
                     };
 
                     // we execute the file downloads and afterwards
@@ -276,8 +260,8 @@ export class SynchronizationService {
                         this.footerToolbar.removeJob(Job.FileDownload);
                         reject(error);
                     });
-                }).catch((error) => {
-                    reject(error);
+                }).catch(error => {
+                    reject(error)
                 });
             });
         });
@@ -312,21 +296,6 @@ export class SynchronizationService {
         await this.syncEnded(this.user.id);
     }
 
-    private async executeContainerSync(container: ILIASObject): Promise<SyncResults> {
-        //await this.newsSynchronization.synchronize();
-        //await this.visitJournalSynchronization.synchronize();
-
-        const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
-        iliasObjects.push(container);
-
-        const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
-        await this.downloadLearnplaces(iliasObjects).toPromise();
-
-        await this.syncEnded(this.user.id);
-
-        return syncResults;
-    }
-
     private downloadLearnplaces(tree: Array<ILIASObject>): Observable<void> {
 
       return Observable.merge(
@@ -341,94 +310,21 @@ export class SynchronizationService {
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<SyncResults> {
+        const iliasObjects: Promise<Array<ILIASObject>> = (parent == undefined) ?
+            this.dataProvider.getDesktopData(this.user) :
+            this.dataProvider.getObjectData(parent, this.user, false);
 
-        try {
-            this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
-        } finally {
-            this.footerToolbar.removeJob(Job.MetaDataFetch);
-        }
-
-        Profiler.addCall("executeLiveLoad");
-        const id: string = ((parent) ? parent.refId : 0).toString();
-        Profiler.add("", true, "liveLoad", id);
-
-        let iliasObjects: Array<ILIASObject>;
-
-        try {
-            iliasObjects = (parent == undefined) ?
-                await this.dataProvider.getDesktopData(this.user) :
-                await this.dataProvider.getObjectData(parent, this.user, false);
-        } catch(e) {
-            console.log("CATCHING ERR");
-        }
-
-        Profiler.add("dataProvider.getObjectData", false, "liveLoad", id);
-
-        const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
-        await this.downloadLearnplaces(iliasObjects).toPromise();
-        Profiler.add("syncEnded", false, "liveLoad", id);
-        await this.syncEnded(this.user.id);
-
-        return syncResults;
-    }
-
-    private async executeGlobalSync(fetchAllMetaData: boolean = true): Promise<SyncResults> {
-        Profiler.addCall("executeGlobalSync");
-        // Run sync for all objects marked as "offline available"
-        Log.write(this, "Fetching offline available objects.");
-
-        try {
-          this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_news"));
-          //await this.newsSynchronization.synchronize();
-          //await this.visitJournalSynchronization.synchronize();
-        }
-        finally {
-          this.footerToolbar.removeJob(Job.MetaDataFetch);
-        }
-
-
-        return this.dataProvider.getDesktopData(this.user)
-            .then(desktopObjects => {
-				        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata"));
-                let promises = Promise.resolve();
-                for (const iliasObject of desktopObjects) {
-                    promises = promises.then(() => {
-                        this.footerToolbar.addJob(Job.MetaDataFetch, this.translate.instant("sync.fetching_metadata") + ": " + iliasObject.title);
-                        Log.write(this, `Fetching offline available objects for ${iliasObject.title}`);
-                       return this.dataProvider.getObjectData(iliasObject, this.user, true);
-                    }).then(() => {
-                        Log.write(this, "Fetching finished.")
-                    });
-                }
-                return promises;
-            })
-            .catch(error => {
-                this.footerToolbar.removeJob(Job.MetaDataFetch);
-                return Promise.reject(error);
-            })
-            .then( () => {
-                Log.write(this, "Fetching metadata finished.");
-                this.footerToolbar.removeJob(Job.MetaDataFetch);
-                return this.getOfflineAvailableObjects(this.user)
-            })
-            .then(offlineAvailableObjects => {
-                const promises = [];
-                for (const iliasObject of offlineAvailableObjects) {
-                    promises.push(ILIASObject.findByParentRefIdRecursive(iliasObject.refId, this.user.id));
-                }
-                promises.push(Promise.resolve(offlineAvailableObjects));
-
-                return Promise.all(promises);
-            })
-            .then((listOfIliasObjectLists) => {
-                let iliasObjects = [];
-                listOfIliasObjectLists.forEach(list => {
-                    iliasObjects = iliasObjects.concat(list);
+        return iliasObjects
+            .then(iliasObjects => {
+                return this.checkForFileDownloads(iliasObjects).then(syncResults => {
+                    return this.downloadLearnplaces(iliasObjects).toPromise()
+                        .then(() => syncResults);
                 });
-
-                return this.checkForFileDownloads(iliasObjects);
-            }).then((syncResults) =>
-                this.syncEnded(this.user.id).then( () => Promise.resolve(syncResults) )
+            }).then((syncResults) => {
+                return this.syncEnded(this.user.id).then( () => Promise.resolve(syncResults))
+            }
+            ).catch(
+                await this.syncEnded(this.user.id)
             );
     }
 }

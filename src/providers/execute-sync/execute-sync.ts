@@ -53,7 +53,7 @@ export class ExecuteSyncProvider {
           Log.write(this, "Sync start", [], []);
           this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-          const syncResult: SyncResults = await this.sync.execute(undefined, true);
+          const syncResult: SyncResults = await this.sync.liveLoad(undefined);
           this.calculateChildrenMarkedAsNew();
 
           // We have some files that were marked but not downloaded. We need to explain why and open a modal.

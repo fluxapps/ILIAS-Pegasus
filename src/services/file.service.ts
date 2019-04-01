@@ -105,7 +105,12 @@ export class FileService {
 
       // Provide a general listener that throws an event
       Log.write(this, "start DL");
-      const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
+      let fileEntry: FileEntry = undefined;
+      try {
+          fileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
+      } catch (e) {
+          console.warn(`error: ${e.message}`);
+      }
       Log.describe(this, "Download Complete: ", fileEntry);
       await this.storeFileVersionLocal(fileObject);
       return fileEntry;

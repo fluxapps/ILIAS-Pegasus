@@ -270,6 +270,7 @@ export class ObjectListPage {
     async startSync(refresher: Refresher): Promise<void> {
         if(refresher) refresher.complete();
         await this.executeLiveLoad();
+        await this.loadCachedObjects();
     }
 
     /**
@@ -289,7 +290,7 @@ export class ObjectListPage {
             Log.write(this, "Sync start", [], []);
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-            const syncResult: SyncResults = await this.sync.execute(this.parent, true);
+            const syncResult: SyncResults = await this.sync.liveLoad(this.parent);
             this.calculateChildrenMarkedAsNew();
 
             // We have some files that were marked but not downloaded. We need to explain why and open a modal.
@@ -351,7 +352,6 @@ export class ObjectListPage {
         }
 
         if (iliasObject.isContainer()) {
-            this.sync.execute(iliasObject, true);
             return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
         }
 

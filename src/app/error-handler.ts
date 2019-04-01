@@ -82,7 +82,7 @@ export class PegasusErrorHandler implements ErrorHandler {
 
             if(unwrappedError instanceof HttpRequestError) {
                 this.log.warn(() => `Unable to sync due to http request error "${unwrappedError.statuscode}".`);
-                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.server_not_reachable"));
+                //this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.server_not_reachable"));
                 return;
             }
 

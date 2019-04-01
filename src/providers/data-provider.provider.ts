@@ -37,18 +37,18 @@ export class DataProvider {
     getObjectData(parentObject: ILIASObject, user: User, recursive: boolean, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         //TODO: we want to update the meta data just once.
         const id: string = (parentObject) ? parentObject.refId.toString() : "-1";
-        Profiler.add("", true, "PD/getObjectData", id);
+        Profiler.addTimestamp("", true, "PD/getObjectData", id);
         return this.rest.getObjectData(parentObject.refId, user, recursive)
             .then((data) => {
-                Profiler.add("rest.getObjectData-done", false, "PD/getObjectData", id);
+                Profiler.addTimestamp("rest.getObjectData-done", false, "PD/getObjectData", id);
                 return this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles)
             })
             .then(objects => {
-                Profiler.add("storeILIASObjects-done", false, "PD/getObjectData", id);
+                Profiler.addTimestamp("storeILIASObjects-done", false, "PD/getObjectData", id);
                 return objects.sort(ILIASObject.compare)
             })
             .then((result) => {
-                Profiler.add("objects.sort-done", false, "PD/getObjectData", id);
+                Profiler.addTimestamp("objects.sort-done", false, "PD/getObjectData", id);
                 return result;
             });
     }
@@ -62,8 +62,6 @@ export class DataProvider {
      * @returns {Promise<ILIASObject>}
      */
     private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject|undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
-        const id: string = (rootParent) ? rootParent.refId.toString(): "-1";
-        Profiler.add("store-start", false, "PD/getObjectData", id);
         Log.write(this, "Storing ILIAS Object");
 
         let the_iliasObject: ILIASObject = undefined;
@@ -87,7 +85,6 @@ export class DataProvider {
                 return the_iliasObject.save() as Promise<ILIASObject>;
             })
             .then((iliasObject: ILIASObject) => {
-                Profiler.add("store-done", false, "PD/getObjectData", id);
                 if (iliasObject.type == "file") {
                     if(refreshFiles)
                         return this.onSaveFile(user, iliasObject);
@@ -170,7 +167,7 @@ export class DataProvider {
      */
     private saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         const id: string = (rootParent) ? rootParent.refId.toString() : "-1";
-        Profiler.add("saveOrDeleteObjects-start", false, "PD/getObjectData", id);
+        Profiler.addTimestamp("saveOrDeleteObjects-start", false, "PD/getObjectData", id);
         const iliasObjects: Array<ILIASObject> = [];
         const promises: Array<Promise<void>> = [];
         const objectsToDelete: Array<ILIASObject> = existingObjects;
@@ -196,7 +193,7 @@ export class DataProvider {
                 this.deleteObject(iliasObject, user);
             });
 
-            Profiler.add("store-promise-done", false, "PD/getObjectData", id);
+            Profiler.addTimestamp("store-promise-done", false, "PD/getObjectData", id);
             return Promise.resolve(iliasObjects);
         });
     }
