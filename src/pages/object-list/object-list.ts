@@ -50,7 +50,7 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
+import {SynchronizationService} from "../../services/synchronization.service";
 import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 import {ThemeProvider} from "../../providers/theme";
@@ -159,7 +159,6 @@ export class ObjectListPage {
 
     ionViewDidEnter(): void {
         this.log.trace(() => "Ion view did enter.");
-        this.calculateChildrenMarkedAsNew();
     }
 
     ionViewDidLoad(): void {
@@ -204,7 +203,6 @@ export class ObjectListPage {
 
             this.objects = await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
             this.objects.sort(ILIASObject.compare);
-            this.calculateChildrenMarkedAsNew();
 
             this.footerToolbar.removeJob(this.parent.refId);
 
@@ -228,7 +226,6 @@ export class ObjectListPage {
 
             this.objects = await DesktopItem.findByUserId(this.user.id);
             this.objects.sort(ILIASObject.compare);
-            this.calculateChildrenMarkedAsNew();
 
             this.footerToolbar.removeJob(Job.DesktopAction);
 
@@ -240,27 +237,6 @@ export class ObjectListPage {
         }
     }
 
-    // TODO: Refactor method to make sure it returns a Promise<void>
-    private calculateChildrenMarkedAsNew(): void {
-        // Container objects marked as offline available display the number of new children as badge
-        this.objects.forEach(iliasObject => {
-            if (iliasObject.isContainer()) {
-                ILIASObject.findByParentRefIdRecursive(iliasObject.refId, iliasObject.userId).then(iliasObjects => {
-                    const newObjects: Array<ILIASObject> = iliasObjects.filter((iliasObject: ILIASObject) => {
-                        return iliasObject.isNew || iliasObject.isUpdated;
-                    });
-                    const n: number = newObjects.length;
-                    Log.describe(this, "Object:", iliasObject);
-                    Log.describe(this, "Objects marked as new: ", n);
-                    iliasObject.newSubItems = n;
-                });
-            } else {
-                iliasObject.newSubItems = 0;
-            }
-        });
-    }
-
-
     /**
      * called by pull-to-refresh refresher
      *
@@ -268,9 +244,9 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     async startSync(refresher: Refresher): Promise<void> {
-        if(refresher) refresher.complete();
         await this.executeLiveLoad();
         await this.loadCachedObjects();
+        if(refresher) refresher.complete();
     }
 
     /**
@@ -279,9 +255,7 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     private async executeLiveLoad(): Promise<void> {
-
         try {
-
             if (this.sync.isRunning) {
                 this.log.debug(() => "Unable to sync because sync is already running.");
                 return;
@@ -289,22 +263,12 @@ export class ObjectListPage {
             //const syncModal: Modal = this.displaySyncScreen();
             Log.write(this, "Sync start", [], []);
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-
-            const syncResult: SyncResults = await this.sync.liveLoad(this.parent);
-            this.calculateChildrenMarkedAsNew();
-
-            // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-            if (syncResult.objectsLeftOut.length > 0) {
-                const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-                await syncModal.present();
-            }
+            await this.sync.liveLoad(this.parent);
 
             //maybe some objects came in new.
             this.footerToolbar.removeJob(Job.Synchronize);
             //this.hideSyncScreen(syncModal);
-
         } catch (error) {
-
             Log.error(this, error);
             this.footerToolbar.removeJob(Job.Synchronize);
             throw error;
@@ -548,7 +512,6 @@ export class ObjectListPage {
         this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
             this.handleActionResult(result);
-            this.calculateChildrenMarkedAsNew();
             this.footerToolbar.removeJob(hash);
         }).catch((error) => {
 

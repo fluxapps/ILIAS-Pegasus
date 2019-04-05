@@ -57,25 +57,6 @@
         <ion-badge color="light" *ngIf="object.isFavorite">
           <ion-icon color="primary" name="ai-favorites"></ion-icon>
         </ion-badge>
-        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
-          <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
-        </ion-badge>
-
-        <ion-badge *ngIf="object.isNew" color="light">
-          <ion-icon color="primary">
-            {{'new' | translate:[] }}
-          </ion-icon>
-        </ion-badge>
-        <ion-badge *ngIf="object.isUpdated" color="light">
-          <ion-icon color="primary">
-            {{'updated' | translate:[] }}
-          </ion-icon>
-        </ion-badge>
-        <ion-badge *ngIf="object.newSubItems" color="light">
-          <ion-icon color="primary">
-            {{ object.newSubItems }}
-          </ion-icon>
-        </ion-badge>
       </p>
       <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
         <ion-icon name="more" color="primary"></ion-icon>

@@ -3,7 +3,7 @@
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
-    <content original-src="index.html" src="http://192.168.99.79:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <hook src="set_theme.js" type="before_prepare" />
     <hook src="set_theme.js" type="before_compile" />

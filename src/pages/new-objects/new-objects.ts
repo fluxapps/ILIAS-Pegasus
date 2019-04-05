@@ -130,7 +130,7 @@ export class NewObjectsPage {
                             return (iliasObject.isNew || iliasObject.isUpdated);
                         });
 
-                        // addTimestamp the new ones to the dictionary
+                        // add the new ones to the dictionary
                         newObjects.forEach(newObject => {
                             if (!this.objects[desktopItem.refId]) {
                                 this.objects[desktopItem.refId] = [];
@@ -144,7 +144,7 @@ export class NewObjectsPage {
                         Log.write(this, "Add new ", desktopItem.isNew == true);
                         Log.write(this, "Found new objects", newObjects);
 
-                        // only addTimestamp course if there are new items in there.
+                        // only add course if there are new items in there.
                         if (this.objects[desktopItem.refId] || desktopItem.isNew || desktopItem.isUpdated) {
                             Log.describe(this, "Desktop items ", this.desktopItems);
                             Log.write(this, "adding desktop item.");

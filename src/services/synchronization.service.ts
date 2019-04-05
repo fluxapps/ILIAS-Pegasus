@@ -16,16 +16,11 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
-import {Profiler} from "../util/profiler";
 
 @Injectable()
 export class SynchronizationService {
 
     private user: User;
-
-
-    private syncQueue: Array<{ object: ILIASObject, liveLoad: boolean, resolver: Resolve<SyncResults>, rejecter }> = [];
-    private syncQueueLiveLoad: Array<{ object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }> = [];
 
     lastSync: Date;
     lastSyncString: string;
@@ -49,23 +44,10 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns {any}
      */
-    liveLoad(iliasObject: ILIASObject = undefined): Promise<SyncResults> {
-        if (this._isRunning && iliasObject == undefined) {
+    liveLoad(iliasObject: ILIASObject = undefined): Promise<Array<ILIASObject>> {
+        if (this._isRunning && iliasObject == undefined)
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
-        } else if(this._isRunning) {
-            let resolver;
-            let rejecter;
-            const promise: Promise<SyncResults> = new Promise((resolve, reject) => {
-                resolver = resolve;
-                rejecter = reject;
-            });
-            this.syncQueueLiveLoad.push({
-                object: iliasObject,
-                resolver: resolver,
-                rejecter: rejecter
-            });
-            return promise;
-        }
+
 
         return User.currentUser()
             .then(user => {
@@ -73,23 +55,11 @@ export class SynchronizationService {
                 return this.syncStarted(this.user.id);
             })
             .then( () => this.executeLiveLoad(iliasObject))
-            .then((syncResult) => {
-                if(this.syncQueueLiveLoad.length > 0) {
-                    const sync: { object: ILIASObject; resolver: Resolve<SyncResults>; rejecter } = this.syncQueueLiveLoad.pop();
-                    this.liveLoad(sync.object)
-                        .then((syncResult: SyncResults) => {
-                            sync.resolver(syncResult);
-                        }).catch(error => {
-                        sync.rejecter(error);
-                    });
-                }
-                this.events.publish("sync:complete");
-                return Promise.resolve(syncResult);
-            })
             .catch( (error) =>
-                this.syncEnded(this.user.id).then( () => {
-                    this.events.publish("sync:complete");
-                    return Promise.reject(error);
+                this.syncEnded(this.user.id)
+                    .then( () => {
+                        this.events.publish("sync:complete");
+                        return Promise.reject(error);
                 })
             );
     }
@@ -296,36 +266,15 @@ export class SynchronizationService {
         await this.syncEnded(this.user.id);
     }
 
-    private downloadLearnplaces(tree: Array<ILIASObject>): Observable<void> {
-
-      return Observable.merge(
-        ...tree
-          .filter(it => it.isLearnplace())
-          .map(it => Observable.fromPromise(
-              this.learnplaceLoader.load(it.objId).then(() => {
-                  it.needsDownload = false;
-              })
-          ))
-      );
-    }
-
-    private async executeLiveLoad(parent: ILIASObject): Promise<SyncResults> {
-        const iliasObjects: Promise<Array<ILIASObject>> = (parent == undefined) ?
-            this.dataProvider.getDesktopData(this.user) :
+    private async executeLiveLoad(parent: ILIASObject): Promise<Array<ILIASObject>> {
+        const iliasObjects: Promise<Array<ILIASObject>> = (parent == undefined)?
+            this.dataProvider.getDesktopData(this.user):
             this.dataProvider.getObjectData(parent, this.user, false);
 
         return iliasObjects
-            .then(iliasObjects => {
-                return this.checkForFileDownloads(iliasObjects).then(syncResults => {
-                    return this.downloadLearnplaces(iliasObjects).toPromise()
-                        .then(() => syncResults);
-                });
-            }).then((syncResults) => {
-                return this.syncEnded(this.user.id).then( () => Promise.resolve(syncResults))
-            }
-            ).catch(
-                await this.syncEnded(this.user.id)
-            );
+            .then(() => this.syncEnded(this.user.id))
+            .then( () => Promise.resolve(iliasObjects))
+            .catch(await this.syncEnded(this.user.id));
     }
 }
 

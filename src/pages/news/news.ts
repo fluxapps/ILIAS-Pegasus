@@ -12,7 +12,7 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
-import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
+import {SynchronizationService} from "../../services/synchronization.service";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
 

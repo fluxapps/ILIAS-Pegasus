@@ -36,14 +36,7 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
             .then( () => this.object.needsDownload = true )
             .then( () => this.object.save() )
             .then( () => this.syncService.liveLoad(this.object))
-            .then( (syncResult) =>  {
-                if(syncResult.objectsLeftOut.length > 0 ) {
-                    return this.modal.create(SyncFinishedModal, {syncResult: syncResult}).present();
-                } else {
-                    this.object.needsDownload = false;
-                    return this.object.save();
-                }
-            }).then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
+            .then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
     }
 
     alert(): ILIASObjectActionAlert|any {
