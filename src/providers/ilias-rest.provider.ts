@@ -46,11 +46,9 @@ export class ILIASRestProvider {
     }
 
     async getObjectData(parentRefId: number, user: User, recursive: boolean = false, timeout: number = 0): Promise<Array<DesktopData>> {
-      Profiler.addTimestamp("", true, "REST/getObjectData", parentRefId.toString());
       const opt: ILIASRequestOptions = (recursive)? {accept: "application/json", urlParams: [["recursive", "1"]]} : DEFAULT_OPTIONS;
 
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/objects/${parentRefId}`, opt);
-      Profiler.addTimestamp("iliasRest.get-done", false, "REST/getObjectData", parentRefId.toString());
 
       return response.handle(it =>
         it.json<Array<DesktopData>>(desktopDataSchema)

@@ -1,15 +1,12 @@
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, ViewChild} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
     ActionSheet,
     ActionSheetButton,
     ActionSheetController,
     ActionSheetOptions,
-    Alert,
     AlertController,
-    AlertOptions,
     Events,
-    Modal,
     ModalController,
     NavController,
     NavParams,
@@ -17,7 +14,6 @@ import {
     Toast,
     ToastController
 } from "ionic-angular";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
@@ -28,7 +24,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../.
 import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
 import {
-    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction,
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
     RemoveLocalLearnplaceActionFunction
 } from "../../actions/remove-local-learnplace-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
@@ -51,14 +47,12 @@ import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService} from "../../services/synchronization.service";
-import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
-import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
-import {ThemeProvider} from "../../providers/theme";
 
 @Component({
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
+    @ViewChild(Refresher) refresher: Refresher;
 
     /**
      * Objects under the given parent object
@@ -72,6 +66,7 @@ export class ObjectListPage {
     pageTitle: string;
     user: User;
     actionSheetActive: boolean = false;
+    private deviceOnline: boolean = true;
 
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
@@ -97,8 +92,7 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: ThemeProvider
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
         this.parent = params.get("parent");
 
@@ -114,12 +108,17 @@ export class ObjectListPage {
                 this.pageTitle = lng;
             });
         }
-        this.initEventListeners();
     }
 
+    /**
+     * when entering the view, get the current user and synchronize the chosen ILIASObject
+     */
     ionViewWillEnter(): void {
-        this.startSync(undefined);
-        this.log.debug(() => "News view initialized.");
+        User.currentUser()
+            .then(user => this.user = user)
+            .then(() => this.executeSync());
+
+        this.log.trace(() => "Ion view will enter page object list.");
     }
 
     /**
@@ -147,6 +146,13 @@ export class ObjectListPage {
     }
 
     /**
+     * Switches to Favourites-tab
+     */
+    protected switchToFavouritesTab(): void {
+        this.nav.parent.select(3);
+    }
+
+    /**
      * Checks the parent on null.
      *
      * @throws Exception if the parent is null
@@ -157,135 +163,68 @@ export class ObjectListPage {
         }
     }
 
-    ionViewDidEnter(): void {
-        this.log.trace(() => "Ion view did enter.");
-    }
+    /**
+     * called by pull-to-refresh refresher
+     *
+     * @returns {Promise<void>}
+     */
+    async executeSync(): Promise<void> {
+        if (this.checkAndUpdateOnlineStatus()) {
+            this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-    ionViewDidLoad(): void {
-        this.log.trace(() => "Ion view did load page object list.");
+            await this.executeLiveLoad();
+            await this.loadCachedObjects(this.parent === undefined);
 
-        User.currentUser()
-            .then(user => {
-                this.user = user;
-
-                return this.loadCachedObjects();
-            })
-            .then(() => {
-
-                if (this.objects.length == 0 && this.parent == undefined) {
-                    this.executeLiveLoad();
-                }
-            });
-    }
-
-    private async loadCachedObjects(): Promise<void> {
-
-        this.user = await User.currentUser();
-
-        if (this.parent == undefined) {
-            await this.loadCachedDesktopData();
-        } else {
-            await this.loadCachedObjectData();
+            this.footerToolbar.removeJob(Job.Synchronize);
         }
+        if (this.refresherIsPulled()) this.refresher.complete();
+    }
 
-        return Promise.resolve();
+    /**
+     * executes live-loading
+     *
+     * @returns {Promise<void>}
+     */
+    private async executeLiveLoad(): Promise<void> {
+        try {
+            Log.write(this, "Sync start", [], []);
+            await this.sync.liveLoad(this.parent);
+        } catch (error) {
+            Log.error(this, error);
+            throw error;
+        }
     }
 
     /**
      * Loads the object data from db cache.
      * @returns {Promise<void>}
      */
-    private async loadCachedObjectData(): Promise<void> {
-
+    private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
+            this.objects = (isDesktopObject) ?
+                await DesktopItem.findByUserId(this.user.id) :
+                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
 
-            this.footerToolbar.addJob(this.parent.refId, "");
-
-            this.objects = await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
             this.objects.sort(ILIASObject.compare);
-
-            this.footerToolbar.removeJob(this.parent.refId);
-
             return Promise.resolve();
-
         } catch (error) {
-            this.footerToolbar.removeJob(this.parent.refId);
             return Promise.reject(error);
         }
     }
 
     /**
-     * load the desktop data from the local db.
-     * @returns {Promise<void>}
+     * checks the internet connection: updates the deviceOnline-variable and returns its value
      */
-    private async loadCachedDesktopData(): Promise<void> {
-
-        try {
-
-            this.footerToolbar.addJob(Job.DesktopAction, "");
-
-            this.objects = await DesktopItem.findByUserId(this.user.id);
-            this.objects.sort(ILIASObject.compare);
-
-            this.footerToolbar.removeJob(Job.DesktopAction);
-
-            return Promise.resolve();
-
-        } catch (error) {
-            this.footerToolbar.removeJob(Job.DesktopAction);
-            return Promise.reject(error);
-        }
+    private checkAndUpdateOnlineStatus(): boolean {
+        this.deviceOnline = window.navigator.onLine;
+        return this.deviceOnline;
     }
 
     /**
-     * called by pull-to-refresh refresher
-     *
-     * @param {Refresher} refresher
-     * @returns {Promise<void>}
+     * checks whether the refresher is being displayed
      */
-    async startSync(refresher: Refresher): Promise<void> {
-        await this.executeLiveLoad();
-        await this.loadCachedObjects();
-        if(refresher) refresher.complete();
-    }
-
-    /**
-     * executes global sync
-     *
-     * @returns {Promise<void>}
-     */
-    private async executeLiveLoad(): Promise<void> {
-        try {
-            if (this.sync.isRunning) {
-                this.log.debug(() => "Unable to sync because sync is already running.");
-                return;
-            }
-            //const syncModal: Modal = this.displaySyncScreen();
-            Log.write(this, "Sync start", [], []);
-            this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-            await this.sync.liveLoad(this.parent);
-
-            //maybe some objects came in new.
-            this.footerToolbar.removeJob(Job.Synchronize);
-            //this.hideSyncScreen(syncModal);
-        } catch (error) {
-            Log.error(this, error);
-            this.footerToolbar.removeJob(Job.Synchronize);
-            throw error;
-        }
-    }
-
-    private displayAlert(title: string, message: string): void {
-        const alert: Alert = this.alert.create(<AlertOptions>{
-            title: title,
-            message: message,
-            buttons: [
-                <AlertButton>{
-                    text: "Ok"
-                }
-            ]
-        });
-        alert.present();
+    private refresherIsPulled(): boolean {
+        return this.refresher.state === "refreshing";
     }
 
     /**
@@ -334,6 +273,33 @@ export class ObjectListPage {
         }
 
         return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
+    }
+
+    executeAction(action: ILIASObjectAction): void {
+        //const hash: number = action.instanceId();
+        //this.footerToolbar.addJob(hash, "");
+        action.execute().then((result) => {
+            this.handleActionResult(result);
+            //this.footerToolbar.removeJob(hash);
+        }).catch((error) => {
+
+            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
+            //this.footerToolbar.removeJob(hash);
+            throw error;
+        });
+    }
+
+    private handleActionResult(result: ILIASObjectActionResult): void {
+        if (!result) return;
+        if (result instanceof ILIASObjectActionSuccess) {
+            if (result.message) {
+                const toast: Toast = this.toast.create({
+                    message: result.message,
+                    duration: 3000
+                });
+                toast.present();
+            }
+        }
     }
 
     /**
@@ -485,53 +451,5 @@ export class ObjectListPage {
             actions.push(this.removeLocalLearnplaceActionFactory(
                 this.translate.instant("actions.remove_local_learnplace"), iliasObject.objId, iliasObject.userId)
             );
-    }
-
-    private handleActionResult(result: ILIASObjectActionResult): void {
-        if (!result) return;
-        if (result instanceof ILIASObjectActionSuccess) {
-            if (result.message) {
-                const toast: Toast = this.toast.create({
-                    message: result.message,
-                    duration: 3000
-                });
-                toast.present();
-            }
-        }
-    }
-
-    initEventListeners(): void {
-        // We want to refresh after a synchronization.
-        this.events.subscribe("sync:complete", () => {
-            this.loadCachedObjects();
-        });
-    }
-
-    executeAction(action: ILIASObjectAction): void {
-        const hash: number = action.instanceId();
-        this.footerToolbar.addJob(hash, "");
-        action.execute().then((result) => {
-            this.handleActionResult(result);
-            this.footerToolbar.removeJob(hash);
-        }).catch((error) => {
-
-            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
-            this.footerToolbar.removeJob(hash);
-            throw error;
-        });
-    }
-
-    displaySyncScreen(): Modal {
-        if(this.objects.length)
-            return undefined;
-
-        const syncModal: Modal = this.modal.create(SynchronizationPage, {}, {enableBackdropDismiss: false});
-        syncModal.present();
-        return syncModal;
-    }
-
-    hideSyncScreen(syncModal: Modal): void {
-        if(syncModal)
-            syncModal.dismiss();
     }
 }

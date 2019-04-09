@@ -14,6 +14,8 @@ import {HardwareAccessError} from "../services/device/hardware-features/hardware
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isDevMode} from "./devmode";
+import {FileError} from "@ionic-native/file";
+import {FileErrorException} from "../exceptions/FileErrorException";
 
 /**
  * Error handler of ILIAS Pegasus
@@ -82,7 +84,7 @@ export class PegasusErrorHandler implements ErrorHandler {
 
             if(unwrappedError instanceof HttpRequestError) {
                 this.log.warn(() => `Unable to sync due to http request error "${unwrappedError.statuscode}".`);
-                //this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.server_not_reachable"));
+                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.server_not_reachable"));
                 return;
             }
 
@@ -101,6 +103,12 @@ export class PegasusErrorHandler implements ErrorHandler {
             if (unwrappedError instanceof CantOpenFileTypeException) {
                 this.log.warn(() => `Unable to open file with message: "${unwrappedError.message}".`);
                 this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.cant_open_file"));
+                return;
+            }
+
+            if (unwrappedError instanceof FileErrorException) {
+                this.log.warn(() => `Unable to handle file with message: "${unwrappedError.message}".`);
+                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.file_error"));
                 return;
             }
 

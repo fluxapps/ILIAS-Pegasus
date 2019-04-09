@@ -44,8 +44,8 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns {any}
      */
-    liveLoad(iliasObject: ILIASObject = undefined): Promise<Array<ILIASObject>> {
-        if (this._isRunning && iliasObject == undefined)
+    liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
+        if (this._isRunning)
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
 
 
@@ -73,7 +73,7 @@ export class SynchronizationService {
      */
     protected syncStarted(user_id: number): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+            //this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
             this._isRunning = true;
             SQLiteDatabaseService.instance().then(db => {
                 db.query(`INSERT INTO synchronization (userId, startDate, endDate, isRunning) VALUES (${user_id}, date('now'), NULL, 1)`)
@@ -91,7 +91,7 @@ export class SynchronizationService {
      * set local isRunning and closes the db entry that a sync is in progress
      */
     protected syncEnded(user_id: number): Promise<any> {
-            this.footerToolbar.removeJob(Job.Synchronize);
+            //this.footerToolbar.removeJob(Job.Synchronize);
             this._isRunning = false;
             Log.write(this, "ending Sync.");
             return SQLiteDatabaseService.instance()
@@ -241,6 +241,7 @@ export class SynchronizationService {
      * Downloads one file after another
      */
     protected executeFileDownloads(downloads: Array<ILIASObject>, progressListener?: (outstanding_downloads: number) => void): Promise<any> {
+        console.log("=== LOADING FILES NOW ===");
         return new Promise((resolve, reject) => {
             if (downloads.length == 0) {
                 resolve();

@@ -113,6 +113,7 @@
         "remove_local_files_in_text": "Sind Sie sicher, dass Sie alle heruntergeladenen Dateien löschen wollen?",
         "download_successful": "Datei wurde heruntergeladen",
         "cant_open_file": "Es wurde keine Applikation gefunden, die diesen Dateityp öffnen kann.",
+        "file_error": "Es ist ein Problem mit der Datei aufgetreten.",
         "server_not_reachable": "Sie haben keine Verbindung zum Server, versuchen Sie es später erneut oder loggen Sie sich erneut ein.",
         "server_response_validation_error": "Es besteht ein Problem mit der Server Kommunikation, dies kann durch eine veraltete App Version verursacht werden. Falls der Fehler bestehen bleibt, versuche Dich auszulogen und neu einzulogen."
     },

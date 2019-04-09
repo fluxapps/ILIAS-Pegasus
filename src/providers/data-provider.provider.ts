@@ -35,22 +35,13 @@ export class DataProvider {
      * @returns {Promise<ILIASObject[]>}
      */
     getObjectData(parentObject: ILIASObject, user: User, recursive: boolean, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
-        //TODO: we want to update the meta data just once.
-        const id: string = (parentObject) ? parentObject.refId.toString() : "-1";
-        Profiler.addTimestamp("", true, "PD/getObjectData", id);
         return this.rest.getObjectData(parentObject.refId, user, recursive)
-            .then((data) => {
-                Profiler.addTimestamp("rest.getObjectData-done", false, "PD/getObjectData", id);
-                return this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles)
-            })
-            .then(objects => {
-                Profiler.addTimestamp("storeILIASObjects-done", false, "PD/getObjectData", id);
-                return objects.sort(ILIASObject.compare)
-            })
-            .then((result) => {
-                Profiler.addTimestamp("objects.sort-done", false, "PD/getObjectData", id);
-                return result;
-            });
+            .then(data =>
+                this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles)
+            )
+            .then(objects =>
+                objects.sort(ILIASObject.compare)
+            );
     }
 
     /**

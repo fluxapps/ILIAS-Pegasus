@@ -8,6 +8,8 @@ import {TranslateService} from "ng2-translate/ng2-translate";
 import {Alert, AlertController} from "ionic-angular";
 import {Settings} from "../models/settings";
 import {OfflineException} from "../exceptions/OfflineException";
+import {FileErrorException} from "../exceptions/FileErrorException";
+import {FileError} from "@ionic-native/file";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
@@ -21,21 +23,19 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
-
         // Download is only executed if a newer version is available in ILIAS
         Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
             return Promise.reject(new OfflineException("File requireds download and is offline at the same time."));
 
-        else if(this.fileObject.needsDownload) {
-          const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
-          return this.checkWLANAndDownload(settings);
+        else if (this.fileObject.needsDownload) {
+            const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
+            return this.checkWLANAndDownload(settings);
         }
         else {
-          await this.file.open(this.fileObject);
-          return new ILIASObjectActionNoMessage();
+            await this.file.open(this.fileObject);
+            return new ILIASObjectActionNoMessage();
         }
-
     }
 
     private checkWLANAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
