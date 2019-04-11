@@ -38,7 +38,7 @@
 
     // .page_desktop{
         // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
-        background-image: url('../assets/branded_mfkjusb/img/header.svg');
+        background-image: url('../assets/img/header.svg');
         // background-color: map_get($colors, primary);
         // background-position: top left;
         background-size: 100vw ;
@@ -103,12 +103,23 @@
 .page_menu {
 
     // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
-    background-image: url('../assets/branded_mfkjusb/img/header_invert.svg');
+    background-image: url('../assets/img/header.svg');
     // background-color: map_get($colors, primary);
     // background-position: top left;
-    background-size: 100vw ;
+    background-size: 100vmin ;
     background-repeat: no-repeat;
-    background-color: map_get($colors, primary);
+    // background-color: map_get($colors, primary);
+
+    .privacy-iq{
+        display: none
+    }
+    .privacy-pegasus{
+        display: none
+    }
+
+    .privacy-zwh{
+        display: none
+    }
 
 }
 
@@ -185,11 +196,12 @@ ion-content.page_settings {
     }
 
     .login-version-row{
-        height: 30vh;
+        height: 20vh;
     }
 
     .login-bottom-image{
-        display: none;
+        // display: none;
+        width: 30vmin;
     }
 
     .styled-bottom-row{
