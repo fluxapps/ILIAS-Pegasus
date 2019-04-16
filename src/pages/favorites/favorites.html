@@ -7,6 +7,16 @@
 </ion-header>
 
 <ion-content no-padding class="page_favorites page_object_list">
+    <ion-refresher (ionRefresh)="loadContent()"
+                   [closeDuration]="400"
+                   [pullMin]="150">
+        <ion-refresher-content id="refresher-content"
+                               pullingIcon="arrow-down"
+                               pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+                               refreshingText="{{ footerToolbar.loadingText }}"
+                               text-center>
+        </ion-refresher-content>
+    </ion-refresher>
 
     <ion-list text-wrap *ngIf="favorites && favorites.length == 0 && footerToolbar.isLoading == false">
         <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
@@ -32,10 +42,6 @@
             <p class="object-flags">
                 <ion-badge color="light" *ngIf="object.isFavorite">
                     <ion-icon color="primary" name="star"></ion-icon>
-                </ion-badge>
-
-                <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
-                    <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
                 </ion-badge>
 
                 <ion-badge *ngIf="object.isNew" color="light">

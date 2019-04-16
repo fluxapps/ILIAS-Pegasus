@@ -16,7 +16,6 @@ import {
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
@@ -24,7 +23,6 @@ import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
@@ -67,7 +65,7 @@ export class NewObjectsPage {
     allObjects: Array<ILIASObject> = [];
 
     constructor(public nav: NavController,
-                params: NavParams,
+                public params: NavParams,
                 public actionSheet: ActionSheetController,
                 public loading: LoadingController,
                 public file: FileService,
@@ -225,7 +223,7 @@ export class NewObjectsPage {
      */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
         if (iliasObject.isContainer()) {
-            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav, this.params);
         }
         if (iliasObject.type === "file") {
             return new DownloadAndOpenFileExternalAction(
@@ -255,22 +253,17 @@ export class NewObjectsPage {
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId)),
         ];
-        if (!iliasObject.isFavorite) {
-            actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
-        } else if (iliasObject.isFavorite) {
-            actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
-        }
         if (iliasObject.isContainer()) {
-            if (!iliasObject.isOfflineAvailable) {
+            if (!iliasObject.isFavorite) {
                 actions.push(
-                  new MarkAsOfflineAvailableAction(this.translate.instant("actions.mark_as_offline_available"),
+                  new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"),
                     iliasObject,
                     this.dataProvider,
                     this.sync,
                     this.modal)
                 );
-            } else if (iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
+            } else if (iliasObject.isFavorite && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+                actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
                 actions.push(
                   new SynchronizeAction(this.translate.instant("actions.synchronize"),
                     iliasObject,

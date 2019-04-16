@@ -17,7 +17,6 @@ import {
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
@@ -31,7 +30,6 @@ import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {Exception} from "../../exceptions/Exception";
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
@@ -47,6 +45,17 @@ import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {SynchronizationService} from "../../services/synchronization.service";
+import {Favorites} from "../../models/favorites";
+
+/**
+ * Summary of the state of an object-list-page
+ */
+interface PageState {
+    favorites: boolean,
+    online: boolean,
+    loading: boolean,
+    refreshing: boolean,
+}
 
 @Component({
     templateUrl: "object-list.html",
@@ -66,7 +75,7 @@ export class ObjectListPage {
     pageTitle: string;
     user: User;
     actionSheetActive: boolean = false;
-    private deviceOnline: boolean = true;
+    private state: PageState = {favorites: undefined, online: undefined, loading: false, refreshing: false};
 
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
@@ -74,7 +83,7 @@ export class ObjectListPage {
     readonly timeline: TimeLine;
 
     constructor(private readonly nav: NavController,
-                params: NavParams,
+                private readonly params: NavParams,
                 private readonly actionSheet: ActionSheetController,
                 private readonly file: FileService,
                 private readonly sync: SynchronizationService,
@@ -95,6 +104,7 @@ export class ObjectListPage {
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
         this.parent = params.get("parent");
+        this.state.favorites = params.get("favorites");
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
@@ -102,11 +112,10 @@ export class ObjectListPage {
             this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ""; // will be updated by the observer
+            const key: string = (this.state.favorites) ? "favorites.title" : "object-list.title";
+            translate.get(key).subscribe((lng) => this.pageTitle = lng);
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
-            translate.get("object-list.title").subscribe((lng) => {
-                this.pageTitle = lng;
-            });
         }
     }
 
@@ -114,11 +123,31 @@ export class ObjectListPage {
      * when entering the view, get the current user and synchronize the chosen ILIASObject
      */
     ionViewWillEnter(): void {
+        this.updatePageState();
         User.currentUser()
             .then(user => this.user = user)
-            .then(() => this.executeSync());
+            .then(() => this.loadContent());
 
         this.log.trace(() => "Ion view will enter page object list.");
+    }
+
+    /**
+     * Updates the state-object of the page
+     */
+    updatePageState(): void {
+        this.state.favorites = this.params.get("favorites");
+        this.state.online = window.navigator.onLine;
+        this.state.loading = this.footerToolbar.isLoading;
+        this.state.refreshing = this.refresher.state === "refreshing";
+    }
+
+    /**
+     * Checks whether the page is in a given state
+     */
+    checkPageState(state: Partial<PageState>): boolean {
+        for(const p in state)
+            if(state[p] !== this.state[p]) return false;
+        return true;
     }
 
     /**
@@ -148,7 +177,7 @@ export class ObjectListPage {
     /**
      * Switches to Favourites-tab
      */
-    protected switchToFavouritesTab(): void {
+    protected switchToFavoritesTab(): void {
         this.nav.parent.select(3);
     }
 
@@ -168,30 +197,66 @@ export class ObjectListPage {
      *
      * @returns {Promise<void>}
      */
-    async executeSync(): Promise<void> {
-        if (this.checkAndUpdateOnlineStatus()) {
-            this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+    async loadContent(): Promise<void> {
+        this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+        this.updatePageState();
 
-            await this.executeLiveLoad();
+        if(this.state.favorites) {
+            if (this.state.online && this.state.refreshing) await this.downloadOfflineData();
+            await this.loadFavouritesObjectList();
+        } else {
+            if (this.state.online) await this.liveLoadContent();
             await this.loadCachedObjects(this.parent === undefined);
-
-            this.footerToolbar.removeJob(Job.Synchronize);
         }
-        if (this.refresherIsPulled()) this.refresher.complete();
+
+        if (this.state.refreshing) this.refresher.complete();
+        this.footerToolbar.removeJob(Job.Synchronize);
+        this.updatePageState();
     }
 
     /**
-     * executes live-loading
+     * live-load content from account
      *
      * @returns {Promise<void>}
      */
-    private async executeLiveLoad(): Promise<void> {
+    async liveLoadContent(): Promise<void> {
         try {
             Log.write(this, "Sync start", [], []);
             await this.sync.liveLoad(this.parent);
         } catch (error) {
             Log.error(this, error);
             throw error;
+        }
+    }
+
+    /**
+     * load content from favorites
+     *
+     * @returns {Promise<void>}
+     */
+    async loadFavouritesObjectList(): Promise<void> {
+        if(this.parent === undefined) {
+            Favorites.findByUserId(this.user.id)
+                .then(favorites => {
+                    favorites.sort(ILIASObject.compare);
+                    this.objects = favorites;
+                });
+        }
+        else await this.loadCachedObjects(false);
+    }
+
+    /**
+     * download content in current container
+     *
+     * @returns {Promise<void>}
+     */
+    async downloadOfflineData(): Promise<void> {
+        let cnt: number = 0;
+        for (const object of this.objects) {
+            cnt++;
+            this.footerToolbar.addJob(Job.FileDownload, `Loading ${cnt}/${this.objects.length} "${object.title}"`); // TODO sync
+            await this.sync.loadOfflineContent(object);
+            this.footerToolbar.removeJob(Job.FileDownload);
         }
     }
 
@@ -210,21 +275,6 @@ export class ObjectListPage {
         } catch (error) {
             return Promise.reject(error);
         }
-    }
-
-    /**
-     * checks the internet connection: updates the deviceOnline-variable and returns its value
-     */
-    private checkAndUpdateOnlineStatus(): boolean {
-        this.deviceOnline = window.navigator.onLine;
-        return this.deviceOnline;
-    }
-
-    /**
-     * checks whether the refresher is being displayed
-     */
-    private refresherIsPulled(): boolean {
-        return this.refresher.state === "refreshing";
     }
 
     /**
@@ -255,7 +305,7 @@ export class ObjectListPage {
         }
 
         if (iliasObject.isContainer()) {
-            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav, this.params);
         }
 
         if (iliasObject.isLearnplace()) {
@@ -314,8 +364,6 @@ export class ObjectListPage {
         this.applyDefaultActions(actions, iliasObject);
         this.applyMarkAsFavoriteAction(actions, iliasObject);
         this.applyUnmarkAsFavoriteAction(actions, iliasObject);
-        this.applyMarkAsOfflineAction(actions, iliasObject);
-        this.applyUnmarkAsOfflineAction(actions, iliasObject);
         this.applySynchronizeAction(actions, iliasObject);
         this.applyRemoveLocalFileAction(actions, iliasObject);
         this.applyRemoveLearnplaceAction(actions, iliasObject);
@@ -380,47 +428,18 @@ export class ObjectListPage {
 
     private applyMarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
         if(!iliasObject.isFavorite) {
-            actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
+            actions.push(new MarkAsFavoriteAction(
+                this.translate.instant("actions.mark_as_favorite"),
+                iliasObject,
+                this.dataProvider,
+                this.sync,
+                this.modal));
         }
     }
 
     private applyUnmarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
         if(iliasObject.isFavorite) {
             actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
-        }
-    }
-
-    private applyMarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(!iliasObject.isOfflineAvailable
-            && (
-                iliasObject.isContainer() && !iliasObject.isLinked()
-                ||
-                iliasObject.isFile()
-                ||
-                iliasObject.isLearnplace()
-            )
-        ) {
-            actions.push(new MarkAsOfflineAvailableAction(
-                this.translate.instant("actions.mark_as_offline_available"),
-                iliasObject,
-                this.dataProvider,
-                this.sync,
-                this.modal)
-            );
-        }
-    }
-
-    private applyUnmarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
-            && (
-                iliasObject.isContainer() && !iliasObject.isLinked()
-                ||
-                iliasObject.isFile()
-                ||
-                iliasObject.isLearnplace()
-            )
-        ) {
-            actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
         }
     }
 

@@ -25,7 +25,7 @@ export class TabmenuPage {
   tabmenuRoot1: string = "DesktopPage"
   tabmenuRoot2: object = ObjectListPage
   tabmenuRoot3: string = "NewsPage"
-  tabmenuRoot4: object = FavoritesPage
+  tabmenuRoot4: object = ObjectListPage
   tabmenuRoot5: string = "MenuPage"
 
   constructor(

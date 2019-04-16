@@ -4,7 +4,7 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
-import {Events} from "ionic-angular";
+import {Events, Toast, ToastController} from "ionic-angular";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
@@ -22,6 +22,8 @@ export class SynchronizationService {
 
     private user: User;
 
+    private syncQueue: Array<{ object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }> = [];
+
     lastSync: Date;
     lastSyncString: string;
 
@@ -30,6 +32,7 @@ export class SynchronizationService {
     constructor(private readonly dataProvider: DataProvider,
                 private readonly events: Events,
                 private readonly fileService: FileService,
+                private readonly toast: ToastController,
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
@@ -63,6 +66,69 @@ export class SynchronizationService {
                 })
             );
     }
+
+    /**
+     * Execute synchronization
+     * If iliasObject is null, executes a global sync (data is fetched for all objects marked as offline available)
+     * If iliasObject is given, only fetches data for the given object
+     * @param iliasObject
+     * @returns {any}
+     */
+    loadOfflineContent(iliasObject: ILIASObject): Promise<SyncResults> {
+        if(this._isRunning) {
+            let resolver;
+            let rejecter;
+            const promise: Promise<SyncResults> = new Promise((resolve, reject) => {
+                resolver = resolve;
+                rejecter = reject;
+            });
+            this.syncQueue.push({
+                object: iliasObject,
+                resolver: resolver,
+                rejecter: rejecter
+            });
+            return promise;
+        }
+
+        return User.currentUser()
+            .then(user => this.user = user)
+            .then( () => this.downloadContainerContent(iliasObject))
+            .then((syncResult) => {
+                if(this.syncQueue.length > 0) {
+                    const sync = this.syncQueue.pop();
+                    this.loadOfflineContent(sync.object)
+                        .then((syncResult: SyncResults) => {
+                            sync.resolver(syncResult);
+                        }).catch(error => {
+                        sync.rejecter(error);
+                    });
+                }
+                return Promise.resolve(syncResult);
+            })
+            .catch( (error) => {
+                return Promise.reject(error);
+            });
+    }
+
+    private async downloadContainerContent(container: ILIASObject): Promise<SyncResults> {
+        const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
+        iliasObjects.push(container);
+        const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
+        await this.downloadLearnplaces(iliasObjects).toPromise();
+        return syncResults;
+    }
+
+    private downloadLearnplaces(tree: Array<ILIASObject>): Observable<void> {
+        return Observable.merge(...tree
+            .filter(it => it.isLearnplace())
+            .map(it => Observable.fromPromise(
+                this.learnplaceLoader.load(it.objId).then(() => {
+                    it.needsDownload = false;
+                })
+            ))
+        );
+    }
+
 
     get isRunning() {
         return this._isRunning;
@@ -168,6 +234,7 @@ export class SynchronizationService {
      * @param iliasObjects
      */
     protected checkForFileDownloads(iliasObjects: Array<ILIASObject>): Promise<SyncResults> {
+        const fileDownloads: Array<Promise<void>> = [];
         return new Promise((resolve: Resolve<SyncResults>, reject: Reject<Error>) => {
             this.user.settings.then(settings => {
                 FileData.getTotalDiskSpace().then(space => {
@@ -207,32 +274,34 @@ export class SynchronizationService {
                     });
 
                     // We make a copy of the files to download, as the list gets decreased in the download process
-                    const totalDownloads: number = downloads.length;
                     const allDownloads: Array<ILIASObject> = downloads.slice(0); // This is the javascript's clone function....
 
-                    // We set the job to downloading and add a listener to track the progress.
-                    this.footerToolbar.addJob(Job.FileDownload, `${this.translate.instant("sync.download")} 0/${totalDownloads}`);
-                    const progressListener = (outstandingDownloads: number) => {
-                        this.footerToolbar.addJob(Job.FileDownload, `${this.translate.instant("sync.download")} ${totalDownloads - outstandingDownloads}/${totalDownloads}`);
-                    };
+                    // we execute the file downloads
+                    const executeDownloads: Array<Promise<any>> = this.executeFileDownloads(downloads);
+                    for(let i: number = 0; i < downloads.length; i++) {
+                        fileDownloads.push(new Promise((resolve: Resolve<void>, reject: Reject<Error>) => {
+                            executeDownloads[i].then(() => {
+                                resolve();
+                            }).catch(error => {
+                                Log.describe(this, "Execute File Download rejected", error);
+                                reject(error);
+                            });
+                        }));
+                    }
 
-                    // we execute the file downloads and afterwards
-                    this.executeFileDownloads(downloads, progressListener).then(() => {
-                        this.footerToolbar.removeJob(Job.FileDownload);
-                        resolve(new SyncResults(
-                            fileObjects,
-                            allDownloads,
-                            filesAlreadySynced,
-                            filesTooBig.concat(noMoreSpace)
-                        ));
-                    }).catch(error => {
-                        Log.describe(this, "Execute File Download rejected", error);
-                        this.footerToolbar.removeJob(Job.FileDownload);
-                        reject(error);
-                    });
+                    resolve(new SyncResults(
+                        fileObjects,
+                        allDownloads,
+                        filesAlreadySynced,
+                        filesTooBig.concat(noMoreSpace),
+                        fileDownloads
+                    ));
+
                 }).catch(error => {
-                    reject(error)
+                    return Promise.reject(error);
                 });
+            }).catch(error => {
+                return Promise.reject(error);
             });
         });
     }
@@ -240,25 +309,18 @@ export class SynchronizationService {
     /**
      * Downloads one file after another
      */
-    protected executeFileDownloads(downloads: Array<ILIASObject>, progressListener?: (outstanding_downloads: number) => void): Promise<any> {
-        console.log("=== LOADING FILES NOW ===");
-        return new Promise((resolve, reject) => {
-            if (downloads.length == 0) {
-                resolve();
-            } else {
-                const download = downloads.pop();
-                if (progressListener != undefined)
-                    progressListener(downloads.length);
+    protected executeFileDownloads(downloads: Array<ILIASObject>): Array<Promise<any>> {
+        const results: Array<Promise<any>> = [];
+        for(const download of downloads) {
+            results.push(new Promise((resolve, reject) => {
                 this.fileService.download(download).then(() => {
-                    this.executeFileDownloads(downloads, progressListener).then(() => {
-                        resolve();
-                    });
+                    resolve();
                 }).catch(error => {
-                    downloads.push(download);
                     reject(error);
-                });
-            }
-        });
+                })
+            }))
+        }
+        return results;
     }
 
     async executeNewsSync(): Promise<void> {
@@ -283,7 +345,8 @@ export class SyncResults {
     constructor(public totalObjects: Array<ILIASObject>,
                 public objectsDownloaded: Array<ILIASObject>,
                 public objectsUnchanged: Array<ILIASObject>,
-                public objectsLeftOut: Array<{object: ILIASObject, reason: LeftOutReason}>) {
+                public objectsLeftOut: Array<{object: ILIASObject, reason: LeftOutReason}>,
+                public fileDownloads: Array<Promise<void>>) {
     }
 }
 

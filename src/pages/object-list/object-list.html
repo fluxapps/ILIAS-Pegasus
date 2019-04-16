@@ -7,11 +7,9 @@
 </ion-header>
 
 <ion-content  class="page_object_list" >
-    <ion-refresher
-        (ionRefresh)="executeSync()"
-        [closeDuration]="400"
-        [pullMin]="150"
-    >
+    <ion-refresher (ionRefresh)="loadContent()"
+                   [closeDuration]="400"
+                   [pullMin]="150">
         <ion-refresher-content id="refresher-content"
                                pullingIcon="arrow-down"
                                pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
@@ -20,8 +18,8 @@
         </ion-refresher-content>
     </ion-refresher>
 
-    <!-- status : synchronization in progress -->
-    <ion-grid *ngIf="footerToolbar.isLoading && !refresherIsPulled()">
+    <!-- status : synchronization in progress, refresher not pulled -->
+    <ion-grid *ngIf="checkPageState({loading: true, refreshing: false})">
         <ion-row>
             <ion-col>
                 <ion-spinner class="centered"></ion-spinner>
@@ -35,7 +33,7 @@
     </ion-grid>
 
     <!-- status : display object-list, synchronization complete -->
-    <ion-list  class="ilias-object-list" *ngIf="deviceOnline && !footerToolbar.isLoading">
+    <ion-list  class="ilias-object-list" *ngIf="checkPageState({online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
         <div class="" *ngIf="parent != undefined">
             <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
                 <ion-avatar item-start>
@@ -72,18 +70,18 @@
                 </button>
             </ion-item>
 
-            <ion-item text-wrap="" *ngIf="!objects.length && !footerToolbar.isLoading">
+            <ion-item text-wrap="" *ngIf="!objects.length">
                 {{ 'no_items' | translate:[] }}
             </ion-item>
         </ion-item-group>
     </ion-list>
 
-    <!-- status : user offline -->
-    <ion-grid *ngIf="!deviceOnline">
+    <!-- status : user offline, not in favorites -->
+    <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
         <ion-row>
             <ion-col>
                 <ion-label>YOU ARE OFFLINE PULL DOWN TO RETRY OR GOTO FAVORITES</ion-label>
-                <button ion-button (click)="switchToFavouritesTab()">FAVORITES</button>
+                <button ion-button (click)="switchToFavoritesTab()">FAVORITES</button>
             </ion-col>
         </ion-row>
     </ion-grid>

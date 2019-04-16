@@ -2,15 +2,19 @@ import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
 import {ILIASObjectActionNoMessage} from "./object-action";
 import {ILIASObjectActionResult} from "./object-action";
+import {UnMarkAsOfflineAvailableAction} from "./unmark-as-offline-available-action";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
+    readonly offlineAction: UnMarkAsOfflineAvailableAction;
+
     constructor(public title: string, public object: ILIASObject) {
         super();
+        this.offlineAction = new UnMarkAsOfflineAvailableAction(title, object);
     }
 
     execute(): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve, reject) => {
+        const favPromise: Promise<ILIASObjectActionResult> = new Promise((resolve, reject) => {
             this.object.isFavorite = false;
             this.object.save().then(() => {
                 resolve(new ILIASObjectActionNoMessage());
@@ -18,6 +22,9 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
                 reject(error);
             });
         });
+
+        return this.offlineAction.execute()
+            .then(() => favPromise);
     }
 
     alert(): ILIASObjectActionAlert|any {
