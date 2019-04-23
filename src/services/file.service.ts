@@ -91,24 +91,24 @@ export class FileService {
 
         // We don't want to download if we're not in wlan
         if (forceDownload == false && settings.shouldntDownloadBecauseOfWLAN()) {
-          throw new NoWLANException(`Unable to download file with refId ${fileObject.refId}`);
+            throw new NoWLANException(`Unable to download file with refId ${fileObject.refId}`);
         }
 
         // If we have no file name we throw an error.
         if (!fileObject.data.hasOwnProperty("fileName")) {
-          throw new Error("Metadata of file object is not present");
+            throw new Error("Metadata of file object is not present");
         }
 
         Log.write(this, "Resolving storage location");
         const storageLocation: string = this.getStorageLocation(user, fileObject);
         await this.createDirectoryPath(storageLocation);
 
-      // Provide a general listener that throws an event
-      Log.write(this, "start DL");
-      const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
-      Log.describe(this, "Download Complete: ", fileEntry);
-      await this.storeFileVersionLocal(fileObject);
-      return fileEntry;
+        // Provide a general listener that throws an event
+        Log.write(this, "start DL");
+        const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
+        Log.describe(this, "Download Complete: ", fileEntry);
+        await this.storeFileVersionLocal(fileObject);
+        return fileEntry;
     }
 
     /**

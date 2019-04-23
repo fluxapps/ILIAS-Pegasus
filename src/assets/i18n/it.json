@@ -23,7 +23,9 @@
     "close": "Chiudi",
     "object-list": {
         "title" : "I miei corsi e i miei gruppi",
-        "content" : "Contenuto"
+        "content" : "Contenuto",
+        "offline" : "Your device is offline. You can pull to refresh or go to your favorites.",
+        "downloading" : "Loading"
     },
     "page-layout": {
         "group" : "Per questo gruppo sono disponibili informazioni ulteriori.",

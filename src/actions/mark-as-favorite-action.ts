@@ -25,7 +25,7 @@ export class MarkAsFavoriteAction extends ILIASObjectAction {
     execute(): Promise<ILIASObjectActionResult> {
         return this.offlineAction.execute()
             .then(() => {
-                this.object.isFavorite = true;
+                this.object.isFavorite = 1;
                 return this.object.save()
                     .then(() => Promise.resolve(new ILIASObjectActionNoMessage()));
             });

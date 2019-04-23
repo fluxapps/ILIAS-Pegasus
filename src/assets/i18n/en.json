@@ -25,7 +25,9 @@
     "yesterday": "Yesterday",
     "object-list": {
         "title" : "My Courses & Groups",
-        "content" : "Content"
+        "content" : "Content",
+        "offline" : "Your device is offline. You can pull to refresh or go to your favorites.",
+        "downloading" : "Loading"
     },
     "page-layout": {
         "group" : "Additional information available for this group.",

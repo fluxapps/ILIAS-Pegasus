@@ -17,12 +17,24 @@ import {
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
 
+export interface SynchronizationState {
+    liveLoading: boolean,
+    loadingOfflineContent: boolean
+}
+interface SyncEntry {
+    object: ILIASObject,
+    resolver: Resolve<SyncResults>,
+    rejecter: Reject<Error>
+}
+
 @Injectable()
 export class SynchronizationService {
 
+    static state: SynchronizationState = {liveLoading: false, loadingOfflineContent: false};
+
     private user: User;
 
-    private syncQueue: Array<{ object: ILIASObject, resolver: Resolve<SyncResults>, rejecter }> = [];
+    private syncQueue: Array<SyncEntry> = [];
 
     lastSync: Date;
     lastSyncString: string;
@@ -45,12 +57,14 @@ export class SynchronizationService {
      * If iliasObject is undefined, executes sync for desktop-data
      * If iliasObject is given, only fetches data for the given object
      * @param iliasObject
-     * @returns {any}
+     * @returns Promise<Array<ILIASObject>>
      */
     liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
-        if (this._isRunning)
+        SynchronizationService.state.liveLoading = true;
+        if (this._isRunning) {
+            SynchronizationService.state.liveLoading = false;
             return Promise.reject(this.translate.instant("actions.sync_already_running"));
-
+        }
 
         return User.currentUser()
             .then(user => {
@@ -63,8 +77,12 @@ export class SynchronizationService {
                     .then( () => {
                         this.events.publish("sync:complete");
                         return Promise.reject(error);
-                })
-            );
+                    })
+            )
+            .then(promise  => {
+                SynchronizationService.state.liveLoading = false;
+                return promise;
+            });
     }
 
     /**
@@ -72,9 +90,12 @@ export class SynchronizationService {
      * If iliasObject is null, executes a global sync (data is fetched for all objects marked as offline available)
      * If iliasObject is given, only fetches data for the given object
      * @param iliasObject
-     * @returns {any}
+     * @returns Promise<SyncResults>
      */
     loadOfflineContent(iliasObject: ILIASObject): Promise<SyncResults> {
+        SynchronizationService.state.loadingOfflineContent = true;
+        console.log("method - loadOfflineContent");
+        iliasObject.isFavorite = 2;
         if(this._isRunning) {
             let resolver;
             let rejecter;
@@ -95,7 +116,7 @@ export class SynchronizationService {
             .then( () => this.downloadContainerContent(iliasObject))
             .then((syncResult) => {
                 if(this.syncQueue.length > 0) {
-                    const sync = this.syncQueue.pop();
+                    const sync: SyncEntry = this.syncQueue.pop();
                     this.loadOfflineContent(sync.object)
                         .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
@@ -107,6 +128,11 @@ export class SynchronizationService {
             })
             .catch( (error) => {
                 return Promise.reject(error);
+            })
+            .then(promise => {
+                iliasObject.isFavorite = 1;
+                SynchronizationService.state.loadingOfflineContent = false;
+                return promise;
             });
     }
 

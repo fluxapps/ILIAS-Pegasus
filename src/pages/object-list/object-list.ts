@@ -53,7 +53,8 @@ import {Favorites} from "../../models/favorites";
 interface PageState {
     favorites: boolean,
     online: boolean,
-    loading: boolean,
+    loadingLive: boolean,
+    loadingOffline: boolean,
     refreshing: boolean,
 }
 
@@ -75,12 +76,19 @@ export class ObjectListPage {
     pageTitle: string;
     user: User;
     actionSheetActive: boolean = false;
-    private state: PageState = {favorites: undefined, online: undefined, loading: false, refreshing: false};
+    private state: PageState = {
+        favorites: undefined,
+        online: undefined,
+        refreshing: false,
+        loadingLive: false,
+        loadingOffline: false
+    };
 
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
     readonly pageLayout: PageLayout;
     readonly timeline: TimeLine;
+    readonly footerToolbarOfflineContent: FooterToolbarService = new FooterToolbarService();
 
     constructor(private readonly nav: NavController,
                 private readonly params: NavParams,
@@ -123,7 +131,6 @@ export class ObjectListPage {
      * when entering the view, get the current user and synchronize the chosen ILIASObject
      */
     ionViewWillEnter(): void {
-        this.updatePageState();
         User.currentUser()
             .then(user => this.user = user)
             .then(() => this.loadContent());
@@ -137,14 +144,16 @@ export class ObjectListPage {
     updatePageState(): void {
         this.state.favorites = this.params.get("favorites");
         this.state.online = window.navigator.onLine;
-        this.state.loading = this.footerToolbar.isLoading;
         this.state.refreshing = this.refresher.state === "refreshing";
+        this.state.loadingLive = SynchronizationService.state.liveLoading;
+        this.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
     }
 
     /**
      * Checks whether the page is in a given state
      */
     checkPageState(state: Partial<PageState>): boolean {
+        this.updatePageState();
         for(const p in state)
             if(state[p] !== this.state[p]) return false;
         return true;
@@ -182,8 +191,7 @@ export class ObjectListPage {
     }
 
     /**
-     * Checks the parent on null.
-     *
+     * Checks the parent on null
      * @throws Exception if the parent is null
      */
     private checkParent(): void {
@@ -194,7 +202,6 @@ export class ObjectListPage {
 
     /**
      * called by pull-to-refresh refresher
-     *
      * @returns {Promise<void>}
      */
     async loadContent(): Promise<void> {
@@ -203,20 +210,29 @@ export class ObjectListPage {
 
         if(this.state.favorites) {
             if (this.state.online && this.state.refreshing) await this.downloadOfflineData();
-            await this.loadFavouritesObjectList();
+            await this.loadFavoritesObjectList();
         } else {
             if (this.state.online) await this.liveLoadContent();
             await this.loadCachedObjects(this.parent === undefined);
         }
 
-        if (this.state.refreshing) this.refresher.complete();
+        this.refresher.complete();
         this.footerToolbar.removeJob(Job.Synchronize);
         this.updatePageState();
     }
 
     /**
+     * loads available content without synchronization and user-feedback
+     * @returns {Promise<void>}
+     */
+    async refreshContent(): Promise<void> {
+        if(this.state.favorites) await this.loadFavoritesObjectList();
+        else await this.loadCachedObjects(this.parent === undefined);
+        this.updatePageState();
+    }
+
+    /**
      * live-load content from account
-     *
      * @returns {Promise<void>}
      */
     async liveLoadContent(): Promise<void> {
@@ -231,10 +247,9 @@ export class ObjectListPage {
 
     /**
      * load content from favorites
-     *
      * @returns {Promise<void>}
      */
-    async loadFavouritesObjectList(): Promise<void> {
+    async loadFavoritesObjectList(): Promise<void> {
         if(this.parent === undefined) {
             Favorites.findByUserId(this.user.id)
                 .then(favorites => {
@@ -247,16 +262,15 @@ export class ObjectListPage {
 
     /**
      * download content in current container
-     *
      * @returns {Promise<void>}
      */
     async downloadOfflineData(): Promise<void> {
         let cnt: number = 0;
         for (const object of this.objects) {
             cnt++;
-            this.footerToolbar.addJob(Job.FileDownload, `Loading ${cnt}/${this.objects.length} "${object.title}"`); // TODO sync
+            this.footerToolbarOfflineContent.addJob(Job.FileDownload, `${this.translate.instant("object-list.downloading")} ${cnt}/${this.objects.length} "${object.title}"`);
             await this.sync.loadOfflineContent(object);
-            this.footerToolbar.removeJob(Job.FileDownload);
+            this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
         }
     }
 
@@ -336,7 +350,7 @@ export class ObjectListPage {
             this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
             //this.footerToolbar.removeJob(hash);
             throw error;
-        });
+        }).then(() => this.refreshContent());
     }
 
     private handleActionResult(result: ILIASObjectActionResult): void {

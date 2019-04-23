@@ -25,7 +25,9 @@
     "yesterday": "Gestern",
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
-        "content" : "Inhalt"
+        "content" : "Inhalt",
+        "offline" : "Keine Internetverbindung. Du kannst versuchen die Seite zu aktualisieren oder zu den Favoriten wechseln.",
+        "downloading" : "Lade"
     },
     "page-layout": {
         "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",

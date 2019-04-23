@@ -15,7 +15,7 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
     execute(): Promise<ILIASObjectActionResult> {
         const favPromise: Promise<ILIASObjectActionResult> = new Promise((resolve, reject) => {
-            this.object.isFavorite = false;
+            this.object.isFavorite = 0;
             this.object.save().then(() => {
                 resolve(new ILIASObjectActionNoMessage());
             }).catch(error =>{
