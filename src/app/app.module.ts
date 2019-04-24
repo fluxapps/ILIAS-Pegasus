@@ -87,7 +87,6 @@ import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
 import {LogoutProvider} from "../providers/logout/logout";
 import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "../providers/repository/repository.user";
-import {ThemeProvider} from "../providers/theme";
 import {Builder} from "../services/builder.base";
 import {Database} from "../services/database/database";
 import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "../services/database/database.api";
@@ -464,7 +463,6 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
     PhotoViewer,
     StreamingMedia,
     HTTP,
-    ThemeProvider,
 
     /* from src/services/device/hardware-features */
     Diagnostic,

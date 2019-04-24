@@ -1,6 +1,5 @@
 import {Component} from "@angular/core";
 import {FooterToolbarService} from "../../../services/footer-toolbar.service";
-import {ThemeProvider} from "../../../providers/theme";
 
 @Component({
     templateUrl: "loading.html"
@@ -8,7 +7,6 @@ import {ThemeProvider} from "../../../providers/theme";
 export class LoadingPage {
 
     constructor(
-        readonly footerToolbar: FooterToolbarService,
-        private readonly theme: ThemeProvider
+        readonly footerToolbar: FooterToolbarService
     ) {}
 }

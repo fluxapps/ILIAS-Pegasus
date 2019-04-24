@@ -32,22 +32,28 @@
         </ion-row>
     </ion-grid>
 
-    <!-- status : display object-list, synchronization complete -->
-    <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
-        <div class="" *ngIf="parent != undefined">
-            <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
-                <ion-avatar item-start>
-                    <img [src]="pageLayout.icon"><!-- TODO make relative? -->
-                </ion-avatar>
-                <span>{{pageLayout.text | translate: []}}</span>
-            </ion-item>
 
-            <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
-                <ion-icon [name]=timeline.icon item-start></ion-icon>
-                <span>{{timeline.text | translate: []}}</span>
-            </ion-item>
-        </div>
-        <ion-item-group>
+  <!-- status : display object-list, synchronization complete -->
+  <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
+    <div class="" *ngIf="parent != undefined">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
+        <ion-avatar item-start>
+            <img [src]="pageLayout.icon"><!-- TODO make relative? -->
+        </ion-avatar>
+        <span>{{pageLayout.text | translate: []}}</span>
+      </ion-item>
+
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()" color="list-element" class="list-element">
+        <ion-icon [name]=timeline.icon item-start></ion-icon>
+        <span>{{timeline.text | translate: []}}</span>
+      </ion-item>
+    </div>
+    <ion-item-group>
+    <!-- <ion-list-header no-lines color="light-blue" class="list-header-item"> -->
+    <!-- <ion-item-divider color="light"> -->
+      <!-- {{"object-list.content" | translate: []}} -->
+    <!-- </ion-item-divider> -->
+    <!-- </ion-list-header> -->
 
             <ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 

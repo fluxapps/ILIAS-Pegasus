@@ -10,7 +10,7 @@ import {
     Toast,
     ToastController,
     ToastOptions,
-    ModalController, NavParams,
+    ModalController,
 } from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
@@ -29,9 +29,6 @@ import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {Log} from "../../services/log.service";
-import {ThemeProvider} from "../../providers/theme";
-import {of} from "rxjs/observable/of";
-import {SynchronizationService} from "../../services/synchronization.service";
 
 
 @Component({
@@ -46,9 +43,7 @@ export class FavoritesPage {
     private rootParents: Array<Promise<string>> = [];
 
     constructor(public nav: NavController,
-                public params: NavParams,
                 public file: FileService,
-                private readonly sync: SynchronizationService,
                 public actionSheet: ActionSheetController,
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
@@ -62,33 +57,11 @@ export class FavoritesPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                private readonly theme: ThemeProvider
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
     ionViewWillEnter(): void {
         this.loadFavorites();
-    }
-
-    /**
-     * called by pull-to-refresh refresher
-     *
-     * @returns {Promise<void>}
-     */
-    async loadContent(): Promise<void> {
-        this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-        //this.updatePageState();
-
-        //if (this.state.online) await this.executeLiveLoad();
-        //await this.loadCachedObjects(this.parent === undefined);
-
-        //if (this.state.refreshing) this.refresher.complete();
-        for(const object of this.favorites) {
-            await this.sync.loadOfflineContent(object);
-        }
-
-        this.footerToolbar.removeJob(Job.Synchronize);
-        //this.updatePageState();
     }
 
     /**
@@ -178,7 +151,7 @@ export class FavoritesPage {
       }
 
       if (iliasObject.isContainer()) {
-        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav, this.params);
+        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
       }
 
       if (iliasObject.isLearnplace()) {

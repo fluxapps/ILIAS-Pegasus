@@ -16,6 +16,7 @@ log.txt
 *_config.json
 .vscode/
 npm-debug.log*
+server.config.json
 
 .idea/
 .sourcemaps/
@@ -33,6 +34,9 @@ plugins/
 plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
+src/assets/*
+resources
+
 
 bin/android-*-unsigned.apk
 .DS_Store
@@ -43,6 +47,7 @@ www/*
 !www/.placeholder
 bower_components
 src/assets/config.json
+branding/common/config/server.config.json
 src/assets/testinstallation_config.json
 build*.sh
 iq_config.xml

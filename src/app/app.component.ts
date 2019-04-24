@@ -15,7 +15,6 @@ import {ObjectListPage} from "../pages/object-list/object-list";
 import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
 import {TabmenuPage} from "../pages/tabmenu/tabmenu";
-import {ThemeProvider} from "../providers/theme";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Database} from "../services/database/database";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
@@ -26,12 +25,9 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
-import {Profiler} from "../util/profiler";
-
 
 @Component({
-  templateUrl: "app.html",
-  providers: [ThemeProvider, Profiler]
+  templateUrl: "app.html"
 })
 export class MyApp {
 
@@ -94,8 +90,7 @@ export class MyApp {
     private readonly modal: ModalController,
     private readonly config: Config,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
-    sqlite: SQLite,
-    readonly theme: ThemeProvider
+    sqlite: SQLite
   ) {
 
     // Set members on classes which are not injectable
@@ -180,6 +175,10 @@ export class MyApp {
     this.config.set("backButtonText", this.translate.instant("back"));
 
     this.splashScreen.hide();
+
+    this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+    await this.sync.execute();
+    this.footerToolbar.removeJob(Job.Synchronize);
   }
 
   /**

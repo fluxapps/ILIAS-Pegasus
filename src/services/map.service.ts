@@ -3,7 +3,6 @@ import {
   MarkerOptions, MyLocation, MyLocationOptions, VisibleRegion
 } from "@ionic-native/google-maps";
 import {isUndefined} from "util";
-import {ThemeProvider} from "../providers/theme";
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -289,7 +288,7 @@ export class MapBuilder {
     this.markerOptions = <MarkerOptions>{
       title: marker.title,
       icon: {
-          "url": ThemeProvider.instance().getAsset("icon/obj_location.svg"),
+          "url": "assets/icon/obj_location.svg",
             },
       animation: "DROP",
       position: <ILatLng>{

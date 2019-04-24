@@ -1,12 +1,12 @@
 <ion-header>
-  <ion-navbar color="header-element" class=primary-gradient>
+  <ion-navbar color="header-element">
     <ion-title>
       {{'info.title' | translate:{value: null} }}
     </ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content padding class="page_info">
-  <ion-segment [(ngModel)]="tab">
+  <ion-segment padding-bottom [(ngModel)]="tab" color="button-element">
     <ion-segment-button value="info">
       {{'info.title' | translate:{value: null} }}
     </ion-segment-button>
@@ -17,13 +17,20 @@
   <div [ngSwitch]="tab">
     <div *ngSwitchCase="'info'">
       <!--KARTE BUGS-->
-      <ion-card no-margin>
+      <ion-card padding class="version-card">
         <ion-card-header>ILIAS Pegasus</ion-card-header>
         <ion-card-content>
           <p>Version 2.0.2</p>
         </ion-card-content>
       </ion-card>
-      <ion-card no-margin>
+      <ion-card padding class="version-card-iq">
+        <ion-card-header>Lernwelt</ion-card-header>
+        <ion-card-content>
+          <p>Basierend auf ILIAS-Pegasus</p>
+          <p>Version 2.0.2</p>
+        </ion-card-content>
+      </ion-card>
+      <ion-card padding class="reporting-card">
         <ion-card-header>Anregungen und Hinweise zu Fehlern</ion-card-header>
         <ion-card-content>
           <p>Hast du einen Fehler gefunden? Bitte helfe uns die App zu verbessern. Melde dich bei:</p>
@@ -32,18 +39,34 @@
           <!-- </button> -->
         </ion-card-content>
       </ion-card>
+      <ion-card padding class="reporting-card-iq">
+          <ion-item text-wrap>
+              <h2>Zentralstelle für die Weiterbildung im Handwerk e. V.</h2>
+              <p>Bereitstellung und Design </p>
+            </ion-item>
+        <ion-card-content>
+            Ansprechpartnerin: <br>
+            Anna Wunderle (UX & UI Design) <br>
+            Tel: 0211/302009-56 <br>
+            <p>awunderle@zwh.de</p>
+          <!-- </button> -->
+        </ion-card-content>
+        <button ion-button color="primary" clear small (click)="browse('https://zwh.de')">
+          <ion-icon name="globe"></ion-icon> https://zwh.de
+        </button>
+      </ion-card>
       <!--KARTE INHALT-->
-      <ion-card no-margin>
+      <ion-card padding>
         <ion-card-header>Inhaltshinweis</ion-card-header>
         <ion-card-content>
           <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich. Für die Optimierung der App werden Nutzungsdaten anonymisiert protokolliert und ausgewertet.</p>
         </ion-card-content>
       </ion-card>
       <!--KARTE STURA-->
-      <ion-card no-margin>
+      <ion-card padding class="stura-card">
         <ion-item text-wrap>
           <ion-avatar item-start>
-            <img [src]="theme.getAsset('img/stura.jpg')">
+            <img rc="asssets/img/stura.jpg">
           </ion-avatar>
           <h2>Studierendenrat der Universität Freiburg</h2>
           <p>Finanzierung</p>
@@ -58,10 +81,10 @@
         </div>
       </ion-card>
       <!-- KARTE UNIFR -->
-      <ion-card no-margin>
+      <ion-card padding class="freiburg-card">
         <ion-item text-wrap>
           <ion-avatar item-start>
-            <img [src]="theme.getAsset('img/unifrei.png')">
+            <img rc="asssets/img/unifrei.png">
           </ion-avatar>
           <h2>Rechenzentrum Albert-Ludwigs-Universität Freiburg</h2>
           <p>Projektleitung</p>
@@ -76,10 +99,10 @@
         </div>
       </ion-card>
       <!-- KARTE UNIMAR -->
-      <ion-card no-margin>
+      <ion-card padding class="marburg-card">
         <ion-item text-wrap>
           <ion-avatar item-start>
-            <img [src]="theme.getAsset('img/unimar.png')">
+            <img src="asssets/img/unimar.png">
           </ion-avatar>
           <h2>Hochschulrechenzentrum Philipps-Universität Marburg</h2>
           <p>Verantwortlich für das ILIAS RESTPlugin</p>
@@ -94,7 +117,7 @@
         </div>
       </ion-card>
       <!-- KARTE SIG MOBILE -->
-      <ion-card no-margin>
+      <ion-card padding class="sig-card">
         <ion-item text-wrap>
           <h2>ILIAS SIG Mobile</h2>
           <p>Community und Koordination Weiterentwicklung</p>
@@ -109,11 +132,11 @@
         </div>
       </ion-card>
       <!--KARTE studer raimann ag-->
-      <ion-card>
+      <ion-card padding>
         <ion-item text-wrap>
-          <ion-avatar item-start>
-            <img [src]="theme.getAsset('img/sturai.png')">
-          </ion-avatar>
+          <!-- <ion-avatar item-start>
+            <img src="/asssets/img/sturai.png">
+          </ion-avatar> -->
           <h2>studer + raimann ag</h2>
           <p>App-Entwicklung & Wartung</p>
         </ion-item>

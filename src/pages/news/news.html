@@ -23,7 +23,7 @@
 
   <ion-list color="list-element">
   <!-- <div *ngFor="let newsPresenter of newsPresenters"> -->
-    <ion-item *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element">
+    <ion-item *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
       <!-- <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon> -->
       <ion-avatar item-start>
           <img src="{{newsPresenter[1].icon()}}"><!-- TODO make relative? -->

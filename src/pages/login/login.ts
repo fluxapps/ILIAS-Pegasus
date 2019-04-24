@@ -5,7 +5,6 @@ import {Events, NavController, Platform} from "ionic-angular";
 import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {User} from "../../models/user";
 import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
-import {ThemeProvider} from "../../providers/theme";
 import {Log} from "../../services/log.service";
 
 @Component({
@@ -27,12 +26,12 @@ export class LoginPage {
                 public toast: Toast,
                 public event: Events,
                 private readonly browser: InAppBrowser,
-                private readonly executeSyncCtrl: ExecuteSyncProvider,
-                private readonly theme: ThemeProvider,
+                private readonly executeSyncCtrl: ExecuteSyncProvider
     ) {
-
-      this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));
-      this.installationId = this.theme.getILIASInstallationId();
+      this.configProvider.loadConfig().then(config => {
+          this.installations.push(...config.installations);
+          this.installationId = this.installations[0].id;
+      });
     }
 
     login() {

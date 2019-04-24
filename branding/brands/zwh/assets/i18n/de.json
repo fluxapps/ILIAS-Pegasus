@@ -1,0 +1,19 @@
+{
+    "test": "der test",
+
+    "onboarding": {
+        "title1": "Mit der Lernwelt App kannst Du:",
+        "concept1": "Die Lernwelt App verbindet Dich mit der ILIAS Installation Deiner Institution, Uni oder Schule. Und nur mit dieser.",
+        "datasecurity3": "Die Lernwelt App basiert auf ILIAS Pegasus und ist ein Open Source Projekt. Wenn Du Dich selbst überzeugen möchtest, was die App tut, dann kannst Du hier den Code einsehen:"
+        
+      },
+      "login": {
+        "hello":"Willkommen in der Lernwelt App!"
+    },
+    "fallback": {
+        "browser": "Du verlässt nun die Lernwelt App"
+    }
+
+    
+}
+

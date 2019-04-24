@@ -6,6 +6,7 @@
     </ion-navbar>
 </ion-header>
 
+<ion-content class="page_favorites page_object_list">
 <ion-content no-padding class="page_favorites page_object_list">
     <ion-refresher (ionRefresh)="loadContent()"
                    [closeDuration]="400"
@@ -19,16 +20,16 @@
     </ion-refresher>
 
     <ion-list text-wrap *ngIf="favorites && favorites.length == 0 && footerToolbar.isLoading == false">
-        <ion-item>{{ 'no_items' | translate:[] }}</ion-item>
+        <ion-item color="list-element">{{ 'no_items' | translate:[] }}</ion-item>
     </ion-list>
 
     <ion-list class="ilias-object-list">
-        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)"  color="list-element">
+        <ion-item text-wrap *ngFor="let object of favorites" (click)="onClick(object)"  color="list-element" class="list-element">
 
                 <ion-avatar item-start>
                         <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
                         <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
-                          <img [src]="theme.getAsset('icon/obj_link.svg')" class="badge-logo">
+                          <img src="assets/icon/obj_link.svg" class="badge-logo">
                         </ion-badge>
                     </ion-avatar>
             <!-- <ion-icon [name]=object.presenter.icon() item-start></ion-icon> -->
@@ -42,6 +43,10 @@
             <p class="object-flags">
                 <ion-badge color="light" *ngIf="object.isFavorite">
                     <ion-icon color="primary" name="star"></ion-icon>
+                </ion-badge>
+
+                <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+                    <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
                 </ion-badge>
 
                 <ion-badge *ngIf="object.isNew" color="light">
