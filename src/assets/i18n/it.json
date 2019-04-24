@@ -23,7 +23,9 @@
     "close": "Chiudi",
     "object-list": {
         "title" : "I miei corsi e i miei gruppi",
-        "content" : "Contenuto"
+        "content" : "Contenuto",
+        "offline" : "Your device is offline. You can pull to refresh or go to your favorites.",
+        "downloading" : "Loading"
     },
     "page-layout": {
         "group" : "Per questo gruppo sono disponibili informazioni ulteriori.",
@@ -111,6 +113,7 @@
         "remove_local_files_in_text": "Sei sicuro/a di voler eliminare tutti i file scaricati?",
         "download_successful": "Scarica completato",
         "cant_open_file": "Non ci sono applicazioni che possono aprire questo tipo di file.",
+        "file_error": "There was a problem handling the file.",
         "server_not_reachable": "Il server non č raggiungibile, per favore riprova pių tardi.",
         "server_response_validation_error": "Problema di comunicazione del server, assicurati di eseguire l'ultima app e riprova."
     },

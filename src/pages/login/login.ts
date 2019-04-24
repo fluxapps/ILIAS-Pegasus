@@ -55,7 +55,6 @@ export class LoginPage {
                     this.saveUser(data[0], data[1], data[2], data[3]).then(() => {
                         Log.write(this, "User saved.");
                         browser.close();
-                        this.executeSyncCtrl.executeSync();
                     }, (err) => {
                         Log.error(this, err);
                         browser.close();

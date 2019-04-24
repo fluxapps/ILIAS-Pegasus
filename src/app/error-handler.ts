@@ -14,6 +14,15 @@ import {HardwareAccessError} from "../services/device/hardware-features/hardware
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {isDevMode} from "./devmode";
+import {FileError} from "@ionic-native/file";
+import {FileErrorException} from "../exceptions/FileErrorException";
+
+interface AlertEntry {
+    alert: Alert,
+    title: string,
+    message: string,
+    cnt: number
+}
 
 /**
  * Error handler of ILIAS Pegasus
@@ -25,6 +34,7 @@ import {isDevMode} from "./devmode";
 export class PegasusErrorHandler implements ErrorHandler {
 
     private static readonly ERROR_TITLE: string = "Pegasus";
+    private displayedAlerts: Array<AlertEntry> = [];
 
     private readonly log: Logger = Logging.getLogger(PegasusErrorHandler.name);
 
@@ -104,6 +114,12 @@ export class PegasusErrorHandler implements ErrorHandler {
                 return;
             }
 
+            if (unwrappedError instanceof FileErrorException) {
+                this.log.warn(() => `Unable to handle file with message: "${unwrappedError.message}".`);
+                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.file_error"));
+                return;
+            }
+
             this.log.error(() => `Unhandled error occurred of type: ${unwrappedError}`);
 
             if (isDevMode()) {
@@ -149,19 +165,29 @@ export class PegasusErrorHandler implements ErrorHandler {
     }
 
     private displayAlert(title: string, message: string): void {
-        const alert: Alert = this.alert.create(<AlertOptions>{
-            title: title,
-            message: message,
-            buttons: [
-                <AlertButton>{
-                    text: "Ok",
-                    handler: (_: boolean): void => {
-                        this.log.debug(() => `Alert with title "${title}" dismissed.`);
+        const alertEntry: AlertEntry = this.displayedAlerts.filter(e => e.title === title && e.message === message)[0];
+        if(alertEntry === undefined) {
+            const alert: Alert = this.alert.create(<AlertOptions>{
+                title: title,
+                message: message,
+                buttons: [
+                    <AlertButton>{
+                        text: "Ok",
+                        handler: (_: boolean): void => {
+                            this.log.debug(() => `Alert with title "${title}" dismissed.`);
+                        }
                     }
-                }
-            ]
-        });
-        alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
+                ]
+            });
+            this.displayedAlerts.push({alert: alert, title: title, message: message, cnt: 1});
+            alert.onDidDismiss(() =>
+                this.displayedAlerts = this.displayedAlerts.filter(e => e.title !== title && e.message !== message)
+            );
+            alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
+        } else {
+            alertEntry.cnt++;
+            alertEntry.alert.setTitle(`${alertEntry.title} (${alertEntry.cnt})`);
+        }
     }
 
     private stringifyWithoutCyclicObjects(errorLike: undefined|null|string|number|object): string {

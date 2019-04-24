@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Modal, ModalController } from "ionic-angular";
-import { SynchronizationService, SyncResults } from "../../services/synchronization.service";
+import { SynchronizationService } from "../../services/synchronization.service";
 import { FooterToolbarService, Job } from "../../services/footer-toolbar.service";
 import { TranslateService } from "ng2-translate";
 import { SyncFinishedModal } from "../../pages/sync-finished-modal/sync-finished-modal"
@@ -44,7 +44,6 @@ export class ExecuteSyncProvider {
     async executeSync(): Promise<void> {
 
       try {
-
           if (this.sync.isRunning) {
               this.log.debug(() => "Unable to sync because sync is already running.");
               return;
@@ -53,45 +52,15 @@ export class ExecuteSyncProvider {
           Log.write(this, "Sync start", [], []);
           this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-          const syncResult: SyncResults = await this.sync.execute();
-          this.calculateChildrenMarkedAsNew();
-
-          // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-          if (syncResult.objectsLeftOut.length > 0) {
-              const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-              await syncModal.present();
-          }
-
-          //maybe some objects came in new.
+          await this.sync.liveLoad();
           this.footerToolbar.removeJob(Job.Synchronize);
           this.hideSyncScreen(syncModal);
-
       } catch (error) {
-
           Log.error(this, error);
           this.footerToolbar.removeJob(Job.Synchronize);
           throw error;
       }
   }
-   // TODO: Refactor method to make sure it returns a Promise<void>
-   private calculateChildrenMarkedAsNew(): void {
-    // Container objects marked as offline available display the number of new children as badge
-    this.objects.forEach(iliasObject => {
-        if (iliasObject.isContainer()) {
-            ILIASObject.findByParentRefIdRecursive(iliasObject.refId, iliasObject.userId).then(iliasObjects => {
-                const newObjects: Array<ILIASObject> = iliasObjects.filter((iliasObject: ILIASObject) => {
-                    return iliasObject.isNew || iliasObject.isUpdated;
-                });
-                const n: number = newObjects.length;
-                Log.describe(this, "Object:", iliasObject);
-                Log.describe(this, "Objects marked as new: ", n);
-                iliasObject.newSubItems = n;
-            });
-        } else {
-            iliasObject.newSubItems = 0;
-        }
-    });
-}
 
   displaySyncScreen(): Modal {
     if(this.objects.length)

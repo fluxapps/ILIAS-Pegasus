@@ -25,7 +25,9 @@
     "yesterday": "Yesterday",
     "object-list": {
         "title" : "My Courses & Groups",
-        "content" : "Content"
+        "content" : "Content",
+        "offline" : "Your device is offline. You can pull to refresh or go to your favorites.",
+        "downloading" : "Loading"
     },
     "page-layout": {
         "group" : "Additional information available for this group.",
@@ -111,6 +113,7 @@
         "remove_local_files_in_text": "Are you sure you want to delete all downloaded files?",
         "download_successful": "Download successful",
         "cant_open_file": "There's no application that could open this filetype.",
+        "file_error": "There was a problem handling the file.",
         "server_not_reachable": "We cannot reach the server, please try again later or try logging in again.",
         "server_response_validation_error": "Server communication issue, please make sure to run the latest app and try again. Try login out and log in again-"
     },

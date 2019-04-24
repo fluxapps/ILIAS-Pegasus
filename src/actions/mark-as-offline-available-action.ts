@@ -7,7 +7,6 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {ActiveRecord} from "../models/active-record";
 import {User} from "../models/user";
 import {SynchronizationService} from "../services/synchronization.service";
-import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
 import {ModalController} from "ionic-angular";
 
 export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
@@ -35,15 +34,8 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
             })
             .then( () => this.object.needsDownload = true )
             .then( () => this.object.save() )
-            .then( () => this.syncService.execute(this.object))
-            .then( (syncResult) =>  {
-                if(syncResult.objectsLeftOut.length > 0 ) {
-                    return this.modal.create(SyncFinishedModal, {syncResult: syncResult}).present();
-                } else {
-                    this.object.needsDownload = false;
-                    return this.object.save();
-                }
-            }).then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
+            .then( () => this.syncService.loadOfflineContent(this.object))
+            .then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
     }
 
     alert(): ILIASObjectActionAlert|any {

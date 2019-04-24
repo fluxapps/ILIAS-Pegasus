@@ -1,101 +1,97 @@
-<ion-header >
+<ion-header id="header-object-list">
     <ion-navbar color="header-element">
         <ion-title>
-          {{ pageTitle }}
+            {{ pageTitle }}
         </ion-title>
     </ion-navbar>
 </ion-header>
+
 <ion-content  class="page_object_list" >
-  <ion-refresher
-          (ionRefresh)="startSync($event)"
-            [closeDuration]="400"
-            [pullMin]="150"
-            >
-    <ion-refresher-content id="refresher-content"
-        pullingIcon="arrow-down"
-        pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
-        refreshingText="{{ footerToolbar.loadingText }}"
-        text-center>
-     </ion-refresher-content>
-  </ion-refresher>
+    <ion-refresher (ionRefresh)="loadContent()"
+                   [closeDuration]="400"
+                   [pullMin]="150">
+        <ion-refresher-content id="refresher-content"
+                               pullingIcon="arrow-down"
+                               pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+                               refreshingText="{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : footerToolbarOfflineContent.loadingText}}"
+                               text-center>
+        </ion-refresher-content>
+    </ion-refresher>
 
+    <!-- status : synchronization in progress, refresher not pulled -->
+    <ion-grid *ngIf="checkPageState({refreshing: false}) && (checkPageState({favorites: false, loadingLive: true}) || checkPageState({favorites: true, loadingOffline: true}))">
+        <ion-row>
+            <ion-col>
+                <ion-spinner class="centered"></ion-spinner>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+                <ion-label text-center>{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : footerToolbarOfflineContent.loadingText}}</ion-label>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
 
+    <!-- status : display object-list, synchronization complete -->
+    <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
+        <div class="" *ngIf="parent != undefined">
+            <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
+                <ion-avatar item-start>
+                    <img [src]="pageLayout.icon"><!-- TODO make relative? -->
+                </ion-avatar>
+                <span>{{pageLayout.text | translate: []}}</span>
+            </ion-item>
 
-  <ion-list  class="ilias-object-list">
-    <div class="" *ngIf="parent != undefined">
-      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()">
-        <ion-avatar item-start>
-            <img [src]="pageLayout.icon"><!-- TODO make relative? -->
-        </ion-avatar>
-        <span>{{pageLayout.text | translate: []}}</span>
-      </ion-item>
+            <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
+                <ion-icon [name]=timeline.icon item-start></ion-icon>
+                <span>{{timeline.text | translate: []}}</span>
+            </ion-item>
+        </div>
+        <ion-item-group>
 
-      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()">
-        <ion-icon [name]=timeline.icon item-start></ion-icon>
-        <span>{{timeline.text | translate: []}}</span>
-      </ion-item>
-    </div>
-    <ion-item-group>
-    <!-- <ion-list-header no-lines color="light-blue" class="list-header-item"> -->
-    <!-- <ion-item-divider color="light"> -->
-      <!-- {{"object-list.content" | translate: []}} -->
-    <!-- </ion-item-divider> -->
-    <!-- </ion-list-header> -->
+            <ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 
-    <ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
+                <ion-avatar item-start>
+                    <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
+                    <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
+                        <img [src]="theme.getAsset('icon/obj_link.svg')" class="badge-logo">
+                    </ion-badge>
+                </ion-avatar>
 
-      <ion-avatar item-start>
-          <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
-          <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
-            <img [src]="theme.getAsset('icon/obj_link.svg')" class="badge-logo">
-          </ion-badge>
-      </ion-avatar>
+                <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
+                {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+                <p class="object-flags">
+                    <ion-badge color="light" *ngIf="object.isFavorite">
+                        <ion-icon color="primary" name="ai-favorites"></ion-icon>
+                    </ion-badge>
+                    <ion-badge color="light" *ngIf="object.isFavorite === 2">
+                        <ion-icon color="primary" name="download"></ion-icon>
+                    </ion-badge>
+                </p>
+                <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
+                    <ion-icon name="more" color="primary"></ion-icon>
+                </button>
+            </ion-item>
 
-      <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
-      {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
-      <p class="object-flags">
-        <ion-badge color="light" *ngIf="object.isFavorite">
-          <ion-icon color="primary" name="ai-favorites"></ion-icon>
-        </ion-badge>
-        <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.isFile() || object.isLearnplace())">
-          <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
-        </ion-badge>
+            <ion-item text-wrap="" *ngIf="!objects.length">
+                {{ 'no_items' | translate:[] }}
+            </ion-item>
+        </ion-item-group>
+    </ion-list>
 
-        <ion-badge *ngIf="object.isNew" color="light">
-          <ion-icon color="primary">
-            {{'new' | translate:[] }}
-          </ion-icon>
-        </ion-badge>
-        <ion-badge *ngIf="object.isUpdated" color="light">
-          <ion-icon color="primary">
-            {{'updated' | translate:[] }}
-          </ion-icon>
-        </ion-badge>
-        <ion-badge *ngIf="object.newSubItems" color="light">
-          <ion-icon color="primary">
-            {{ object.newSubItems }}
-          </ion-icon>
-        </ion-badge>
-      </p>
-      <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
-        <ion-icon name="more" color="primary"></ion-icon>
-      </button>
-    </ion-item>
-
-    <ion-item text-wrap="" *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == false">
-      {{ 'no_items' | translate:[] }}
-    </ion-item>
-  </ion-item-group>
-  </ion-list>
-
-  <ion-grid *ngIf="objects != null && objects.length == 0 && footerToolbar.isLoading == true">
-    <ion-row>
-      <ion-col>
-        <ion-spinner class="centered"></ion-spinner>
-        <span text-center>{{ footerToolbar.loadingText }}</span>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <!-- status : user offline, not in favorites -->
+    <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
+        <ion-row>
+            <ion-col>
+                <ion-label>{{ 'object-list.offline' | translate:[] }}</ion-label>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+                <button ion-button (click)="switchToFavoritesTab()">{{ 'favorites.title' | translate:[] }}</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
 
 </ion-content>
 

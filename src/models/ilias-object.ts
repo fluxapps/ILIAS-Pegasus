@@ -84,7 +84,7 @@ export class ILIASObject extends ActiveRecord {
     /**
      * Object is marked as favorite
      */
-    isFavorite: boolean;
+    isFavorite: number;
 
     /**
      * Is true iff aditional resources need to be downloaded before this object is offline available.
