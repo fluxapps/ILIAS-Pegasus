@@ -75,7 +75,6 @@ export class ObjectListPage {
     parent: ILIASObject;
     pageTitle: string;
     user: User;
-    actionSheetActive: boolean = false;
     private state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -296,7 +295,6 @@ export class ObjectListPage {
      * @param iliasObject
      */
     onClick(iliasObject: ILIASObject): void {
-        if (this.actionSheetActive) return;
         const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
         // When executing the primary action, we reset the isNew state
@@ -353,6 +351,13 @@ export class ObjectListPage {
         }).then(() => this.refreshContent());
     }
 
+    executeMarkOrUnmarkAsFavoriteAction(iliasObject: ILIASObject, markAsFavorite: boolean): void {
+        const actions: Array<ILIASObjectAction> = [];
+        if(markAsFavorite) this.applyMarkAsFavoriteAction(actions, iliasObject);
+        else this.applyUnmarkAsFavoriteAction(actions, iliasObject);
+        this.executeAction(actions.pop());
+    }
+
     private handleActionResult(result: ILIASObjectActionResult): void {
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {
@@ -371,8 +376,6 @@ export class ObjectListPage {
      * @param iliasObject
      */
     showActions(iliasObject: ILIASObject): void {
-        this.actionSheetActive = true;
-
         const actions: Array<ILIASObjectAction> = [];
 
         this.applyDefaultActions(actions, iliasObject);
@@ -387,7 +390,6 @@ export class ObjectListPage {
             return <ActionSheetButton>{
                 text: action.title,
                 handler: (): void => {
-                    this.actionSheetActive = false;
                     // This action displays an alert before it gets executed
                     if (action.alert()) {
                         this.alert.create({
@@ -418,7 +420,6 @@ export class ObjectListPage {
             text: this.translate.instant("cancel"),
             role: "cancel",
             handler: (): void => {
-                this.actionSheetActive = false;
             }
         });
 
@@ -427,9 +428,6 @@ export class ObjectListPage {
             buttons: buttons
         };
         const actionSheet: ActionSheet = this.actionSheet.create(options);
-        actionSheet.onDidDismiss(() => {
-            this.actionSheetActive = false;
-        });
         actionSheet.present();
     }
 
