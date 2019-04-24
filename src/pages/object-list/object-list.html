@@ -49,7 +49,7 @@
         </div>
         <ion-item-group>
 
-            <ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
+            <button ion-item text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 
                 <ion-avatar item-start>
                     <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
@@ -60,18 +60,30 @@
 
                 <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
                 {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
-                <p class="object-flags">
+                <!--<p class="object-flags">
                     <ion-badge color="light" *ngIf="object.isFavorite">
                         <ion-icon color="primary" name="ai-favorites"></ion-icon>
                     </ion-badge>
                     <ion-badge color="light" *ngIf="object.isFavorite === 2">
                         <ion-icon color="primary" name="download"></ion-icon>
                     </ion-badge>
-                </p>
-                <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
-                    <ion-icon name="more" color="primary"></ion-icon>
+                </p>-->
+                <button ion-button icon-only item-end clear *ngIf="!object.isFavorite" (click)="executeMarkOrUnmarkAsFavoriteAction(object, true);$event.stopPropagation();">
+                    <ion-icon name="star-outline" color="primary"></ion-icon>
                 </button>
-            </ion-item>
+                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 1" (click)="executeMarkOrUnmarkAsFavoriteAction(object, false);$event.stopPropagation();">
+                    <ion-icon name="star" color="primary"></ion-icon>
+                </button>
+                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 2" (click)="$event.stopPropagation()">
+                    <ion-icon name="download" color="primary"></ion-icon>
+                </button>
+                <button ion-button icon-only item-end clear (click)="showActions(object);$event.stopPropagation();">
+                    <ion-icon name="ios-more" color="primary"></ion-icon>
+                </button>
+                <!--<button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
+                    <ion-icon name="more" color="primary"></ion-icon>
+                </button>-->
+            </button>
 
             <ion-item text-wrap="" *ngIf="!objects.length">
                 {{ 'no_items' | translate:[] }}

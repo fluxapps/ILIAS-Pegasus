@@ -64,7 +64,8 @@
         "summary": "Riepilogo",
         "total": "Totale",
         "users": "Utenti",
-        "deleting_files": "Sto eliminando i file..."
+        "deleting_files": "Sto eliminando i file...",
+        "downloadOnStart": "Download favorites on startup"
     },
     "info": {
         "title": "Informazioni",
