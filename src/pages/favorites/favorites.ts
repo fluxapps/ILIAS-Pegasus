@@ -11,6 +11,7 @@ import {
     ToastController,
     ToastOptions,
     ModalController,
+    NavParams,
 } from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
@@ -50,6 +51,7 @@ export class FavoritesPage {
                 public alert: AlertController,
                 public toast: ToastController,
                 private modal: ModalController,
+                private readonly navParams: NavParams,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -151,7 +153,7 @@ export class FavoritesPage {
       }
 
       if (iliasObject.isContainer()) {
-        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+        return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav, this.navParams);
       }
 
       if (iliasObject.isLearnplace()) {
