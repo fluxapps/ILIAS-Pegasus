@@ -3,8 +3,8 @@
  * -> replaces the folder ./src/assets with the one corresponding to the chosen brand
  * -> replaces the file ./build.json used for IOS release builds
  * -> generates "src/assets/config.json" with the required ILIAS installations from "branding/common/config/server.config.json"
+ * -> sets values in "config.xml" to the ones specified in "branding/brands/[brand]/config.json"
  * -> generates language files in "src/assets/i18n" by inserting brand-specific changes to the files in "branding/common/i18n"
- * -> sets the field id in "config.xml"
  *
  * USAGE: the brand can be set via the "--brand"-tag
  * npm run setbrand -- --brand=[BRAND_NAME]
@@ -22,10 +22,10 @@ function execute() {
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
         setFile("build.json", `branding/brands/${brand}/build.json`);
-        generateConfigFile(brand, config);
+        generateServerConfigFile(brand, config);
+        setValuesInProjectConfig(config);
         generateLangFiles(brand);
-        setIdInConfig(config);
-        consoleOut("(set_brand.js) DONE");
+        refreshPlatforms();
     } catch(e) {
         console_log += e.stack;
         throw(e);
@@ -53,7 +53,7 @@ function getBrand() {
 }
 
 // generate "src/assets/config.json"
-function generateConfigFile(brand, config) {
+function generateServerConfigFile(brand, config) {
     let config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
     let config_out = { "installations": [] };
 
@@ -73,6 +73,37 @@ function generateConfigFile(brand, config) {
     writeJSON("src/assets/config.json", config_out);
 }
 
+// set values in "config.xml"
+function setValuesInProjectConfig(config) {
+    // for each entry, the 'setValueInTag'-method is called until the tag was found once
+    let toDoList = [
+        {tag: "<widget ", pre: "id=\"", value: config.projectConfig.id, post: "\"", done: false},
+        {tag: "<name>", pre: "<name>", value: config.projectConfig.name, post: "</name>", done: false},
+        {tag: "<description>", pre: "<description>", value: config.projectConfig.description, post: "</description>", done: false}
+    ];
+
+    // iterate trough lines of 'config.xml' until all tags have ben found
+    let lines = FS.readFileSync("config.xml", "utf8").split("\n");
+    let done = false;
+    for(let i = 0; (i < lines.length) && !done; i++) {
+        done = true;
+        toDoList.forEach(e => {
+            [lines[i], e.done] = (e.done) ? [lines[i], e.done] : setValueInTag(lines[i], e.tag, e.pre, e.value, e.post);
+            done &= e.done;
+        });
+    }
+
+    if(!done) {
+        let notDone = "";
+        toDoList.forEach(function(e) {
+            notDone += (e.done) ? "" : `${e.tag} `;
+        });
+        throw new Error(`(set_brand.js) unable to set the value(s) for the following tag(s) [ ${notDone}] in 'config.xml'`);
+    }
+
+    FS.writeFileSync("config.xml", lines.join("\n"));
+}
+
 // generate language-files from a global and a brand-specific source
 function generateLangFiles(brand) {
     FS.readdirSync("branding/common/i18n").forEach(function(file) {
@@ -89,18 +120,36 @@ function generateLangFiles(brand) {
     });
 }
 
-// set the field id in "conifg.xml"
-function setIdInConfig(config) {
-    let lines = FS.readFileSync("config.xml", "utf8").split("\n");
-    for(let i = 0; i < lines.length; i++) {
-        if (lines[i].indexOf("<widget ") !== -1) {
-            let ind0 = lines[i].indexOf("id=") + 4;
-            let ind1 = lines[i].indexOf('"', ind0);
-            lines[i] = `${lines[i].substring(0, ind0)}${config.condig_id}${lines[i].substring(ind1)}`;
-            FS.writeFileSync("config.xml", lines.join("\n"));
-            return;
+// remove platforms-directory and add the platforms from scratch
+function refreshPlatforms() {
+    deleteDirSync("platforms");
+    runShell("ionic cordova platform add ios");
+    runShell("ionic cordova platform add android");
+}
+
+// run cmd as a shell-script
+function runShell(cmd) {
+    const exec = require("child_process").exec;
+    exec(cmd, (err, stdout, stderr) => {
+        consoleOut(`(set_brand.js) running command "${cmd}"`);
+        consoleOut(`(set_brand.js) stdout ${stdout}`);
+        if(err !== null) {
+            consoleOut(`(set_brand.js) err ${err}`);
+            consoleOut(`(set_brand.js) stderr ${stderr}`);
+            throw new Error(`(set_brand.js) failed when running command "${cmd}", see the output above for details`);
         }
+    });
+}
+
+// if the @line contains @tag, the content between @pre and @post is replaced with @value
+function setValueInTag(line, tag, pre, value, post) {
+    if (line.indexOf(tag) !== -1) {
+        let ind0 = line.indexOf(pre) + pre.length;
+        let ind1 = line.indexOf(post, ind0);
+        line = `${line.substring(0, ind0)}${value}${line.substring(ind1)}`;
+        return [line, true];
     }
+    return [line, false];
 }
 
 // set file at target to the one at source
@@ -110,6 +159,8 @@ function setFile(path_to, path_from) {
 
 // set directory at target to the one at source
 function setDirectoryContent(path_to, path_from) {
+    if(!FS.existsSync(path_from))
+        throw new Error(`(set_brand.js) the directory '${path_from}' for '${path_to}' does not exist`);
     deleteDirSync(path_to);
     FS.mkdirSync(path_to);
     copyDirSync(path_from, path_to);
@@ -179,12 +230,13 @@ function consoleOut(msg) {
 function writeLog(brand) {
     let log = `content automatically generated by the script './branding/set_brand.js'
 
-BRAND ......... ${brand}
-RESOURCES ..... branding/brands/${brand}/resources => resources
-ASSETS ........ branding/brands/${brand}/assets => src/assets
-CONFIG ........ branding/common/config/server.config.json + branding/brands/${brand}/config.json => src/assets/config.json
-LANGUAGE ...... branding/common/i18n/* + branding/brands/${brand}/assets/i18n/* => src/assets/i18n/*
-BUILD ......... branding/brands/${brand}/build.json => build.json
+BRAND ........... ${brand}
+RESOURCES ....... branding/brands/${brand}/resources => resources
+ASSETS .......... branding/brands/${brand}/assets => src/assets
+SERVERCONFIG .... branding/common/config/server.config.json + branding/brands/${brand}/config.json => src/assets/config.json
+PROJECTCONFIG ... config.xml + branding/brands/${brand}/config.json => config.xml
+LANGUAGE ........ branding/common/i18n/* + branding/brands/${brand}/assets/i18n/* => src/assets/i18n/*
+BUILD ........... branding/brands/${brand}/build.json => build.json
 
 CONSOLE OUTPUT
 ${console_log}`;

@@ -31,13 +31,17 @@ __template__
 ```
 {
   "ilias_installation_ids": [],
-  "condig_id": ""
+  "projectConfig": {
+    "id": "",
+    "name": "",
+    "description": ""
+  }
 }
 ```
 
 the array 'ilias_installation_ids' contains ids that correspond to ILIAS-installations, declared in './branding/common/config/server.config.json'
 
-the string 'condig_id' is used as the value for the field 'widget/id' in 'config.xml'
+the strings 'id', 'name' and 'description' are used as the value for the fields 'widget/id', 'name' and 'description' in 'config.xml'
 
 only the chosen entries will be available on the login-screen in the customized app, and the first id sets the default installation for the login
 

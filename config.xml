@@ -138,6 +138,6 @@
     </plugin>
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="cordova-plugin-streaming-media" spec="^2.2.0" />
-    <engine name="android" spec="7.1.4" />
     <engine name="ios" spec="^4.5.5" />
+    <engine name="android" spec="~7.1.4" />
 </widget>

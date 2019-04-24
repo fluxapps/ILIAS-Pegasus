@@ -1,4 +1,8 @@
 {
-  "ilias_installation_ids": [7, 8, 12],
-  "condig_id": "ch.studerraimann.ilias.offline"
+  "ilias_installation_ids": [7, 8],
+  "projectConfig": {
+    "id": "ch.studerraimann.ilias.offline",
+    "name": "ILIAS Pegasus",
+    "description": "Download, sync and store ILIAS-files on your device"
+  }
 }
