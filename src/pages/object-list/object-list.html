@@ -5,7 +5,7 @@
             {{ pageTitle }}
         </ion-title>
 
-        <ion-buttons end>
+        <ion-buttons *ngIf="!checkPageState({favorites: false, online: false})" end>
             <div style="display:inline" *ngIf="parent !== undefined">
                 <button ion-button icon-only clear *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
                     <ion-icon name="star-outline" color="light"></ion-icon>
@@ -13,7 +13,7 @@
                 <button ion-button icon-only clear *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
                     <ion-icon name="star" color="light"></ion-icon>
                 </button>
-                <button ion-button icon-only clear *ngIf="parent.isFavorite === 2" (click)="$event.stopPropagation()">
+                <button ion-button icon-only clear *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
                     <ion-icon name="md-download" color="light"></ion-icon>
                 </button>
                 <button ion-button icon-only clear (click)="showActions(parent);$event.stopPropagation();">
@@ -32,7 +32,7 @@
         <ion-refresher-content id="refresher-content"
                                pullingIcon="arrow-down"
                                pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
-                               refreshingText="{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : footerToolbarOfflineContent.loadingText}}"
+                               refreshingText="{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}"
                                text-center>
         </ion-refresher-content>
     </ion-refresher>
@@ -46,7 +46,7 @@
         </ion-row>
         <ion-row>
             <ion-col>
-                <ion-label text-center>{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : footerToolbarOfflineContent.loadingText}}</ion-label>
+                <ion-label text-center>{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
             </ion-col>
         </ion-row>
     </ion-grid>
@@ -99,7 +99,7 @@
                 <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
                     <ion-icon name="star" color="primary"></ion-icon>
                 </button>
-                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 2" (click)="$event.stopPropagation()">
+                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
                     <ion-icon name="md-download" color="primary"></ion-icon>
                 </button>
                 <button ion-button icon-only item-end clear (click)="showActions(object);$event.stopPropagation();">

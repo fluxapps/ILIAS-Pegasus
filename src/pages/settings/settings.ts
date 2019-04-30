@@ -126,7 +126,11 @@ export class SettingsPage {
 
         if (this.settings.userId) {
             this.log.debug(() => "Saving settings.");
-            await this.settings.save();
+            try {
+                await this.settings.save();
+            } catch (e) {
+                console.log(`ERR ${e.message}`);
+            }
 
             this.log.info(() => "Settings saved successfully.");
             await this.translate.use(this.settings.language).toPromise();

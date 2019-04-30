@@ -1,6 +1,6 @@
 import {Component, Inject} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
-import {Alert, AlertController, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
+import {Alert, AlertController, Events, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadFileAction} from "../../actions/download-file-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
@@ -48,6 +48,7 @@ export class ObjectDetailsPage {
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
+                public events: Events,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -141,12 +142,14 @@ export class ObjectDetailsPage {
                   this.iliasObject,
                   this.dataProvider,
                   this.sync,
-                  this.modal)
+                  this.modal,
+                  this.events)
                 );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject)
+                  this.iliasObject,
+                  this.events)
                 );
                 this.actions.push(new SynchronizeAction(
                   this.translate.instant("actions.synchronize"),
@@ -177,12 +180,14 @@ export class ObjectDetailsPage {
                   this.iliasObject,
                   this.dataProvider,
                   this.sync,
-                  this.modal)
+                  this.modal,
+                  this.events)
                 );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject)
+                  this.iliasObject,
+                  this.events)
                 );
             }
             if (this.iliasObject.needsDownload) {

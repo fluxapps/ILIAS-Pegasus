@@ -87,7 +87,7 @@ export class InitDatabase implements Migration {
                   "language TEXT," +
                   "downloadSize INTEGER," +
                   "quotaSize INTEGER," +
-                  "downloadOnStart INTEGER" +
+                  "downloadOnStart INTEGER," +
                   "downloadWlan INTEGER" +
       ")"
     );

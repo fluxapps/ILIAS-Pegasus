@@ -34,7 +34,7 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
             })
             .then( () => this.object.needsDownload = true )
             .then( () => this.object.save() )
-            .then( () => this.syncService.loadOfflineContent(this.object))
+            .then( () => this.syncService.loadOfflineObjectRecursive(this.object))
             .then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
     }
 

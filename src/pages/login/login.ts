@@ -6,6 +6,10 @@ import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../con
 import {User} from "../../models/user";
 import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
 import {Log} from "../../services/log.service";
+import {Settings} from "../../models/settings";
+import {ILIASObject} from "../../models/ilias-object";
+import {Favorites} from "../../models/favorites";
+import {SynchronizationService} from "../../services/synchronization.service";
 
 @Component({
     templateUrl: "login.html",
@@ -22,6 +26,7 @@ export class LoginPage {
 
     constructor(public platform: Platform,
                 public nav: NavController,
+                private readonly sync: SynchronizationService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ILIASConfigProvider,
                 public toast: Toast,
                 public event: Events,
@@ -61,10 +66,13 @@ export class LoginPage {
                 }
             });
         });
+
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser.");
-            this.checkLogin();
+            this.checkLogin()
+                .then(() => this.checkAndLoadOfflineContent());
         });
+
     }
 
     /**
@@ -79,6 +87,15 @@ export class LoginPage {
             Log.write(this, "Login went wrong....");
             this.toast.showShortTop("Login failed");
         });
+    }
+
+    /**
+     * if downloadOnStart is enabled, synchronize all offline-data after login
+     */
+    private async checkAndLoadOfflineContent(): Promise<void> {
+        const user: User = await User.currentUser();
+        const settings: Settings = await Settings.findByUserId(user.id);
+        if (settings.downloadOnStart) this.sync.loadAllOfflineContent();
     }
 
 

@@ -87,7 +87,6 @@ export class ObjectListPage {
 
     readonly pageLayout: PageLayout;
     readonly timeline: TimeLine;
-    readonly footerToolbarOfflineContent: FooterToolbarService = new FooterToolbarService();
 
     constructor(private readonly nav: NavController,
                 private readonly params: NavParams,
@@ -112,6 +111,7 @@ export class ObjectListPage {
     ) {
         this.parent = params.get("parent");
         this.state.favorites = params.get("favorites");
+        if(this.state.favorites) events.subscribe("favorites:changed", () => this.loadFavoritesObjectList());
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
@@ -207,7 +207,7 @@ export class ObjectListPage {
         this.updatePageState();
 
         if(this.state.favorites) {
-            if (this.state.online && this.state.refreshing) await this.downloadOfflineData();
+            if (this.state.online && this.state.refreshing) await this.sync.loadAllOfflineContent();
             await this.loadFavoritesObjectList();
         } else {
             if (this.state.online) await this.liveLoadContent();
@@ -256,20 +256,6 @@ export class ObjectListPage {
                 });
         }
         else await this.loadCachedObjects(false);
-    }
-
-    /**
-     * download content in current container
-     * @returns {Promise<void>}
-     */
-    async downloadOfflineData(): Promise<void> {
-        let cnt: number = 0;
-        for (const object of this.objects) {
-            cnt++;
-            this.footerToolbarOfflineContent.addJob(Job.FileDownload, `${this.translate.instant("object-list.downloading")} ${cnt}/${this.objects.length} "${object.title}"`);
-            await this.sync.loadOfflineContent(object);
-            this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
-        }
     }
 
     /**
@@ -444,13 +430,19 @@ export class ObjectListPage {
                 iliasObject,
                 this.dataProvider,
                 this.sync,
-                this.modal));
+                this.modal,
+                this.events
+            ));
         }
     }
 
     private applyUnmarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
         if(iliasObject.isFavorite) {
-            actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
+            actions.push(new UnMarkAsFavoriteAction(
+                this.translate.instant("actions.unmark_as_favorite"),
+                iliasObject,
+                this.events
+            ));
         }
     }
 

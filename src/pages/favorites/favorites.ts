@@ -11,7 +11,7 @@ import {
     ToastController,
     ToastOptions,
     ModalController,
-    NavParams,
+    NavParams, Events,
 } from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
@@ -51,6 +51,7 @@ export class FavoritesPage {
                 public alert: AlertController,
                 public toast: ToastController,
                 private modal: ModalController,
+                private readonly events: Events,
                 private readonly navParams: NavParams,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
@@ -120,7 +121,7 @@ export class FavoritesPage {
         const actions: Array<ILIASObjectAction> = [
             new ShowDetailsPageAction(this.translate.instant("actions.show_details"), object, this.nav),
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(object.refId)),
-            new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), object)
+            new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), object, this.events)
         ];
         actions.forEach(action => {
             actionButtons.push({

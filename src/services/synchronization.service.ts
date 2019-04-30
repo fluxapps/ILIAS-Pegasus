@@ -16,6 +16,8 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
+import {Settings} from "../models/settings";
+import {Favorites} from "../models/favorites";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -31,6 +33,7 @@ interface SyncEntry {
 export class SynchronizationService {
 
     static state: SynchronizationState = {liveLoading: false, loadingOfflineContent: false};
+    readonly footerToolbarOfflineContent: FooterToolbarService = new FooterToolbarService();
 
     private user: User;
 
@@ -86,15 +89,34 @@ export class SynchronizationService {
     }
 
     /**
-     * Execute synchronization
-     * If iliasObject is null, executes a global sync (data is fetched for all objects marked as offline available)
-     * If iliasObject is given, only fetches data for the given object
+     * Execute synchronization for all iliasObjects that are favorites and their children
+     * @returns Promise<void>
+     */
+    async loadAllOfflineContent(): Promise<void> {
+        const user: User = await User.currentUser();
+        if(user === undefined) {
+            console.warn("unable to load offline-content, because user is undefined");
+            return;
+        }
+
+        const favorites: Array<ILIASObject> = await Favorites.findByUserId(user.id);
+        let cnt: number = 0;
+        for (const fav of favorites) {
+            cnt++;
+            this.footerToolbarOfflineContent.addJob(Job.FileDownload, `${this.translate.instant("object-list.downloading")} ${cnt}/${favorites.length} "${fav.title}"`);
+            await this.loadOfflineObjectRecursive(fav);
+            this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
+        }
+    }
+
+    /**
+     * Execute synchronization for an iliasObject and all its children
      * @param iliasObject
      * @returns Promise<SyncResults>
      */
-    loadOfflineContent(iliasObject: ILIASObject): Promise<SyncResults> {
+    loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
         SynchronizationService.state.loadingOfflineContent = true;
-        console.log("method - loadOfflineContent");
+        console.log("method - loadOfflineObjectRecursive");
         iliasObject.isFavorite = 2;
         if(this._isRunning) {
             let resolver;
@@ -117,7 +139,7 @@ export class SynchronizationService {
             .then((syncResult) => {
                 if(this.syncQueue.length > 0) {
                     const sync: SyncEntry = this.syncQueue.pop();
-                    this.loadOfflineContent(sync.object)
+                    this.loadOfflineObjectRecursive(sync.object)
                         .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
                         }).catch(error => {

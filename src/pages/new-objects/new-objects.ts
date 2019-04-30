@@ -5,7 +5,7 @@ import {
     ActionSheetButton,
     ActionSheetController,
     Alert,
-    AlertController,
+    AlertController, Events,
     LoadingController,
     ModalController,
     NavController,
@@ -75,6 +75,7 @@ export class NewObjectsPage {
                 public footerToolbar: FooterToolbarService,
                 public translate: TranslateService,
                 public modal: ModalController,
+                public events: Events,
                 public dataProvider: DataProvider,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
@@ -260,10 +261,11 @@ export class NewObjectsPage {
                     iliasObject,
                     this.dataProvider,
                     this.sync,
-                    this.modal)
+                    this.modal,
+                    this.events)
                 );
             } else if (iliasObject.isFavorite && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
+                actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject, this.events));
                 actions.push(
                   new SynchronizeAction(this.translate.instant("actions.synchronize"),
                     iliasObject,

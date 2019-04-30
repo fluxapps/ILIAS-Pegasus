@@ -4,7 +4,7 @@ import {ILIASObjectActionNoMessage} from "./object-action";
 import {ILIASObjectActionResult} from "./object-action";
 import {DataProvider} from "../providers/data-provider.provider";
 import {SynchronizationService} from "../services/synchronization.service";
-import {ModalController} from "ionic-angular";
+import {Events, ModalController} from "ionic-angular";
 import {MarkAsOfflineAvailableAction} from "./mark-as-offline-available-action";
 
 export class MarkAsFavoriteAction extends ILIASObjectAction {
@@ -16,13 +16,15 @@ export class MarkAsFavoriteAction extends ILIASObjectAction {
         public object: ILIASObject,
         public dataProvider: DataProvider,
         public syncService: SynchronizationService,
-        public modal: ModalController
+        public modal: ModalController,
+        public events: Events
     ) {
         super();
         this.offlineAction = new MarkAsOfflineAvailableAction(title, object, dataProvider, syncService, modal);
     }
 
     execute(): Promise<ILIASObjectActionResult> {
+        this.events.publish("favorites:changed");
         return this.offlineAction.execute()
             .then(() => {
                 this.object.isFavorite = 1;

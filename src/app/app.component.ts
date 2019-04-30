@@ -25,6 +25,8 @@ import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
+import {Favorites} from "../models/favorites";
+import {ILIASObject} from "../models/ilias-object";
 
 @Component({
   templateUrl: "app.html"
@@ -177,7 +179,10 @@ export class MyApp {
     this.splashScreen.hide();
 
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-    //TODO: Implement synchronization start method -> await this.sync.execute();
+    if(this.user !== undefined) {
+        const settings: Settings = await Settings.findByUserId(this.user.id);
+        if (settings.downloadOnStart) this.sync.loadAllOfflineContent();
+    }
     this.footerToolbar.removeJob(Job.Synchronize);
   }
 
@@ -227,10 +232,12 @@ export class MyApp {
    * @param {User} user - the user to read its configured language
    */
   private async configureTranslation(user: User): Promise<void> {
-
-    const setting: Settings = await Settings.findByUserId(user.id);
-
-    this.translate.use(setting.language);
+    if(this.user !== undefined) {
+      const setting: Settings = await Settings.findByUserId(user.id);
+      this.translate.use(setting.language);
+    } else {
+        this.translate.use("de");
+    }
     this.translate.setDefaultLang("de");
   }
 

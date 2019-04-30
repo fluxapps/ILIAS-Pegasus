@@ -29,6 +29,11 @@ export class Settings extends ActiveRecord {
     quotaSize: number = 300;
 
     /**
+     * If true, execute offline-data-sync when starting the app
+     */
+    downloadOnStart: boolean = true;
+
+    /**
      * If true, only execute sync when WLAN is available
      */
     downloadWlan: boolean = true;
@@ -39,6 +44,7 @@ export class Settings extends ActiveRecord {
             "language",
             "downloadSize",
             "quotaSize",
+            "downloadOnStart",
             "downloadWlan"
         ]));
 
