@@ -36,14 +36,14 @@
   <!-- status : display object-list, synchronization complete -->
   <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
     <div class="" *ngIf="parent != undefined">
-      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="bottom-line list-element">
         <ion-avatar item-start>
             <img [src]="pageLayout.icon"><!-- TODO make relative? -->
         </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
-      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()" color="list-element" class="list-element">
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()" color="list-element" class="bottom-line list-element">
         <ion-icon [name]=timeline.icon item-start></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>
@@ -55,7 +55,7 @@
     <!-- </ion-item-divider> -->
     <!-- </ion-list-header> -->
 
-            <button ion-item detail-none text-wrap class="bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
+            <button ion-item detail-none text-wrap class="object-list-item bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 
                 <ion-avatar item-start>
                     <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
@@ -91,25 +91,42 @@
                 </button>-->
             </button>
 
-            <ion-item text-wrap="" *ngIf="!objects.length">
-                {{ 'no_items' | translate:[] }}
-            </ion-item>
         </ion-item-group>
+            <!-- status : user in favorites, but nothing added -->
+        <ion-grid *ngIf="checkPageState({favorites: true}) && !objects.length">
+            <ion-row justify-content-center align-items-center>
+                <ion-col col-12 text-center>
+                    <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-12>
+                    <ion-label text-center color="lightish" text-wrap> {{ 'object-list.no_items' | translate:[] }}</ion-label>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
     </ion-list>
-
     <!-- status : user offline, not in favorites -->
     <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
-        <ion-row>
-            <ion-col>
-                <ion-label>{{ 'object-list.offline' | translate:[] }}</ion-label>
+        <ion-row justify-content-center align-items-center>
+            <ion-col col-12 text-center>
+                <img src="assets/icon/objectlist_offline.svg" class="offline-image">
             </ion-col>
         </ion-row>
         <ion-row>
-            <ion-col>
-                <button ion-button (click)="switchToFavoritesTab()">{{ 'favorites.title' | translate:[] }}</button>
+            <ion-col col-12>
+                <ion-label text-center color="lightish" text-wrap>{{ 'object-list.offline' | translate:[] }}</ion-label>
+            </ion-col>
+        </ion-row>
+        <ion-row> 
+            <ion-col col-12>
+                <button ion-button outline round block (click)="switchToFavoritesTab()">{{ 'favorites.title' | translate:[] }}</button>
             </ion-col>
         </ion-row>
     </ion-grid>
+
+
+    
 
 </ion-content>
 

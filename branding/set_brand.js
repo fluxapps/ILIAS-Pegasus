@@ -122,9 +122,10 @@ function generateLangFiles(brand) {
 
 // remove platforms-directory and add the platforms from scratch
 function refreshPlatforms() {
-    deleteDirSync("platforms");
-    runShell("ionic cordova platform add ios");
-    runShell("ionic cordova platform add android");
+    // deleteDirSync("platforms");
+    // runShell("ionic cordova platform add ios");
+    // runShell("ionic cordova platform add android");
+    consoleOut(`Skipping refresh plattforms`);
 }
 
 // run cmd as a shell-script

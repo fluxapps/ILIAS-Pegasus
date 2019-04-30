@@ -27,7 +27,8 @@
         "title" : "Meine Kurse & Gruppen",
         "content" : "Inhalt",
         "offline" : "Keine Internetverbindung. Du kannst versuchen die Seite zu aktualisieren oder zu den Favoriten wechseln.",
-        "downloading" : "Lade"
+        "downloading" : "Lade",
+        "no_items": "Favoriten tauchen hier auf und werden heruntergeladen, so dass sie auch ohne Internetverbindung offline verfügbar sind."
     },
     "page-layout": {
         "group" : "Für diese Gruppe sind zusätzliche Informationen verfügbar.",
