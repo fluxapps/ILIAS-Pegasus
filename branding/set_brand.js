@@ -11,13 +11,15 @@
  */
 
 const FS = require("fs");
+const OS = require("os");
 let console_log = "";
 execute();
 
 function execute() {
     let brand = "";
+    let platforms = "";
     try {
-        brand = getBrand();
+        [brand, platforms] = getFlagValues();
         let config = loadJSON(`branding/brands/${brand}/config.json`);
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
@@ -25,7 +27,7 @@ function execute() {
         generateServerConfigFile(brand, config);
         setValuesInProjectConfig(config);
         generateLangFiles(brand);
-        refreshPlatforms();
+        refreshPlatforms(platforms);
     } catch(e) {
         console_log += e.stack;
         throw(e);
@@ -34,22 +36,48 @@ function execute() {
     }
 }
 
-// get brand from command-line
-function getBrand() {
-    // find and check the "--brand"-tag
-    for (let i = 0; i < process.argv.length; i++) {
-        let list = process.argv[i].split('=');
-        if (list[0] === "--brand") {
-            let brand = list[1];
-            if (!FS.existsSync(`branding/brands/${brand}`))
-                throw new Error(`(set_brand.js) the directory 'branding/brands/${brand}' for the brand '${brand}' does not exist`);
-            consoleOut(`(set_brand.js) setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
-            return brand;
-        }
+// get arguments from the command-line
+function getFlagValues() {
+    let brand = getFlagValueFromArgv("brand");
+    if (brand === undefined) throw new Error("(set_brand.js) flag for setting the brand not found. use as 'npm run setbrand -- --brand=[BRAND_NAME]'");
+    if (!FS.existsSync(`branding/brands/${brand}`))
+        throw new Error(`(set_brand.js) the directory 'branding/brands/${brand}' for the brand '${brand}' does not exist`);
+    consoleOut(`(set_brand.js) setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
+
+    let platforms = getFlagValueFromArgv("platforms");
+    switch (platforms) {
+        case "ia":
+            break;
+        case undefined:
+            platforms = "ia";
+            consoleOut(`(set_brand.js) flag 'platforms' not found, adding ios and android platforms by default`);
+            break;
+        case "ai":
+            platforms = "ai";
+            consoleOut(`(set_brand.js) adding the platforms ios and android`);
+            break;
+        case "i":
+            consoleOut(`(set_brand.js) adding the platform ios`);
+            break;
+        case "a":
+            consoleOut(`(set_brand.js) adding the platform android`);
+            break;
+        default:
+            throw new Error(`(set_brand.js) unable to interpret the flag 'platforms', set to '${platforms}'. possible values are 'ia', 'ai', 'i', 'a'`);
     }
 
-    // if the tag does not exist, throw an error
-    throw new Error("(set_brand.js) flag for setting the brand not found. use as 'npm run setbrand -- --brand=[BRAND_NAME]'");
+    return [brand, platforms]
+}
+
+// get value of the argument with flag 'name' from the command-line
+function getFlagValueFromArgv(name) {
+    for (let i = 0; i < process.argv.length; i++) {
+        let list = process.argv[i].split("=");
+        if (list[0] === `--${name}`)
+            return list[1];
+    }
+
+    return undefined;
 }
 
 // generate "src/assets/config.json"
@@ -121,10 +149,15 @@ function generateLangFiles(brand) {
 }
 
 // remove platforms-directory and add the platforms from scratch
-function refreshPlatforms() {
+function refreshPlatforms(platforms) {
     deleteDirSync("platforms");
-    runShell("ionic cordova platform add ios");
-    runShell("ionic cordova platform add android");
+
+    if(platforms.indexOf("a") !== -1)
+        runShell("ionic cordova platform add android");
+
+    if(platforms.indexOf("i") !== -1)
+        if (OS.platform() === "darwin") runShell("ionic cordova platform add ios");
+        else consoleOut(`(set_brand.js) did not add ios-platform on the operating system "${OS.platform()}"`);
 }
 
 // run cmd as a shell-script
@@ -136,7 +169,7 @@ function runShell(cmd) {
         if(err !== null) {
             consoleOut(`(set_brand.js) err ${err}`);
             consoleOut(`(set_brand.js) stderr ${stderr}`);
-            throw new Error(`(set_brand.js) failed when running command "${cmd}", see the output above for details`);
+            throw new Error(`(set_brand.js) failed when running command '${cmd}', see the output above for details`);
         }
     });
 }
