@@ -27,7 +27,8 @@
         "title" : "My Courses & Groups",
         "content" : "Content",
         "offline" : "Your device is offline. You can pull to refresh or go to your favorites.",
-        "downloading" : "Loading"
+        "downloading" : "Loading",
+        "no_items": "Favorites appear here and are downloaded. Favorites are offline available even without an Internet connection"
     },
     "page-layout": {
         "group" : "Additional information available for this group.",
