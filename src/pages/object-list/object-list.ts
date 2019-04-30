@@ -133,7 +133,6 @@ export class ObjectListPage {
         User.currentUser()
             .then(user => this.user = user)
             .then(() => this.loadContent());
-
         this.log.trace(() => "Ion view will enter page object list.");
     }
 
@@ -351,9 +350,9 @@ export class ObjectListPage {
         }).then(() => this.refreshContent());
     }
 
-    executeMarkOrUnmarkAsFavoriteAction(iliasObject: ILIASObject, markAsFavorite: boolean): void {
+    executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
         const actions: Array<ILIASObjectAction> = [];
-        if(markAsFavorite) this.applyMarkAsFavoriteAction(actions, iliasObject);
+        if(value) this.applyMarkAsFavoriteAction(actions, iliasObject);
         else this.applyUnmarkAsFavoriteAction(actions, iliasObject);
         this.executeAction(actions.pop());
     }

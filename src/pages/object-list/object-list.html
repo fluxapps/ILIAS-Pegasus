@@ -1,8 +1,27 @@
 <ion-header id="header-object-list">
     <ion-navbar color="header-element">
+
         <ion-title>
             {{ pageTitle }}
         </ion-title>
+
+        <ion-buttons end>
+            <div style="display:inline" *ngIf="parent !== undefined">
+                <button ion-button icon-only clear *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
+                    <ion-icon name="star-outline" color="light"></ion-icon>
+                </button>
+                <button ion-button icon-only clear *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
+                    <ion-icon name="star" color="light"></ion-icon>
+                </button>
+                <button ion-button icon-only clear *ngIf="parent.isFavorite === 2" (click)="$event.stopPropagation()">
+                    <ion-icon name="md-download" color="light"></ion-icon>
+                </button>
+                <button ion-button icon-only clear (click)="showActions(parent);$event.stopPropagation();">
+                    <ion-icon name="md-more" color="light"></ion-icon>
+                </button>
+            </div>
+        </ion-buttons>
+
     </ion-navbar>
 </ion-header>
 
@@ -35,8 +54,8 @@
 
   <!-- status : display object-list, synchronization complete -->
   <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
-    <div class="" *ngIf="parent != undefined">
-      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="bottom-line list-element">
+    <div class="" *ngIf="parent !== undefined">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
         <ion-avatar item-start>
             <img [src]="pageLayout.icon"><!-- TODO make relative? -->
         </ion-avatar>
@@ -58,9 +77,9 @@
             <button ion-item detail-none text-wrap class="object-list-item bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
 
                 <ion-avatar item-start>
-                    <img [src]="object.presenter.icon()"><!-- TODO make relative? -->
+                    <img [src]="object.presenter.icon()">
                     <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
-                        <img [src]="theme.getAsset('icon/obj_link.svg')" class="badge-logo">
+                        <img src="assets/icon/obj_link.svg" class="badge-logo">
                     </ion-badge>
                 </ion-avatar>
 
@@ -74,10 +93,10 @@
                         <ion-icon color="primary" name="download"></ion-icon>
                     </ion-badge>
                 </p>-->
-                <button ion-button icon-only item-end clear *ngIf="!object.isFavorite" (click)="executeMarkOrUnmarkAsFavoriteAction(object, true);$event.stopPropagation();">
+                <button ion-button icon-only item-end clear *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
                     <ion-icon name="star-outline" color="primary"></ion-icon>
                 </button>
-                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 1" (click)="executeMarkOrUnmarkAsFavoriteAction(object, false);$event.stopPropagation();">
+                <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
                     <ion-icon name="star" color="primary"></ion-icon>
                 </button>
                 <button ion-button icon-only item-end clear *ngIf="object.isFavorite === 2" (click)="$event.stopPropagation()">
