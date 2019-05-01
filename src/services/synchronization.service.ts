@@ -45,7 +45,7 @@ export class SynchronizationService {
     private _isRunning: boolean = false;
 
     constructor(private readonly dataProvider: DataProvider,
-                private readonly events: Events,
+                public events: Events,
                 private readonly fileService: FileService,
                 private readonly toast: ToastController,
                 private readonly footerToolbar: FooterToolbarService,
@@ -99,6 +99,7 @@ export class SynchronizationService {
             return;
         }
 
+        SynchronizationService.state.loadingOfflineContent = true;
         const favorites: Array<ILIASObject> = await Favorites.findByUserId(user.id);
         let cnt: number = 0;
         for (const fav of favorites) {
@@ -107,6 +108,7 @@ export class SynchronizationService {
             await this.loadOfflineObjectRecursive(fav);
             this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
         }
+        SynchronizationService.state.loadingOfflineContent = false;
     }
 
     /**
@@ -115,7 +117,6 @@ export class SynchronizationService {
      * @returns Promise<SyncResults>
      */
     loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
-        SynchronizationService.state.loadingOfflineContent = true;
         console.log("method - loadOfflineObjectRecursive");
         iliasObject.isFavorite = 2;
         if(this._isRunning) {
@@ -153,7 +154,6 @@ export class SynchronizationService {
             })
             .then(promise => {
                 iliasObject.isFavorite = 1;
-                SynchronizationService.state.loadingOfflineContent = false;
                 return promise;
             });
     }

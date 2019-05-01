@@ -62,12 +62,10 @@ import {
     VISIT_JOURNAL_WATCH,
     VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.service";
-import {FavoritesPage} from "../pages/favorites/favorites";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
-import {ObjectListPage} from "../pages/object-list/object-list";
 import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
@@ -128,8 +126,6 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
   declarations: [
     MyApp,
     TabmenuPage,
-    ObjectListPage,
-    FavoritesPage,
     NewObjectsPage,
     SettingsPage,
     ObjectDetailsPage,
@@ -177,8 +173,6 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
   entryComponents: [
     MyApp,
     TabmenuPage,
-    ObjectListPage,
-    FavoritesPage,
     NewObjectsPage,
     SettingsPage,
     ObjectDetailsPage,

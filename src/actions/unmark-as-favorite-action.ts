@@ -1,9 +1,11 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
-import {ILIASObjectActionNoMessage} from "./object-action";
-import {ILIASObjectActionResult} from "./object-action";
+import {
+    ILIASObjectAction,
+    ILIASObjectActionAlert,
+    ILIASObjectActionNoMessage,
+    ILIASObjectActionResult
+} from "./object-action";
 import {UnMarkAsOfflineAvailableAction} from "./unmark-as-offline-available-action";
-import {Events} from "ionic-angular";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
@@ -11,8 +13,7 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
     constructor(
         public title: string,
-        public object: ILIASObject,
-        public events: Events
+        public object: ILIASObject
     ) {
         super();
         this.offlineAction = new UnMarkAsOfflineAvailableAction(title, object);
@@ -20,7 +21,6 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
     execute(): Promise<ILIASObjectActionResult> {
         const favPromise: Promise<ILIASObjectActionResult> = new Promise((resolve, reject) => {
-            this.events.publish("favorites:changed");
             this.object.isFavorite = 0;
             this.object.save()
                 .then(() => {

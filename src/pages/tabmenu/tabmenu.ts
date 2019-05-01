@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
-import {  NavController } from "ionic-angular";
+import { NavController} from "ionic-angular";
 // import { DesktopPage } from "../desktop/desktop";
-import { FavoritesPage } from "../favorites/favorites";
 // import { NewsPage } from "../news/news";
 // import { SettingsPage } from "../settings/settings";
 import { ObjectListPage } from "../object-list/object-list";
@@ -22,11 +21,11 @@ import { TranslateService } from "ng2-translate";
 })
 export class TabmenuPage {
 
-  tabmenuRoot1: string = "DesktopPage"
-  tabmenuRoot2: object = ObjectListPage
-  tabmenuRoot3: string = "NewsPage"
-  tabmenuRoot4: object = ObjectListPage
-  tabmenuRoot5: string = "MenuPage"
+  tabmenuRoot1: string = "DesktopPage";
+  tabmenuRoot2: string = "ObjectListPage";
+  tabmenuRoot3: string = "NewsPage";
+  tabmenuRoot4: string = "ObjectListPage";
+  tabmenuRoot5: string = "MenuPage";
 
   constructor(
     public navCtrl: NavController,

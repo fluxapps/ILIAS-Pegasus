@@ -48,7 +48,6 @@ export class ObjectDetailsPage {
                 public translate: TranslateService,
                 public footerToolbar: FooterToolbarService,
                 public modal: ModalController,
-                public events: Events,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -142,14 +141,12 @@ export class ObjectDetailsPage {
                   this.iliasObject,
                   this.dataProvider,
                   this.sync,
-                  this.modal,
-                  this.events)
+                  this.modal)
                 );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject,
-                  this.events)
+                  this.iliasObject)
                 );
                 this.actions.push(new SynchronizeAction(
                   this.translate.instant("actions.synchronize"),
@@ -180,14 +177,12 @@ export class ObjectDetailsPage {
                   this.iliasObject,
                   this.dataProvider,
                   this.sync,
-                  this.modal,
-                  this.events)
+                  this.modal)
                 );
             } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject,
-                  this.events)
+                  this.iliasObject)
                 );
             }
             if (this.iliasObject.needsDownload) {

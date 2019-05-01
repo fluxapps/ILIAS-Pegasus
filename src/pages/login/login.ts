@@ -95,7 +95,7 @@ export class LoginPage {
     private async checkAndLoadOfflineContent(): Promise<void> {
         const user: User = await User.currentUser();
         const settings: Settings = await Settings.findByUserId(user.id);
-        if (settings.downloadOnStart) this.sync.loadAllOfflineContent();
+        if (settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
     }
 
 

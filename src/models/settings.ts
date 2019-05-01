@@ -31,7 +31,7 @@ export class Settings extends ActiveRecord {
     /**
      * If true, execute offline-data-sync when starting the app
      */
-    downloadOnStart: boolean = true;
+    downloadOnStart: boolean = false;
 
     /**
      * If true, only execute sync when WLAN is available

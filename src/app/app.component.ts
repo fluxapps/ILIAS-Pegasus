@@ -8,7 +8,6 @@ import {TranslateService} from "ng2-translate/src/translate.service";
 import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
-import {FavoritesPage} from "../pages/favorites/favorites";
 import {LoginPage} from "../pages/login/login";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectListPage} from "../pages/object-list/object-list";
@@ -37,8 +36,6 @@ export class MyApp {
 
   rootPage: {};
   tabmenuPage: object = TabmenuPage;
-  objectListPage: object = ObjectListPage;
-  favoritesPage: object = FavoritesPage;
   newObjectsPage: object = NewObjectsPage;
   settingsPage: object = SettingsPage;
   loginPage: object = LoginPage;
@@ -126,20 +123,20 @@ export class MyApp {
 
     await this.menu.close();
 
-    if (page == ObjectListPage) {
-      await this.nav.setRoot(page);
-    } else {
+    //if (page == ObjectListPage) {
+    //  await this.nav.setRoot(page);
+    //} else {
 
       //check if we navigating the object list
-      if (this.nav.last().component == ObjectListPage) {
+      //if (this.nav.last().component == ObjectListPage) {
         //preserve history
-        await this.nav.push(page);
-      } else {
+      //  await this.nav.push(page);
+      //} else {
         //we are navigating over the menu remove history
         await this.nav.push(page);
         await this.nav.remove(1);
-      }
-    }
+      //}
+    //}
   }
 
   /**
@@ -181,7 +178,7 @@ export class MyApp {
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
     if(this.user !== undefined) {
         const settings: Settings = await Settings.findByUserId(this.user.id);
-        if (settings.downloadOnStart) this.sync.loadAllOfflineContent();
+        if (settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
     }
     this.footerToolbar.removeJob(Job.Synchronize);
   }

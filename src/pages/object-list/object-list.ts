@@ -1,4 +1,4 @@
-import {Component, Inject, ViewChild} from "@angular/core";
+import {Component, Inject, ViewChild, NgZone} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
     ActionSheet,
@@ -6,7 +6,7 @@ import {
     ActionSheetController,
     ActionSheetOptions,
     AlertController,
-    Events,
+    IonicPage,
     ModalController,
     NavController,
     NavParams,
@@ -56,9 +56,12 @@ interface PageState {
     loadingLive: boolean,
     loadingOffline: boolean,
     refreshing: boolean,
+    desktop: boolean,
 }
 
+@IonicPage()
 @Component({
+    selector: "page-desktop",
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
@@ -74,13 +77,13 @@ export class ObjectListPage {
      */
     parent: ILIASObject;
     pageTitle: string;
-    user: User;
     private state: PageState = {
         favorites: undefined,
         online: undefined,
-        refreshing: false,
         loadingLive: false,
-        loadingOffline: false
+        loadingOffline: false,
+        refreshing: false,
+        desktop: undefined
     };
 
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
@@ -98,8 +101,8 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly dataProvider: DataProvider,
+                private readonly ngZone: NgZone,
                 readonly footerToolbar: FooterToolbarService,
-                private readonly events: Events,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -111,7 +114,6 @@ export class ObjectListPage {
     ) {
         this.parent = params.get("parent");
         this.state.favorites = params.get("favorites");
-        if(this.state.favorites) events.subscribe("favorites:changed", () => this.loadFavoritesObjectList());
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
@@ -130,10 +132,8 @@ export class ObjectListPage {
      * when entering the view, get the current user and synchronize the chosen ILIASObject
      */
     ionViewWillEnter(): void {
-        User.currentUser()
-            .then(user => this.user = user)
-            .then(() => this.loadContent());
-        this.log.trace(() => "Ion view will enter page object list.");
+        this.ngZone.run(() => this.loadContent());
+        this.log.trace(() => `Ion view will enter page object list. favorites is ${this.state.favorites}`);
     }
 
     /**
@@ -142,9 +142,10 @@ export class ObjectListPage {
     updatePageState(): void {
         this.state.favorites = this.params.get("favorites");
         this.state.online = window.navigator.onLine;
-        this.state.refreshing = this.refresher.state === "refreshing";
         this.state.loadingLive = SynchronizationService.state.liveLoading;
         this.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
+        this.state.refreshing = this.refresher.state === "refreshing";
+        this.state.desktop = this.parent === undefined;
     }
 
     /**
@@ -249,7 +250,8 @@ export class ObjectListPage {
      */
     async loadFavoritesObjectList(): Promise<void> {
         if(this.parent === undefined) {
-            Favorites.findByUserId(this.user.id)
+            const user: User = await User.currentUser();
+            Favorites.findByUserId(user.id)
                 .then(favorites => {
                     favorites.sort(ILIASObject.compare);
                     this.objects = favorites;
@@ -264,9 +266,10 @@ export class ObjectListPage {
      */
     private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
+            const user: User = await User.currentUser();
             this.objects = (isDesktopObject) ?
-                await DesktopItem.findByUserId(this.user.id) :
-                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
+                await DesktopItem.findByUserId(user.id) :
+                await ILIASObject.findByParentRefId(this.parent.refId, user.id);
 
             this.objects.sort(ILIASObject.compare);
             return Promise.resolve();
@@ -337,6 +340,9 @@ export class ObjectListPage {
     }
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
+        this.updatePageState();
+        if(value && !this.state.online) return;
+
         const actions: Array<ILIASObjectAction> = [];
         if(value) this.applyMarkAsFavoriteAction(actions, iliasObject);
         else this.applyUnmarkAsFavoriteAction(actions, iliasObject);
@@ -361,6 +367,7 @@ export class ObjectListPage {
      * @param iliasObject
      */
     showActions(iliasObject: ILIASObject): void {
+        this.updatePageState();
         const actions: Array<ILIASObjectAction> = [];
 
         this.applyDefaultActions(actions, iliasObject);
@@ -417,21 +424,20 @@ export class ObjectListPage {
     }
 
     private applyDefaultActions(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        actions.push(
-            new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
+        actions.push(new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav));
+        if (this.state.online) actions.push(
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
         );
     }
 
     private applyMarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(!iliasObject.isFavorite) {
+        if(!iliasObject.isFavorite && this.state.online) {
             actions.push(new MarkAsFavoriteAction(
                 this.translate.instant("actions.mark_as_favorite"),
                 iliasObject,
                 this.dataProvider,
                 this.sync,
-                this.modal,
-                this.events
+                this.modal
             ));
         }
     }
@@ -440,14 +446,13 @@ export class ObjectListPage {
         if(iliasObject.isFavorite) {
             actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
-                iliasObject,
-                this.events
+                iliasObject
             ));
         }
     }
 
     private applySynchronizeAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
+        if(iliasObject.isOfflineAvailable  && this.state.online && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
             && (
                 iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()
                 ||

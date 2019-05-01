@@ -23,8 +23,11 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
 
         // Recursively mark children as offline available
         return User.find(this.object.userId)
-            .then( user => this.dataProvider.getObjectData(this.object, user, true, false) )
-            .then( (children) => {
+            .then(user => {
+                this.object.isFavorite = 2;
+                return this.dataProvider.getObjectData(this.object, user, true, false)
+            })
+            .then((children) => {
                 const promises = [];
                 children.forEach(child => {
                     promises.push(this.setChildToOfflineAvailable(child));
@@ -32,10 +35,10 @@ export class MarkAsOfflineAvailableAction extends ILIASObjectAction {
 
                 return Promise.resolve(promises);
             })
-            .then( () => this.object.needsDownload = true )
-            .then( () => this.object.save() )
-            .then( () => this.syncService.loadOfflineObjectRecursive(this.object))
-            .then( () => Promise.resolve(new ILIASObjectActionNoMessage()) )
+            .then(() => this.object.needsDownload = true)
+            .then(() => this.object.save())
+            .then(() => this.syncService.loadOfflineObjectRecursive(this.object))
+            .then(() => Promise.resolve(new ILIASObjectActionNoMessage()));
     }
 
     alert(): ILIASObjectActionAlert|any {

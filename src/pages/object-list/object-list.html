@@ -112,7 +112,7 @@
 
         </ion-item-group>
             <!-- status : user in favorites, but nothing added -->
-        <ion-grid *ngIf="checkPageState({favorites: true}) && !objects.length">
+        <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !objects.length">
             <ion-row justify-content-center align-items-center>
                 <ion-col col-12 text-center>
                     <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
