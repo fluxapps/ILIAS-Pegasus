@@ -4,7 +4,7 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {User} from "../models/user";
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
-import {Events, Toast, ToastController} from "ionic-angular";
+import {Events} from "ionic-angular";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import { TranslateService } from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
@@ -16,12 +16,12 @@ import {
 } from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 import {Observable} from "rxjs/Observable";
-import {Settings} from "../models/settings";
 import {Favorites} from "../models/favorites";
 
 export interface SynchronizationState {
     liveLoading: boolean,
-    loadingOfflineContent: boolean
+    loadingOfflineContent: boolean,
+    recursiveSyncRunning: boolean
 }
 interface SyncEntry {
     object: ILIASObject,
@@ -32,22 +32,25 @@ interface SyncEntry {
 @Injectable()
 export class SynchronizationService {
 
-    static state: SynchronizationState = {liveLoading: false, loadingOfflineContent: false};
+    static state: SynchronizationState = {
+        liveLoading: false,
+        loadingOfflineContent: false,
+        recursiveSyncRunning: false
+    };
     readonly footerToolbarOfflineContent: FooterToolbarService = new FooterToolbarService();
 
     private user: User;
 
-    private syncQueue: Array<SyncEntry> = [];
+    private syncOfflineQueue: Array<ILIASObject> = [];
+    private syncOfflineQueueCnt: number = 0;
+    private recursiveSyncQueue: Array<SyncEntry> = [];
 
     lastSync: Date;
     lastSyncString: string;
 
-    private _isRunning: boolean = false;
-
     constructor(private readonly dataProvider: DataProvider,
                 public events: Events,
                 private readonly fileService: FileService,
-                private readonly toast: ToastController,
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
@@ -64,27 +67,22 @@ export class SynchronizationService {
      */
     liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
         SynchronizationService.state.liveLoading = true;
-        if (this._isRunning) {
-            SynchronizationService.state.liveLoading = false;
-            return Promise.reject(this.translate.instant("actions.sync_already_running"));
-        }
 
-        return User.currentUser()
-            .then(user => {
-                this.user = user;
-                return this.syncStarted(this.user.id);
-            })
-            .then( () => this.executeLiveLoad(iliasObject))
-            .catch( (error) =>
-                this.syncEnded(this.user.id)
-                    .then( () => {
-                        this.events.publish("sync:complete");
-                        return Promise.reject(error);
+        return this.loadCurrentUser()
+            .then(() => {
+                return this.syncStarted()
+                    .then( () => this.executeLiveLoad(iliasObject))
+                    .catch( (error) =>
+                        this.syncEnded()
+                            .then( () => {
+                                this.events.publish("sync:complete");
+                                return Promise.reject(error);
+                            })
+                    )
+                    .then(promise  => {
+                        SynchronizationService.state.liveLoading = false;
+                        return promise;
                     })
-            )
-            .then(promise  => {
-                SynchronizationService.state.liveLoading = false;
-                return promise;
             });
     }
 
@@ -93,22 +91,58 @@ export class SynchronizationService {
      * @returns Promise<void>
      */
     async loadAllOfflineContent(): Promise<void> {
-        const user: User = await User.currentUser();
-        if(user === undefined) {
-            console.warn("unable to load offline-content, because user is undefined");
+        await this.loadCurrentUser();
+        const favorites: Array<ILIASObject> = await Favorites.findByUserId(this.user.id);
+        this.addObjectsToSyncQueue(favorites);
+    }
+
+    /**
+     * Add ILIASObjects to the syncOfflineQueue for offline-synchronization and start offline-sync, if it is not already running
+     * @param iliasObjects
+     */
+    async addObjectsToSyncQueue(iliasObjects: ILIASObject|Array<ILIASObject>): Promise<void> {
+        await this.loadCurrentUser();
+        this.syncOfflineQueue = Array.prototype.concat(this.syncOfflineQueue, iliasObjects);
+        this.updateOfflineSyncStatusMessage();
+        if(!SynchronizationService.state.loadingOfflineContent)
+            this.processOfflineSyncQueue();
+    }
+
+    /**
+     * Download all ILIASObjects and their contents in the syncOfflineQueue
+     */
+    async processOfflineSyncQueue(): Promise<void> {
+        if (this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
+            this.syncOfflineQueue = [];
+            this.syncOfflineQueueCnt = 0;
+            SynchronizationService.state.loadingOfflineContent = false;
             return;
         }
 
         SynchronizationService.state.loadingOfflineContent = true;
-        const favorites: Array<ILIASObject> = await Favorites.findByUserId(user.id);
-        let cnt: number = 0;
-        for (const fav of favorites) {
-            cnt++;
-            this.footerToolbarOfflineContent.addJob(Job.FileDownload, `${this.translate.instant("object-list.downloading")} ${cnt}/${favorites.length} "${fav.title}"`);
-            await this.loadOfflineObjectRecursive(fav);
-            this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
-        }
-        SynchronizationService.state.loadingOfflineContent = false;
+        this.updateOfflineSyncStatusMessage();
+
+        const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
+        ilObj.isFavorite = 2;
+        await this.loadOfflineObjectRecursive(ilObj);
+        ilObj.isFavorite = 1;
+        this.syncOfflineQueueCnt++;
+
+        this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
+        this.processOfflineSyncQueue();
+    }
+
+    /**
+     * Set the status-message of the offline-synchronization
+     */
+    private updateOfflineSyncStatusMessage(): void {
+        const cnt: number = this.syncOfflineQueueCnt + 1;
+        const size: number = this.syncOfflineQueue.length;
+        const title: string = this.syncOfflineQueue[this.syncOfflineQueueCnt].title;
+        const footerMsg: string = `${this.translate.instant("object-list.downloading")} ${cnt}/${size} "${title}"`;
+
+        this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
+        this.footerToolbarOfflineContent.addJob(Job.FileDownload, footerMsg);
     }
 
     /**
@@ -119,14 +153,14 @@ export class SynchronizationService {
     loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
         console.log("method - loadOfflineObjectRecursive");
         iliasObject.isFavorite = 2;
-        if(this._isRunning) {
+        if(SynchronizationService.state.recursiveSyncRunning) {
             let resolver;
             let rejecter;
             const promise: Promise<SyncResults> = new Promise((resolve, reject) => {
                 resolver = resolve;
                 rejecter = reject;
             });
-            this.syncQueue.push({
+            this.recursiveSyncQueue.push({
                 object: iliasObject,
                 resolver: resolver,
                 rejecter: rejecter
@@ -134,12 +168,10 @@ export class SynchronizationService {
             return promise;
         }
 
-        return User.currentUser()
-            .then(user => this.user = user)
-            .then( () => this.downloadContainerContent(iliasObject))
+        return this.downloadContainerContent(iliasObject)
             .then((syncResult) => {
-                if(this.syncQueue.length > 0) {
-                    const sync: SyncEntry = this.syncQueue.pop();
+                if(this.recursiveSyncQueue.length > 0) {
+                    const sync: SyncEntry = this.recursiveSyncQueue.pop();
                     this.loadOfflineObjectRecursive(sync.object)
                         .then((syncResult: SyncResults) => {
                             sync.resolver(syncResult);
@@ -177,23 +209,24 @@ export class SynchronizationService {
         );
     }
 
-
-    get isRunning() {
-        return this._isRunning;
+    /**
+     * Set the user-variable of the object
+     */
+    private async loadCurrentUser(): Promise<void> {
+        this.user = await User.currentUser();
     }
 
     /**
-     * set local isRunning and db entry that a sync is in progress
+     * set local recursiveSyncRunning and db entry that a sync is in progress
      */
-    protected syncStarted(user_id: number): Promise<any> {
+    protected async syncStarted(): Promise<any> {
         return new Promise((resolve, reject) => {
-            //this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-            this._isRunning = true;
+            SynchronizationService.state.recursiveSyncRunning = true;
             SQLiteDatabaseService.instance().then(db => {
-                db.query(`INSERT INTO synchronization (userId, startDate, endDate, isRunning) VALUES (${user_id}, date('now'), NULL, 1)`)
-                  .then(() => {
-                    resolve();
-                }).catch(err => {
+                db.query(`INSERT INTO synchronization (userId, startDate, endDate, recursiveSyncRunning) VALUES (${this.user.id}, date('now'), NULL, 1)`)
+                    .then(() => {
+                        resolve();
+                    }).catch(err => {
                     Log.error(this, err);
                     reject();
                 });
@@ -202,24 +235,23 @@ export class SynchronizationService {
     }
 
     /**
-     * set local isRunning and closes the db entry that a sync is in progress
+     * set local recursiveSyncRunning and closes the db entry that a sync is in progress
      */
-    protected syncEnded(user_id: number): Promise<any> {
-            //this.footerToolbar.removeJob(Job.Synchronize);
-            this._isRunning = false;
-            Log.write(this, "ending Sync.");
-            return SQLiteDatabaseService.instance()
-                .then(db => {
+    protected async syncEnded(): Promise<any> {
+        SynchronizationService.state.recursiveSyncRunning = false;
+        Log.write(this, "ending Sync.");
 
-					  db.query(`UPDATE synchronization SET isRunning = 0, endDate = date('now') WHERE userId = ${user_id} AND isRunning = 1`)
-				})
-                .then(() => this.updateLastSync(user_id));
+        return SQLiteDatabaseService.instance()
+            .then(db => db.query(
+                `UPDATE synchronization SET recursiveSyncRunning = 0, endDate = date('now') WHERE userId = ${this.user.id} AND recursiveSyncRunning = 1`
+            ))
+            .then(() => this.updateLastSync(this.user.id));
     }
 
-    updateLastSync(user_id: number){
+    updateLastSync(userId: number): Promise<any> {
         return SQLiteDatabaseService.instance()
             .then(db =>
-              db.query(`SELECT endDate FROM synchronization WHERE userId = ${user_id} AND endDate not Null ORDER BY endDate DESC LIMIT 1`))
+              db.query(`SELECT endDate FROM synchronization WHERE userId = ${userId} AND endDate not Null ORDER BY endDate DESC LIMIT 1`))
             .then((result) => {
                 if(result.rows.length == 0)
                     return Promise.resolve(null);
@@ -252,7 +284,7 @@ export class SynchronizationService {
             return Promise.reject("No user given.");
 
         return SQLiteDatabaseService.instance()
-                .then(db => db.query("SELECT * FROM synchronization WHERE isRunning = 1 AND userId = " + user.id))
+                .then(db => db.query("SELECT * FROM synchronization WHERE recursiveSyncRunning = 1 AND userId = " + user.id))
                 .then(result => Promise.resolve((<any> result).rows.length > 0));
     }
 
@@ -374,7 +406,7 @@ export class SynchronizationService {
     async executeNewsSync(): Promise<void> {
         await this.newsSynchronization.synchronize();
         await this.visitJournalSynchronization.synchronize();
-        await this.syncEnded(this.user.id);
+        await this.syncEnded();
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<Array<ILIASObject>> {
@@ -383,9 +415,9 @@ export class SynchronizationService {
             this.dataProvider.getObjectData(parent, this.user, false);
 
         return iliasObjects
-            .then(() => this.syncEnded(this.user.id))
+            .then(() => this.syncEnded())
             .then( () => Promise.resolve(iliasObjects))
-            .catch(await this.syncEnded(this.user.id));
+            .catch(await this.syncEnded());
     }
 }
 

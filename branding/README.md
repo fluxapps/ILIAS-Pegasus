@@ -8,7 +8,7 @@ in order to set the branding of the app, use the following command
 
     npm run setbrand -- --brand=[BRAND_NAME] --platforms==[PLATFORMS]
 
-where the flag 'platforms' is optional and may be set to 'ia', 'ai', 'i' or 'a'. accordingly, the script will add the (a)ndroid and (i)os platforms to the project. the default value is 'ia'
+where the flag 'platforms' is optional and may be set to 'ia', 'ai', 'i', 'a' or 'none'. accordingly, the script will add the (a)ndroid and (i)os platforms to the project. when set to 'none', the platforms are not altered in any way. the default value of the flag is 'ia'
 
 the script './branding/set_brand.js' will set the customization and generate a log-file at './branding/set_brand.log'
 

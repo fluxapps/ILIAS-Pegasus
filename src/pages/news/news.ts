@@ -106,7 +106,7 @@ export class NewsPage
 
         try {
 
-            if (this.sync.isRunning) {
+            if (SynchronizationService.state.recursiveSyncRunning) {
                 this.log.debug(() => "Sync is already running.");
                 return;
             }

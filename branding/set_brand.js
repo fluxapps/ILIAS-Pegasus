@@ -46,14 +46,13 @@ function getFlagValues() {
 
     let platforms = getFlagValueFromArgv("platforms");
     switch (platforms) {
-        case "ia":
-            break;
         case undefined:
             platforms = "ia";
             consoleOut(`(set_brand.js) flag 'platforms' not found, adding ios and android platforms by default`);
             break;
+        case "ia":
         case "ai":
-            platforms = "ai";
+            platforms = "ia";
             consoleOut(`(set_brand.js) adding the platforms ios and android`);
             break;
         case "i":
@@ -61,6 +60,10 @@ function getFlagValues() {
             break;
         case "a":
             consoleOut(`(set_brand.js) adding the platform android`);
+            break;
+        case "none":
+            platforms = undefined;
+            consoleOut(`(set_brand.js) not adding any platforms`);
             break;
         default:
             throw new Error(`(set_brand.js) unable to interpret the flag 'platforms', set to '${platforms}'. possible values are 'ia', 'ai', 'i', 'a'`);
@@ -150,6 +153,7 @@ function generateLangFiles(brand) {
 
 // remove platforms-directory and add the platforms from scratch
 function refreshPlatforms(platforms) {
+    if(platforms === undefined) return;
     deleteDirSync("platforms");
 
     if(platforms.indexOf("a") !== -1)

@@ -44,7 +44,7 @@ export class ExecuteSyncProvider {
     async executeSync(): Promise<void> {
 
       try {
-          if (this.sync.isRunning) {
+          if (SynchronizationService.state.recursiveSyncRunning) {
               this.log.debug(() => "Unable to sync because sync is already running.");
               return;
           }

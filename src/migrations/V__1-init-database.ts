@@ -76,7 +76,7 @@ export class InitDatabase implements Migration {
                   "userId INTEGER," +
                   "startDate DATETIME," +
                   "endDate DATETIME," +
-                  "isRunning INTEGER" +
+                  "recursiveSyncRunning INTEGER" +
       ")"
     );
 
