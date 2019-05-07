@@ -7,16 +7,16 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding class="page_settings">
-    <ion-segment [(ngModel)]="settingsMode" color="button-element">
+    <!-- <ion-segment [(ngModel)]="settingsMode" color="button-element">
         <ion-segment-button value="general">
             {{'general' | translate:[] }}
         </ion-segment-button>
         <ion-segment-button value="users">
             {{'settings.users' | translate:[] }}
         </ion-segment-button>
-    </ion-segment>
+    </ion-segment> -->
 
-    <div [ngSwitch]="settingsMode">
+    <ng-container [ngSwitch]="settingsMode">
         <ion-list *ngSwitchCase="'general'" class="general">
             <div *ngIf="settings">
                 <ion-item text-wrap color="list-element">
@@ -55,6 +55,18 @@
                     <ion-input type="number" text-right
                                [(ngModel)]="settings.quotaSize"></ion-input>
                 </ion-item>
+                <ion-item-group>
+                    <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
+                    <ion-item button-right color="list-element">
+                        <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' |
+                            translate:[] }}:
+                            {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
+                        </ion-label>
+                        <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="deleteAllFilesPrompt()">
+                            <ion-icon name="trash" color="primary"></ion-icon>
+                        </button>
+                    </ion-item>
+                </ion-item-group>
                 <ion-col>
                     <button ion-button full block (click)="saveSettings()" color="button-element">{{'Save' | translate:{value: null} }}
                     </button>
@@ -69,7 +81,7 @@
             </ion-grid>
         </ion-list>
 
-        <ion-list *ngSwitchCase="'users'">
+        <!-- <ion-list *ngSwitchCase="'users'">
             <div padding-top *ngIf="settings">
             <ion-item-group *ngFor="let installation of installationsWithUsers">
                 <ion-item-divider color="list-element">{{installation.title}}</ion-item-divider>
@@ -101,8 +113,8 @@
                     </ion-col>
                 </ion-row>
             </ion-grid>
-        </ion-list>
-    </div>
+        </ion-list> -->
+    </ng-container>
 
 </ion-content>
 
