@@ -1,8 +1,7 @@
 import {Component, Inject} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
-import {Alert, AlertController, Events, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
+import {Alert, AlertController, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
-import {DownloadFileAction} from "../../actions/download-file-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OpenFileExternalAction} from "../../actions/open-file-external-action";
@@ -183,15 +182,6 @@ export class ObjectDetailsPage {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
                   this.iliasObject)
-                );
-            }
-            if (this.iliasObject.needsDownload) {
-                this.actions.push(new DownloadFileAction(
-                  this.translate.instant("actions.download"),
-                  this.iliasObject,
-                  this.file,
-                  this.translate,
-                  this.alert)
                 );
             }
         }

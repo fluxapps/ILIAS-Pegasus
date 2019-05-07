@@ -74,9 +74,12 @@ export class NewsPage
      * @returns {Promise<void>}
      */
     async startNewsSync(refresher: Refresher = undefined): Promise<void> {
-        await this.executeNewsSync();
-        if (refresher) refresher.complete();
-        this.reloadView();
+        try {
+            await this.executeNewsSync();
+        } finally {
+            if (refresher) refresher.complete();
+            this.reloadView();
+        }
     }
 
     reloadView(): void {

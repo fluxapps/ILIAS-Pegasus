@@ -5,7 +5,7 @@ export class Favorites {
 
     static findByUserId(userId: number): Promise<Array<ILIASObject>> {
         return SQLiteDatabaseService.instance()
-            .then(db => db.query("SELECT * FROM objects WHERE isFavorite = 1 AND userId = ? ORDER BY title ASC", [userId]))
+            .then(db => db.query("SELECT * FROM objects WHERE isFavorite > 0 AND userId = ? ORDER BY title ASC", [userId]))
             .then((response) => {
                 const favorites = [];
                 for (let i = 0; i < (<any> response).rows.length; i++) {

@@ -6,8 +6,8 @@
  * -> sets values in "config.xml" to the ones specified in "branding/brands/[brand]/config.json"
  * -> generates language files in "src/assets/i18n" by inserting brand-specific changes to the files in "branding/common/i18n"
  *
- * USAGE: the brand can be set via the "--brand"-tag
- * npm run setbrand -- --brand=[BRAND_NAME]
+ * USAGE: the brand can be set via the "--brand"-tag, the "--platforms"-tag is optional
+ * npm run setbrand -- --brand=[BRAND_NAME] --platforms==[PLATFORMS]
  */
 
 const FS = require("fs");
@@ -173,7 +173,7 @@ function runShell(cmd) {
         if(err !== null) {
             consoleOut(`(set_brand.js) err ${err}`);
             consoleOut(`(set_brand.js) stderr ${stderr}`);
-            throw new Error(`(set_brand.js) failed when running command '${cmd}', see the output above for details`);
+            throw new Error(`(set_brand.js) failed when running command "${cmd}", see the output above for details`);
         }
     });
 }

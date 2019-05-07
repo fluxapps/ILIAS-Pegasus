@@ -77,6 +77,7 @@ export class ObjectListPage {
      */
     parent: ILIASObject;
     pageTitle: string;
+    user: User;
     private state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -129,11 +130,20 @@ export class ObjectListPage {
     }
 
     /**
-     * when entering the view, get the current user and synchronize the chosen ILIASObject
+     * load the content for the chosen ILIASObject
      */
     ionViewWillEnter(): void {
         this.ngZone.run(() => this.loadContent());
         this.log.trace(() => `Ion view will enter page object list. favorites is ${this.state.favorites}`);
+    }
+
+    /**
+     * Loads the current User and updates this.user if the result is valid
+     */
+    async updateUser(): Promise<void> {
+        const newUser: User = await User.currentUser();
+        if (newUser !== undefined) this.user = newUser;
+        if (this.user === undefined) console.warn("in the page object-list, this.user is undefined");
     }
 
     /**
@@ -250,8 +260,8 @@ export class ObjectListPage {
      */
     async loadFavoritesObjectList(): Promise<void> {
         if(this.parent === undefined) {
-            const user: User = await User.currentUser();
-            Favorites.findByUserId(user.id)
+            await this.updateUser();
+            Favorites.findByUserId(this.user.id)
                 .then(favorites => {
                     favorites.sort(ILIASObject.compare);
                     this.objects = favorites;
@@ -266,10 +276,10 @@ export class ObjectListPage {
      */
     private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
-            const user: User = await User.currentUser();
+            await this.updateUser();
             this.objects = (isDesktopObject) ?
-                await DesktopItem.findByUserId(user.id) :
-                await ILIASObject.findByParentRefId(this.parent.refId, user.id);
+                await DesktopItem.findByUserId(this.user.id) :
+                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
 
             this.objects.sort(ILIASObject.compare);
             return Promise.resolve();
