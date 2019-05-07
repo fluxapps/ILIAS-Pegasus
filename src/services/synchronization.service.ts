@@ -404,13 +404,14 @@ export class SynchronizationService {
     }
 
     async executeNewsSync(): Promise<void> {
+        await this.loadCurrentUser();
         await this.newsSynchronization.synchronize();
         await this.visitJournalSynchronization.synchronize();
         await this.syncEnded();
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<Array<ILIASObject>> {
-        const iliasObjects: Promise<Array<ILIASObject>> = (parent == undefined)?
+        const iliasObjects: Promise<Array<ILIASObject>> = (parent === undefined)?
             this.dataProvider.getDesktopData(this.user):
             this.dataProvider.getObjectData(parent, this.user, false);
 

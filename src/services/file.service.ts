@@ -150,6 +150,8 @@ export class FileService {
      * @param fileObject
      */
     async remove(fileObject: ILIASObject): Promise<void> {
+        fileObject.isOfflineAvailable = false;
+
         const user: User = await User.find(fileObject.userId);
         if(fileObject.isLearnplace()) {
             await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
@@ -186,7 +188,7 @@ export class FileService {
             return iliasObject.type === "file" || iliasObject.isLearnplace();
           });
           for(const fileObject of fileObjects)
-            await this.remove(fileObject);
+              await this.remove(fileObject);
           this.log.info(() => "Deleting Files complete");
           this.footerToolbar.removeJob(Job.DeleteFilesTree);
         }
