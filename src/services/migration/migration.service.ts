@@ -11,6 +11,8 @@ import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
 import {CreateNews} from "../../migrations/V__4-create-news-shema";
+import {UpdateUserAndSettingsShema} from "../../migrations/V__5-update-user-and-settings-shema";
+import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-and-favorites";
 
 /**
  * DB Migration with TypeORM.
@@ -123,6 +125,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
       new AddObjectAttributes(),
       new CreateLearnplace(),
       new CreateNews(),
+      new UpdateUserAndSettingsShema(),
+      new MigrateOfflineAndFavorites()
     ];
   }
 }

@@ -121,6 +121,7 @@ import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+import {AppVersion} from "@ionic-native/app-version";
 
 @NgModule({
   declarations: [
@@ -468,7 +469,8 @@ import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
       <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
       <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
     LogoutProvider,
-    ExecuteSyncProvider
+    ExecuteSyncProvider,
+    AppVersion
   ],
   exports: [
     TranslateModule
