@@ -36,6 +36,11 @@ export class User extends ActiveRecord {
     lastTokenUpdate: number;
 
     /**
+     * App-version at the time of the last login
+     */
+    lastVersionLogin: string;
+
+    /**
      * Holds the app settings
      */
     protected _settings: Settings;
@@ -47,7 +52,8 @@ export class User extends ActiveRecord {
             "iliasLogin",
             "accessToken",
             "refreshToken",
-            "lastTokenUpdate"
+            "lastTokenUpdate",
+            "lastVersionLogin"
         ]));
     }
 

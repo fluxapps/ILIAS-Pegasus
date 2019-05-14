@@ -26,6 +26,7 @@ import {SynchronizationPage} from "./fallback/synchronization/synchronization.co
 import getMessage = Logging.getMessage;
 import {Favorites} from "../models/favorites";
 import {ILIASObject} from "../models/ilias-object";
+import {LogoutProvider} from "../providers/logout/logout";
 
 @Component({
   templateUrl: "app.html"
@@ -70,9 +71,9 @@ export class MyApp {
      * @param {Database} database
      * @param modal
      * @param config
+     * @param logoutCtrl
      * @param {DBMigration} dbMigration
      * @param {SQLite} sqlite
-     * @param theme
      */
   constructor(
     readonly footerToolbar: FooterToolbarService,
@@ -88,6 +89,7 @@ export class MyApp {
     private readonly database: Database,
     private readonly modal: ModalController,
     private readonly config: Config,
+    private readonly logoutCtrl: LogoutProvider,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite
   ) {
@@ -177,6 +179,10 @@ export class MyApp {
 
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
     if(this.user !== undefined) {
+        if(!this.user.hasOwnProperty("lastVersionLogin")) {
+            await this.logoutCtrl.logout();
+            return;
+        }
         const settings: Settings = await Settings.findByUserId(this.user.id);
         if (settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
     }

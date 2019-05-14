@@ -21,7 +21,8 @@ export class InitDatabase implements Migration {
                   "installationId INTEGER," +
                   "accessToken TEXT," +
                   "refreshToken TEXT," +
-                  "lastTokenUpdate INTEGER" +
+                  "lastTokenUpdate INTEGER," +
+                  "lastVersionLogin TEXT" +
       ")"
     );
 
