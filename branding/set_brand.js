@@ -157,10 +157,10 @@ function refreshPlatforms(platforms) {
     deleteDirSync("platforms");
 
     if(platforms.indexOf("a") !== -1)
-        runShell("ionic cordova platform add android");
+        runShell("npx ionic cordova platform add android");
 
     if(platforms.indexOf("i") !== -1)
-        if (OS.platform() === "darwin") runShell("ionic cordova platform add ios");
+        if (OS.platform() === "darwin") runShell("npx ionic cordova platform add ios");
         else consoleOut(`(set_brand.js) did not add ios-platform on the operating system "${OS.platform()}"`);
 }
 

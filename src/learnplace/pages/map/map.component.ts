@@ -1,6 +1,6 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy} from "@angular/core";
+import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild} from "@angular/core";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
-import {AlertController, AlertOptions, NavParams} from "ionic-angular";
+import {AlertController, AlertOptions, NavParams, Content} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {MapModel} from "../../services/block.model";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
@@ -17,6 +17,8 @@ export class MapPage implements AfterViewInit, OnDestroy {
 
   private readonly learnplaceObjectId: number;
   readonly title: string;
+  @ViewChild("content")
+  content: Content
 
   map: MapModel | undefined = undefined;
 
@@ -45,6 +47,8 @@ console.log(this.learnplaceObjectId);
         this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
         this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
     });
+
+    this.content.resize();
   }
 
   ngOnDestroy(): void {

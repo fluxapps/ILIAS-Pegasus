@@ -7,6 +7,28 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
 @import "icons";
 
+ion-icon {
+    &[class*="custom-"] {
+      mask-size: contain;
+      mask-position: 50% 50%;
+      mask-repeat: no-repeat;
+      background: currentColor;
+      width: 1em;
+      height: 1em;
+    }
+  
+    &[class*="custom-info"] {
+      mask-image: url(../assets/icon/info.svg);
+    }
+    &[class*="custom-qrcode"] {
+      mask-image: url(../assets/qrcode.svg);
+    }
+    &[class*="custom-spades"] {
+      mask-image: url(../assets/spades.svg);
+    }
+  
+  }
+
 .content, .ion-header, ion-navbar {
     font-family: 'Raleway', sans-serif !important;
 }
