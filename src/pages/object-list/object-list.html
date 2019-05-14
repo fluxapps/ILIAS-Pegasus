@@ -81,6 +81,8 @@
                     <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
                         <img src="assets/icon/obj_link.svg" class="badge-logo">
                     </ion-badge>
+                    
+                   
                 </ion-avatar>
 
                 <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>

@@ -188,7 +188,7 @@ ion-content.page_settings {
         padding-top: 5%;
         padding-bottom: 5%;
         font-weight: 800;
-        font-size: 2.2em;
+        font-size: 2.2vh;
         color: white;
     }
 
@@ -263,8 +263,9 @@ ion-content.page_settings {
 
     .badge-link {
         position: absolute;
-        left: 6%;
-        bottom: 55%;
+        margin-top: -5rem;
+		margin-left: 1rem;
+		opacity: 0.9;
     }
 
     .badge-logo{
@@ -353,7 +354,7 @@ ion-content.page_settings {
 
     img { //TODO check, had to tune
         &.logo {
-            width: 50%;
+            height: 10vh;
             padding-left: 5%;
             //padding-right: 4%;
         }
@@ -382,8 +383,7 @@ ion-content.page_settings {
         padding-right: 15%;
         font-weight: 600;
         color: white;
-
-        font-size: 0.8em;
+        font-size: 1.2vmax !important;
     }
 
     .flagtoflag {
@@ -393,8 +393,9 @@ ion-content.page_settings {
 
     .grid-text {
         font-weight: 600;
-        font-size: 0.8em;
-        padding-bottom: 6%;
+        font-size: 1vmax !important;
+        padding-left: 3%;
+        // padding-bottom: 6%;
         text-align: left;
         padding-right: 5%;
     }
@@ -415,6 +416,10 @@ ion-content.page_settings {
         margin-bottom: 5px;
         font-size: 1.2em;
         background-color: map-get($colors, primary);
+    }
+
+    .onboarding-grid{
+        height: 125px;
     }
 
 }

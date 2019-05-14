@@ -18,8 +18,12 @@ $text-color:        #000;
 $background-color:  #fff;
 // $tabs-ios-tab-icon-color-active: map_get($colors, primary);
 // $tabs-ios-tab-icon-color: #a9a9a9;
-$tabs-ios-tab-icon-color-active: map_get($colors, primary) !important;
+$tabs-tab-color-active: map_get($colors, primary) !important;
 $tabs-ios-tab-icon-color: #a9a9a9 !important;
+$tabs-ios-tab-text-color-active: map_get($colors, primary) !important;
+$tabs-ios-tab-color-inactive: #a9a9a9 !important;
+$tabs-md-tab-color-inactive:  rgba(169,169,169, 1);
+$tabs-wp-tab-color-inactive: rgba(0, 0, 0, .1);
 $tabs-ios-border: 0.5px solid #a9a9a9 !important;
 $tabs-ios-tab-icon-size: 35px !important;
 

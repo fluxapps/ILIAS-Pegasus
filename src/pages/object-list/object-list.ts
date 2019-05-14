@@ -351,7 +351,7 @@ export class ObjectListPage {
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
         this.updatePageState();
-        if(value && !this.state.online) return;
+        if(!this.state.online) return;
 
         const actions: Array<ILIASObjectAction> = [];
         if(value) this.applyMarkAsFavoriteAction(actions, iliasObject);
