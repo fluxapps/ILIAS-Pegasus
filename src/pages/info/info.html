@@ -6,21 +6,21 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding class="page_info">
-  <ion-segment padding-bottom [(ngModel)]="tab" color="button-element">
+  <!-- <ion-segment padding-bottom [(ngModel)]="tab" color="button-element">
     <ion-segment-button value="info">
       {{'info.title' | translate:{value: null} }}
     </ion-segment-button>
     <ion-segment-button value="guide">
       {{'info.guide' | translate:{value: null} }}
     </ion-segment-button>
-  </ion-segment>
+  </ion-segment> -->
   <div [ngSwitch]="tab">
     <div *ngSwitchCase="'info'">
       <!--KARTE BUGS-->
       <ion-card padding class="version-card">
         <ion-card-header>ILIAS Pegasus</ion-card-header>
         <ion-card-content>
-          <p>Version 2.0.2</p>
+          <p>Version 3.0.0</p>
         </ion-card-content>
       </ion-card>
       <ion-card padding class="version-card-iq">
