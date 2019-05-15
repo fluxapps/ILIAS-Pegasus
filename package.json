@@ -179,13 +179,15 @@
         "API_KEY_FOR_ANDROID": "YOUR_API_KEY_FOR_ANDROID",
         "API_KEY_FOR_IOS": "YOUR_API_KEY_FOR_IOS",
         "PLAY_SERVICES_VERSION": "15.0.1",
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+        "ANDROID_SUPPORT_V4_VERSION": "27.+",
+        "LOCATION_WHEN_IN_USE_DESCRIPTION": "ILIAS Pegasus needs your current location to unlock local content (learnplaces).",
+        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "ILIAS Pegasus needs your current location to unlock local content (learnplaces)."
       },
-      "com-sarriaroman-photoviewer": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-file-opener2": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "com-sarriaroman-photoviewer": {}
     }
   }
 }
