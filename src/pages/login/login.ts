@@ -7,8 +7,7 @@ import {User} from "../../models/user";
 import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
 import {Log} from "../../services/log.service";
 import {Settings} from "../../models/settings";
-import {ILIASObject} from "../../models/ilias-object";
-import {Favorites} from "../../models/favorites";
+import {AppVersion} from "@ionic-native/app-version";
 import {SynchronizationService} from "../../services/synchronization.service";
 
 @Component({
@@ -23,6 +22,7 @@ export class LoginPage {
      * Selected installation id
      */
     installationId: number;
+    readonly appVersionStr: Promise<string>;
 
     constructor(public platform: Platform,
                 public nav: NavController,
@@ -31,12 +31,15 @@ export class LoginPage {
                 public toast: Toast,
                 public event: Events,
                 private readonly browser: InAppBrowser,
-                private readonly executeSyncCtrl: ExecuteSyncProvider
+                private readonly executeSyncCtrl: ExecuteSyncProvider,
+                readonly appVersionPlugin: AppVersion
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
           this.installationId = this.installations[0].id;
       });
+
+      this.appVersionStr = this.appVersionPlugin.getVersionNumber();
     }
 
     login() {
@@ -70,6 +73,7 @@ export class LoginPage {
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser.");
             this.checkLogin()
+                .then(() => this.updatelastVersionLogin())
                 .then(() => this.checkAndLoadOfflineContent());
         });
 
@@ -87,6 +91,15 @@ export class LoginPage {
             Log.write(this, "Login went wrong....");
             this.toast.showShortTop("Login failed");
         });
+    }
+
+    /**
+     * update the value lastVersionLogin for the user after login
+     */
+    private async updatelastVersionLogin(): Promise<void> {
+        const user: User = await User.currentUser();
+        user.lastVersionLogin = await this.appVersionStr;
+        await user.save();
     }
 
     /**
