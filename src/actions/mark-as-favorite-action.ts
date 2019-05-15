@@ -5,32 +5,27 @@ import {
     ILIASObjectActionNoMessage,
     ILIASObjectActionResult
 } from "./object-action";
-import {DataProvider} from "../providers/data-provider.provider";
 import {SynchronizationService} from "../services/synchronization.service";
-import {ModalController} from "ionic-angular";
-import {MarkAsOfflineAvailableAction} from "./mark-as-offline-available-action";
 
 export class MarkAsFavoriteAction extends ILIASObjectAction {
-
-    readonly offlineAction: MarkAsOfflineAvailableAction;
 
     constructor(
         public title: string,
         public object: ILIASObject,
-        public dataProvider: DataProvider,
-        public syncService: SynchronizationService,
-        public modal: ModalController
+        public syncService: SynchronizationService
     ) {
         super();
-        this.offlineAction = new MarkAsOfflineAvailableAction(title, object, dataProvider, syncService, modal);
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        return this.offlineAction.execute()
-            .then(() => {
-                return this.object.save()
-                    .then(() => Promise.resolve(new ILIASObjectActionNoMessage()));
-            });
+    async execute(): Promise<ILIASObjectActionResult> {
+        await this.object.setIsFavorite(2);
+
+        this.object.needsDownload = true; // TODO sync needed?
+        await this.object.save();
+
+        await this.syncService.addObjectsToSyncQueue(this.object);
+
+        return Promise.resolve(new ILIASObjectActionNoMessage());
     }
 
     alert(): ILIASObjectActionAlert|any {

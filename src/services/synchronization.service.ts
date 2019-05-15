@@ -93,6 +93,7 @@ export class SynchronizationService {
     async loadAllOfflineContent(): Promise<void> {
         await this.loadCurrentUser();
         const favorites: Array<ILIASObject> = await Favorites.findByUserId(this.user.id);
+        if(favorites.length === 0) return;
         this.addObjectsToSyncQueue(favorites);
     }
 
@@ -123,11 +124,12 @@ export class SynchronizationService {
         this.updateOfflineSyncStatusMessage();
 
         const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
-        ilObj.isFavorite = 2;
+        await ilObj.setIsFavorite(2);
         await this.loadOfflineObjectRecursive(ilObj);
-        ilObj.isFavorite = 1;
-        this.syncOfflineQueueCnt++;
+        await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
+        await ilObj.setIsFavorite(1);
 
+        this.syncOfflineQueueCnt++;
         this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
         this.processOfflineSyncQueue();
     }
@@ -150,9 +152,9 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns Promise<SyncResults>
      */
-    loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
+    async loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
         console.log("method - loadOfflineObjectRecursive");
-        iliasObject.isFavorite = 2;
+        await iliasObject.setIsFavorite(2);
         if(SynchronizationService.state.recursiveSyncRunning) {
             let resolver;
             let rejecter;
@@ -183,10 +185,6 @@ export class SynchronizationService {
             })
             .catch( (error) => {
                 return Promise.reject(error);
-            })
-            .then(promise => {
-                iliasObject.isFavorite = 1;
-                return promise;
             });
     }
 

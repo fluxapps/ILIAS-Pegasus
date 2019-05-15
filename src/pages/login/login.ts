@@ -73,7 +73,7 @@ export class LoginPage {
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser.");
             this.checkLogin()
-                .then(() => this.updatelastVersionLogin())
+                .then(() => this.updateLastVersionLogin())
                 .then(() => this.checkAndLoadOfflineContent());
         });
 
@@ -96,7 +96,7 @@ export class LoginPage {
     /**
      * update the value lastVersionLogin for the user after login
      */
-    private async updatelastVersionLogin(): Promise<void> {
+    private async updateLastVersionLogin(): Promise<void> {
         const user: User = await User.currentUser();
         user.lastVersionLogin = await this.appVersionStr;
         await user.save();

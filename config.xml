@@ -3,7 +3,7 @@
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
-    <content original-src="index.html" src="http://192.168.99.79:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -142,7 +142,6 @@
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
     <plugin name="com-sarriaroman-photoviewer" spec="1.2.2" />
-    <allow-navigation href="http://192.168.99.79:8100" sessionid="9cbe74de" />
     <engine name="android" spec="8.0.0" />
     <engine name="ios" spec="5.0.1" />
 </widget>

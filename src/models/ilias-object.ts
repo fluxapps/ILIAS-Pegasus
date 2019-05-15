@@ -4,6 +4,8 @@ import {ILIASObjectPresenter} from "../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../presenters/presenter-factory";
 import {FileData} from "./file-data";
 import {Log} from "../services/log.service";
+import {DesktopItem} from "./desktop-item";
+import {User} from "./user";
 
 export class ILIASObject extends ActiveRecord {
 
@@ -278,7 +280,7 @@ export class ILIASObject extends ActiveRecord {
                 if (parentObject.id) {
                     resolve(parentObject);
                 } else {
-                    resolve(null);
+                    resolve(undefined);
                 }
             });
         });
@@ -419,6 +421,29 @@ export class ILIASObject extends ActiveRecord {
             });
             return Promise.resolve(iliasObjects);
         });
+    }
+
+    /**
+     * Set property 'isFavorite' of the 'iliasObject'
+     */
+    async setIsFavorite(value: number): Promise<void> {
+        this.isFavorite = value;
+        await this.save();
+    }
+
+
+    /**
+     * Set property 'isOfflineAvailable' of the 'iliasObject' and its content to 'value'
+     */
+    static async setOfflineAvailableRecursive(iliasObject: ILIASObject, user: User, value: boolean): Promise<void> {
+        ILIASObject.findByParentRefIdRecursive(iliasObject.refId, user.id).then(objects => {
+            objects.push(iliasObject);
+            objects.forEach(o => {
+                o.isOfflineAvailable = value;
+                if(value) o.offlineAvailableOwner = undefined; // TODO sync how to set this value
+                o.save();
+            });
+        })
     }
 
     /**

@@ -5,33 +5,37 @@ import {
     ILIASObjectActionNoMessage,
     ILIASObjectActionResult
 } from "./object-action";
-import {UnMarkAsOfflineAvailableAction} from "./unmark-as-offline-available-action";
+import {User} from "../models/user";
+import {FileService} from "../services/file.service";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
-    readonly offlineAction: UnMarkAsOfflineAvailableAction;
-
     constructor(
         public title: string,
-        public object: ILIASObject
+        public object: ILIASObject,
+        public file: FileService
     ) {
         super();
-        this.offlineAction = new UnMarkAsOfflineAvailableAction(title, object);
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        const favPromise: Promise<ILIASObjectActionResult> = new Promise((resolve, reject) => {
-            this.object.isFavorite = 0;
-            this.object.save()
-                .then(() => {
-                    resolve(new ILIASObjectActionNoMessage());
-                }).catch(error => {
-                reject(error);
-            });
-        });
+    async execute(): Promise<ILIASObjectActionResult> {
+        const underFavorite: boolean = await this.objectIsUnderFavorite();
+        if(!underFavorite) {
+            await this.file.removeRecursive(this.object);
+            const user: User = await User.currentUser();
+            await ILIASObject.setOfflineAvailableRecursive(this.object, user, false);
+        }
 
-        return this.offlineAction.execute()
-            .then(() => favPromise);
+        await this.object.setIsFavorite(0);
+        return Promise.resolve(new ILIASObjectActionNoMessage());
+    }
+
+    /**
+     * Checks whether this.object is contained within a favorite-object
+     */
+    private async objectIsUnderFavorite(): Promise<boolean> {
+        const parent: ILIASObject = await this.object.parent;
+        return (parent === undefined) ? false : parent.isOfflineAvailable;
     }
 
     alert(): ILIASObjectActionAlert|any {
