@@ -121,6 +121,7 @@ export class PegasusErrorHandler implements ErrorHandler {
             }
 
             this.log.error(() => `Unhandled error occurred of type: ${unwrappedError}`);
+            this.log.error(() => `JSON of error: ${JSON.stringify(unwrappedError)}`);
 
             if (isDevMode()) {
                 this.ionicErrorHandler.handleError(error);

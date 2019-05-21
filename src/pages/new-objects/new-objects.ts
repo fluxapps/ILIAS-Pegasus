@@ -258,12 +258,10 @@ export class NewObjectsPage {
                 actions.push(
                   new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"),
                     iliasObject,
-                    this.dataProvider,
-                    this.sync,
-                    this.modal)
+                    this.sync)
                 );
             } else if (iliasObject.isFavorite && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
+                actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject, this.file));
                 actions.push(
                   new SynchronizeAction(this.translate.instant("actions.synchronize"),
                     iliasObject,

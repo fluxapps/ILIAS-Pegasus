@@ -5,33 +5,23 @@ import {
     ILIASObjectActionNoMessage,
     ILIASObjectActionResult
 } from "./object-action";
-import {UnMarkAsOfflineAvailableAction} from "./unmark-as-offline-available-action";
+import {FileService} from "../services/file.service";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
 
-    readonly offlineAction: UnMarkAsOfflineAvailableAction;
-
     constructor(
         public title: string,
-        public object: ILIASObject
+        public object: ILIASObject,
+        public file: FileService
     ) {
         super();
-        this.offlineAction = new UnMarkAsOfflineAvailableAction(title, object);
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        const favPromise: Promise<ILIASObjectActionResult> = new Promise((resolve, reject) => {
-            this.object.isFavorite = 0;
-            this.object.save()
-                .then(() => {
-                    resolve(new ILIASObjectActionNoMessage());
-                }).catch(error => {
-                reject(error);
-            });
-        });
-
-        return this.offlineAction.execute()
-            .then(() => favPromise);
+    async execute(): Promise<ILIASObjectActionResult> {
+        // if the object is currently downloading, the syncService will execute the removal
+        if(this.object.isFavorite !== 2) this.object.removeFromFavorites(this.file);
+        else await this.object.setIsFavorite(0);
+        return Promise.resolve(new ILIASObjectActionNoMessage());
     }
 
     alert(): ILIASObjectActionAlert|any {

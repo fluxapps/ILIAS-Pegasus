@@ -142,7 +142,7 @@
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
     <plugin name="com-sarriaroman-photoviewer" spec="1.2.2" />
-    <allow-navigation href="http://192.168.99.79:8100" sessionid="9cbe74de" />
+    <allow-navigation href="http://192.168.99.79:8100" sessionid="74abc573" />
     <engine name="android" spec="8.0.0" />
     <engine name="ios" spec="5.0.1" />
 </widget>

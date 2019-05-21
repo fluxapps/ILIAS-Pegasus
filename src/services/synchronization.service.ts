@@ -6,7 +6,7 @@ import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {Events} from "ionic-angular";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
-import { TranslateService } from "ng2-translate/src/translate.service";
+import {TranslateService} from "ng2-translate/src/translate.service";
 import {Log} from "./log.service";
 import {FileData} from "../models/file-data";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
@@ -93,7 +93,8 @@ export class SynchronizationService {
     async loadAllOfflineContent(): Promise<void> {
         await this.loadCurrentUser();
         const favorites: Array<ILIASObject> = await Favorites.findByUserId(this.user.id);
-        this.addObjectsToSyncQueue(favorites);
+        if(favorites.length === 0) return;
+        await this.addObjectsToSyncQueue(favorites);
     }
 
     /**
@@ -105,7 +106,7 @@ export class SynchronizationService {
         this.syncOfflineQueue = Array.prototype.concat(this.syncOfflineQueue, iliasObjects);
         this.updateOfflineSyncStatusMessage();
         if(!SynchronizationService.state.loadingOfflineContent)
-            this.processOfflineSyncQueue();
+            await this.processOfflineSyncQueue();
     }
 
     /**
@@ -123,13 +124,19 @@ export class SynchronizationService {
         this.updateOfflineSyncStatusMessage();
 
         const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
-        ilObj.isFavorite = 2;
-        await this.loadOfflineObjectRecursive(ilObj);
-        ilObj.isFavorite = 1;
-        this.syncOfflineQueueCnt++;
+        // the user may has unmarked the object in the mean time
+        if(ilObj.isFavorite) {
+            await ilObj.setIsFavorite(2);
+            await this.loadOfflineObjectRecursive(ilObj);
+            await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
+            // the user may has unmarked the object in the mean time
+            if(ilObj.isFavorite) await ilObj.setIsFavorite(1);
+            else ilObj.removeFromFavorites(this.fileService);
+        }
 
+        this.syncOfflineQueueCnt++;
         this.footerToolbarOfflineContent.removeJob(Job.FileDownload);
-        this.processOfflineSyncQueue();
+        await this.processOfflineSyncQueue();
     }
 
     /**
@@ -150,9 +157,9 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns Promise<SyncResults>
      */
-    loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
+    async loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
         console.log("method - loadOfflineObjectRecursive");
-        iliasObject.isFavorite = 2;
+        await iliasObject.setIsFavorite(2);
         if(SynchronizationService.state.recursiveSyncRunning) {
             let resolver;
             let rejecter;
@@ -183,10 +190,6 @@ export class SynchronizationService {
             })
             .catch( (error) => {
                 return Promise.reject(error);
-            })
-            .then(promise => {
-                iliasObject.isFavorite = 1;
-                return promise;
             });
     }
 
@@ -194,6 +197,9 @@ export class SynchronizationService {
         const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
         iliasObjects.push(container);
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
+        await Promise.all(syncResults.fileDownloads).catch(
+            () => console.warn(`Encountered some problem in method 'downloadContainerContent' with container ${container.title}`)
+        );
         await this.downloadLearnplaces(iliasObjects).toPromise();
         return syncResults;
     }

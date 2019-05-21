@@ -75,8 +75,7 @@ export class InitDatabase implements Migration {
                   "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                   "userId INTEGER," +
                   "startDate DATETIME," +
-                  "endDate DATETIME," +
-                  "recursiveSyncRunning INTEGER" +
+                  "endDate DATETIME" +
       ")"
     );
 

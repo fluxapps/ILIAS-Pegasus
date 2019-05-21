@@ -7,7 +7,7 @@
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
 import {QueryRunner} from "typeorm";
 
-export class UpdateUserAndSettingsShema implements Migration {
+export class UpdateUserSettingsSyncSchema implements Migration {
 
     readonly version: MigrationVersion = new MigrationVersion("V__5");
 
@@ -21,6 +21,11 @@ export class UpdateUserAndSettingsShema implements Migration {
         await queryRunner.query(
             "ALTER TABLE settings " +
             "ADD downloadOnStart INTEGER DEFAULT 0"
+        );
+
+        await queryRunner.query(
+            "ALTER TABLE synchronization " +
+            "ADD recursiveSyncRunning INTEGER DEFAULT 0"
         );
     }
 

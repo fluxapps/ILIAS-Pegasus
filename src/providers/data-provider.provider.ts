@@ -60,12 +60,6 @@ export class DataProvider {
         return ILIASObject.findByRefId(parseInt(object.refId, 10), user.id)
             .then(iliasObject => {
                 iliasObject.readFromObject(object);
-
-                // If the object is stored newly, we inherit the offlineAvailable flag from the parent and also mark the object as new
-                if (rootParent && !iliasObject.id && rootParent.isOfflineAvailable) {
-                    iliasObject.isOfflineAvailable = true;
-                    iliasObject.offlineAvailableOwner = ILIASObject.OFFLINE_OWNER_SYSTEM;
-                }
                 the_iliasObject = iliasObject;
                 return iliasObject;
             })
@@ -80,7 +74,6 @@ export class DataProvider {
                     if(refreshFiles)
                         return this.onSaveFile(user, iliasObject);
                     else {
-                        iliasObject.isOfflineAvailable = false;
                         return iliasObject.save() as Promise<ILIASObject>;
                     }
                 } else {

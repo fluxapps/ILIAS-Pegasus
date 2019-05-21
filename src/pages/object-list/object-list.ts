@@ -445,9 +445,7 @@ export class ObjectListPage {
             actions.push(new MarkAsFavoriteAction(
                 this.translate.instant("actions.mark_as_favorite"),
                 iliasObject,
-                this.dataProvider,
-                this.sync,
-                this.modal
+                this.sync
             ));
         }
     }
@@ -456,7 +454,8 @@ export class ObjectListPage {
         if(iliasObject.isFavorite) {
             actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
-                iliasObject
+                iliasObject,
+                this.file
             ));
         }
     }

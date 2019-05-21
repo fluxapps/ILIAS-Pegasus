@@ -1,4 +1,4 @@
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, NgZone} from "@angular/core";
 import {NavController, ToastController, ToastOptions, AlertController, Toast, Alert, AlertOptions, Config} from "ionic-angular";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {log} from "util";
@@ -47,11 +47,12 @@ export class SettingsPage {
                 public alert: AlertController,
                 public dataProvider: DataProvider,
                 public fileService: FileService,
-                private readonly config: Config) {
+                private readonly config: Config,
+                private readonly ngZone: NgZone) {
     }
 
     ionViewDidEnter(): void {
-        this.init();
+        this.ngZone.run(() => this.init());
     }
 
     private init(): void {
