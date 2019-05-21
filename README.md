@@ -149,6 +149,21 @@ OUTPUT_DIR="./bin" \
 ./tools/build-android.sh
 ```
 
+### Troubleshoting
+#### Cordova Plugin GoogleMaps
+In order to use Learnplaces (Lernorte) you need the google map plugin. Use Version 2.4.6.
+If allready installed another version remove the plugin:
+```bash
+ionic cordova plugin remove cordova-plugin-googlemaps
+```
+Add it using your API Key:
+```bash
+ionic cordova plugin add cordova-plugin-googlemaps@2.4.6 \
+    --variable API_KEY_FOR_ANDROID="YOUR API KEY ANDROID GOES HERE" \
+    --variable API_KEY_FOR_IOS= "YOUR API KEY IOS GOES HERE"
+```
+
+
 ### Build With
 * [Cordova](https://cordova.apache.org/) - Is powering the app.
 * [Ionic](https://ionicframework.com/) - To build a responsive UI.
