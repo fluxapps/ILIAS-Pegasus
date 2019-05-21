@@ -6,6 +6,7 @@ import {FileData} from "./file-data";
 import {Log} from "../services/log.service";
 import {DesktopItem} from "./desktop-item";
 import {User} from "./user";
+import {FileService} from "../services/file.service";
 
 export class ILIASObject extends ActiveRecord {
 
@@ -286,6 +287,16 @@ export class ILIASObject extends ActiveRecord {
         });
     }
 
+    /**
+     * Checks whether the object is contained within a favorite-object
+     */
+    async objectIsUnderFavorite(): Promise<boolean> {
+        const parents: Array<ILIASObject> = await this.getParentsChain();
+        for(let i: number = 0; i < parents.length; i++)
+            if(parents[i].isFavorite) return true;
+        return false;
+    }
+
 
     /**
      * Find ILIAS-Object by primary ID, returns a Promise resolving the fully loaded ILIASObject object
@@ -424,13 +435,31 @@ export class ILIASObject extends ActiveRecord {
     }
 
     /**
+     * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
+     */
+    async removeFromFavorites(fileService: FileService): Promise<void> {
+        await this.setIsFavorite(0);
+        const underFavorite: boolean = await this.objectIsUnderFavorite();
+        const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
+
+        while (objectsStack.length) {
+            const ilObj: ILIASObject = objectsStack.pop();
+
+            const newObjects: Array<ILIASObject> = await ILIASObject.findByParentRefId(ilObj.refId, this.userId);
+            for (let i: number = 0; i < newObjects.length; i++)
+                if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
+
+            await fileService.removeObject(ilObj);
+        }
+    }
+
+    /**
      * Set property 'isFavorite' of the 'iliasObject'
      */
     async setIsFavorite(value: number): Promise<void> {
         this.isFavorite = value;
         await this.save();
     }
-
 
     /**
      * Set property 'isOfflineAvailable' of the 'iliasObject' and its content to 'value'

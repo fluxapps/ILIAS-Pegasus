@@ -5,7 +5,6 @@ import {
     ILIASObjectActionNoMessage,
     ILIASObjectActionResult
 } from "./object-action";
-import {User} from "../models/user";
 import {FileService} from "../services/file.service";
 
 export class UnMarkAsFavoriteAction extends ILIASObjectAction {
@@ -19,23 +18,10 @@ export class UnMarkAsFavoriteAction extends ILIASObjectAction {
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
-        const underFavorite: boolean = await this.objectIsUnderFavorite();
-        if(!underFavorite) {
-            await this.file.removeRecursive(this.object);
-            const user: User = await User.currentUser();
-            await ILIASObject.setOfflineAvailableRecursive(this.object, user, false);
-        }
-
-        await this.object.setIsFavorite(0);
+        // if the object is currently downloading, the syncService will execute the removal
+        if(this.object.isFavorite !== 2) this.object.removeFromFavorites(this.file);
+        else await this.object.setIsFavorite(0);
         return Promise.resolve(new ILIASObjectActionNoMessage());
-    }
-
-    /**
-     * Checks whether this.object is contained within a favorite-object
-     */
-    private async objectIsUnderFavorite(): Promise<boolean> {
-        const parent: ILIASObject = await this.object.parent;
-        return (parent === undefined) ? false : parent.isOfflineAvailable;
     }
 
     alert(): ILIASObjectActionAlert|any {

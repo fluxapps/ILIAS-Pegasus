@@ -20,7 +20,7 @@ export class DataProviderFileObjectHandler implements DataProviderILIASObjectHan
 
     onDelete(iliasObject: ILIASObject, user: User): Promise<any> {
         // Note: Order matters! FileService::remove still needs FileData
-        return this.file.remove(iliasObject)
+        return this.file.removeFile(iliasObject)
             .then(() => FileData.find(iliasObject.id))
             .then(fileData => fileData.destroy());
     }
