@@ -8,7 +8,6 @@
         <ion-row padding-top justify-content-center align-items-center	 class=login-welcome-row>
                 <h1 class=huge-login-header text-center>{{ 'login.hello' | translate:[]}}</h1>
         </ion-row>
-
         <ion-row padding justify-content-center align-items-end	 class=login-institution-row>
             <ion-item color="nobg-w">
                 <ion-label stacked text-center></ion-label>
@@ -21,7 +20,7 @@
         </ion-row>
 
         <ion-row justify-content-center>
-            <button ion-button color="light" outline round  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
+            <button ion-button color="button-item" outline round  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</button>
         </ion-row>
 
         <ion-row padding justify-content-center align-items-end class=login-version-row>

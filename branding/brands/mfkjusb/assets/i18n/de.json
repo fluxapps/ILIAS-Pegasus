@@ -1,4 +1,11 @@
 {
-    "test": "der test"
+    "test": "der test",
+
+    "onboarding": {
+        "title1": "Mit der DWC App kannst Du:",
+        "concept1": "Die DWC App verbindet Dich mit der ILIAS Installation Deiner Institution, Uni oder Schule. Und nur mit dieser.",
+        "datasecurity3": "Die DWC App basiert auf ILIAS Pegasus und ist ein Open Source Projekt. Wenn Du Dich selbst überzeugen möchtest, was die App tut, dann kannst Du hier den Code einsehen:"
+        
+      }
     
 }

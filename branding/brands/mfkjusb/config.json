@@ -1,4 +1,8 @@
 {
-  "ilias_installation_ids": [7, 8, 13],
-  "condig_id": "ch.studerraimann.ilias.offline"
+  "ilias_installation_ids": [13],
+  "projectConfig": {
+    "id": "ch.studerraimann.ilias.mfkjusb",
+    "name": "Digitaler Weiterbildungscampus",
+    "description": "Download, sync and store ILIAS-files on your device"
+  }
 }
