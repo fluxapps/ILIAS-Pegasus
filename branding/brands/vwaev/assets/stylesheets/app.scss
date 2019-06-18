@@ -6,6 +6,7 @@
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
 @import "icons";
+@import url("https://use.typekit.net/phy6wgb.css");
 
 ion-icon {
     &[class*="custom-"] {
@@ -30,7 +31,8 @@ ion-icon {
   }
 
 .content, .ion-header, ion-navbar {
-    font-family: 'Raleway', sans-serif !important;
+    font-family: 'interstate', sans-serif !important;
+    font-weight: 400;
 }
 
 .ilias-object-list {

@@ -3,17 +3,11 @@
 <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1000 972.8" style="enable-background:new 0 0 1000 972.8;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#FFF200;}
-	.st1{fill:#231F20;}
-	.st2{fill:#231F20;stroke:#231F20;stroke-width:0.1513;stroke-miterlimit:3.864;}
+	.st0{fill:url(#SVGID_1_);}
 </style>
-<g>
-	<path id="path143432" class="st0" d="M543.7,276.5L650.5,0L454.1,0l-106,276.5L543.7,276.5 M666.2,0h32.3l-0.1,276.5h-137L666.2,0
-		 M437.8,0L314.5,0.2l0.4,276.4h15.2L437.8,0"/>
-	<path id="path143434" class="st1" d="M301.5,249.5h56.8V110h-56.8V249.5z"/>
-	<path id="path143478" class="st2" d="M595.6,207.8l5-13.4h45.9v13.4C646.6,207.8,595.6,207.8,595.6,207.8z M553.8,249.5L608.2,110
-		h16.3l-53.1,139.5C571.4,249.5,553.8,249.5,553.8,249.5z M456.1,249.5L509.5,110h16.7l-53.5,139.5H456.1z M340.8,249.5L395.1,110
-		h16.7l-53.5,139.5C358.3,249.5,340.8,249.5,340.8,249.5z M629,110h56.8v139.5H629V110z M513.8,110h56.8v139.5h-56.8V110z M416,110
-		h56.8v139.5H416V110z"/>
-</g>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="86.4666" y1="740.6003" x2="913.5334" y2="-86.4666">
+	<stop  offset="0" style="stop-color:#FBBA00"/>
+	<stop  offset="1" style="stop-color:#FFED00"/>
+</linearGradient>
+<rect class="st0" width="1000" height="654.1"/>
 </svg>

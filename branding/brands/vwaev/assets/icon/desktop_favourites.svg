@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+<!-- Generator: Adobe Illustrator 23.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Livello_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 72.3 72.3" style="enable-background:new 0 0 72.3 72.3;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#4A668B;}
-	.st1{fill:none;stroke:#282828;stroke-miterlimit:10;}
+	.st0{fill:#010202;}
 </style>
-<path id="path-1_2_" class="st0" d="M14.5,14.3l1.2-2.3c0.2-0.3,0.6-0.3,0.7,0l1.2,2.3l2.6,0.4c0.3,0,0.4,0.4,0.2,0.7l-1.9,1.8
-	l0.4,2.6c0,0.3-0.3,0.6-0.6,0.4L16,19l-2.3,1.2c-0.3,0.2-0.6-0.1-0.6-0.4l0.4-2.6l-1.9-1.8c-0.2-0.2-0.1-0.6,0.2-0.7L14.5,14.3z"/>
-<path id="path-1_1_" class="st1" d="M11.6,11.1l3.4-6.7c0.5-0.8,1.6-0.8,2.1,0l3.4,6.7l7.4,1c0.9,0.1,1.3,1.3,0.7,2l-5.3,5.2
-	l1.3,7.4c0.1,0.9-0.8,1.6-1.7,1.3l-6.6-3.5l-6.6,3.5c-0.8,0.5-1.9-0.2-1.7-1.3L9,19.4l-5.5-5.1c-0.7-0.7-0.3-1.9,0.7-2L11.6,11.1z"
-	/>
+<path class="st0" d="M10.1,31l18-2.6c0.2,0,0.5-0.2,0.6-0.4l7.3-14.9L43.4,28c0.1,0.2,0.3,0.4,0.6,0.4l16.5,2.4L48.7,42.5
+	c-0.2,0.2-0.2,0.5-0.2,0.7l2.8,16.5l-14.8-7.8c-0.2-0.2-0.5-0.2-0.7,0L21,59.5l2.8-16.5c0.1-0.2-0.1-0.5-0.2-0.7L18,37
+	c-0.3-0.3-0.8-0.3-1.1,0c-0.3,0.3-0.3,0.8,0,1.1l5.3,5.2l-3,17.6c-0.1,0.3,0.1,0.6,0.3,0.8c0.2,0.1,0.3,0.2,0.5,0.2s0.2,0,0.4-0.1
+	l15.8-8.3l15.8,8.3c0.2,0.2,0.5,0.1,0.8-0.1c0.2-0.2,0.4-0.5,0.3-0.8l-3-17.6l12.7-12.4c0.2-0.2,0.3-0.5,0.2-0.8
+	c-0.1-0.3-0.3-0.5-0.6-0.5l-17.7-2.6l-8-16c-0.2-0.5-1.1-0.5-1.4,0l-7.9,16L9.9,29.5c-0.5,0-0.7,0.5-0.7,0.8
+	C9.3,30.8,9.7,31.1,10.1,31z"/>
 </svg>

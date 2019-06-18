@@ -18,9 +18,9 @@ $text-color:        #000;
 $background-color:  #fff;
 // $tabs-ios-tab-icon-color-active: map_get($colors, primary);
 // $tabs-ios-tab-icon-color: #a9a9a9;
-$tabs-tab-color-active: map_get($colors, primary) !important;
+$tabs-tab-color-active: map_get($colors, secondary) !important;
 $tabs-ios-tab-icon-color: #a9a9a9 !important;
-$tabs-ios-tab-text-color-active: map_get($colors, primary) !important;
+$tabs-ios-tab-text-color-active: map_get($colors, secondary) !important;
 $tabs-ios-tab-color-inactive: #a9a9a9 !important;
 $tabs-md-tab-color-inactive:  rgba(169,169,169, 1);
 $tabs-wp-tab-color-inactive: rgba(0, 0, 0, .1);
@@ -86,7 +86,7 @@ $refresher-text-font-size: 1em;
     // border-radius: 20px 20px 0 0;
     // box-shadow: inset 0 0 10px #969696;
 
-    background-color: #ffffff !important;
+    background-color: #000000 !important;
     // opacity: 0.95;
     backdrop-filter: blur(5px);
         // color:white;
@@ -101,7 +101,7 @@ $refresher-text-font-size: 1em;
 
 
 .main-header{
-    color: white !important;
+    color: black !important;
     font-weight: bold;
     font-size: 3.75vmax;
     
