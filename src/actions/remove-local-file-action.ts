@@ -10,7 +10,7 @@ export class RemoveLocalFileAction extends ILIASObjectAction {
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
-        await this.file.remove(this.fileObject);
+        await this.file.removeFile(this.fileObject);
         return new ILIASObjectActionSuccess(this.translation.instant("actions.removed_local_file"));
     }
 

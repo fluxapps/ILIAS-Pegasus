@@ -1,12 +1,13 @@
 <ion-header>
-  <ion-navbar color="nobg-w" class="blue-gradient">
+  <ion-navbar color="nobg-w" class=primary-gradient>
 
   </ion-navbar>
 </ion-header>
 
-<ion-content padding color="nobg-w"class="blue-gradient">
+<ion-content #content padding color="nobg-w"class=primary-gradient>
 
-  <div *ngIf="map?.visible" #map id="map"></div>
+  <div  *ngIf="map?.visible" #map id="map">
+  </div>
 
   <div *ngIf="!map?.visible" padding>
 

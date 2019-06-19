@@ -38,7 +38,7 @@ export const FILE_UPLOADER: InjectionToken<FileUploader> = new InjectionToken("t
 // workaround to access the url property of the http response
 // see https://ionicframework.com/docs/native/http/
 interface HTTPResponseWorkaround extends HTTPResponse{
-    url?: string
+    url: string
 }
 
 /**

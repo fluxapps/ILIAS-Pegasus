@@ -1,0 +1,10 @@
+<ion-tabs 
+tabsLayout="title-hide" 
+tabsHighlight="true"
+>
+    <ion-tab [root]="tabmenuRoot1" tabTitle="Home" tabIcon="ai-home"></ion-tab>
+    <ion-tab [root]="tabmenuRoot2" tabTitle="Content" [rootParams]="{favorites: false}"  tabIcon="ai-content"></ion-tab>
+    <ion-tab [root]="tabmenuRoot3" tabTitle="News" tabIcon="ai-news"></ion-tab>
+    <ion-tab [root]="tabmenuRoot4" tabTitle="Favorites" [rootParams]="{favorites: true}" tabIcon="ai-favorites"></ion-tab>
+    <ion-tab [root]="tabmenuRoot5" tabTitle="Menu" tabIcon="menu"></ion-tab>
+</ion-tabs>

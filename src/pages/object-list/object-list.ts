@@ -1,15 +1,12 @@
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, ViewChild, NgZone} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
     ActionSheet,
     ActionSheetButton,
     ActionSheetController,
     ActionSheetOptions,
-    Alert,
     AlertController,
-    AlertOptions,
-    Events,
-    Modal,
+    IonicPage,
     ModalController,
     NavController,
     NavParams,
@@ -17,25 +14,22 @@ import {
     Toast,
     ToastController
 } from "ionic-angular";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
 import {
-    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction,
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
     RemoveLocalLearnplaceActionFunction
 } from "../../actions/remove-local-learnplace-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {Exception} from "../../exceptions/Exception";
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
@@ -50,13 +44,28 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
-import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
+import {SynchronizationService} from "../../services/synchronization.service";
+import {Favorites} from "../../models/favorites";
 
+/**
+ * Summary of the state of an object-list-page
+ */
+interface PageState {
+    favorites: boolean,
+    online: boolean,
+    loadingLive: boolean,
+    loadingOffline: boolean,
+    refreshing: boolean,
+    desktop: boolean,
+}
+
+@IonicPage()
 @Component({
+    selector: "page-desktop",
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
+    @ViewChild(Refresher) refresher: Refresher;
 
     /**
      * Objects under the given parent object
@@ -69,7 +78,14 @@ export class ObjectListPage {
     parent: ILIASObject;
     pageTitle: string;
     user: User;
-    actionSheetActive: boolean = false;
+    private state: PageState = {
+        favorites: undefined,
+        online: undefined,
+        loadingLive: false,
+        loadingOffline: false,
+        refreshing: false,
+        desktop: undefined
+    };
 
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
@@ -77,7 +93,7 @@ export class ObjectListPage {
     readonly timeline: TimeLine;
 
     constructor(private readonly nav: NavController,
-                params: NavParams,
+                private readonly params: NavParams,
                 private readonly actionSheet: ActionSheetController,
                 private readonly file: FileService,
                 private readonly sync: SynchronizationService,
@@ -86,8 +102,8 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly dataProvider: DataProvider,
+                private readonly ngZone: NgZone,
                 readonly footerToolbar: FooterToolbarService,
-                private readonly events: Events,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -98,6 +114,7 @@ export class ObjectListPage {
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
         this.parent = params.get("parent");
+        this.state.favorites = params.get("favorites");
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
@@ -105,13 +122,50 @@ export class ObjectListPage {
             this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ""; // will be updated by the observer
+            const key: string = (this.state.favorites) ? "favorites.title" : "object-list.title";
+            translate.get(key).subscribe((lng) => this.pageTitle = lng);
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
-            translate.get("object-list.title").subscribe((lng) => {
-                this.pageTitle = lng;
-            });
         }
-        this.initEventListeners();
+    }
+
+    /**
+     * load the content for the chosen ILIASObject
+     */
+    ionViewWillEnter(): void {
+        this.ngZone.run(() => this.loadContent());
+        this.log.trace(() => `Ion view will enter page object list. favorites is ${this.state.favorites}`);
+    }
+
+    /**
+     * Loads the current User and updates this.user if the result is valid
+     */
+    async updateUser(): Promise<void> {
+        const newUser: User = await User.currentUser();
+        if (newUser !== undefined) this.user = newUser;
+        if (this.user === undefined) console.warn("in the page object-list, this.user is undefined");
+    }
+
+    /**
+     * Updates the state-object of the page
+     */
+    updatePageState(): void {
+        this.state.favorites = this.params.get("favorites");
+        this.state.online = window.navigator.onLine;
+        this.state.loadingLive = SynchronizationService.state.liveLoading;
+        this.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
+        this.state.refreshing = this.refresher.state === "refreshing";
+        this.state.desktop = this.parent === undefined;
+    }
+
+    /**
+     * Checks whether the page is in a given state
+     */
+    checkPageState(state: Partial<PageState>): boolean {
+        this.updatePageState();
+        for(const p in state)
+            if(state[p] !== this.state[p]) return false;
+        return true;
     }
 
     /**
@@ -139,8 +193,14 @@ export class ObjectListPage {
     }
 
     /**
-     * Checks the parent on null.
-     *
+     * Switches to Favourites-tab
+     */
+    protected switchToFavoritesTab(): void {
+        this.nav.parent.select(3);
+    }
+
+    /**
+     * Checks the parent on null
      * @throws Exception if the parent is null
      */
     private checkParent(): void {
@@ -149,168 +209,83 @@ export class ObjectListPage {
         }
     }
 
-    ionViewDidEnter(): void {
-        this.log.trace(() => "Ion view did enter.");
-        this.calculateChildrenMarkedAsNew();
-    }
+    /**
+     * called by pull-to-refresh refresher
+     * @returns {Promise<void>}
+     */
+    async loadContent(): Promise<void> {
+        this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
+        this.updatePageState();
 
-    ionViewDidLoad(): void {
-        this.log.trace(() => "Ion view did load page object list.");
-
-        User.currentUser()
-            .then(user => {
-                this.user = user;
-
-                return this.loadCachedObjects();
-            })
-            .then(() => {
-
-                if (this.objects.length == 0 && this.parent == undefined) {
-                    this.executeSync();
-                }
-            });
-    }
-
-    private async loadCachedObjects(): Promise<void> {
-
-        this.user = await User.currentUser();
-
-        if (this.parent == undefined) {
-            await this.loadCachedDesktopData();
+        if(this.state.favorites) {
+            if (this.state.online && this.state.refreshing) await this.sync.loadAllOfflineContent();
+            await this.loadFavoritesObjectList();
         } else {
-            await this.loadCachedObjectData();
+            if (this.state.online) await this.liveLoadContent();
+            await this.loadCachedObjects(this.parent === undefined);
         }
 
-        return Promise.resolve();
+        this.refresher.complete();
+        this.footerToolbar.removeJob(Job.Synchronize);
+        this.updatePageState();
+    }
+
+    /**
+     * loads available content without synchronization and user-feedback
+     * @returns {Promise<void>}
+     */
+    async refreshContent(): Promise<void> {
+        if(this.state.favorites) await this.loadFavoritesObjectList();
+        else await this.loadCachedObjects(this.parent === undefined);
+        this.updatePageState();
+    }
+
+    /**
+     * live-load content from account
+     * @returns {Promise<void>}
+     */
+    async liveLoadContent(): Promise<void> {
+        try {
+            Log.write(this, "Sync start", [], []);
+            await this.sync.liveLoad(this.parent);
+        } catch (error) {
+            Log.error(this, error);
+            throw error;
+        }
+    }
+
+    /**
+     * load content from favorites
+     * @returns {Promise<void>}
+     */
+    async loadFavoritesObjectList(): Promise<void> {
+        if(this.parent === undefined) {
+            await this.updateUser();
+            Favorites.findByUserId(this.user.id)
+                .then(favorites => {
+                    favorites.sort(ILIASObject.compare);
+                    this.objects = favorites;
+                });
+        }
+        else await this.loadCachedObjects(false);
     }
 
     /**
      * Loads the object data from db cache.
      * @returns {Promise<void>}
      */
-    private async loadCachedObjectData(): Promise<void> {
-
+    private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
+            await this.updateUser();
+            this.objects = (isDesktopObject) ?
+                await DesktopItem.findByUserId(this.user.id) :
+                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
 
-            this.footerToolbar.addJob(this.parent.refId, "");
-
-            this.objects = await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
             this.objects.sort(ILIASObject.compare);
-            this.calculateChildrenMarkedAsNew();
-
-            this.footerToolbar.removeJob(this.parent.refId);
-
             return Promise.resolve();
-
         } catch (error) {
-            this.footerToolbar.removeJob(this.parent.refId);
             return Promise.reject(error);
         }
-    }
-
-    /**
-     * load the desktop data from the local db.
-     * @returns {Promise<void>}
-     */
-    private async loadCachedDesktopData(): Promise<void> {
-
-        try {
-
-            this.footerToolbar.addJob(Job.DesktopAction, "");
-
-            this.objects = await DesktopItem.findByUserId(this.user.id);
-            this.objects.sort(ILIASObject.compare);
-            this.calculateChildrenMarkedAsNew();
-
-            this.footerToolbar.removeJob(Job.DesktopAction);
-
-            return Promise.resolve();
-
-        } catch (error) {
-            this.footerToolbar.removeJob(Job.DesktopAction);
-            return Promise.reject(error);
-        }
-    }
-
-    // TODO: Refactor method to make sure it returns a Promise<void>
-    private calculateChildrenMarkedAsNew(): void {
-        // Container objects marked as offline available display the number of new children as badge
-        this.objects.forEach(iliasObject => {
-            if (iliasObject.isContainer()) {
-                ILIASObject.findByParentRefIdRecursive(iliasObject.refId, iliasObject.userId).then(iliasObjects => {
-                    const newObjects: Array<ILIASObject> = iliasObjects.filter((iliasObject: ILIASObject) => {
-                        return iliasObject.isNew || iliasObject.isUpdated;
-                    });
-                    const n: number = newObjects.length;
-                    Log.describe(this, "Object:", iliasObject);
-                    Log.describe(this, "Objects marked as new: ", n);
-                    iliasObject.newSubItems = n;
-                });
-            } else {
-                iliasObject.newSubItems = 0;
-            }
-        });
-    }
-
-
-    /**
-     * called by pull-to-refresh refresher
-     *
-     * @param {Refresher} refresher
-     * @returns {Promise<void>}
-     */
-    async startSync(refresher: Refresher): Promise<void> {
-        refresher.complete();
-        await this.executeSync();
-    }
-
-    /**
-     * executes global sync
-     *
-     * @returns {Promise<void>}
-     */
-    private async executeSync(): Promise<void> {
-
-        try {
-
-            if (this.sync.isRunning) {
-                this.log.debug(() => "Unable to sync because sync is already running.");
-                return;
-            }
-            Log.write(this, "Sync start", [], []);
-            this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-
-            const syncResult: SyncResults = await this.sync.execute();
-            this.calculateChildrenMarkedAsNew();
-
-            // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-            if (syncResult.objectsLeftOut.length > 0) {
-                const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-                await syncModal.present();
-            }
-
-            //maybe some objects came in new.
-            this.footerToolbar.removeJob(Job.Synchronize);
-
-        } catch (error) {
-
-            Log.error(this, error);
-            this.footerToolbar.removeJob(Job.Synchronize);
-            throw error;
-        }
-    }
-
-    private displayAlert(title: string, message: string): void {
-        const alert: Alert = this.alert.create(<AlertOptions>{
-            title: title,
-            message: message,
-            buttons: [
-                <AlertButton>{
-                    text: "Ok"
-                }
-            ]
-        });
-        alert.present();
     }
 
     /**
@@ -318,7 +293,6 @@ export class ObjectListPage {
      * @param iliasObject
      */
     onClick(iliasObject: ILIASObject): void {
-        if (this.actionSheetActive) return;
         const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
         // When executing the primary action, we reset the isNew state
@@ -341,7 +315,7 @@ export class ObjectListPage {
         }
 
         if (iliasObject.isContainer()) {
-            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav);
+            return new ShowObjectListPageAction(this.translate.instant("actions.show_object_list"), iliasObject, this.nav, this.params);
         }
 
         if (iliasObject.isLearnplace()) {
@@ -361,20 +335,54 @@ export class ObjectListPage {
         return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
     }
 
+    executeAction(action: ILIASObjectAction): void {
+        //const hash: number = action.instanceId();
+        //this.footerToolbar.addJob(hash, "");
+        action.execute().then((result) => {
+            this.handleActionResult(result);
+            //this.footerToolbar.removeJob(hash);
+        }).catch((error) => {
+
+            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
+            //this.footerToolbar.removeJob(hash);
+            throw error;
+        }).then(() => this.refreshContent());
+    }
+
+    executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
+        this.updatePageState();
+        if(!this.state.online) return;
+
+        const actions: Array<ILIASObjectAction> = [];
+        if(value) this.applyMarkAsFavoriteAction(actions, iliasObject);
+        else this.applyUnmarkAsFavoriteAction(actions, iliasObject);
+        this.executeAction(actions.pop());
+    }
+
+    private handleActionResult(result: ILIASObjectActionResult): void {
+        if (!result) return;
+        if (result instanceof ILIASObjectActionSuccess) {
+            if (result.message) {
+                const toast: Toast = this.toast.create({
+                    message: result.message,
+                    duration: 3000
+                });
+                toast.present();
+            }
+        }
+    }
+
     /**
      * Show the action sheet for the given object
      * @param iliasObject
      */
     showActions(iliasObject: ILIASObject): void {
-        this.actionSheetActive = true;
-
+        this.updatePageState();
         const actions: Array<ILIASObjectAction> = [];
 
         this.applyDefaultActions(actions, iliasObject);
         this.applyMarkAsFavoriteAction(actions, iliasObject);
         this.applyUnmarkAsFavoriteAction(actions, iliasObject);
-        this.applyMarkAsOfflineAction(actions, iliasObject);
-        this.applyUnmarkAsOfflineAction(actions, iliasObject);
         this.applySynchronizeAction(actions, iliasObject);
         this.applyRemoveLocalFileAction(actions, iliasObject);
         this.applyRemoveLearnplaceAction(actions, iliasObject);
@@ -384,7 +392,6 @@ export class ObjectListPage {
             return <ActionSheetButton>{
                 text: action.title,
                 handler: (): void => {
-                    this.actionSheetActive = false;
                     // This action displays an alert before it gets executed
                     if (action.alert()) {
                         this.alert.create({
@@ -415,7 +422,6 @@ export class ObjectListPage {
             text: this.translate.instant("cancel"),
             role: "cancel",
             handler: (): void => {
-                this.actionSheetActive = false;
             }
         });
 
@@ -424,67 +430,38 @@ export class ObjectListPage {
             buttons: buttons
         };
         const actionSheet: ActionSheet = this.actionSheet.create(options);
-        actionSheet.onDidDismiss(() => {
-            this.actionSheetActive = false;
-        });
         actionSheet.present();
     }
 
     private applyDefaultActions(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        actions.push(
-            new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav),
+        actions.push(new ShowDetailsPageAction(this.translate.instant("actions.show_details"), iliasObject, this.nav));
+        if (this.state.online) actions.push(
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId))
         );
     }
 
     private applyMarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(!iliasObject.isFavorite) {
-            actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), iliasObject));
+        if(!iliasObject.isFavorite && this.state.online) {
+            actions.push(new MarkAsFavoriteAction(
+                this.translate.instant("actions.mark_as_favorite"),
+                iliasObject,
+                this.sync
+            ));
         }
     }
 
     private applyUnmarkAsFavoriteAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
         if(iliasObject.isFavorite) {
-            actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), iliasObject));
-        }
-    }
-
-    private applyMarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(!iliasObject.isOfflineAvailable
-            && (
-                iliasObject.isContainer() && !iliasObject.isLinked()
-                ||
-                iliasObject.isFile()
-                ||
-                iliasObject.isLearnplace()
-            )
-        ) {
-            actions.push(new MarkAsOfflineAvailableAction(
-                this.translate.instant("actions.mark_as_offline_available"),
+            actions.push(new UnMarkAsFavoriteAction(
+                this.translate.instant("actions.unmark_as_favorite"),
                 iliasObject,
-                this.dataProvider,
-                this.sync,
-                this.modal)
-            );
-        }
-    }
-
-    private applyUnmarkAsOfflineAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
-            && (
-                iliasObject.isContainer() && !iliasObject.isLinked()
-                ||
-                iliasObject.isFile()
-                ||
-                iliasObject.isLearnplace()
-            )
-        ) {
-            actions.push(new UnMarkAsOfflineAvailableAction(this.translate.instant("actions.unmark_as_offline_available"), iliasObject));
+                this.file
+            ));
         }
     }
 
     private applySynchronizeAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isOfflineAvailable && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
+        if(iliasObject.isOfflineAvailable  && this.state.online && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
             && (
                 iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()
                 ||
@@ -510,40 +487,5 @@ export class ObjectListPage {
             actions.push(this.removeLocalLearnplaceActionFactory(
                 this.translate.instant("actions.remove_local_learnplace"), iliasObject.objId, iliasObject.userId)
             );
-    }
-
-    private handleActionResult(result: ILIASObjectActionResult): void {
-        if (!result) return;
-        if (result instanceof ILIASObjectActionSuccess) {
-            if (result.message) {
-                const toast: Toast = this.toast.create({
-                    message: result.message,
-                    duration: 3000
-                });
-                toast.present();
-            }
-        }
-    }
-
-    initEventListeners(): void {
-        // We want to refresh after a synchronization.
-        this.events.subscribe("sync:complete", () => {
-            this.loadCachedObjects();
-        });
-    }
-
-    executeAction(action: ILIASObjectAction): void {
-        const hash: number = action.instanceId();
-        this.footerToolbar.addJob(hash, "");
-        action.execute().then((result) => {
-            this.handleActionResult(result);
-            this.calculateChildrenMarkedAsNew();
-            this.footerToolbar.removeJob(hash);
-        }).catch((error) => {
-
-            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
-            this.footerToolbar.removeJob(hash);
-            throw error;
-        });
     }
 }

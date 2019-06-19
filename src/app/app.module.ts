@@ -6,6 +6,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {Diagnostic} from "@ionic-native/diagnostic";
 import {File} from "@ionic-native/file";
 import {Geolocation} from "@ionic-native/geolocation";
+import {HTTP} from "@ionic-native/http";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {Network} from "@ionic-native/network";
 import {PhotoViewer} from "@ionic-native/photo-viewer";
@@ -15,17 +16,19 @@ import {StatusBar} from "@ionic-native/status-bar";
 import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Toast} from "@ionic-native/toast";
 import {IonicApp, IonicErrorHandler, IonicModule, ModalController, NavController, Platform} from "ionic-angular";
-import {TranslateModule, TranslateService, MissingTranslationHandler} from "ng2-translate/ng2-translate";
+import {MissingTranslationHandler, TranslateModule, TranslateService} from "ng2-translate/ng2-translate";
 import {TranslateLoader, TranslateStaticLoader} from "ng2-translate/src/translate.service";
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
 import {
-    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction,
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
+    RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
 } from "../actions/remove-local-learnplace-action";
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "../config/ilias-config";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "../config/ilias.rest-config";
 import {TypeORMConfigurationAdapter} from "../config/typeORM-config";
+// import { DirectivesModule } from "../directives/directives.module";
 import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
 import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
@@ -59,19 +62,19 @@ import {
     VISIT_JOURNAL_WATCH,
     VisitJournalSynchronizationImpl
 } from "../learnplace/services/visitjournal.service";
-import {FavoritesPage} from "../pages/favorites/favorites";
-import {InfoPage} from "../pages/info/info";
-import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {LoginPage} from "../pages/login/login";
 import {ModalPage} from "../pages/modal/modal";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectDetailsPage} from "../pages/object-details/object-details";
-import {ObjectListPage} from "../pages/object-list/object-list";
+import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
 import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
+import {TabmenuPage} from "../pages/tabmenu/tabmenu";
 import {HardwareFeaturePage} from "../pages/test-hardware-feature/test-hardware-feature";
 import {FileSizePipe} from "../pipes/fileSize.pipe";
+import {BrandingProvider} from "../providers/branding";
 import {DataProvider} from "../providers/data-provider.provider";
+import {ExecuteSyncProvider} from "../providers/execute-sync/execute-sync";
 import {FILE_DOWNLOADER, FileDownloaderImpl} from "../providers/file-transfer/file-download";
 import {FILE_UPLOADER, FileUploaderImpl} from "../providers/file-transfer/file-upload";
 import {DataProviderFileObjectHandler} from "../providers/handlers/file-object-handler";
@@ -80,6 +83,7 @@ import {ILIASRestProvider} from "../providers/ilias-rest.provider";
 import {ILIAS_REST, ILIASRestImpl, ILIASTokenManager, TOKEN_MANAGER} from "../providers/ilias/ilias.rest";
 import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "../providers/ilias/ilias.rest-api";
 import {NEWS_REST, NewsRestImpl} from "../providers/ilias/news.rest";
+import {LogoutProvider} from "../providers/logout/logout";
 import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "../providers/repository/repository.user";
 import {Builder} from "../services/builder.base";
 import {Database} from "../services/database/database";
@@ -115,19 +119,19 @@ import {LoadingPage} from "./fallback/loading/loading.component";
 import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
-import {HTTP} from "@ionic-native/http";
+import {AppVersion} from "@ionic-native/app-version";
 
 @NgModule({
   declarations: [
     MyApp,
-    ObjectListPage,
-    FavoritesPage,
+    TabmenuPage,
     NewObjectsPage,
     SettingsPage,
-    InfoPage,
     ObjectDetailsPage,
     LoginPage,
+    SynchronizationPage,
     FileSizePipe,
     SyncFinishedModal,
     ModalPage,
@@ -169,13 +173,12 @@ import {HTTP} from "@ionic-native/http";
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    ObjectListPage,
-    FavoritesPage,
+    TabmenuPage,
     NewObjectsPage,
     SettingsPage,
-    InfoPage,
     ObjectDetailsPage,
     LoginPage,
+    SynchronizationPage,
     SyncFinishedModal,
     //NewsPage,
     LoadingPage,
@@ -194,7 +197,7 @@ import {HTTP} from "@ionic-native/http";
     RoamingFallbackScreen,
     LeaveAppDialog,
 
-    HardwareFeaturePage
+    HardwareFeaturePage,
   ],
   providers: [
 
@@ -454,7 +457,7 @@ import {HTTP} from "@ionic-native/http";
     Geolocation,
     PhotoViewer,
     StreamingMedia,
-      HTTP,
+    HTTP,
 
     /* from src/services/device/hardware-features */
     Diagnostic,
@@ -464,7 +467,10 @@ import {HTTP} from "@ionic-native/http";
     IonicErrorHandler,
     {provide: ErrorHandler, useClass: PegasusErrorHandler},
       <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
-      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false}
+      <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
+    LogoutProvider,
+    ExecuteSyncProvider,
+    AppVersion
   ],
   exports: [
     TranslateModule

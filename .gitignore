@@ -12,9 +12,11 @@ log.txt
 *.map
 *.sourcemaps
 *.keystore
+*.jks
 *_config.json
 .vscode/
 npm-debug.log*
+server.config.json
 
 .idea/
 .sourcemaps/
@@ -32,20 +34,23 @@ plugins/
 plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
+src/assets/*
+resources
+
 
 bin/android-*-unsigned.apk
-ch_studerraimann_ilias_offline.keystore
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 www_back/
-www/build
 www/*
 !www/.placeholder
 bower_components
 src/assets/config.json
+branding/common/config/server.config.json
 src/assets/testinstallation_config.json
 build*.sh
+iq_config.xml
 
 bin
 simulation

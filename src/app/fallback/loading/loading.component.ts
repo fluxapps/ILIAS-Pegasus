@@ -7,6 +7,6 @@ import {FooterToolbarService} from "../../../services/footer-toolbar.service";
 export class LoadingPage {
 
     constructor(
-        readonly footerToolbar: FooterToolbarService,
+        readonly footerToolbar: FooterToolbarService
     ) {}
 }

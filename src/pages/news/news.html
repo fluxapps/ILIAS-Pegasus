@@ -1,21 +1,17 @@
 <ion-header>
-    <ion-navbar color="nobg-w" class=blue-gradient>
+    <ion-navbar color="header-element">
       <ion-buttons left>
       </ion-buttons>
         <ion-title>
-          {{ 'news.title' | translate:[] }}
+          {{ 'news.title' | translate}}
+          <!-- News -->
         </ion-title>
-        <ion-buttons end>
-            <button ion-button menuToggle>
-                <ion-icon name="menu"></ion-icon>
-            </button>
-        </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content class="page_news">
 
   <ion-refresher
-    (ionRefresh)="startSync($event)"
+    (ionRefresh)="startNewsSync($event)"
     [closeDuration]="400"
     [pullMin]="150">
     <ion-refresher-content id="refresher-content"
@@ -25,12 +21,12 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <ion-list>
-  <div *ngFor="let newsPresenter of newsPresenters">
-    <ion-item (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)">
+  <ion-list color="list-element">
+  <!-- <div *ngFor="let newsPresenter of newsPresenters"> -->
+    <ion-item *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
       <!-- <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon> -->
       <ion-avatar item-start>
-          <img src="{{newsPresenter[1].icon()}}">
+          <img src="{{newsPresenter[1].icon()}}"><!-- TODO make relative? -->
       </ion-avatar>
 
       <h2 class="news-title">{{newsPresenter[0].title}}</h2>
@@ -38,7 +34,7 @@
       <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
       <ion-note class="date-note" item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
     </ion-item>
-  </div>
+  <!-- </div> -->
   </ion-list>
 
 </ion-content>

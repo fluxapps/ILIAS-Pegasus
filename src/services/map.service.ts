@@ -101,7 +101,8 @@ export interface StandardMap {
 
   fromLatLngToPoint(latLng: ILatLng): Promise<object>
 
-  fromPointToLatLng(point: object): Promise<LatLng>
+  
+  fromPointToLatLng(point: Array<number>): Promise<LatLng>
 
   setMyLocationEnabled(enabled: boolean): void
 
@@ -190,11 +191,11 @@ class StandardMapBinding implements StandardMap {
 
   async clear(): Promise<void> { return this.map.clear() }
 
-  async fromLatLngToPoint(latLng: ILatLng): Promise<object> {
+  async fromLatLngToPoint(latLng: LatLng): Promise<object> {
     return this.map.fromLatLngToPoint(latLng);
   }
 
-  async fromPointToLatLng(point: object): Promise<LatLng> {
+  async fromPointToLatLng(point: Array<number>): Promise<LatLng> {
     return this.map.fromPointToLatLng(point);
   }
 
@@ -230,6 +231,7 @@ class StandardMapBinding implements StandardMap {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
+
 export class MapBuilder {
 
   private cameraPosition?: CameraPosition<ILatLng>;
@@ -286,7 +288,7 @@ export class MapBuilder {
     this.markerOptions = <MarkerOptions>{
       title: marker.title,
       icon: {
-          "url": "assets/icon/icon_xsrl.png",
+          "url": "/assets/icon/obj_location.svg",
             },
       animation: "DROP",
       position: <ILatLng>{
@@ -333,7 +335,7 @@ export class MapBuilder {
     });
 
     console.log(JSON.stringify(this.binding));
-    const googleMap: GoogleMap = new GoogleMap(this.binding, <GoogleMapOptions>{
+    const googleMap: GoogleMap = GoogleMaps.create(this.binding, <GoogleMapOptions>{
       camera: this.cameraPosition,
       controls: this.defaultControls,
       gestures: this.defaultGestures

@@ -129,7 +129,7 @@
 ---------------*/
 
 /* Specificity hack */
-.ui.loading.loading.loading.loading.loading.loading.button {
+.ui.page_loading.page_loading.page_loading.page_loading.page_loading.page_loading.button {
   position: relative;
   cursor: default;
   text-shadow: none !important;
@@ -138,7 +138,7 @@
   pointer-events: @loadingPointerEvents;
   transition: @loadingTransition;
 }
-.ui.loading.button:before {
+.ui.page_loading.button:before {
   position: absolute;
   content: '';
   top: 50%;
@@ -151,7 +151,7 @@
   border-radius: @circularRadius;
   border: @loaderLineWidth solid @invertedLoaderFillColor;
 }
-.ui.loading.button:after {
+.ui.page_loading.button:after {
   position: absolute;
   content: '';
   top: 50%;
@@ -172,7 +172,7 @@
 
   box-shadow: 0px 0px 0px 1px transparent;
 }
-.ui.labeled.icon.loading.button .icon {
+.ui.labeled.icon.page_loading.button .icon {
   background-color: transparent;
   box-shadow: none;
 }
@@ -186,10 +186,10 @@
   }
 }
 
-.ui.basic.loading.button:not(.inverted):before {
+.ui.basic.page_loading.button:not(.inverted):before {
   border-color: @loaderFillColor;
 }
-.ui.basic.loading.button:not(.inverted):after {
+.ui.basic.page_loading.button:not(.inverted):after {
   border-top-color: @loaderLineColor;
 }
 

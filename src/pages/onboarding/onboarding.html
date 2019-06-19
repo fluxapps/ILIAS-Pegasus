@@ -1,34 +1,37 @@
-<ion-header color="nobg-w">
-  
-</ion-header>
-<ion-content padding color=nobg-w class=blue-gradient>
-  <ion-slides ion-fixed #slides class=white-text>
+
+<ion-content padding color=nobg-w class=page_onboarding>
+  <ion-slides #slides class=white-text>
 			<ion-slide>
-					<img class="logo" src="assets/img/pony.png">
+					<ion-header color="nobg-w" no-shadow no-border>
+							<ion-buttons end>
+							<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+							</ion-buttons>
+						</ion-header>
+					<img class="logo" src="assets/img/onboarding_welcome.png">
 					<h1 class=huge-header text-center>{{ 'onboarding.title1' | translate:[]}}</h1>
 					<ion-grid>
-						<ion-row>
+						<ion-row align-items-center>
 							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_file.svg">
+									<img class="logo" src="assets/icon/obj_file.svg">
 							</ion-col>
-							<ion-col col-9 class=grid-text>
-								{{ 'onboarding.function1' | translate:[]}}	
+							<ion-col col-9 class=grid-text align-self-center>
+								<p>{{ 'onboarding.function1' | translate:[]}}	</p>
 							</ion-col>
 						</ion-row>
-						<ion-row>
+						<ion-row align-items-center>
 							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_more.svg">
+									<img class="logo" src="assets/icon/more.svg">
 							</ion-col>
-							<ion-col col-9 class=grid-text>
-								{{ 'onboarding.function2' | translate:[]}}	
+							<ion-col col-9 class=grid-text align-self-center>
+								<p>{{ 'onboarding.function2' | translate:[]}}</p>
 							</ion-col>
 						</ion-row>
-						<ion-row>
-							<ion-col col-3 text-right>
-									<img class="logo" src="assets/icon/icon_auth.svg">
+						<ion-row align-items-center>
+						<ion-col col-3 text-right>
+									<img class="logo" src="assets/img/onboarding_key.svg">
 						</ion-col>
-							<ion-col col-9 class=grid-text>
-								{{ 'onboarding.function3' | translate:[]}}	
+							<ion-col col-9 class=grid-text align-self-center>
+							<p>{{ 'onboarding.function3' | translate:[]}}</p>
 							</ion-col>
 						</ion-row>
 	
@@ -38,21 +41,31 @@
 				</ion-slide>
 
       <ion-slide class="start-slide" padding class=white-text>
-					<img src="assets/img/decentralized.svg" class="decentral">
+			<ion-header color="nobg-w" no-shadow no-border>
+					<ion-buttons end>
+					<button ion-button clear color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
+					</ion-buttons>
+				</ion-header>
+					<img src="assets/img/onboarding_decentralized.png" class="decentral">
           <h1 class=huge-header text-center>{{ 'onboarding.title2' | translate:[]}}</h1>
           <p class="central-text" text-center>
-            {{ 'onboarding.concept1' | translate:[]}}
+            {{ 'onboarding.concept1' | translate:[] }}
 					</p>
 					<p class="central-text" text-center>
 						{{ 'onboarding.concept2' | translate:[]}}
-							<a href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</a>
+							<ion-label color="white" href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</ion-label>
 						</p>
 				
           <button ion-button round color="white" (click)="nextSlide()">{{ 'onboarding.next' | translate:[]}}</button>
       </ion-slide>
 
       <ion-slide class="bordeaux-gradient" padding>
-        	<img src="assets/icon/ios-lock.svg" class="lock">
+			<ion-header color="nobg-w" no-shadow no-border>
+					<ion-buttons end>
+					<button ion-button clear color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</button>
+					</ion-buttons>
+				</ion-header>
+        	<img src="assets/icon/menu_lock.svg" class="lock">
         <h1 class=huge-header text-center>{{ 'onboarding.title3' | translate:[]}}</h1>
         <p class=central-text text-center>
 			{{ 'onboarding.datasecurity1' | translate:[]}}
@@ -61,7 +74,7 @@
         <p class=central-text text-center>
 			{{ 'onboarding.datasecurity3' | translate:[]}}
 				</p>
-				<a href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
+				<a color="white" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
         <p class=central-text>
         </p>
           <button ion-button round  color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</button>

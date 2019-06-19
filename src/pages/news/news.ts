@@ -12,7 +12,7 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
-import {SynchronizationService, SyncResults} from "../../services/synchronization.service";
+import {SynchronizationService} from "../../services/synchronization.service";
 import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
 
 
@@ -27,7 +27,9 @@ import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
     selector: "newsPresenters",
     templateUrl: "news.html"
 })
-export class NewsPage implements OnInit {
+export class NewsPage 
+// implements OnInit 
+{
 
     newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
     private readonly log: Logger = Logging.getLogger(NewsPage.name);
@@ -44,10 +46,16 @@ export class NewsPage implements OnInit {
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
-    ngOnInit(): void {
+    ionViewWillEnter(): void {
+        this.startNewsSync();
         this.log.debug(() => "News view initialized.");
         this.reloadView();
     }
+
+    // ngOnInit(): void {
+    //     this.log.debug(() => "News view initialized.");
+    //     this.reloadView();
+    // }
 
     openNews(id: number, context: number): void {
         this.log.debug(() => `open news with id ${id}, context id ${context}`);
@@ -65,10 +73,13 @@ export class NewsPage implements OnInit {
      * @param {Refresher} refresher
      * @returns {Promise<void>}
      */
-    async startSync(refresher: Refresher): Promise<void> {
-        await this.executeSync();
-        refresher.complete();
-        this.reloadView();
+    async startNewsSync(refresher: Refresher = undefined): Promise<void> {
+        try {
+            await this.executeNewsSync();
+        } finally {
+            if (refresher) refresher.complete();
+            this.reloadView();
+        }
     }
 
     reloadView(): void {
@@ -76,7 +87,7 @@ export class NewsPage implements OnInit {
             (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
     }
 
-    // ------------------- object-list duplicate----------------------------
+    // ------------------- object-list duplicate ----------------------------
     private executeAction(action: ILIASObjectAction): void {
         const hash: number = action.instanceId();
         this.footerToolbar.addJob(hash, "");
@@ -90,15 +101,15 @@ export class NewsPage implements OnInit {
     }
 
     /**
-     * executes global sync
+     * executes news sync
      *
      * @returns {Promise<void>}
      */
-    private async executeSync(): Promise<void> {
+    private async executeNewsSync(): Promise<void> {
 
         try {
 
-            if (this.sync.isRunning) {
+            if (SynchronizationService.state.recursiveSyncRunning) {
                 this.log.debug(() => "Sync is already running.");
                 return;
             }
@@ -106,13 +117,7 @@ export class NewsPage implements OnInit {
             this.log.info(() => "Sync start");
             this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
 
-            const syncResult: SyncResults = await this.sync.execute();
-
-            // We have some files that were marked but not downloaded. We need to explain why and open a modal.
-            if (syncResult.objectsLeftOut.length > 0) {
-                const syncModal: Modal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-                await syncModal.present();
-            }
+            await this.sync.executeNewsSync();
 
             //maybe some objects came in new.
             this.footerToolbar.removeJob(Job.Synchronize);

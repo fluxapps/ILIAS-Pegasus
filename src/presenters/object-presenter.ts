@@ -2,6 +2,7 @@ import {ILIASObject} from "../models/ilias-object";
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 import {FileService} from "../services/file.service";
 import {Log} from "../services/log.service";
+
 /**
  * Decorator to present data of ILIASObjects in the view.
  * Wraps an ILIASObject instance and returns presentation specific stuff
@@ -50,11 +51,12 @@ export interface ILIASObjectPresenter {
  */
 export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
 
-    constructor(protected iliasObject: ILIASObject) {
-    }
+    constructor(
+        protected iliasObject: ILIASObject
+    ) {}
 
     icon(): string {
-        return "./assets/icon/icon_webr.svg";
+        return "assets/icon/obj_link.svg";
     }
 
     title(): string {
@@ -97,7 +99,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
                     })
             );
             detailPromises.push(
-                Promise.resolve({label: "details.offline_available", value: (this.iliasObject.isOfflineAvailable && !this.iliasObject.needsDownload)?"yes":"no", translate: true})
+                Promise.resolve({label: "details.offline_available", value: this.iliasObject.isOfflineAvailable ? "yes" : "no", translate: true})
             );
 
             return Promise.all(detailPromises);

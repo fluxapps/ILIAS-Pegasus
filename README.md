@@ -4,6 +4,8 @@ ILIAS Pegasus is an app which is running on Android or iOS and integrate functio
 of the ILIAS learn management system. For example viewing courses or personal news.
 Furthermore it is possible to make files offline available to read them while offline.
 
+[![Build status](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_apis/build/status/ILIAS-Pegasus-CI)](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_build/latest?definitionId=1)
+
 ## Getting Started
 These instructions will get the ILIAS Pegasus app up and running.
 
@@ -52,7 +54,7 @@ Install the Java 8 SDK from oracle. Java 9 and 10 are not supported at the momen
 <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
 Add the path to your java runtime to the $JAVA_HOME environment variable.
 
-### Install
+### Install Dependencies
 Clone the project to your workspace.
 Change into the cloned project and install all dependencies.
 This could take several minutes.
@@ -60,16 +62,23 @@ This could take several minutes.
 npm install
 ```
 
+### Configure your ILIAS Installation
+
+Copy and edit the template of s[server.config.json.template](../blob/master/branding/common/config/server.config.json.template)  and add the development ILIAS
+installation. 
+Save you configurationfile as server.config.json in branding/common/config. 
+Add you Installation id to the config.json file in your brand (eg. branding/brands/vanilla/config.json)
+
+### Install Brand
+[Choose your brand, following the README.md in the branding folder.](../blob/master/branding/README.md)
+
+### Install Platforms
+
 Install the both platforms.
 ```bash
 ionic cordova prepare
 ```
 
-Copy and edit the template of config.json and add the development ILIAS
-installation.
-```bash
-mv src/assets/config.json.template src/assets/config.json
-```
 
 ### Debug Build
 
@@ -146,6 +155,21 @@ KEY_STORE="mystore.jks" \
 OUTPUT_DIR="./bin" \ 
 ./tools/build-android.sh
 ```
+
+### Troubleshoting
+#### Cordova Plugin GoogleMaps
+In order to use Learnplaces (Lernorte) you need the google map plugin. Use Version 2.4.6.
+If allready installed another version remove the plugin:
+```bash
+ionic cordova plugin remove cordova-plugin-googlemaps
+```
+Add it using your API Key:
+```bash
+ionic cordova plugin add cordova-plugin-googlemaps@2.4.6 \
+    --variable API_KEY_FOR_ANDROID="YOUR API KEY ANDROID GOES HERE" \
+    --variable API_KEY_FOR_IOS= "YOUR API KEY IOS GOES HERE"
+```
+
 
 ### Build With
 * [Cordova](https://cordova.apache.org/) - Is powering the app.

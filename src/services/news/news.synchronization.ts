@@ -47,11 +47,12 @@ export class NewsSynchronizationImpl implements NewsSynchronization {
     const news: Array<NewsItem> = await this.newsRest.getNews();
     const mappedNews: Array<NewsEntity> = news.map(this.mapToEntity);
 
-    const activeUser: User = await User.findActiveUser();
-    const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
-
-    user.news = mappedNews;
-    await this.userRepository.save(user);
+    const activeUser: User = await User.currentUser();
+    if (activeUser !== undefined) {
+        const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
+        user.news = mappedNews;
+        await this.userRepository.save(user);
+    }
   }
 
   private mapToEntity(newsItem: NewsItem): NewsEntity {
