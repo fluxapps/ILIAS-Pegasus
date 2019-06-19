@@ -1,6 +1,23 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] – 2019-06-19
+
+### Changed
+- Synchronization revised
+- User Interface completely revised
+- File Handling revised
+- Faster loading of metadata
+- Live loading of metadata
+- Favorites are offline available now
+
+### Added
+- Branding provider
+- Branding folder
+- Branded App files
+- Tile Home screen
+- Access to the repository (join courses)
+
 ## [2.0.2] – 2018-10-02
 
 ### Fixed

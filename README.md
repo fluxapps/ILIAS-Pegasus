@@ -62,6 +62,8 @@ This could take several minutes.
 npm install
 ```
 
+[Choose your brand, following the README.md in the branding folder.](../blob/master/branding/README.md)
+
 Install the both platforms.
 ```bash
 ionic cordova prepare
