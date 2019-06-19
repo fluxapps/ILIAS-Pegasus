@@ -8,7 +8,6 @@ import {ILIASObject} from "../models/ilias-object";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
 import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file";
 import {FileData} from "../models/file-data";
-import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {Log} from "./log.service";
 import {TranslateService} from "ng2-translate/src/translate.service";
 import {Settings} from "../models/settings";
@@ -33,7 +32,6 @@ export class FileService {
     constructor(protected events: Events,
                        protected platform: Platform,
                        protected rest: ILIASRestProvider,
-                       protected footerToolbar: FooterToolbarService,
                        protected translate: TranslateService,
                        private readonly file: File,
                        private readonly network: Network,
@@ -91,24 +89,24 @@ export class FileService {
 
         // We don't want to download if we're not in wlan
         if (forceDownload == false && settings.shouldntDownloadBecauseOfWLAN()) {
-          throw new NoWLANException(`Unable to download file with refId ${fileObject.refId}`);
+            throw new NoWLANException(`Unable to download file with refId ${fileObject.refId}`);
         }
 
         // If we have no file name we throw an error.
         if (!fileObject.data.hasOwnProperty("fileName")) {
-          throw new Error("Metadata of file object is not present");
+            throw new Error("Metadata of file object is not present");
         }
 
         Log.write(this, "Resolving storage location");
         const storageLocation: string = this.getStorageLocation(user, fileObject);
         await this.createDirectoryPath(storageLocation);
 
-      // Provide a general listener that throws an event
-      Log.write(this, "start DL");
-      const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
-      Log.describe(this, "Download Complete: ", fileEntry);
-      await this.storeFileVersionLocal(fileObject);
-      return fileEntry;
+        // Provide a general listener that throws an event
+        Log.write(this, "start DL");
+        const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
+        Log.describe(this, "Download Complete: ", fileEntry);
+        await this.storeFileVersionLocal(fileObject);
+        return fileEntry;
     }
 
     /**
@@ -144,12 +142,30 @@ export class FileService {
         });
     }
 
+    /**
+     * Deletes the local object on the device
+     */
+    async removeObject(iliasObject: ILIASObject): Promise<void> {
+        if(iliasObject.type === "file" || iliasObject.isLearnplace()) {
+            await this.removeFile(iliasObject);
+            return;
+        }
+
+        await iliasObject.setIsFavorite(0);
+        iliasObject.isOfflineAvailable = false;
+        await iliasObject.save();
+    }
+
 
     /**
      * Deletes the local file on the device from the given ILIAS file object
      * @param fileObject
      */
-    async remove(fileObject: ILIASObject): Promise<void> {
+    async removeFile(fileObject: ILIASObject): Promise<void> {
+        await fileObject.setIsFavorite(0);
+        fileObject.isOfflineAvailable = false;
+        await fileObject.save();
+
         const user: User = await User.find(fileObject.userId);
         if(fileObject.isLearnplace()) {
             await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
@@ -179,20 +195,15 @@ export class FileService {
 
         try {
           this.log.trace(() => "Start recursive removal of files");
-          this.footerToolbar.addJob(Job.DeleteFilesTree, this.translate.instant("deleting_files"));
           const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
           iliasObjects.push(containerObject);
-          const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
-            return iliasObject.type === "file" || iliasObject.isLearnplace();
-          });
-          for(const fileObject of fileObjects)
-            await this.remove(fileObject);
+
+          for(const fileObject of iliasObjects)
+              await this.removeObject(fileObject);
           this.log.info(() => "Deleting Files complete");
-          this.footerToolbar.removeJob(Job.DeleteFilesTree);
         }
         catch (error) {
           this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
-          this.footerToolbar.removeJob(Job.DeleteFilesTree);
           throw error;
         }
     }
@@ -243,7 +254,7 @@ export class FileService {
         const user: User = await User.currentUser();
         this.log.debug(() => `Opening file on iOS: ${this.getStorageLocation(user, fileObject)}${fileObject.data.fileName}`);
 
-      window["DocumentHandler"].previewFileFromUrlOrPath(
+      window["DocumentViewer"].previewFileFromUrlOrPath(
           (msg) => {
             this.log.trace(() => `Existing file successfully opened on iOS with message "${msg}"`);
           },

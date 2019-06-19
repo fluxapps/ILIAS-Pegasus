@@ -2,9 +2,7 @@ import {Component, Inject} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {Alert, AlertController, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
 import {TranslateService} from "ng2-translate/src/translate.service";
-import {DownloadFileAction} from "../../actions/download-file-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {MarkAsOfflineAvailableAction} from "../../actions/mark-as-offline-available-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OpenFileExternalAction} from "../../actions/open-file-external-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
@@ -12,7 +10,6 @@ import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {UnMarkAsOfflineAvailableAction} from "../../actions/unmark-as-offline-available-action";
 import {ILIASObject} from "../../models/ilias-object";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {Builder} from "../../services/builder.base";
@@ -136,24 +133,18 @@ export class ObjectDetailsPage {
         this.actions = [
           this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(this.iliasObject.refId))
         ];
-        if (!this.iliasObject.isFavorite) {
-            this.actions.push(new MarkAsFavoriteAction(this.translate.instant("actions.mark_as_favorite"), this.iliasObject));
-        } else if (this.iliasObject.isFavorite) {
-            this.actions.push(new UnMarkAsFavoriteAction(this.translate.instant("actions.unmark_as_favorite"), this.iliasObject));
-        }
         if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
-            if (!this.iliasObject.isOfflineAvailable) {
-                this.actions.push(new MarkAsOfflineAvailableAction(
-                  this.translate.instant("actions.mark_as_offline_available"),
+            if (!this.iliasObject.isFavorite) {
+                this.actions.push(new MarkAsFavoriteAction(
+                  this.translate.instant("actions.mark_as_favorite"),
                   this.iliasObject,
-                  this.dataProvider,
-                  this.sync,
-                  this.modal)
+                  this.sync)
                 );
-            } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsOfflineAvailableAction(
-                  this.translate.instant("actions.unmark_as_offline_available"),
-                  this.iliasObject)
+            } else if (this.iliasObject.isFavorite && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+                this.actions.push(new UnMarkAsFavoriteAction(
+                  this.translate.instant("actions.unmark_as_favorite"),
+                  this.iliasObject,
+                  this.file)
                 );
                 this.actions.push(new SynchronizeAction(
                   this.translate.instant("actions.synchronize"),
@@ -178,27 +169,17 @@ export class ObjectDetailsPage {
             }, () => {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
-            if (!this.iliasObject.isOfflineAvailable) {
-                this.actions.push(new MarkAsOfflineAvailableAction(
-                  this.translate.instant("actions.mark_as_offline_available"),
+            if (!this.iliasObject.isFavorite) {
+                this.actions.push(new MarkAsFavoriteAction(
+                  this.translate.instant("actions.mark_as_favorite"),
                   this.iliasObject,
-                  this.dataProvider,
-                  this.sync,
-                  this.modal)
+                  this.sync)
                 );
-            } else if (this.iliasObject.isOfflineAvailable && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsOfflineAvailableAction(
-                  this.translate.instant("actions.unmark_as_offline_available"),
-                  this.iliasObject)
-                );
-            }
-            if (this.iliasObject.needsDownload) {
-                this.actions.push(new DownloadFileAction(
-                  this.translate.instant("actions.download"),
+            } else if (this.iliasObject.isFavorite && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+                this.actions.push(new UnMarkAsFavoriteAction(
+                  this.translate.instant("actions.unmark_as_favorite"),
                   this.iliasObject,
-                  this.file,
-                  this.translate,
-                  this.alert)
+                  this.file)
                 );
             }
         }

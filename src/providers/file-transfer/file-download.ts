@@ -38,7 +38,7 @@ export const FILE_DOWNLOADER: InjectionToken<FileDownloader> = new InjectionToke
 // workaround to access the url property of the http response
 // see https://ionicframework.com/docs/native/http/
 interface HTTPResponseWorkaround extends HTTPResponse{
-    url?: string
+    url: string
 }
 
 /**

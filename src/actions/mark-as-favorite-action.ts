@@ -1,20 +1,30 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
-import {ILIASObjectActionNoMessage} from "./object-action";
-import {ILIASObjectActionResult} from "./object-action";
+import {
+    ILIASObjectAction,
+    ILIASObjectActionAlert,
+    ILIASObjectActionNoMessage,
+    ILIASObjectActionResult
+} from "./object-action";
+import {SynchronizationService} from "../services/synchronization.service";
 
 export class MarkAsFavoriteAction extends ILIASObjectAction {
 
-    constructor(public title: string,
-                       public object: ILIASObject) {
+    constructor(
+        public title: string,
+        public object: ILIASObject,
+        public syncService: SynchronizationService
+    ) {
         super();
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
+        await this.object.setIsFavorite(2);
 
-            this.object.isFavorite = true;
-            return this.object.save()
-                .then( () => Promise.resolve(new ILIASObjectActionNoMessage()) );
+        this.object.needsDownload = true; // TODO sync needed?
+        await this.object.save();
+
+        await this.syncService.addObjectsToSyncQueue(this.object);
+        return Promise.resolve(new ILIASObjectActionNoMessage());
     }
 
     alert(): ILIASObjectActionAlert|any {

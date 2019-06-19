@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="nobg-w" class=blue-gradient>
+    <ion-navbar color="nobg-w" class=primary-gradient>
         <ion-title>
           <!-- <ion-icon name="stopwatch"></ion-icon> -->
           {{ 'new-objects.title' | translate:{value: null} }}
@@ -38,7 +38,7 @@
                 <ion-item-sliding text-wrap *ngFor="let object of objects[desktopItem.refId]">
                     <ion-item (click)="onClick(object)" *ngIf="object">
                       <ion-avatar item-start>
-                        <img  [src]=object.presenter.icon() />
+                        <img [src]=object.presenter.icon() /><!-- TODO make relative? -->
                       </ion-avatar>
                         <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
 

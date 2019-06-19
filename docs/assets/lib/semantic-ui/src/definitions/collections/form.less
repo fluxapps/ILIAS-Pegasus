@@ -609,12 +609,12 @@
     Loading
 ---------------*/
 
-.ui.loading.form {
+.ui.page_loading.form {
   position: relative;
   cursor: default;
   pointer-events: none;
 }
-.ui.loading.form:before {
+.ui.page_loading.form:before {
   position: absolute;
   content: '';
   top: 0%;
@@ -624,7 +624,7 @@
   height: 100%;
   z-index: @loaderDimmerZIndex;
 }
-.ui.loading.form:after {
+.ui.page_loading.form:after {
   position: absolute;
   content: '';
   top: 50%;

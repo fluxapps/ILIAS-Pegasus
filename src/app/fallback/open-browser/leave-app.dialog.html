@@ -1,5 +1,5 @@
 <ion-header no-border>
-    <ion-navbar color="nobg-blue">
+    <ion-navbar color="nobg-w">
       <ion-buttons left>
       <button ion-button icon-only (click)="dismiss()">
         <ion-icon name ="close"></ion-icon>
@@ -7,10 +7,10 @@
       </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content class="blue-gradient" color="nobg-w">
+<ion-content class=primary-gradient color="nobg-w" class="page_leave_app_dialog">
 
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-  	 viewBox="0 0 355.5 501" style="enable-background:new 0 0 355.5 501;" xml:space="preserve" id="webr-icon">
+  	 viewBox="0 0 355.5 501" style="enable-background:new 0 0 355.5 501;" xml:space="preserve" id="webr-icon" class=fallback-icon>
   <style type="text/css">
   	.st0{opacity:0.56;fill:url(#SVGID_1_);enable-background:new    ;}
   	.st1{fill:url(#SVGID_2_);}
@@ -51,10 +51,10 @@
         {{'fallback.browser' | translate:{value: null} }}
       </h1>
       </ion-row>
-      <ion-row padding>
+      <ion-row padding justify-content-center>
         <button ion-button round outline (click)="leaveApp()" id="middle-button" color="white">{{'fallback.browser_ok' | translate:{value: null} }}</button>
       </ion-row>
-      <ion-row padding>
+      <ion-row padding justify-content-center>
         <a text-center id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate:{value: null} }}</a>
       </ion-row>
     </ion-grid>

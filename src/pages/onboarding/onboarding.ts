@@ -18,7 +18,7 @@ export class OnboardingPage {
   slideOptions: any;
 
   constructor(public navCtrl: NavController,
-    public viewCtrl: ViewController,
+    public viewCtrl: ViewController
   ) {
 
   }
@@ -31,5 +31,4 @@ export class OnboardingPage {
     this.viewCtrl.dismiss();
   }
 
-  
 }

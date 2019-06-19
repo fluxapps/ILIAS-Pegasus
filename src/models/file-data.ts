@@ -98,7 +98,7 @@ export class FileData extends ActiveRecord {
                 return db.query("SELECT SUM(files.fileSize) AS diskSpace FROM users " +
                     "INNER JOIN objects ON objects.userId = users.id " +
                     "INNER JOIN files ON files.iliasObjectId = objects.id " +
-                    "WHERE users.id = ? AND files.fileVersionDateLocal is NOT NULL GROUP BY users.id", [user.id]);
+                    "WHERE users.id = ? AND objects.isOfflineAvailable = 1 GROUP BY users.id", [user.id]);
             })
             .then((response: any) => {
                 let diskSpace: number = 0;

@@ -6,6 +6,7 @@ import {StreamingMedia} from "@ionic-native/streaming-media";
 import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
 import {isDefined} from "ionic-angular/es2015/util/util";
+import {LinkBuilder} from "../../../services/link/link-builder.service";
 
 @Component({
   selector: "video-block",

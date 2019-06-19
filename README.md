@@ -4,6 +4,8 @@ ILIAS Pegasus is an app which is running on Android or iOS and integrate functio
 of the ILIAS learn management system. For example viewing courses or personal news.
 Furthermore it is possible to make files offline available to read them while offline.
 
+[![Build status](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_apis/build/status/ILIAS-Pegasus-CI)](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_build/latest?definitionId=1)
+
 ## Getting Started
 These instructions will get the ILIAS Pegasus app up and running.
 
@@ -146,6 +148,21 @@ KEY_STORE="mystore.jks" \
 OUTPUT_DIR="./bin" \ 
 ./tools/build-android.sh
 ```
+
+### Troubleshoting
+#### Cordova Plugin GoogleMaps
+In order to use Learnplaces (Lernorte) you need the google map plugin. Use Version 2.4.6.
+If allready installed another version remove the plugin:
+```bash
+ionic cordova plugin remove cordova-plugin-googlemaps
+```
+Add it using your API Key:
+```bash
+ionic cordova plugin add cordova-plugin-googlemaps@2.4.6 \
+    --variable API_KEY_FOR_ANDROID="YOUR API KEY ANDROID GOES HERE" \
+    --variable API_KEY_FOR_IOS= "YOUR API KEY IOS GOES HERE"
+```
+
 
 ### Build With
 * [Cordova](https://cordova.apache.org/) - Is powering the app.

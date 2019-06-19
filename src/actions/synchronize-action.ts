@@ -19,15 +19,10 @@ export class SynchronizeAction extends ILIASObjectAction {
     }
 
     execute(): Promise<ILIASObjectActionResult> {
-            return this.sync.execute(this.object).then((syncResult) => {
-                if(syncResult.objectsLeftOut.length > 0 ){
-                    const syncModal = this.modal.create(SyncFinishedModal, {syncResult: syncResult});
-                    syncModal.present();
-                    return Promise.resolve(new ILIASObjectActionNoMessage());
-                } else {
-                    return Promise.resolve(new ILIASObjectActionSuccess(this.translate.instant("sync.object_synced", {title: this.object.title} )));
-                }
-            });
+        return this.sync.liveLoad(this.object)
+            .then(() => Promise.resolve(
+                new ILIASObjectActionSuccess(this.translate.instant("sync.object_synced", {title: this.object.title} ))
+            ));
     }
 
     alert(): ILIASObjectActionAlert|any {

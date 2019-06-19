@@ -8,12 +8,12 @@ import {TranslateService} from "ng2-translate/src/translate.service";
 import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
-import {FavoritesPage} from "../pages/favorites/favorites";
-import {InfoPage} from "../pages/info/info";
 import {LoginPage} from "../pages/login/login";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectListPage} from "../pages/object-list/object-list";
+import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
+import {TabmenuPage} from "../pages/tabmenu/tabmenu";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Database} from "../services/database/database";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
@@ -22,8 +22,12 @@ import {Logging} from "../services/logging/logging.service";
 import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage} from "./fallback/loading/loading.component";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import getMessage = Logging.getMessage;
-import { OnboardingPage } from "../pages/onboarding/onboarding";
+import {Favorites} from "../models/favorites";
+import {ILIASObject} from "../models/ilias-object";
+import {LogoutProvider} from "../providers/logout/logout";
+import {AppVersion} from "@ionic-native/app-version";
 
 @Component({
   templateUrl: "app.html"
@@ -33,16 +37,14 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: {};
-
-  objectListPage: object = ObjectListPage;
-  favoritesPage: object = FavoritesPage;
+  tabmenuPage: object = TabmenuPage;
   newObjectsPage: object = NewObjectsPage;
   settingsPage: object = SettingsPage;
-  infoPage: object = InfoPage;
   loginPage: object = LoginPage;
   onboardingPage: object = OnboardingPage;
   newsPage: string = "NewsPage"; //needs to be string in order to get lazy loaded
   LoadingPage: object = LoadingPage;
+  SynchronizationPage: object = SynchronizationPage;
   loggedIn: boolean = false;
   /**
    * The current logged in user
@@ -51,28 +53,30 @@ export class MyApp {
 
   private readonly log: Logger = Logging.getLogger(MyApp.name);
 
-  /**
-   *
-   * This constructor sets on classes which are not injectable yet
-   * member instances. This is a workaround for Ionic 3 update with
-   * the current app architecture. This will be changed on release 2.0.0.
-   *
-   * @param {Platform} platform
-   * @param {MenuController} menu
-   * @param {FooterToolbarService} footerToolbar
-   * @param {TranslateService} translate
-   * @param {Events} event
-   * @param {ToastController} toast
-   * @param {SynchronizationService} sync
-   * @param {StatusBar} statusBar
-   * @param {Network} network
-   * @param {SplashScreen} splashScreen
-   * @param {Database} database
-   * @param modal
-   * @param config
-   * @param {DBMigration} dbMigration
-   * @param {SQLite} sqlite
-   */
+    /**
+     *
+     * This constructor sets on classes which are not injectable yet
+     * member instances. This is a workaround for Ionic 3 update with
+     * the current app architecture. This will be changed on release 2.0.0.
+     *
+     * @param {Platform} platform
+     * @param {MenuController} menu
+     * @param {FooterToolbarService} footerToolbar
+     * @param {TranslateService} translate
+     * @param {Events} event
+     * @param {ToastController} toast
+     * @param {SynchronizationService} sync
+     * @param {StatusBar} statusBar
+     * @param {Network} network
+     * @param {SplashScreen} splashScreen
+     * @param {Database} database
+     * @param modal
+     * @param config
+     * @param logoutCtrl
+     * @param appVersionPlugin
+     * @param {DBMigration} dbMigration
+     * @param {SQLite} sqlite
+     */
   constructor(
     readonly footerToolbar: FooterToolbarService,
     private readonly platform: Platform,
@@ -87,6 +91,8 @@ export class MyApp {
     private readonly database: Database,
     private readonly modal: ModalController,
     private readonly config: Config,
+    private readonly logoutCtrl: LogoutProvider,
+    private readonly appVersionPlugin: AppVersion,
     @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
     sqlite: SQLite
   ) {
@@ -122,20 +128,20 @@ export class MyApp {
 
     await this.menu.close();
 
-    if (page == ObjectListPage) {
-      await this.nav.setRoot(page);
-    } else {
+    //if (page == ObjectListPage) {
+    //  await this.nav.setRoot(page);
+    //} else {
 
       //check if we navigating the object list
-      if (this.nav.last().component == ObjectListPage) {
+      //if (this.nav.last().component == ObjectListPage) {
         //preserve history
-        await this.nav.push(page);
-      } else {
+      //  await this.nav.push(page);
+      //} else {
         //we are navigating over the menu remove history
         await this.nav.push(page);
         await this.nav.remove(1);
-      }
-    }
+      //}
+    //}
   }
 
   /**
@@ -175,7 +181,15 @@ export class MyApp {
     this.splashScreen.hide();
 
     this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-    await this.sync.execute();
+    if(this.user !== undefined) {
+        const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
+        if(this.user.lastVersionLogin !== currentAppVersion) {
+            await this.logoutCtrl.logout();
+            return;
+        }
+        const settings: Settings = await Settings.findByUserId(this.user.id);
+        if (settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
+    }
     this.footerToolbar.removeJob(Job.Synchronize);
   }
 
@@ -209,7 +223,7 @@ export class MyApp {
       this.loggedIn = true;
       this.user = user;
       await this.configureTranslation(user);
-      await this.nav.setRoot(this.objectListPage);
+      await this.nav.setRoot(this.tabmenuPage);
 
     } catch(error) {
 
@@ -225,10 +239,12 @@ export class MyApp {
    * @param {User} user - the user to read its configured language
    */
   private async configureTranslation(user: User): Promise<void> {
-
-    const setting: Settings = await Settings.findByUserId(user.id);
-
-    this.translate.use(setting.language);
+    if(this.user !== undefined) {
+      const setting: Settings = await Settings.findByUserId(user.id);
+      this.translate.use(setting.language);
+    } else {
+        this.translate.use("de");
+    }
     this.translate.setDefaultLang("de");
   }
 
@@ -248,6 +264,8 @@ export class MyApp {
   /**
    * Performs all steps to log out the user.
    */
+
+   //TODO: Delete as it is now in logout provider
   async logout(): Promise<void> {
     await this.menu.close();
 
@@ -308,4 +326,5 @@ export class MyApp {
     );
     onboardingModal.present();
   }
+
 }

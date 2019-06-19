@@ -5,6 +5,7 @@ import {ILIASObject} from "../models/ilias-object";
 import {DesktopItem} from "../models/desktop-item";
 import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
 import {Log} from "../services/log.service";
+import {Profiler} from "../util/profiler";
 
 @Injectable()
 export class DataProvider {
@@ -34,10 +35,13 @@ export class DataProvider {
      * @returns {Promise<ILIASObject[]>}
      */
     getObjectData(parentObject: ILIASObject, user: User, recursive: boolean, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
-        //TODO: we want to update the meta data just once.
         return this.rest.getObjectData(parentObject.refId, user, recursive)
-            .then((data) => this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles))
-            .then(objects => objects.sort(ILIASObject.compare));
+            .then(data =>
+                this.storeILIASObjects(data, user, parentObject, recursive, refreshFiles)
+            )
+            .then(objects =>
+                objects.sort(ILIASObject.compare)
+            );
     }
 
     /**
@@ -49,7 +53,6 @@ export class DataProvider {
      * @returns {Promise<ILIASObject>}
      */
     private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject|undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
-
         Log.write(this, "Storing ILIAS Object");
 
         let the_iliasObject: ILIASObject = undefined;
@@ -57,12 +60,6 @@ export class DataProvider {
         return ILIASObject.findByRefId(parseInt(object.refId, 10), user.id)
             .then(iliasObject => {
                 iliasObject.readFromObject(object);
-
-                // If the object is stored newly, we inherit the offlineAvailable flag from the parent and also mark the object as new
-                if (rootParent && !iliasObject.id && rootParent.isOfflineAvailable) {
-                    iliasObject.isOfflineAvailable = true;
-                    iliasObject.offlineAvailableOwner = ILIASObject.OFFLINE_OWNER_SYSTEM;
-                }
                 the_iliasObject = iliasObject;
                 return iliasObject;
             })
@@ -77,7 +74,6 @@ export class DataProvider {
                     if(refreshFiles)
                         return this.onSaveFile(user, iliasObject);
                     else {
-                        iliasObject.isOfflineAvailable = false;
                         return iliasObject.save() as Promise<ILIASObject>;
                     }
                 } else {
@@ -154,33 +150,36 @@ export class DataProvider {
      * @returns {Promise<ILIASObject[]>}
      */
     private saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
-            const iliasObjects: Array<ILIASObject> = [];
-            const promises: Array<Promise<void>> = [];
-            const objectsToDelete: Array<ILIASObject> = existingObjects;
-            Log.describe(this, "Existing Objects.", existingObjects);
-            remoteObjects.forEach(remoteObject => {
-                const promise: Promise<void> = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
-                    iliasObjects.push(iliasObject);
-                    // Check if the stored object exists already locally, if so, remove it from objectsToDelete
-                    const objectIndex: number = existingObjects.findIndex(existingObject => {
-                        return existingObject.objId == iliasObject.objId;
-                    });
-                    if (objectIndex > -1) {
-                        objectsToDelete.splice(objectIndex, 1);
-                    }
+        const id: string = (rootParent) ? rootParent.refId.toString() : "-1";
+        Profiler.addTimestamp("saveOrDeleteObjects-start", false, "PD/getObjectData", id);
+        const iliasObjects: Array<ILIASObject> = [];
+        const promises: Array<Promise<void>> = [];
+        const objectsToDelete: Array<ILIASObject> = existingObjects;
+        Log.describe(this, "Existing Objects.", existingObjects);
+        remoteObjects.forEach(remoteObject => {
+            const promise: Promise<void> = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
+                iliasObjects.push(iliasObject);
+                // Check if the stored object exists already locally, if so, remove it from objectsToDelete
+                const objectIndex: number = existingObjects.findIndex(existingObject => {
+                    return existingObject.objId == iliasObject.objId;
                 });
-                promises.push(promise);
+                if (objectIndex > -1) {
+                    objectsToDelete.splice(objectIndex, 1);
+                }
+            });
+            promises.push(promise);
+        });
+
+        return Promise.all(promises).then(() => {
+            // TODO: build the following into the chain.
+            // Delete all existing objects left that were not delivered
+            objectsToDelete.forEach(iliasObject => {
+                this.deleteObject(iliasObject, user);
             });
 
-            return Promise.all(promises).then(() => {
-                // TODO: build the following into the chain.
-                // Delete all existing objects left that were not delivered
-                objectsToDelete.forEach(iliasObject => {
-                    this.deleteObject(iliasObject, user);
-                });
-
-                return Promise.resolve(iliasObjects);
-            });
+            Profiler.addTimestamp("store-promise-done", false, "PD/getObjectData", id);
+            return Promise.resolve(iliasObjects);
+        });
     }
 
     /**

@@ -1,10 +1,14 @@
 import {Component, Inject} from "@angular/core";
-import {NavController, Platform, Events} from "ionic-angular";
-import {User} from "../../models/user";
-import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
 import {Toast} from "@ionic-native/toast";
+import {Events, NavController, Platform} from "ionic-angular";
+import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+import {User} from "../../models/user";
+import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
 import {Log} from "../../services/log.service";
+import {Settings} from "../../models/settings";
+import {AppVersion} from "@ionic-native/app-version";
+import {SynchronizationService} from "../../services/synchronization.service";
 
 @Component({
     templateUrl: "login.html",
@@ -18,16 +22,24 @@ export class LoginPage {
      * Selected installation id
      */
     installationId: number;
+    readonly appVersionStr: Promise<string>;
 
     constructor(public platform: Platform,
                 public nav: NavController,
+                private readonly sync: SynchronizationService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ILIASConfigProvider,
                 public toast: Toast,
                 public event: Events,
-                private readonly browser: InAppBrowser
+                private readonly browser: InAppBrowser,
+                private readonly executeSyncCtrl: ExecuteSyncProvider,
+                readonly appVersionPlugin: AppVersion
     ) {
+      this.configProvider.loadConfig().then(config => {
+          this.installations.push(...config.installations);
+          this.installationId = this.installations[0].id;
+      });
 
-      this.configProvider.loadConfig().then(config => this.installations.push(...config.installations));
+      this.appVersionStr = this.appVersionPlugin.getVersionNumber();
     }
 
     login() {
@@ -57,10 +69,14 @@ export class LoginPage {
                 }
             });
         });
+
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser.");
-            this.checkLogin();
+            this.checkLogin()
+                .then(() => this.updateLastVersionLogin())
+                .then(() => this.checkAndLoadOfflineContent());
         });
+
     }
 
     /**
@@ -75,6 +91,24 @@ export class LoginPage {
             Log.write(this, "Login went wrong....");
             this.toast.showShortTop("Login failed");
         });
+    }
+
+    /**
+     * update the value lastVersionLogin for the user after login
+     */
+    private async updateLastVersionLogin(): Promise<void> {
+        const user: User = await User.currentUser();
+        user.lastVersionLogin = await this.appVersionStr;
+        await user.save();
+    }
+
+    /**
+     * if downloadOnStart is enabled, synchronize all offline-data after login
+     */
+    private async checkAndLoadOfflineContent(): Promise<void> {
+        const user: User = await User.currentUser();
+        const settings: Settings = await Settings.findByUserId(user.id);
+        if (settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
     }
 
 
