@@ -54,7 +54,7 @@ Install the Java 8 SDK from oracle. Java 9 and 10 are not supported at the momen
 <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
 Add the path to your java runtime to the $JAVA_HOME environment variable.
 
-### Install
+### Install Dependencies
 Clone the project to your workspace.
 Change into the cloned project and install all dependencies.
 This could take several minutes.
@@ -62,18 +62,23 @@ This could take several minutes.
 npm install
 ```
 
-[Choose your brand, following the README.md in the branding folder.](../blob/master/branding/README.md)
+### Configure your ILIAS Installation
+
+Copy and edit the template of s[server.config.json.template](../branding/common/server.config.json.template)  and add the development ILIAS
+installation. 
+Save you configurationfile as server.config.json in branding/common/config. 
+Add you Installation id to the config.json file in your brand (eg. branding/brands/vanilla/config.json)
+
+### Install Brand
+[Choose your brand, following the README.md in the branding folder.](../branding/README.md)
+
+### Install Platforms
 
 Install the both platforms.
 ```bash
 ionic cordova prepare
 ```
 
-Copy and edit the template of config.json and add the development ILIAS
-installation.
-```bash
-mv src/assets/config.json.template src/assets/config.json
-```
 
 ### Debug Build
 
