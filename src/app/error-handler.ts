@@ -1,21 +1,21 @@
 import {ErrorHandler, Injectable} from "@angular/core";
 import {Alert, AlertController, AlertOptions, IonicErrorHandler} from "ionic-angular";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {TimeoutError} from "rxjs/Rx";
-import {Error} from "tslint/lib/error";
 import {isNullOrUndefined, isNumber, isObject, isString} from "util";
+import {isDevMode} from "./devmode";
+import {TranslateService} from "@ngx-translate/core";
+import {Logger} from "../services/logging/logging.api";
+import {Logging} from "../services/logging/logging.service";
+import {AlertButton} from "ionic-angular/components/alert/alert-options";
+// errors and exceptions
+import {Error} from "tslint/lib/error";
+import {TimeoutError} from "rxjs/Rx";
+import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "../providers/http";
+import {HardwareAccessError} from "../services/device/hardware-features/hardware-access.errors";
+import {FileErrorException} from "../exceptions/FileErrorException";
 import {CantOpenFileTypeException} from "../exceptions/CantOpenFileTypeException";
 import {NoWLANException} from "../exceptions/noWLANException";
 import {OfflineException} from "../exceptions/OfflineException";
 import {RESTAPIException} from "../exceptions/RESTAPIException";
-import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "../providers/http";
-import {HardwareAccessError} from "../services/device/hardware-features/hardware-access.errors";
-import {Logger} from "../services/logging/logging.api";
-import {Logging} from "../services/logging/logging.service";
-import {isDevMode} from "./devmode";
-import {FileError} from "@ionic-native/file";
-import {FileErrorException} from "../exceptions/FileErrorException";
 
 interface AlertEntry {
     alert: Alert,

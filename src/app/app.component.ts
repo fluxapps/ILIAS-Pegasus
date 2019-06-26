@@ -1,19 +1,26 @@
+/** angular */
 import {Component, Inject, ViewChild} from "@angular/core";
-import {Network} from "@ionic-native/network";
-import {SplashScreen} from "@ionic-native/splash-screen";
-import {SQLite} from "@ionic-native/sqlite";
-import {StatusBar} from "@ionic-native/status-bar";
 import {Config, Events, MenuController, ModalController, Nav, Platform, Toast, ToastController, ToastOptions} from "ionic-angular";
-import {TranslateService} from "ng2-translate/src/translate.service";
+/** ngx */
+import {Network} from "@ionic-native/network/ngx";
+import {SplashScreen} from "@ionic-native/splash-screen/ngx";
+import {SQLite} from "@ionic-native/sqlite/ngx";
+import {StatusBar} from "@ionic-native/status-bar/ngx";
+import {AppVersion} from "@ionic-native/app-version/ngx";
+import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "../config/typeORM-config";
 import {Settings} from "../models/settings";
 import {User} from "../models/user";
+/** pages */
 import {LoginPage} from "../pages/login/login";
 import {NewObjectsPage} from "../pages/new-objects/new-objects";
 import {ObjectListPage} from "../pages/object-list/object-list";
 import {OnboardingPage} from "../pages/onboarding/onboarding";
 import {SettingsPage} from "../pages/settings/settings";
 import {TabmenuPage} from "../pages/tabmenu/tabmenu";
+import {LoadingPage} from "./fallback/loading/loading.component";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
+/** services */
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Database} from "../services/database/database";
 import {FooterToolbarService, Job} from "../services/footer-toolbar.service";
@@ -21,13 +28,9 @@ import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
 import {DB_MIGRATION, DBMigration} from "../services/migration/migration.api";
 import {SynchronizationService} from "../services/synchronization.service";
-import {LoadingPage} from "./fallback/loading/loading.component";
-import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
-import getMessage = Logging.getMessage;
-import {Favorites} from "../models/favorites";
-import {ILIASObject} from "../models/ilias-object";
+/** misc */
 import {LogoutProvider} from "../providers/logout/logout";
-import {AppVersion} from "@ionic-native/app-version";
+import getMessage = Logging.getMessage;
 
 @Component({
   templateUrl: "app.html"
@@ -125,23 +128,9 @@ export class MyApp {
    * @param {object} page - the page to open
    */
   async openPage(page: object): Promise<void> {
-
     await this.menu.close();
-
-    //if (page == ObjectListPage) {
-    //  await this.nav.setRoot(page);
-    //} else {
-
-      //check if we navigating the object list
-      //if (this.nav.last().component == ObjectListPage) {
-        //preserve history
-      //  await this.nav.push(page);
-      //} else {
-        //we are navigating over the menu remove history
-        await this.nav.push(page);
-        await this.nav.remove(1);
-      //}
-    //}
+    await this.nav.push(page);
+    await this.nav.remove(1);
   }
 
   /**
@@ -154,11 +143,6 @@ export class MyApp {
     this.nav.push(OnboardingPage);
 
   }
-  // presentLoading(): void {
-  //   this.menu.close();
-  //   let loadingModal = this.modalCtrl.create(LoadingPage);
-  //   loadingModal.present();
-  // }
 
   /**
    * Initialize everything that has to be done on start up.
@@ -197,15 +181,10 @@ export class MyApp {
    * Subscribes on global events that are used.
    */
   private subscribeOnGlobalEvents(): void {
-
     this.event.subscribe("doLogout", () => this.logout());
-
     this.event.subscribe("login", () => this.setRootPage());
-
     this.event.subscribe("logout", () => this.loggedIn = false);
-
     this.network.onDisconnect().subscribe(() => this.footerToolbar.offline = true);
-
     this.network.onConnect().subscribe(() => this.footerToolbar.offline = false);
   }
 

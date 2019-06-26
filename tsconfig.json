@@ -2,13 +2,8 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": false,
-    "alwaysStrict": true,             //emit use 'strict' in output js files
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noEmitOnError": false,
-    "noImplicitReturns": true,
-    "typeRoots": ["node_modules/@types"],
-//    "strictNullChecks": true, -> can not be used yet, too much code will be invalid
     "lib": [
       "dom",
       "es2015"
@@ -19,11 +14,12 @@
     "target": "es5"
   },
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/__tests__/*.ts"
   ],
   "compileOnSave": false,
   "atom": {

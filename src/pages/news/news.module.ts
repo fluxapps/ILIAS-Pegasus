@@ -1,8 +1,6 @@
 import {NgModule} from "@angular/core";
-import {Http} from "@angular/http";
-
 import {IonicPageModule} from "ionic-angular";
-import {TranslateLoader, TranslateModule, TranslateStaticLoader} from "ng2-translate";
+import {TranslateModule} from "@ngx-translate/core";
 import {NEWS_FEED, NewsFeedImpl} from "../../services/news/news.feed";
 import {NewsPage} from "./news";
 import {CommonModule} from "@angular/common";

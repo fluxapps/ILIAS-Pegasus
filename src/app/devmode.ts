@@ -1,5 +1,5 @@
-import {isDevMode as isAngularDevMode} from "@angular/core";
 import {isDefined, isFunction} from "ionic-angular/es2015/util/util";
+//import {isDevMode as isAngularDevMode} from "@angular/core";
 
 /**
  * Returns true if the dev mode is enabled, otherwise returns false.
