@@ -1,6 +1,16 @@
 import {
-  CameraPosition, GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, ILatLng, LatLng, MapType,
-  MarkerOptions, MyLocation, MyLocationOptions, VisibleRegion
+    CameraPosition,
+    GoogleMap,
+    GoogleMapOptions,
+    GoogleMaps,
+    GoogleMapsEvent,
+    ILatLng,
+    LatLng,
+    MapType,
+    MarkerOptions,
+    MyLocation,
+    MyLocationOptions,
+    VisibleRegion
 } from "@ionic-native/google-maps";
 import {isUndefined} from "util";
 

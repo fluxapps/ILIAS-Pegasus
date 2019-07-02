@@ -1,21 +1,28 @@
-import {VisibilityAware} from "./visibility.context";
+/** angular */
 import {Inject, Injectable} from "@angular/core";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {Geolocation, GeolocationOptions} from "@ionic-native/geolocation";
-import {LearnplaceEntity} from "../../entity/learnplace.entity";
-import {NoSuchElementError} from "../../../error/errors";
-import {Coordinates} from "../../../services/geodesy";
-import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {isDefined} from "ionic-angular/es2015/util/util";
-import {Subscription} from "rxjs/Subscription";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+/** ionic-native */
+import {Geolocation} from "@ionic-native/geolocation/ngx";
+/** services */
+import {Coordinates} from "../../../services/geodesy";
+/** providers */
+import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
+/** entries */
+import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {UserEntity} from "../../../entity/user.entity";
-import {Logger} from "../../../services/logging/logging.api";
-import {Logging} from "../../../services/logging/logging.service";
-import {Platform} from "ionic-angular";
+import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+/** rxjs */
 import {Observable} from "rxjs/Observable";
 import {Subscriber} from "rxjs/Subscriber";
+import {Subscription} from "rxjs/Subscription";
+/** logging */
+import {Logger} from "../../../services/logging/logging.api";
+import {Logging} from "../../../services/logging/logging.service";
+/** misc */
+import {NoSuchElementError} from "../../../error/errors";
+import {VisibilityAware} from "./visibility.context";
 
 /**
  * Enumerator for available strategies.
@@ -91,7 +98,9 @@ export interface MembershipAwareStrategy extends VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class AlwaysStrategy implements VisibilityStrategy {
 
   /**
@@ -117,7 +126,9 @@ export class AlwaysStrategy implements VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class NeverStrategy implements VisibilityStrategy {
 
   /**
@@ -144,7 +155,9 @@ export class NeverStrategy implements VisibilityStrategy {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
   private membershipId: string = "";
@@ -220,7 +233,9 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, ShutdownVisibilityStrategy {
 
   private membershipId: string = "";

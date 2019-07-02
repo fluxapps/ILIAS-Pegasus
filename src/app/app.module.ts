@@ -6,7 +6,7 @@ import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/c
 import {HttpModule} from "@angular/http";
 import {BrowserModule} from "@angular/platform-browser";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-/** ngx */
+/** ionic-native */
 import {Diagnostic} from "@ionic-native/diagnostic/ngx";
 import {File} from "@ionic-native/file/ngx";
 import {Geolocation} from "@ionic-native/geolocation/ngx";

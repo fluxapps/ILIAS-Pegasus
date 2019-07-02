@@ -1,7 +1,10 @@
-import {VisibilityAware} from "./visibility/visibility.context";
+/** angular */
 import {SafeHtml} from "@angular/platform-browser";
-import {Observable} from "rxjs/Observable";
+/** visibilities */
+import {VisibilityAware} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+/** misc */
+import {Observable} from "rxjs/Observable";
 
 /**
  * Contains information to display a map.

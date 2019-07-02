@@ -1,10 +1,15 @@
-import {
-  AfterVisitPlaceStrategy,
-  AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy, VisibilityStrategy,
-  VisibilityStrategyType
-} from "./visibility.strategy";
+/** angular */
 import {Injectable} from "@angular/core";
 import {isUndefined} from "ionic-angular/es2015/util/util";
+/** misc */
+import {
+    AfterVisitPlaceStrategy,
+    AlwaysStrategy,
+    NeverStrategy,
+    OnlyAtPlaceStrategy,
+    VisibilityStrategy,
+    VisibilityStrategyType
+} from "./visibility.strategy";
 import {IllegalStateError} from "../../../error/errors";
 import {Observable} from "rxjs/Observable";
 
@@ -24,7 +29,9 @@ export interface VisibilityAware {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VisibilityStrategyApplier {
 
   private learnplaceId: string | undefined;

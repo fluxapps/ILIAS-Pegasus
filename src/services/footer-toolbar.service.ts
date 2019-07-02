@@ -1,10 +1,12 @@
+/** angular */
 import {Injectable} from "@angular/core";
-import {DownloadProgress} from "./file.service";
-import {Log} from "./log.service";
+/** logging */
 import {Logger} from "./logging/logging.api";
 import {Logging} from "./logging/logging.service";
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class FooterToolbarService {
 
     private log: Logger = Logging.getLogger(FooterToolbarService.name);

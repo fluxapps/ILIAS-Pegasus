@@ -1,4 +1,4 @@
-import {SQLite, SQLiteDatabaseConfig, SQLiteObject} from "@ionic-native/sqlite";
+import {SQLite, SQLiteDatabaseConfig, SQLiteObject} from "@ionic-native/sqlite/ngx";
 import {Log} from "./log.service";
 
 export interface DatabaseService {

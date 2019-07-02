@@ -1,21 +1,27 @@
+/** angular */
 import {Injectable, Inject} from "@angular/core";
 import {Events, Platform} from "ionic-angular";
-import {isNullOrUndefined} from "util";
-import {IllegalStateError} from "../error/errors";
-import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
+/** ionic-native */
+import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file/ngx";
+import {TranslateService} from "@ngx-translate/core";
+import {Network} from "@ionic-native/network/ngx";
+/** models */
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file";
 import {FileData} from "../models/file-data";
 import {Log} from "./log.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
 import {Settings} from "../models/settings";
+/** errors and exceptions */
+import {IllegalStateError} from "../error/errors";
 import {CantOpenFileTypeException} from "../exceptions/CantOpenFileTypeException";
 import {NoWLANException} from "../exceptions/noWLANException";
-import {Network} from "@ionic-native/network"
+/** logging */
 import {Logger} from "./logging/logging.api";
 import {Logging} from "./logging/logging.service";
+/** misc */
+import {isNullOrUndefined} from "util";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -24,7 +30,9 @@ export interface DownloadProgress {
     percentCompleted: number;
 }
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class FileService {
 
     private log: Logger = Logging.getLogger(FileService.name);
@@ -116,7 +124,7 @@ export class FileService {
      * @returns {Promise<FileEntry>}
      */
     existsFile(fileObject: ILIASObject): Promise<FileEntry> {
-        return new Promise((resolve: Resolve<FileEntry>, reject: (error: FileError|Error) => void): void => {
+        return new Promise((resolve: any, reject: (error: FileError|Error) => void): void => {
             User.find(fileObject.userId).then(user => {
                 const storageLocation: string = this.getStorageLocation(user, fileObject);
                 if (!window["resolveLocalFileSystemURL"]) {
@@ -229,7 +237,7 @@ export class FileService {
 
     private async openExistingAndroid(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
       this.log.debug(() => `Opening file on Android: ${fileEntry.fullPath}`);
-      window["cordova"].plugins.fileOpener2.open(
+      cordova.plugins["fileOpener2"].open(
         fileEntry.toURL(),
         fileObject.data.fileType,
         {

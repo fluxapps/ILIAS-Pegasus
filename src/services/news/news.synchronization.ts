@@ -1,7 +1,9 @@
-
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+/** providers */
 import {NEWS_REST, NewsItem, NewsRest} from "../../providers/ilias/news.rest";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+/** misc */
 import {NewsEntity} from "../../entity/news.entity";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
@@ -29,14 +31,16 @@ export const NEWS_SYNCHRONIZATION: InjectionToken<NewsSynchronization> = new Inj
  *
  * @author nschaefli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class NewsSynchronizationImpl implements NewsSynchronization {
 
 
   constructor(
     @Inject(NEWS_REST)        private readonly newsRest: NewsRest,
     @Inject(USER_REPOSITORY)  private readonly userRepository: UserRepository
-  ){}
+  ) {}
 
   /**
    * Synchronize the personal ILIAS news of the current authenticated user.

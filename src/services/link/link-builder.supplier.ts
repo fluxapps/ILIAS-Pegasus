@@ -1,12 +1,16 @@
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+/** providers */
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
+/** errors and exceptions */
+import {NoSuchElementError} from "../../error/errors";
+import {RESTAPIException} from "../../exceptions/RESTAPIException";
+/** misc */
+import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
 import {Optional} from "../../util/util.optional";
-import {NoSuchElementError} from "../../error/errors";
-import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
-import {User} from "../../models/user";
-import {RESTAPIException} from "../../exceptions/RESTAPIException";
 
 /**
  * The installation news supplier, supplies the currently used ILIAS installation
@@ -55,7 +59,9 @@ export const TOKEN_SUPPLIER: InjectionToken<TokenSupplier> = new InjectionToken(
  *
  * @author Nicolas Schäfli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
 
   constructor(
@@ -87,7 +93,9 @@ export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
  *
  * @author Nicolas Schäfli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class AuthTokenSupplier implements TokenSupplier {
 
   constructor(private readonly restProvider: ILIASRestProvider

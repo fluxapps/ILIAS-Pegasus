@@ -1,19 +1,25 @@
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
+/** ionic-native */
+import {Geolocation} from "@ionic-native/geolocation/ngx";
+/** providers */
 import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../providers/repository/visitjournal.repository";
-import {VisitJournalEntity} from "../entity/visit-journal.entity";
-import {Logger} from "../../services/logging/logging.api";
-import {Logging} from "../../services/logging/logging.service";
-import {LocationWatch} from "../../services/location";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
-import {Geolocation, Geoposition} from "@ionic-native/geolocation";
-import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
-import {IllegalStateError, NoSuchElementError} from "../../error/errors";
+/** services */
+import {LocationWatch} from "../../services/location";
 import {Coordinates} from "../../services/geodesy";
-import {Subscription} from "rxjs/Subscription";
+/** entries */
+import {VisitJournalEntity} from "../entity/visit-journal.entity";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
+/** logging */
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {IllegalStateError} from "../../error/errors";
 import {Observable} from "rxjs/Observable";
 
 /**
@@ -38,7 +44,9 @@ export const VISIT_JOURNAL_SYNCHRONIZATION: InjectionToken<VisitJournalSynchroni
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VisitJournalSynchronizationImpl implements VisitJournalSynchronization {
 
     private readonly log: Logger = Logging.getLogger(VisitJournalSynchronizationImpl.name);
@@ -104,7 +112,9 @@ export const VISIT_JOURNAL_WATCH: InjectionToken<VisitJournalWatch> = new Inject
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
     private learnplaceObjectId: number | undefined = undefined;

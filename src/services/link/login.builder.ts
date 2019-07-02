@@ -1,4 +1,3 @@
-
 import {Builder} from "../builder.base";
 import {Injectable, InjectionToken} from "@angular/core";
 import {IllegalStateError} from "../../error/errors";
@@ -30,7 +29,9 @@ export interface LoginLinkBuilder extends Builder<string> {
 
 export const LOGIN_LINK_BUILDER: InjectionToken<() => LoginLinkBuilder> = new InjectionToken("token for login link builder factory");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LoginLinkBuilderImpl implements LoginLinkBuilder {
 
   private installationUrl: string = "";

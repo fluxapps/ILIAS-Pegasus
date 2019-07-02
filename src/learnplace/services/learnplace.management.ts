@@ -1,12 +1,16 @@
+/** angular */
 import {InjectionToken, Inject, Injectable} from "@angular/core";
-import {IOError} from "../../error/errors";
+/** ionic-native */
+import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
+/** services */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
+/** entries */
 import {PictureBlockEntity} from "../entity/pictureBlock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
+/** misc */
+import {IOError} from "../../error/errors";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {DirectoryEntry, File, Flags, IWriteOptions, FileWriter, FileEntry, FileError, RemoveResult} from "@ionic-native/file";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
 
 /**
@@ -49,7 +53,9 @@ export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new Injecti
  * @author nschaefli <ns@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LearnplaceManagerImpl implements LearnplaceManager{
 
     private log: Logger = Logging.getLogger(LearnplaceManagerImpl.name);

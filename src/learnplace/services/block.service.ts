@@ -1,22 +1,32 @@
-import {
-    AccordionBlockModel, BlockModel, LinkBlockModel, PictureBlockModel, TextBlockModel,
-    VideoBlockModel
-} from "./block.model";
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {VisibilityStrategyApplier} from "./visibility/visibility.context";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
-import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {DomSanitizer} from "@angular/platform-browser";
+/** providers */
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+/** entries */
+import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {AccordionEntity} from "../entity/accordion.entity";
 import {TextblockEntity} from "../entity/textblock.entity";
 import {PictureBlockEntity} from "../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../entity/linkblock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
-import {Observable} from "rxjs/Observable";
-import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+/** visibilities */
+import {VisibilityStrategyApplier} from "./visibility/visibility.context";
+import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+/** logging */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {
+    AccordionBlockModel,
+    BlockModel,
+    LinkBlockModel,
+    PictureBlockModel,
+    TextBlockModel,
+    VideoBlockModel
+} from "./block.model";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
@@ -56,7 +66,9 @@ export const BLOCK_SERVICE: InjectionToken<BlockService> = new InjectionToken<Bl
  * @author nmaerchy <nm@studer-raimann.ch>
  * @since 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VisibilityManagedBlockService implements BlockService {
 
     private readonly log: Logger = Logging.getLogger(VisibilityManagedBlockService.name);
@@ -94,7 +106,7 @@ export class VisibilityManagedBlockService implements BlockService {
 
             this.log.trace(() => `Map blocks of learnplace: id=${it.id}`);
 
-            return Observable.combineLatest<BlockModel>(
+            return Observable.combineLatest<Array<BlockModel>>(
                 ...this.mapTextblocks(it.textBlocks),
                 ...this.mapPictureBlocks(it.pictureBlocks),
                 ...this.mapLinkBlocks(it.linkBlocks),
@@ -152,7 +164,7 @@ export class VisibilityManagedBlockService implements BlockService {
         return accordionBlockList
             .map(accordion => {
 
-                const blockList: Observable<Array<BlockModel>> = Observable.combineLatest<BlockModel>(
+                const blockList: Observable<Array<BlockModel>> = Observable.combineLatest<Array<BlockModel>>(
                     ...this.mapTextblocks(accordion.textBlocks),
                     ...this.mapPictureBlocks(accordion.pictureBlocks),
                     ...this.mapLinkBlocks(accordion.linkBlocks),

@@ -1,30 +1,39 @@
+/** angular */
+import {Inject, Injectable, InjectionToken} from "@angular/core";
+import {isDefined} from "ionic-angular/es2015/util/util";
+/** providers */
 import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
 import {BlockObject, JournalEntry, LearnPlace} from "../../providers/rest/learnplace.pojo";
+import {HttpRequestError, UnfinishedHttpRequestError} from "../../../providers/http";
+import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
+/** entries */
+import {VisibilityEntity} from "../../entity/visibility.entity";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {LocationEntity} from "../../entity/location.entity";
 import {MapEntity} from "../../entity/map.entity";
-import {Logging} from "../../../services/logging/logging.service";
-import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {VisibilityEntity} from "../../entity/visibility.entity";
-import {Logger} from "../../../services/logging/logging.api";
-import {Optional} from "../../../util/util.optional";
-import {HttpRequestError, UnfinishedHttpRequestError} from "../../../providers/http";
-import {
-    AccordionMapper, LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper,
-    VisitJournalMapper
-} from "./mappers";
-import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
-import {UserEntity} from "../../../entity/user.entity";
-import {Observable} from "rxjs/Observable";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {TextblockEntity} from "../../entity/textblock.entity";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {AccordionEntity} from "../../entity/accordion.entity";
-import {isDefined} from "ionic-angular/es2015/util/util";
+/** logging */
+import {Logging} from "../../../services/logging/logging.service";
+import {Logger} from "../../../services/logging/logging.api";
+/** misc */
 import uuid from "uuid-js";
+import {Optional} from "../../../util/util.optional";
+import {
+    AccordionMapper,
+    LinkBlockMapper,
+    PictureBlockMapper,
+    TextBlockMapper,
+    VideoBlockMapper,
+    VisitJournalMapper
+} from "./mappers";
+import {UserEntity} from "../../../entity/user.entity";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Describes a loader for a single learnplace.
@@ -54,7 +63,9 @@ export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new Injection
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.5.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class RestLearnplaceLoader implements LearnplaceLoader {
 
     private readonly log: Logger = Logging.getLogger(RestLearnplaceLoader.name);

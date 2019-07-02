@@ -1,11 +1,15 @@
-import {MapModel} from "./block.model";
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+/** visibilities */
 import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
+/** providers */
+import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
+/** misc */
+import {MapModel} from "./block.model";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {Observable} from "rxjs/Observable";
-import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 
 /**
  * Describes a service to operate with Maps.
@@ -37,7 +41,9 @@ export const MAP_SERVICE: InjectionToken<MapService> = new InjectionToken("token
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.2.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VisibilityManagedMapService implements MapService {
 
   constructor(

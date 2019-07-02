@@ -1,18 +1,26 @@
-import {Connection, getConnection, QueryRunner} from "typeorm";
+/** angular */
 import {Inject, Injectable} from "@angular/core";
-import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
+/** migration */
 import {
-  DBMigration, Migration, MIGRATION_SUPPLIER, MigrationError, MigrationSupplier,
-  MigrationVersion
+    DBMigration,
+    Migration,
+    MIGRATION_SUPPLIER,
+    MigrationError,
+    MigrationSupplier,
+    MigrationVersion
 } from "./migration.api";
 import {InitDatabase} from "../../migrations/V__1-init-database";
 import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
-import {Logger} from "../logging/logging.api";
-import {Logging} from "../logging/logging.service";
 import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
 import {CreateNews} from "../../migrations/V__4-create-news-shema";
 import {UpdateUserSettingsSyncSchema} from "../../migrations/V__5-update-user-settings-sync-schema";
 import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-and-favorites";
+/** logging */
+import {Logger} from "../logging/logging.api";
+import {Logging} from "../logging/logging.service";
+/** misc */
+import {Connection, getConnection, QueryRunner} from "typeorm";
+import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
 
 /**
  * DB Migration with TypeORM.
@@ -20,7 +28,9 @@ import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TypeOrmDbMigration implements DBMigration {
 
   private readonly log: Logger = Logging.getLogger(TypeOrmDbMigration.name);
@@ -111,7 +121,9 @@ export class TypeOrmDbMigration implements DBMigration {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class SimpleMigrationSupplier implements MigrationSupplier {
 
   /**

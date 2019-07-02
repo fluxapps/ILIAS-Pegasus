@@ -1,23 +1,31 @@
-import {TextblockEntity} from "../../entity/textblock.entity";
-import {
-  AccordionBlock, ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
-  VideoBlock
-} from "../../providers/rest/learnplace.pojo";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
-import {isNullOrUndefined} from "util";
-import {VisibilityEntity} from "../../entity/visibility.entity";
-import {Optional} from "../../../util/util.optional";
+/** angular */
 import {Inject, Injectable} from "@angular/core";
+import {isUndefined} from "ionic-angular/es2015/util/util";
+/** ionic-native */
+import {File} from "@ionic-native/file/ngx";
+/** entry */
+import {TextblockEntity} from "../../entity/textblock.entity";
+import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
+import {VisibilityEntity} from "../../entity/visibility.entity";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
-import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder, RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
+import {AccordionEntity} from "../../entity/accordion.entity";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {File} from "@ionic-native/file";
-import {Platform} from "ionic-angular";
-import {isUndefined} from "ionic-angular/es2015/util/util";
-import {AccordionEntity} from "../../entity/accordion.entity";
+/** misc */
+import {isNullOrUndefined} from "util";
+import {Optional} from "../../../util/util.optional";
+import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder, RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
+import {
+    AccordionBlock,
+    ILIASLinkBlock,
+    JournalEntry,
+    PictureBlock,
+    TextBlock,
+    VideoBlock
+} from "../../providers/rest/learnplace.pojo";
 
 /**
  * Describes a mapper for an array.
@@ -54,7 +62,9 @@ export interface ArrayMapper<K, T> {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> {
 
   private readonly log: Logger = Logging.getLogger(TextBlockMapper.name);
@@ -94,7 +104,9 @@ export class TextBlockMapper implements ArrayMapper<TextblockEntity, TextBlock> 
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, PictureBlock> {
 
   private readonly log: Logger = Logging.getLogger(PictureBlockMapper.name);
@@ -180,7 +192,9 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBlock> {
 
   private readonly log: Logger = Logging.getLogger(LinkBlockMapper.name);
@@ -220,7 +234,9 @@ export class LinkBlockMapper implements ArrayMapper<LinkblockEntity, ILIASLinkBl
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBlock> {
 
   private readonly log: Logger = Logging.getLogger(VideoBlockMapper.name);
@@ -295,7 +311,9 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBlock> {
 
   private readonly log: Logger = Logging.getLogger(AccordionMapper.name);
@@ -356,7 +374,9 @@ export class AccordionMapper implements ArrayMapper<AccordionEntity, AccordionBl
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class VisitJournalMapper implements ArrayMapper<VisitJournalEntity, JournalEntry> {
 
   private readonly log: Logger = Logging.getLogger(VisitJournalMapper.name);

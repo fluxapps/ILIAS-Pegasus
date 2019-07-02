@@ -1,4 +1,3 @@
-
 /**
  * Describes an object, that watches the location of the device
  * and performs a specific task when the location changes.

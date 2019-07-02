@@ -32,7 +32,9 @@ export const DATABASE_CONFIGURATION_ADAPTER: InjectionToken<DatabaseConfiguratio
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class DatabaseConnectionRegistry {
 
   private readonly connections: Map<string, DatabaseOptions> = new Map();

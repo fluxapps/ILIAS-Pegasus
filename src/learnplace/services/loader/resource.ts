@@ -1,14 +1,17 @@
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {DirectoryEntry, File, Flags} from "@ionic-native/file";
 import {Platform} from "ionic-angular";
-import {UserEntity} from "../../../entity/user.entity";
+/** ionic-native */
+import {DirectoryEntry, File, Flags} from "@ionic-native/file/ngx";
+/** providers */
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../../providers/file-transfer/file-download";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
-import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-
-
+/** misc */
+import {UserEntity} from "../../../entity/user.entity";
+import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 
 /**
  * Builds directory paths for learnplaces.
@@ -38,7 +41,9 @@ export interface LearnplacePathBuilder {
 
 export const LEARNPLACE_PATH_BUILDER: InjectionToken<LearnplacePathBuilder> = new InjectionToken("token for learnplace path builder");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LearnplacePathBuilderImpl implements LearnplacePathBuilder {
 
     private readonly log: Logger = Logging.getLogger(LearnplacePathBuilderImpl.name);
@@ -118,7 +123,9 @@ export const RESOURCE_TRANSFER: InjectionToken<string> = new InjectionToken("tok
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class HttpResourceTransfer implements ResourceTransfer {
 
   private readonly log: Logger = Logging.getLogger(HttpResourceTransfer.name);

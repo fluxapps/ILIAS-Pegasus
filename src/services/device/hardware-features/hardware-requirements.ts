@@ -1,11 +1,14 @@
-import {HardwareFeature, HardwareRequirement} from "./hardware-feature.service";
+/** angular */
 import {Modal, ModalController} from "ionic-angular";
-import {DiagnosticUtil} from "./diagnostics.util";
+/** screens */
 import {LocationFallbackScreen} from "../../../app/fallback/location/location-fallback.component";
-import {LocationAccessError, RoamingAccessError, WifiAccessError} from "./hardware-access.errors";
 import {WifiFallbackScreen} from "../../../app/fallback/wifi/wifi-fallback.component";
 import {RoamingFallbackScreen} from "../../../app/fallback/roaming/roaming-fallback.component";
+/** misc */
 import {Optional} from "../../../util/util.optional";
+import {HardwareFeature, HardwareRequirement} from "./hardware-feature.service";
+import {DiagnosticUtil} from "./diagnostics.util";
+import {LocationAccessError, RoamingAccessError, WifiAccessError} from "./hardware-access.errors";
 
 /**
  * Implements parts of a {@link HardwareRequirement} that are exactly the same across all specific requirements.

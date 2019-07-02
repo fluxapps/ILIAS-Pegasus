@@ -1,5 +1,7 @@
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {SafeHtml, DomSanitizer} from "@angular/platform-browser";
+/** misc */
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
@@ -41,7 +43,9 @@ export class NewsItemModel {
  *
  * @author nschaefli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class NewsFeedImpl implements NewsFeed {
 
   private static readonly UNIX_TIME_MULTIPLIER_MILIS: number = 1000;

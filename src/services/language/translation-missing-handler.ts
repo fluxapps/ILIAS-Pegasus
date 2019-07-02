@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {MissingTranslationHandler, MissingTranslationHandlerParams} from "ng2-translate";
+import {MissingTranslationHandler, MissingTranslationHandlerParams} from "@ngx-translate/core";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 
@@ -16,7 +16,9 @@ import {Logging} from "../logging/logging.service";
  * @version 1.0.0
  * @since v2.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class PegasusMissingTranslationHandler extends MissingTranslationHandler {
 
     private static readonly OBJECT_TYPE_KEY: string = "object_type.";

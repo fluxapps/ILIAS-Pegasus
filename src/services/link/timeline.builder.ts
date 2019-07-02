@@ -21,7 +21,9 @@ export const TIMELINE_LINK_BUILDER: InjectionToken<() => TimelineLinkBuilder> = 
  *
  * @author Nicolas Schäfli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TimelineLinkBuilderImpl implements TimelineLinkBuilder {
 
   private refId: number = -1;

@@ -1,5 +1,6 @@
-
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+/** builders */
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder} from "./default.builder";
 import {TIMELINE_LINK_BUILDER, TimelineLinkBuilder} from "./timeline.builder";
 import {NEWS_LINK_BUILDER, NewsLinkBuilder} from "./news.builder";
@@ -62,7 +63,9 @@ export interface LinkBuilder {
 
 export const LINK_BUILDER: InjectionToken<LinkBuilder> = new InjectionToken("token for loading link builder");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LinkBuilderImpl implements LinkBuilder {
 
   constructor(

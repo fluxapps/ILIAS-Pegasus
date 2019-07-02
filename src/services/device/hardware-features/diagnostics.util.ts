@@ -1,8 +1,11 @@
+/** angular */
+import {Platform} from "ionic-angular";
+import {Injectable} from "@angular/core";
+/** ionic-native */
+import {Diagnostic} from "@ionic-native/diagnostic/ngx";
+/** logging */
 import {Logger} from "../../logging/logging.api";
 import {Logging} from "../../logging/logging.service";
-import {Platform} from "ionic-angular";
-import {Diagnostic} from "@ionic-native/diagnostic";
-import {Injectable} from "@angular/core";
 
 /**
  * Utils class to check hardware features with {@link Diagnostic}.
@@ -10,7 +13,9 @@ import {Injectable} from "@angular/core";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class DiagnosticUtil {
 
   private readonly log: Logger = Logging.getLogger(DiagnosticUtil.name);

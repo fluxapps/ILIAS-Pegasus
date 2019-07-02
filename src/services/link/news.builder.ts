@@ -4,6 +4,7 @@ import {INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, TOKEN_SUPPLIER, To
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {IllegalStateError, NoSuchElementError} from "../../error/errors";
 import {UserEntity} from "../../entity/user.entity";
+/** logging */
 import {Logging} from "../logging/logging.service";
 import {Logger} from "../logging/logging.api";
 
@@ -37,7 +38,9 @@ export interface NewsLinkBuilder extends Builder<Promise<string>> {
 
 export const NEWS_LINK_BUILDER: InjectionToken<() => NewsLinkBuilder> = new InjectionToken("token for news link builder factory");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class NewsLinkBuilderImpl implements NewsLinkBuilder {
 
   private readonly log: Logger = Logging.getLogger(NewsLinkBuilderImpl.name);

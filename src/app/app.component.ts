@@ -1,7 +1,7 @@
 /** angular */
 import {Component, Inject, ViewChild} from "@angular/core";
 import {Config, Events, MenuController, ModalController, Nav, Platform, Toast, ToastController, ToastOptions} from "ionic-angular";
-/** ngx */
+/** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import {SQLite} from "@ionic-native/sqlite/ngx";

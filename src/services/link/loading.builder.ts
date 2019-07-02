@@ -1,4 +1,3 @@
-
 import {Builder} from "../builder.base";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier} from "./link-builder.supplier";
@@ -14,7 +13,9 @@ export interface LoadingLinkBuilder extends Builder<Promise<string>> {
 
 export const LOADING_LINK_BUILDER: InjectionToken<() => LoadingLinkBuilder> = new InjectionToken("token for loading link builder factory");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class LoadingLinkBuilderImpl implements LoadingLinkBuilder {
 
   constructor(

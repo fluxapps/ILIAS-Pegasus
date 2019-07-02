@@ -4,7 +4,6 @@
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-import {isDefined} from "ionic-angular/es2015/util/util";
 import {isDevMode} from "../../app/devmode";
 
 export interface Logger {

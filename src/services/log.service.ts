@@ -3,7 +3,9 @@ import {Injectable} from "@angular/core";
 /**
  * @deprecated Use Logging.getLogger instead.
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class Log {
 
     static debug: boolean = false;

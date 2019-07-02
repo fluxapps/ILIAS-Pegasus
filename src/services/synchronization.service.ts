@@ -1,22 +1,24 @@
+/** angular */
 import {Inject, Injectable} from "@angular/core";
-import {ILIASObject} from "../models/ilias-object";
-import {DataProvider} from "../providers/data-provider.provider";
-import {User} from "../models/user";
+import {Events} from "ionic-angular";
+/** services */
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
-import {Events} from "ionic-angular";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {Log} from "./log.service";
-import {FileData} from "../models/file-data";
-import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
-import {
-  VISIT_JOURNAL_SYNCHRONIZATION,
-  VisitJournalSynchronization
-} from "../learnplace/services/visitjournal.service";
+import {TranslateService} from "@ngx-translate/core";
+import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {Observable} from "rxjs/Observable";
+/** models */
 import {Favorites} from "../models/favorites";
+import {FileData} from "../models/file-data";
+import {User} from "../models/user";
+import {ILIASObject} from "../models/ilias-object";
+/** logging */
+import {Log} from "./log.service";
+/** misc */
+import {DataProvider} from "../providers/data-provider.provider";
+import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
+import {Observable} from "rxjs/Observable";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -25,11 +27,13 @@ export interface SynchronizationState {
 }
 interface SyncEntry {
     object: ILIASObject,
-    resolver: Resolve<SyncResults>,
-    rejecter: Reject<Error>
+    resolver: any,
+    rejecter: any
 }
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class SynchronizationService {
 
     static state: SynchronizationState = {
@@ -161,8 +165,8 @@ export class SynchronizationService {
         console.log("method - loadOfflineObjectRecursive");
         await iliasObject.setIsFavorite(2);
         if(SynchronizationService.state.recursiveSyncRunning) {
-            let resolver;
-            let rejecter;
+            let resolver: any;
+            let rejecter: any;
             const promise: Promise<SyncResults> = new Promise((resolve, reject) => {
                 resolver = resolve;
                 rejecter = reject;
@@ -321,7 +325,7 @@ export class SynchronizationService {
      */
     protected checkForFileDownloads(iliasObjects: Array<ILIASObject>): Promise<SyncResults> {
         const fileDownloads: Array<Promise<void>> = [];
-        return new Promise((resolve: Resolve<SyncResults>, reject: Reject<Error>) => {
+        return new Promise((resolve: any, reject: any) => {
             this.user.settings.then(settings => {
                 FileData.getTotalDiskSpace().then(space => {
 
@@ -365,7 +369,7 @@ export class SynchronizationService {
                     // we execute the file downloads
                     const executeDownloads: Array<Promise<any>> = this.executeFileDownloads(downloads);
                     for(let i: number = 0; i < downloads.length; i++) {
-                        fileDownloads.push(new Promise((resolve: Resolve<void>, reject: Reject<Error>) => {
+                        fileDownloads.push(new Promise((resolve: any, reject: any) => {
                             executeDownloads[i].then(() => {
                                 resolve();
                             }).catch(error => {

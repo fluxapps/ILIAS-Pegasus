@@ -1,6 +1,8 @@
-import {HardwareAccessError} from "./hardware-access.errors";
+/** angular */
 import {Injectable} from "@angular/core";
 import {ModalController} from "ionic-angular";
+/** misc */
+import {HardwareAccessError} from "./hardware-access.errors";
 import {DiagnosticUtil} from "./diagnostics.util";
 import {LocationRequirement, RoamingRequirement, WifiRequirement} from "./hardware-requirements";
 
@@ -11,7 +13,9 @@ import {LocationRequirement, RoamingRequirement, WifiRequirement} from "./hardwa
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 0.0.2
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class Hardware {
 
   constructor(

@@ -1,12 +1,17 @@
-import {createConnection} from "typeorm";
+/** angular */
 import {Inject, Injectable} from "@angular/core";
+/** logging */
+import {Logger} from "../logging/logging.api";
+import {Logging} from "../logging/logging.service";
+/** misc */
+import {createConnection} from "typeorm";
 import {
-    DATABASE_CONFIGURATION_ADAPTER, DatabaseBootstraper, DatabaseConfigurationAdapter, DatabaseConnectionRegistry,
+    DATABASE_CONFIGURATION_ADAPTER,
+    DatabaseConfigurationAdapter,
+    DatabaseConnectionRegistry,
     DatabaseOptions,
     DEFAULT_CONNECTION_NAME
 } from "./database.api";
-import {Logger} from "../logging/logging.api";
-import {Logging} from "../logging/logging.service";
 
 /**
  * The Database can be used to get information about a certain connection.
@@ -14,7 +19,9 @@ import {Logging} from "../logging/logging.service";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.1.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class Database {
 
     private readonly readyConnections: Array<string> = [];

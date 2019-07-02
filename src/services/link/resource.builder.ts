@@ -24,7 +24,9 @@ export interface ResourceLinkBuilder extends Builder<Promise<string>>{
 
 export const RESOURCE_LINK_BUILDER: InjectionToken<() => ResourceLinkBuilder> = new InjectionToken("token for the resource link builder factory");
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class ResourceLinkBuilderImpl implements ResourceLinkBuilder {
 
   private path: string = "";
