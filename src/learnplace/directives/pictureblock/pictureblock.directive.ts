@@ -1,11 +1,15 @@
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {PictureBlockModel} from "../../services/block.model";
-import {Platform} from "ionic-angular";
-import {File} from "@ionic-native/file";
-import {PhotoViewer, PhotoViewerOptions} from "@ionic-native/photo-viewer";
+/** angular */
+import {Component, Input, OnInit} from "@angular/core";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {Platform} from "ionic-angular";
+/** ionic-native */
+import {File} from "@ionic-native/file/ngx";
+import {PhotoViewer, PhotoViewerOptions} from "@ionic-native/photo-viewer/ngx";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+/** misc */
+import {PictureBlockModel} from "../../services/block.model";
 
 @Component({
     selector: "picture-block",

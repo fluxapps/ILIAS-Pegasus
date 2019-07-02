@@ -14,7 +14,9 @@ import {FileService} from "../../services/file.service";
 
 
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class DataProviderFileObjectHandler implements DataProviderILIASObjectHandler {
 
     constructor(protected rest: ILIASRestProvider,

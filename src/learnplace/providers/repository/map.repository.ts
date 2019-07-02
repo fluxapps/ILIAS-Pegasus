@@ -34,7 +34,9 @@ export interface MapRepository extends CRUDRepository<MapEntity, number> {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TypeORMMapRepository extends AbstractCRUDRepository<MapEntity, number> implements MapRepository {
 
   constructor(database: Database) {

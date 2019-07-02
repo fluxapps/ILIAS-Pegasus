@@ -1,20 +1,25 @@
+/** angular */
 import {ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
-import {LinkBlockModel} from "../../services/block.model";
+import {isDefined} from "ionic-angular/es2015/util/util";
+/** services */
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
+import {Builder} from "../../../services/builder.base";
+import {LinkBlockModel} from "../../services/block.model";
+/** actions */
 import {
     OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
     OpenObjectInILIASAction
 } from "../../../actions/open-object-in-ilias-action";
-import {Builder} from "../../../services/builder.base";
 import {ILIASObjectAction} from "../../../actions/object-action";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {User} from "../../../models/user";
-import {ILIASObject} from "../../../models/ilias-object";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {Observable} from "rxjs/Observable";
+/** models */
+import {User} from "../../../models/user";
+import {ILIASObject} from "../../../models/ilias-object";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 import {Subscription} from "rxjs/Subscription";
-import {isDefined} from "ionic-angular/es2015/util/util";
 
 @Component({
     selector: "link-block",

@@ -1,10 +1,12 @@
-import {ILIASObject} from "../models/ilias-object";
+/** presenters */
 import {ILIASObjectPresenter, GenericILIASObjectPresenter} from "./object-presenter";
 import {CourseObjectPresenter} from "./course-presenter";
 import {FolderObjectPresenter} from "./folder-presenter";
 import {GroupObjectPresenter} from "./group-presenter";
 import {FileObjectPresenter} from "./file-presenter";
 import {LearnplaceObjectPresenter} from "./learnplace-presenter";
+/** misc */
+import {ILIASObject} from "../models/ilias-object";
 
 export class ILIASObjectPresenterFactory {
     static instance(object: ILIASObject): ILIASObjectPresenter {

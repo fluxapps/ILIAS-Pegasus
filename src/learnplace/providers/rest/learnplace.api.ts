@@ -68,7 +68,9 @@ export const LEARNPLACE_API: InjectionToken<LearnplaceAPI> = new InjectionToken(
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class ILIASLearnplaceAPI implements LearnplaceAPI {
 
   private log: Logger = Logging.getLogger(ILIASLearnplaceAPI.name);

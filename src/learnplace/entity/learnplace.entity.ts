@@ -1,10 +1,4 @@
-import {LocationEntity} from "./location.entity";
-import {MapEntity} from "./map.entity";
-import {
-    Column,
-    Entity, JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToMany, OneToOne, PrimaryColumn,
-    RelationOptions
-} from "typeorm";
+/** entries */
 import {TextblockEntity} from "./textblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
 import {LinkblockEntity} from "./linkblock.entity";
@@ -12,6 +6,22 @@ import {VideoBlockEntity} from "./videoblock.entity";
 import {VisitJournalEntity} from "./visit-journal.entity";
 import {AccordionEntity} from "./accordion.entity";
 import {UserEntity} from "../../entity/user.entity";
+import {LocationEntity} from "./location.entity";
+import {MapEntity} from "./map.entity";
+/** misc */
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinColumnOptions,
+    JoinTable,
+    JoinTableOptions,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+    RelationOptions
+} from "typeorm";
 
 @Entity("Learnplace")
 export class LearnplaceEntity {

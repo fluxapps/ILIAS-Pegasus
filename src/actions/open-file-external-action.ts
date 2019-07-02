@@ -1,8 +1,6 @@
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionNoMessage} from "./object-action";
 import {FileService} from "../services/file.service";
-import {ILIASObjectActionResult} from "./object-action";
-import {ILIASObjectActionNoMessage} from "./object-action";
 
 export class OpenFileExternalAction extends ILIASObjectAction {
 

@@ -1,5 +1,4 @@
-import {Column, Entity, ManyToMany, PrimaryColumn, RelationOptions} from "typeorm";
-import {UserEntity} from "./user.entity";
+import {Column, Entity, PrimaryColumn} from "typeorm";
 
 @Entity("News")
 export class NewsEntity {

@@ -1,5 +1,6 @@
+/** angular */
 import {Injectable} from "@angular/core";
-import {isDevMode} from "../app/devmode";
+/** entries */
 import {NewsEntity} from "../entity/news.entity";
 import {UserEntity} from "../entity/user.entity";
 import {AccordionEntity} from "../learnplace/entity/accordion.entity";
@@ -12,6 +13,8 @@ import {TextblockEntity} from "../learnplace/entity/textblock.entity";
 import {VideoBlockEntity} from "../learnplace/entity/videoblock.entity";
 import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
 import {VisitJournalEntity} from "../learnplace/entity/visit-journal.entity";
+/** misc */
+import {isDevMode} from "../app/devmode";
 import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";
 
 export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
@@ -22,7 +25,9 @@ export const PEGASUS_CONNECTION_NAME: string = "ilias-pegasus";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter {
 
     /**

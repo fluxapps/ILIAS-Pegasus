@@ -1,15 +1,21 @@
+/** angular */
+import {Alert, AlertController} from "ionic-angular";
+/** models */
+import {Settings} from "../models/settings";
 import {ILIASObject} from "../models/ilias-object";
 import {
-  ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionSuccess, ILIASObjectActionNoMessage
+    ILIASObjectAction,
+    ILIASObjectActionAlert,
+    ILIASObjectActionResult,
+    ILIASObjectActionSuccess,
+    ILIASObjectActionNoMessage
 } from "./object-action";
-import {FileService} from "../services/file.service";
+/** logging */
 import {Log} from "../services/log.service";
-import {TranslateService} from "ng2-translate/ng2-translate";
-import {Alert, AlertController} from "ionic-angular";
-import {Settings} from "../models/settings";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 import {OfflineException} from "../exceptions/OfflineException";
-import {FileErrorException} from "../exceptions/FileErrorException";
-import {FileError} from "@ionic-native/file";
+import {FileService} from "../services/file.service";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
@@ -39,7 +45,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
     }
 
     private checkWLANAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
+        return new Promise((resolve, reject): void => {
             if (settings.shouldntDownloadBecauseOfWLAN()) {
                 const alert: Alert = this.alerter.create({
                     title: this.translate.instant("actions.download_without_wlan"),
@@ -74,7 +80,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
      * @returns {Promise<T>}
      */
     checkExceedDiskQuota(settings: Settings): Promise<ILIASObjectActionNoMessage> {
-        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
+        return new Promise((resolve, reject): void => {
             settings.quotaExceeds(this.fileObject).then(tooBig => {
                 if (tooBig) {
                     const alert: Alert = this.alerter.create({
@@ -111,7 +117,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
      * @returns {Promise<T>}
      */
     checkFileTooBigAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
+        return new Promise((resolve, reject): void => {
             if (settings.fileTooBig(this.fileObject)) {
                 const alert: Alert = this.alerter.create({
                     title: this.translate.instant("actions.download_with_file_too_big"),

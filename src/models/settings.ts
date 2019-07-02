@@ -1,6 +1,8 @@
+/** ionic-native */
+import {Network} from "@ionic-native/network/ngx";
+/** misc */
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
-import {Network} from "@ionic-native/network";
 import {FileData} from "./file-data";
 import {ILIASObject} from "./ilias-object";
 

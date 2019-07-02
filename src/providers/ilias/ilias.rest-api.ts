@@ -45,7 +45,9 @@ export const TOKEN_RESPONSE_CONSUMER: InjectionToken<TokenResponseConsumer> = ne
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
  export class DefaultTokenResponseConsumer implements TokenResponseConsumer {
   accept(token: OAuth2Token): Promise<void> { return Promise.resolve() }
 }

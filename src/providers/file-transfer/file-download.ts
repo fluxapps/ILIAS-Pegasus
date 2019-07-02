@@ -48,7 +48,9 @@ interface HTTPResponseWorkaround extends HTTPResponse{
 /**
  * Standard file download implementation.
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class FileDownloaderImpl implements FileDownloader{
 
 

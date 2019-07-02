@@ -14,7 +14,9 @@ interface LogEntry {
  *                      Profiler for all dt milliseconds
  */
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class Profiler {
 
     private static staticInstance: Profiler = undefined;

@@ -1,12 +1,14 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
+import {FileData} from "./file-data";
+import {User} from "./user";
+/** services */
 import {SQLiteDatabaseService} from "../services/database.service";
+import {FileService} from "../services/file.service";
+/** presenters */
 import {ILIASObjectPresenter} from "../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../presenters/presenter-factory";
-import {FileData} from "./file-data";
+/** logging */
 import {Log} from "../services/log.service";
-import {DesktopItem} from "./desktop-item";
-import {User} from "./user";
-import {FileService} from "../services/file.service";
 
 export class ILIASObject extends ActiveRecord {
 

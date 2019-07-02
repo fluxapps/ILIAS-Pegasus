@@ -1,5 +1,5 @@
 import {LearnplaceEntity} from "./learnplace.entity";
-import {Column, Entity, JoinColumn, JoinColumnOptions, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, JoinColumnOptions, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity("VisitJournal")
 export class VisitJournalEntity {

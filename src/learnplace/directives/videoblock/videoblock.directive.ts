@@ -1,12 +1,14 @@
+/** angular */
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {VideoBlockModel} from "../../services/block.model";
 import {Platform} from "ionic-angular";
-import {File} from "@ionic-native/file";
-import {StreamingMedia} from "@ionic-native/streaming-media";
-import {Observable} from "rxjs/Observable";
-import {Subscription} from "rxjs/Subscription";
 import {isDefined} from "ionic-angular/es2015/util/util";
-import {LinkBuilder} from "../../../services/link/link-builder.service";
+/** ionic-native */
+import {File} from "@ionic-native/file/ngx";
+import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
+/** misc */
+import {VideoBlockModel} from "../../services/block.model";
+import {Subscription} from "rxjs/Subscription";
+
 
 @Component({
   selector: "video-block",

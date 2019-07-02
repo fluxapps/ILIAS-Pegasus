@@ -1,12 +1,17 @@
+/** angular */
+import {InjectionToken} from "@angular/core";
+import {NavController, ModalController, Modal} from "ionic-angular";
+/** learnplace */
+import {TabsPage, TabsPageParams} from "../learnplace/pages/tabs/tabs.component";
+import {LearnplaceLoader} from "../learnplace/services/loader/learnplace";
+/** misc */
 import {LoadingPage} from "../app/fallback/loading/loading.component";
 import {
-    ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage,
+    ILIASObjectAction,
+    ILIASObjectActionAlert,
+    ILIASObjectActionNoMessage,
     ILIASObjectActionResult
 } from "./object-action";
-import {LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {NavController, ModalController, Modal} from "ionic-angular";
-import {TabsPage, TabsPageParams} from "../learnplace/pages/tabs/tabs.component";
-import {InjectionToken} from "@angular/core";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.

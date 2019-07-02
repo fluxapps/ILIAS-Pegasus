@@ -1,7 +1,7 @@
 import {ILIASObject} from "../models/ilias-object";
 import {FileService} from "../services/file.service";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionSuccess} from "./object-action";
-import {TranslateService} from "ng2-translate";
+import {TranslateService} from "@ngx-translate/core";
 
 export class RemoveLocalFileAction extends ILIASObjectAction {
 

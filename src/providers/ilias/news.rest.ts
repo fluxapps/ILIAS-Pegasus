@@ -56,7 +56,9 @@ export const NEWS_REST: InjectionToken<NewsRest> = new InjectionToken("token for
  *
  * @author nschaefli <ns@studer-raimann.ch>
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class NewsRestImpl implements NewsRest {
 
   private readonly REST_PATH: string = "/v2/ilias-app/news";

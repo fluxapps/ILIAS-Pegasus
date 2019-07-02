@@ -1,10 +1,15 @@
+/** angular */
+import {Inject, Injectable} from "@angular/core";
+/** misc */
 import {
-  ClientCredentials, OAuth2DataSupplier, OAuth2Token, Token,
-  TokenResponseConsumer
+    ClientCredentials,
+    OAuth2DataSupplier,
+    OAuth2Token,
+    Token,
+    TokenResponseConsumer
 } from "../providers/ilias/ilias.rest-api";
 import {User} from "../models/user";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "./ilias-config";
-import {Inject, Injectable} from "@angular/core";
 
 const apiURL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
 
@@ -14,7 +19,9 @@ const apiURL: string = "/Customizing/global/plugins/Services/UIComponent/UserInt
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
 
   constructor(
@@ -55,7 +62,9 @@ export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TokenResponseConsumerImpl implements TokenResponseConsumer {
 
   /**

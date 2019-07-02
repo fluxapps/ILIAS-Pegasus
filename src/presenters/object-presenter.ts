@@ -1,7 +1,10 @@
-import {ILIASObject} from "../models/ilias-object";
+/** services */
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 import {FileService} from "../services/file.service";
+/** logging */
 import {Log} from "../services/log.service";
+/** misc */
+import {ILIASObject} from "../models/ilias-object";
 
 /**
  * Decorator to present data of ILIASObjects in the view.

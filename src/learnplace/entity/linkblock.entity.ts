@@ -1,6 +1,11 @@
 import {
-  Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
-  RelationOptions
+    Column,
+    Entity,
+    JoinColumn,
+    JoinColumnOptions,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    RelationOptions
 } from "typeorm";
 import {VisibilityEntity} from "./visibility.entity";
 

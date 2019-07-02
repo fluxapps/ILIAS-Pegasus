@@ -1,15 +1,23 @@
-import {
-  Column,
-  Entity,
-  JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToOne,
-  PrimaryGeneratedColumn,
-  RelationOptions
-} from "typeorm";
+/** entries */
 import {LinkblockEntity} from "./linkblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";
 import {TextblockEntity} from "./textblock.entity";
 import {VisibilityEntity} from "./visibility.entity";
+/** misc */
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinColumnOptions,
+    JoinTable,
+    JoinTableOptions,
+    ManyToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    RelationOptions
+} from "typeorm";
+
 
 @Entity("Accordion")
 export class AccordionEntity {

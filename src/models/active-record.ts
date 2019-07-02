@@ -1,5 +1,7 @@
-import {DatabaseService, SQLiteDatabaseService} from "../services/database.service";
+/** logging */
 import {Log} from "../services/log.service";
+/** misc */
+import {DatabaseService, SQLiteDatabaseService} from "../services/database.service";
 
 export interface DatabaseConnector {
     /**

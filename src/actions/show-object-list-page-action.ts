@@ -1,9 +1,9 @@
-import {NavController, NavParams} from "ionic-angular/index";
+/** angular */
+import {NavController, NavParams} from "ionic-angular";
+/** msic */
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
 import {ObjectListPage} from "../pages/object-list/object-list";
-import {ILIASObjectActionResult} from "./object-action";
-import {ILIASObjectActionNoMessage} from "./object-action";
 
 export class ShowObjectListPageAction extends ILIASObjectAction {
 

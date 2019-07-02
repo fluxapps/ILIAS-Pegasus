@@ -1,13 +1,21 @@
+/** angular */
+import {Alert, AlertController} from "ionic-angular";
+/** models */
 import {ILIASObject} from "../models/ilias-object";
-import {
-  ILIASObjectActionNoMessage, ILIASObjectActionSuccess, ILIASObjectActionResult, ILIASObjectAction, ILIASObjectActionAlert
-} from "./object-action";
-import {FileService} from "../services/file.service";
-import {TranslateService} from "ng2-translate/ng2-translate";
-import {Log} from "../services/log.service";
 import {User} from "../models/user";
 import {Settings} from "../models/settings";
-import {Alert, AlertController} from "ionic-angular";
+/** logging */
+import {Log} from "../services/log.service";
+/** misc */
+import {
+    ILIASObjectActionNoMessage,
+    ILIASObjectActionSuccess,
+    ILIASObjectActionResult,
+    ILIASObjectAction,
+    ILIASObjectActionAlert
+} from "./object-action";
+import {TranslateService} from "@ngx-translate/core";
+import {FileService} from "../services/file.service";
 import {OfflineException} from "../exceptions/OfflineException";
 
 export class DownloadFileAction extends ILIASObjectAction {
@@ -36,7 +44,7 @@ export class DownloadFileAction extends ILIASObjectAction {
     }
 
     wlanAndDownload(): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void => {
+        return new Promise((resolve, reject): void => {
 
             User.find(this.fileObject.userId).then(user => {
                 Settings.findByUserId(user.id).then(settings => {
@@ -70,7 +78,7 @@ export class DownloadFileAction extends ILIASObjectAction {
 
     }
 
-    download(resolve: Resolve<ILIASObjectActionResult>, reject: Reject<Error>): void {
+    download(resolve, reject): void {
         this.file.download(this.fileObject, true).then(() => {
             resolve(new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful")));
         }, (error) => {

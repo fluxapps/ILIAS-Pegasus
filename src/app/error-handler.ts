@@ -30,7 +30,9 @@ interface AlertEntry {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.1.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class PegasusErrorHandler implements ErrorHandler {
 
     private static readonly ERROR_TITLE: string = "Pegasus";

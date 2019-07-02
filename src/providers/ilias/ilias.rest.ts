@@ -94,7 +94,9 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
  export class ILIASTokenManager implements TokenManager {
 
    private readonly log: Logger = Logging.getLogger(ILIASTokenManager.name);
@@ -204,7 +206,9 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.1
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
  export class ILIASRestImpl implements ILIASRest {
 
    constructor(

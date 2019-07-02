@@ -1,8 +1,9 @@
+/** angular */
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {TextBlockModel} from "../../services/block.model";
-import {Observable} from "rxjs/Observable";
-import {Subscription} from "rxjs/Subscription";
 import {isDefined} from "ionic-angular/es2015/util/util";
+/** misc */
+import {TextBlockModel} from "../../services/block.model";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: "text-block",

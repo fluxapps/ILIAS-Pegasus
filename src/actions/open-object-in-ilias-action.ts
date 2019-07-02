@@ -1,12 +1,17 @@
+/** angular */
+import {InjectionToken} from "@angular/core";
+import {Modal, ModalController, Platform} from "ionic-angular";
+/** ionic-native */
+import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+/** logging */
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
+/** misc */
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionNoMessage} from "./object-action";
-import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser";
-import {Modal, ModalController, Platform} from "ionic-angular";
 import {Builder} from "../services/builder.base";
 import {IllegalStateError} from "../error/errors";
 import {LeaveAppAction, LeaveAppDialog, LeaveAppDialogNavParams} from "../app/fallback/open-browser/leave-app.dialog";
-import {InjectionToken} from "@angular/core";
+
 
 export class OpenObjectInILIASAction extends ILIASObjectAction {
 

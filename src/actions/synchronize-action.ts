@@ -1,12 +1,10 @@
-import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert} from "./object-action";
-import {SynchronizationService} from "../services/synchronization.service";
-import {ILIASObjectActionResult} from "./object-action";
-import {ILIASObjectActionSuccess} from "./object-action";
+/** angular */
 import {ModalController} from "ionic-angular";
-import {TranslateService} from "ng2-translate/ng2-translate";
-import {ILIASObjectActionNoMessage} from "./object-action";
-import {SyncFinishedModal} from "../pages/sync-finished-modal/sync-finished-modal";
+/** misc */
+import {ILIASObject} from "../models/ilias-object";
+import {SynchronizationService} from "../services/synchronization.service";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionSuccess} from "./object-action";
+import {TranslateService} from "@ngx-translate/core";
 
 export class SynchronizeAction extends ILIASObjectAction {
 

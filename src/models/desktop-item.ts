@@ -1,7 +1,9 @@
+/** logging */
+import {Log} from "../services/log.service";
+/** misc */
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {ILIASObject} from "./ilias-object";
-import {Log} from "../services/log.service";
 
 export class DesktopItem extends ActiveRecord {
     /**
