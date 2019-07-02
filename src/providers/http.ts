@@ -1,12 +1,15 @@
-import {HttpClient as Http, HttpHeaders, HttpParams, HttpResponse as Response, XhrFactory} from "@angular/common/http";
+/** angular */
 import {Injectable} from "@angular/core";
-import * as HttpStatus from "http-status-codes";
+import {HttpClient as Http, HttpHeaders, HttpParams, HttpResponse as Response, XhrFactory} from "@angular/common/http";
 import {isDefined} from "ionic-angular/es2015/util/util";
+/** logging */
+import {Logger} from "../services/logging/logging.api";
+import {Logging} from "../services/logging/logging.service";
+/** misc */
 import {Validator, ValidatorResult} from "jsonschema";
 import {Observable} from "rxjs/Observable";
 import {IllegalStateError} from "../error/errors";
-import {Logger} from "../services/logging/logging.api";
-import {Logging} from "../services/logging/logging.service";
+import * as HttpStatus from "http-status-codes";
 
 /**
  * Abstracts the Http service of angular in async methods.
@@ -15,7 +18,9 @@ import {Logging} from "../services/logging/logging.service";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 2.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class HttpClient {
 
   private static readonly RETRY_COUNT: number = 2;

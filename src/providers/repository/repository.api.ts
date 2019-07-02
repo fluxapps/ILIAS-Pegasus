@@ -1,8 +1,10 @@
-import {Connection, getConnection} from "typeorm";
+/** services */
 import {DEFAULT_CONNECTION_NAME} from "../../services/database/database.api";
 import {Database} from "../../services/database/database";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {Connection, getConnection} from "typeorm";
 import {Optional} from "../../util/util.optional";
 
 /**

@@ -15,11 +15,14 @@
  * @property {number} createDate  - The creation date of the news as unix epoch timestamp.
  * @property {number} updateDate  - The latest update date of the news as unix epoch timestamp.
  */
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "./ilias.rest";
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {HttpResponse} from "../http";
+/** logging */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "./ilias.rest";
+import {HttpResponse} from "../http";
 
 export interface NewsItem {
   readonly newsId: number;

@@ -1,13 +1,19 @@
+/** angular */
 import {Injectable} from "@angular/core";
+/** models */
 import {User} from "../models/user";
 import {DesktopData, ILIASRestProvider} from "./ilias-rest.provider";
 import {ILIASObject} from "../models/ilias-object";
 import {DesktopItem} from "../models/desktop-item";
-import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
+/** logging */
 import {Log} from "../services/log.service";
+/** misc */
+import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
 import {Profiler} from "../util/profiler";
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class DataProvider {
 
     constructor(private readonly rest: ILIASRestProvider,

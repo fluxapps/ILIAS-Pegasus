@@ -1,16 +1,17 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Modal, ModalController } from "ionic-angular";
-import { SynchronizationService } from "../../services/synchronization.service";
-import { FooterToolbarService, Job } from "../../services/footer-toolbar.service";
-import { TranslateService } from "ng2-translate";
-import { SyncFinishedModal } from "../../pages/sync-finished-modal/sync-finished-modal"
-import { ILIASObject } from "../../models/ilias-object";
-import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
-
+/** angular */
+import {HttpClient} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {Modal, ModalController} from "ionic-angular";
+/** services */
+import {SynchronizationService} from "../../services/synchronization.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {Log} from "../../services/log.service";
-import { Logger } from "../../services/logging/logging.api";
-import { Logging } from "../../services/logging/logging.service";
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
+import {ILIASObject} from "../../models/ilias-object";
+import {SynchronizationPage} from "../../app/fallback/synchronization/synchronization.component";
 
 /*
   Generated class for the ExecuteSyncProvider provider.
@@ -18,7 +19,9 @@ import { Logging } from "../../services/logging/logging.service";
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
 */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class ExecuteSyncProvider {
 
   objects: Array<ILIASObject> = [];

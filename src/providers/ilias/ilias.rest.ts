@@ -1,13 +1,19 @@
-import {HttpClient, HttpResponse, RequestOptions} from "../http";
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {
-  ClientCredentials,
-  OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier, OAuth2Token, TOKEN_RESPONSE_CONSUMER,
-  TokenResponseConsumer
-} from "./ilias.rest-api";
 import {isDefined, isUndefined} from "ionic-angular/es2015/util/util";
+/** logging */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {HttpClient, HttpResponse, RequestOptions} from "../http";
+import {
+    ClientCredentials,
+    OAUTH2_DATA_SUPPLIER,
+    OAuth2DataSupplier,
+    OAuth2Token,
+    TOKEN_RESPONSE_CONSUMER,
+    TokenResponseConsumer
+} from "./ilias.rest-api";
 
 const MILLISEC_TO_SEC: number = 1000;
 

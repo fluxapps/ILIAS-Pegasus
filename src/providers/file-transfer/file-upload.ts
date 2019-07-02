@@ -1,8 +1,12 @@
+/** angular */
 import {HttpResponse as Response} from "@angular/common/http";
 import {InjectionToken, Injectable} from "@angular/core";
-import {HTTP, HTTPResponse} from "@ionic-native/http";
+/** ionic-native */
+import {HTTP, HTTPResponse} from "@ionic-native/http/ngx";
+/** logging */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
 import {HttpRequestError, HttpResponse} from "../http";
 import {RequestOptions} from "./file-transfer";
 

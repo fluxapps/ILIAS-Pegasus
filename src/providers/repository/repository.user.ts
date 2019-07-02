@@ -1,10 +1,13 @@
-import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "./repository.api";
-import {UserEntity} from "../../entity/user.entity";
+/** angular */
 import {Injectable, InjectionToken} from "@angular/core";
-import {Database} from "../../services/database/database";
-import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
+/** services */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+import {Database} from "../../services/database/database";
+/** misc */
+import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "./repository.api";
+import {UserEntity} from "../../entity/user.entity";
+import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
 import {Optional} from "../../util/util.optional";
 
 /**
@@ -22,7 +25,9 @@ export const USER_REPOSITORY: InjectionToken<UserRepository> = new InjectionToke
 /**
  * Provides a type ORM implementation of the user repository which provides basic CRUD functionality to manipulate the user.
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class UserTypeORMRepository extends AbstractCRUDRepository<UserEntity, number> implements UserRepository{
 
   private static readonly ENTITY_NAME: string = "users";

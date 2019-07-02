@@ -1,10 +1,17 @@
+/** angular */
 import {Injectable} from "@angular/core";
+/** ilias */
 import {ILIASRestProvider} from "../ilias-rest.provider";
-import {User} from "../../models/user";
-import {FileService} from "../../services/file.service";
-import {FileData} from "../../models/file-data";
 import {DataProviderILIASObjectHandler} from "./ilias-object-handler";
+/** models */
+import {User} from "../../models/user";
 import {ILIASObject} from "../../models/ilias-object";
+import {FileData} from "../../models/file-data";
+/** misc */
+import {FileService} from "../../services/file.service";
+
+
+
 
 
 @Injectable()

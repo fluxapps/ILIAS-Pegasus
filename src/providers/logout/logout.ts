@@ -1,10 +1,12 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { App, ToastController, Toast, ToastOptions } from "ionic-angular";
-import { TranslateService } from "ng2-translate";
-import { User } from "../../models/user";
-import { Page } from "ionic-angular/navigation/nav-util";
-import { LoginPage } from "../../pages/login/login";
+/** angular */
+import {HttpClient} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {App, ToastController, Toast, ToastOptions} from "ionic-angular";
+import {Page} from "ionic-angular/navigation/nav-util";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
+import {User} from "../../models/user";
+import {LoginPage} from "../../pages/login/login";
 
 /*
   Generated class for the LogoutProvider provider.

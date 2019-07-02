@@ -1,17 +1,21 @@
+/** angular */
+import {Injectable, InjectionToken} from "@angular/core";
+import {isDefined} from "ionic-angular/es2015/util/util";
+/** entries */
 import {AccordionEntity} from "../../entity/accordion.entity";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
-import {Injectable, InjectionToken} from "@angular/core";
-import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
-import {Database} from "../../../services/database/database";
-import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
-import {Optional} from "../../../util/util.optional";
-import {Logging} from "../../../services/logging/logging.service";
-import {Logger} from "../../../services/logging/logging.api";
-import {isDefined} from "ionic-angular/es2015/util/util";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {TextblockEntity} from "../../entity/textblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
+/** logging */
+import {Logging} from "../../../services/logging/logging.service";
+import {Logger} from "../../../services/logging/logging.api";
+/** misc */
+import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
+import {Database} from "../../../services/database/database";
+import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
+import {Optional} from "../../../util/util.optional";
 
 /**
  * Describes a CRUD repository for {@link LearnplaceEntity}.
@@ -39,7 +43,9 @@ export const LEARNPLACE_REPOSITORY: InjectionToken<LearnplaceRepository> = new I
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.1.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<LearnplaceEntity, string> implements LearnplaceRepository {
 
     private logger: Logger = Logging.getLogger(TypeORMLearnplaceRepository.name);

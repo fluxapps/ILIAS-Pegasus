@@ -1,10 +1,13 @@
-import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+/** angular */
 import {Injectable, InjectionToken} from "@angular/core";
-import {Database} from "../../../services/database/database";
-import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
+/** logging */
 import {Logging} from "../../../services/logging/logging.service";
 import {Logger} from "../../../services/logging/logging.api";
+/** misc */
+import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
+import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+import {Database} from "../../../services/database/database";
+import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 
 /**
  * Describes a CRUD repository for {@link VisitJournalEntity}.
@@ -28,7 +31,9 @@ export const VISIT_JOURNAL_REPOSITORY: InjectionToken<VisitJournalRepository> = 
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class TypeORMVisitJournalRepository extends AbstractCRUDRepository<VisitJournalEntity, number> implements VisitJournalRepository {
 
   private readonly logger: Logger = Logging.getLogger(TypeORMVisitJournalRepository.name);

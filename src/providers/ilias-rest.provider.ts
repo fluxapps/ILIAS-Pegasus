@@ -1,19 +1,25 @@
+/** angular */
 import {Inject, Injectable} from "@angular/core";
-import {User} from "../models/user";
 import {HttpClient} from "@angular/common/http";
+/** ionic-native */
+import {File, FileEntry, Flags} from "@ionic-native/file/ngx";
+/** ilias */
+import {ClientCredentials, OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier} from "./ilias/ilias.rest-api";
+import {ILIAS_REST, ILIASRequestOptions, ILIASRest, TOKEN_MANAGER, TokenManager} from "./ilias/ilias.rest";
+/** logging */
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
+/** misc */
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "./file-transfer/file-download";
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest, TOKEN_MANAGER, TokenManager} from "./ilias/ilias.rest";
 import {HttpResponse} from "./http";
-import {File, FileEntry, Entry, Flags} from "@ionic-native/file";
-import {ClientCredentials, OAUTH2_DATA_SUPPLIER, OAuth2DataSupplier} from "./ilias/ilias.rest-api";
-import * as fs from "fs";
 import {Profiler} from "../util/profiler";
+import {User} from "../models/user";
 
 const DEFAULT_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class ILIASRestProvider {
 
     private readonly log: Logger = Logging.getLogger(ILIASRestProvider.name);

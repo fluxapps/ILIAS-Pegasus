@@ -1,10 +1,14 @@
-import {BlockObject, JournalEntry, LearnPlace} from "./learnplace.pojo";
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "../../../providers/ilias/ilias.rest";
+/** angular */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
+/** providers */
 import {HttpResponse} from "../../../providers/http";
-import {blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema} from "./json.schema";
+import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "../../../providers/ilias/ilias.rest";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+/** misc */
+import {BlockObject, JournalEntry, LearnPlace} from "./learnplace.pojo";
+import {blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema} from "./json.schema";
 
 const DEFAULT_REQUEST_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
