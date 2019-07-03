@@ -135,6 +135,11 @@ export class PegasusErrorHandler implements ErrorHandler {
             this.log.warn(
                 () => `Error occurred during error handling: ${this.stringifyWithoutCyclicObjects(err)}, previous error ${this.stringifyWithoutCyclicObjects(error)}`
             );
+
+            this.log.error(() => `Error unhandled of type: ${err}`);
+            this.log.error(() => `JSON of error: ${JSON.stringify(err)}`);
+            this.log.error(() => `Previous error unhandled of type: ${error}`);
+            this.log.error(() => `JSON of previous error: ${JSON.stringify(error)}`);
         }
     }
 

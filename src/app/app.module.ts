@@ -177,7 +177,7 @@ import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directi
     TranslateModule.forRoot({
         loader: {
             provide: TranslateLoader,
-            useFactory: (http: HttpClient): TranslateHttpLoader => new TranslateHttpLoader(http, "./assets/i18n", ".json"),
+            useFactory: (http: HttpClient): TranslateHttpLoader => new TranslateHttpLoader(http, "./assets/i18n/", ".json"),
             deps: [HttpClient]
         }
     })

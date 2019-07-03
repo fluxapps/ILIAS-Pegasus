@@ -14,7 +14,7 @@
     "karma": "karma start ./test/karma.continuous.conf.js",
     "karma:singlerun": "karma start ./test/karma.conf.js",
     "test": "npm run tslint && npm run karma:singlerun",
-    "postinstall": "./tools/workaround_typescript_2.6/run-patch.sh",
+    "postinstall": "./tools/workaround_typescript/run-patch.sh",
     "setbrand": "node ./branding/set_brand.js"
   },
   "config": {
@@ -26,6 +26,7 @@
     "@angular-devkit/core": "^7.3.9",
     "@angular-devkit/schematics": "^7.3.9",
     "@angular/animations": "^7.2.15",
+    "@angular/cli": "^7.3.9",
     "@angular/common": "^7.2.15",
     "@angular/compiler": "^7.2.15",
     "@angular/compiler-cli": "^7.2.15",
@@ -57,8 +58,8 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "com-sarriaroman-photoviewer": "^1.1.11",
     "cordova": "^9.0.0",
-    "cordova-android": "8.0.0",
-    "cordova-android-support-gradle-release": "^2.1.0",
+    "cordova-android": "^8.0.0",
+    "cordova-android-support-gradle-release": "^3.0.1",
     "cordova-custom-config": "^5.1.0",
     "cordova-ios": "5.0.1",
     "cordova-plugin-advanced-http": "^1.11.1",
@@ -91,6 +92,7 @@
     "rxjs-compat": "^6.5.2",
     "text-encoding": "^0.6.4",
     "typeorm": "^0.1.21",
+    "typescript": "^3.2.4",
     "uuid-js": "^0.7.5",
     "web-animations-js": "^2.3.2",
     "zone.js": "^0.8.29"
@@ -124,7 +126,6 @@
     "ts-loader": "^3.5.0",
     "ts-node": "^3.3.0",
     "tslint": "^5.18.0",
-    "typescript": "~3.2.4",
     "webpack": "^3.12.0"
   },
   "description": "ILIAS-Pegasus",

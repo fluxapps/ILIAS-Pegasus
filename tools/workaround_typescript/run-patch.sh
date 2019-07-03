@@ -4,7 +4,7 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DIFF_NAME="patch.diff"
 TYPESCRIPT_PATH="./node_modules/typescript"
 TYPESCRIPT_FILE="$(cd $(dirname "$TYPESCRIPT_PATH/lib/typescript.js") && pwd -P)/typescript.js"
-VERSION_REQUIRED="2.6.2"
+VERSION_REQUIRED="3.2.4"
 
 if [[ ! -r "$TYPESCRIPT_PATH" ]]; then
     echo "No typescript installation found, please install your node modules first. (npm i)"
