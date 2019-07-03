@@ -1,6 +1,8 @@
-import { NgModule } from "@angular/core";
-import { IonicPageModule } from "ionic-angular";
-import { DesktopPage } from "./desktop";
+/** angular */
+import {NgModule} from "@angular/core";
+import {IonicPageModule} from "ionic-angular";
+/** misc */
+import {DesktopPage} from "./desktop";
 
 @NgModule({
   declarations: [

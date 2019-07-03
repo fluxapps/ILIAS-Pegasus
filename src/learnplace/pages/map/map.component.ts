@@ -1,12 +1,15 @@
+/** angular */
 import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild} from "@angular/core";
+import {AlertController, NavParams, Content} from "ionic-angular";
+/** services */
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
-import {AlertController, AlertOptions, NavParams, Content} from "ionic-angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {MapModel} from "../../services/block.model";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
-import {TranslateService} from "ng2-translate";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 import {Subscription} from "rxjs/Subscription";
 
 @Component({

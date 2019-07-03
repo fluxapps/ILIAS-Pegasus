@@ -49,7 +49,6 @@ import {FooterToolbarService} from "../services/footer-toolbar.service";
 import {PegasusMissingTranslationHandler} from "../services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "../services/link/default.builder";
 import {LINK_BUILDER, LinkBuilderImpl} from "../services/link/link-builder.service";
-import {AuthTokenSupplier, INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, InstallationLinkSupplierImpl, TOKEN_SUPPLIER, TokenSupplier} from "../services/link/link-builder.supplier";
 import {LOADING_LINK_BUILDER, LoadingLinkBuilder, LoadingLinkBuilderImpl} from "../services/link/loading.builder";
 import {LOGIN_LINK_BUILDER, LoginLinkBuilder, LoginLinkBuilderImpl} from "../services/link/login.builder";
 import {NEWS_LINK_BUILDER, NewsLinkBuilder, NewsLinkBuilderImpl} from "../services/link/news.builder";
@@ -59,6 +58,14 @@ import {DB_MIGRATION, MIGRATION_SUPPLIER} from "../services/migration/migration.
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "../services/migration/migration.service";
 import {NEWS_SYNCHRONIZATION, NewsSynchronizationImpl} from "../services/news/news.synchronization";
 import {SynchronizationService} from "../services/synchronization.service";
+import {
+    AuthTokenSupplier,
+    INSTALLATION_LINK_PROVIDER,
+    InstallationLinkSupplier,
+    InstallationLinkSupplierImpl,
+    TOKEN_SUPPLIER,
+    TokenSupplier
+} from "../services/link/link-builder.supplier";
 /** providers */
 import {DataProvider} from "../providers/data-provider.provider";
 import {ExecuteSyncProvider} from "../providers/execute-sync/execute-sync";
@@ -88,12 +95,24 @@ import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
 import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "../learnplace/services/learnplace.management";
 import {LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {AccordionMapper, LinkBlockMapper, PictureBlockMapper, TextBlockMapper, VideoBlockMapper, VisitJournalMapper} from "../learnplace/services/loader/mappers";
 import {HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
 import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
 import {VisibilityStrategyApplier} from "../learnplace/services/visibility/visibility.context";
 import {AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy} from "../learnplace/services/visibility/visibility.strategy";
-import {SynchronizedVisitJournalWatch, VISIT_JOURNAL_SYNCHRONIZATION, VISIT_JOURNAL_WATCH, VisitJournalSynchronizationImpl} from "../learnplace/services/visitjournal.service";
+import {
+    SynchronizedVisitJournalWatch,
+    VISIT_JOURNAL_SYNCHRONIZATION,
+    VISIT_JOURNAL_WATCH,
+    VisitJournalSynchronizationImpl
+} from "../learnplace/services/visitjournal.service";
+import {
+    AccordionMapper,
+    LinkBlockMapper,
+    PictureBlockMapper,
+    TextBlockMapper,
+    VideoBlockMapper,
+    VisitJournalMapper
+} from "../learnplace/services/loader/mappers";
 // providers for learnplaces
 import {LEARNPLACE_REPOSITORY, TypeORMLearnplaceRepository} from "../learnplace/providers/repository/learnplace.repository";
 import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
@@ -102,7 +121,11 @@ import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/l
 // actions for learnplaces
 import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../actions/open-object-in-ilias-action";
-import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceAction, RemoveLocalLearnplaceActionFunction} from "../actions/remove-local-learnplace-action";
+import {
+    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
+    RemoveLocalLearnplaceAction,
+    RemoveLocalLearnplaceActionFunction
+} from "../actions/remove-local-learnplace-action";
 // directives for learnplaces
 import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
 import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
@@ -169,7 +192,6 @@ import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directi
     LoginPage,
     SynchronizationPage,
     SyncFinishedModal,
-    //NewsPage,
     LoadingPage,
     OnboardingPage,
 

@@ -1,6 +1,8 @@
+/** angular */
 import {Component} from "@angular/core";
-import {Diagnostic} from "@ionic-native/diagnostic";
 import {ViewController} from "ionic-angular";
+/** ionic-native */
+import {Diagnostic} from "@ionic-native/diagnostic/ngx";
 
 @Component({
   templateUrl: "wifi-fallbackscreen.html"

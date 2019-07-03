@@ -1,6 +1,8 @@
+/** angular */
 import {Component} from "@angular/core";
 import {NavParams, ViewController} from "ionic-angular";
-import {TranslateService} from "ng2-translate/ng2-translate";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 import {ILIASObject} from "../../models/ilias-object";
 import {LeftOutReason, SyncResults} from "../../services/synchronization.service";
 

@@ -1,9 +1,12 @@
+/** angular */
 import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
-import {MapPage, MapPageParams} from "../map/map.component";
-import {ContentPage, ContentPageParams} from "../content/content.component";
 import {NavController, NavParams} from "ionic-angular";
+/** services */
 import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 import {VISIT_JOURNAL_WATCH, VisitJournalWatch} from "../../services/visitjournal.service";
+/** misc */
+import {MapPage, MapPageParams} from "../map/map.component";
+import {ContentPage, ContentPageParams} from "../content/content.component";
 
 @Component({
   templateUrl: "tabs.html",

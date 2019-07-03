@@ -1,12 +1,11 @@
+/** angular */
 import {Component, Inject, ViewChild, NgZone} from "@angular/core";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
     ActionSheet,
     ActionSheetButton,
     ActionSheetController,
     ActionSheetOptions,
     AlertController,
-    IonicPage,
     ModalController,
     NavController,
     NavParams,
@@ -14,7 +13,22 @@ import {
     Toast,
     ToastController
 } from "ionic-angular";
-import {TranslateService} from "ng2-translate/src/translate.service";
+/** ionic-native */
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
+/** services */
+import {Builder} from "../../services/builder.base";
+import {FileService} from "../../services/file.service";
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {SynchronizationService} from "../../services/synchronization.service";
+/** models */
+import {DesktopItem} from "../../models/desktop-item";
+import {ILIASObject} from "../../models/ilias-object";
+import {PageLayout} from "../../models/page-layout";
+import {TimeLine} from "../../models/timeline";
+import {User} from "../../models/user";
+import {Favorites} from "../../models/favorites";
+/** actions */
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
@@ -22,30 +36,19 @@ import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../.
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
-import {
-    REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
-    RemoveLocalLearnplaceActionFunction
-} from "../../actions/remove-local-learnplace-action";
+import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {Exception} from "../../exceptions/Exception";
-import {DesktopItem} from "../../models/desktop-item";
-import {ILIASObject} from "../../models/ilias-object";
-import {PageLayout} from "../../models/page-layout";
-import {TimeLine} from "../../models/timeline";
-import {User} from "../../models/user";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {Builder} from "../../services/builder.base";
-import {FileService} from "../../services/file.service";
-import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+/** logging */
 import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {SynchronizationService} from "../../services/synchronization.service";
-import {Favorites} from "../../models/favorites";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
+import {Exception} from "../../exceptions/Exception";
+import {DataProvider} from "../../providers/data-provider.provider";
 
 /**
  * Summary of the state of an object-list-page
@@ -58,8 +61,6 @@ interface PageState {
     refreshing: boolean,
     desktop: boolean,
 }
-
-@IonicPage()
 @Component({
     selector: "page-desktop",
     templateUrl: "object-list.html",

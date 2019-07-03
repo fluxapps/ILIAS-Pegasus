@@ -1,14 +1,20 @@
+/** angular */
 import {Component, Inject} from "@angular/core";
-import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser";
-import {Toast} from "@ionic-native/toast";
 import {Events, NavController, Platform} from "ionic-angular";
-import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+/** ionic-native */
+import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+import {Toast} from "@ionic-native/toast/ngx";
+import {AppVersion} from "@ionic-native/app-version/ngx";
+/** models */
 import {User} from "../../models/user";
-import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
-import {Log} from "../../services/log.service";
 import {Settings} from "../../models/settings";
-import {AppVersion} from "@ionic-native/app-version";
+/** logging */
+import {Log} from "../../services/log.service";
+/** misc */
 import {SynchronizationService} from "../../services/synchronization.service";
+import {ExecuteSyncProvider} from "../../providers/execute-sync/execute-sync";
+import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+
 
 @Component({
     templateUrl: "login.html",

@@ -1,20 +1,24 @@
-import {AfterViewInit, Component, Inject, SecurityContext, OnInit} from "@angular/core";
-import {Modal, ModalController, Refresher, IonicPage} from "ionic-angular";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {ILIASObjectAction} from "../../actions/object-action";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+/** angular */
+import {Component, Inject} from "@angular/core";
+import {ModalController, Refresher} from "ionic-angular";
+/** models */
 import {ILIASObject} from "../../models/ilias-object";
 import {User} from "../../models/user";
-import {ILIASObjectPresenter} from "../../presenters/object-presenter";
+/** services */
 import {Builder} from "../../services/builder.base";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {Logger} from "../../services/logging/logging.api";
-import {Logging} from "../../services/logging/logging.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
 import {SynchronizationService} from "../../services/synchronization.service";
-import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
-
+/** actions */
+import {ILIASObjectAction} from "../../actions/object-action";
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+/** logging */
+import {Logger} from "../../services/logging/logging.api";
+import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {ILIASObjectPresenter} from "../../presenters/object-presenter";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * Generated class for the NewsComponent component.
@@ -22,7 +26,6 @@ import {SyncFinishedModal} from "../sync-finished-modal/sync-finished-modal";
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
-@IonicPage()
 @Component({
     selector: "newsPresenters",
     templateUrl: "news.html"

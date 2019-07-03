@@ -1,7 +1,9 @@
+/** angular */
 import { NgModule } from "@angular/core";
 import { IonicPageModule } from "ionic-angular";
+/** misc */
 import { ObjectListPage } from "./object-list";
-import { TranslateModule } from "ng2-translate";
+import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
   declarations: [

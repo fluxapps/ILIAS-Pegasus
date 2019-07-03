@@ -1,7 +1,15 @@
+/** angular */
 import {Component, Inject} from "@angular/core";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {Alert, AlertController, ModalController, NavController, NavParams, Toast, ToastController} from "ionic-angular";
-import {TranslateService} from "ng2-translate/src/translate.service";
+/** ionic-native */
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
+/** service */
+import {Builder} from "../../services/builder.base";
+import {FileService} from "../../services/file.service";
+import {FooterToolbarService} from "../../services/footer-toolbar.service";
+import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {SynchronizationService} from "../../services/synchronization.service";
+/** actions */
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OpenFileExternalAction} from "../../actions/open-file-external-action";
@@ -10,17 +18,14 @@ import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
 import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {ILIASObject} from "../../models/ilias-object";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {Builder} from "../../services/builder.base";
-import {FileService} from "../../services/file.service";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+/** logging */
 import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {SynchronizationService} from "../../services/synchronization.service";
-
+/** misc */
+import {ILIASObject} from "../../models/ilias-object";
+import {DataProvider} from "../../providers/data-provider.provider";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     templateUrl: "object-details.html"

@@ -1,5 +1,5 @@
+/** angular */
 import {Component, Inject} from "@angular/core";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {
     ActionSheet,
     ActionSheetButton,
@@ -13,7 +13,9 @@ import {
     Toast,
     ToastController
 } from "ionic-angular";
-import {TranslateService} from "ng2-translate/src/translate.service";
+/** ionic-native */
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
+/** actions */
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
@@ -23,24 +25,29 @@ import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
+/** exceptions */
 import {CantOpenFileTypeException} from "../../exceptions/CantOpenFileTypeException";
 import {OfflineException} from "../../exceptions/OfflineException";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
+/** models */
 import {ActiveRecord} from "../../models/active-record";
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
 import {User} from "../../models/user";
-import {DataProvider} from "../../providers/data-provider.provider";
+/** services */
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import {SynchronizationService} from "../../services/synchronization.service";
+/** logging */
 import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {SynchronizationService} from "../../services/synchronization.service";
+/** misc */
 import {LoginPage} from "../login/login";
-
+import {TranslateService} from "@ngx-translate/core";
+import {DataProvider} from "../../providers/data-provider.provider";
 
 @Component({
     templateUrl: "new-objects.html",

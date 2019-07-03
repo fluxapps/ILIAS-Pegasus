@@ -1,8 +1,10 @@
-import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams } from "ionic-angular";
-import { LogoutProvider } from "../../providers/logout/logout";
-import { SettingsPage } from "../settings/settings";
-import { Page } from "ionic-angular/navigation/nav-util";
+/* angular */
+import {Component} from "@angular/core";
+import {NavController, NavParams} from "ionic-angular";
+import {Page} from "ionic-angular/navigation/nav-util";
+/* misc */
+import {LogoutProvider} from "../../providers/logout/logout";
+import {SettingsPage} from "../settings/settings";
 
 /**
  * Generated class for the MenuPage page.
@@ -10,8 +12,6 @@ import { Page } from "ionic-angular/navigation/nav-util";
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
-
-@IonicPage()
 @Component({
   selector: "page-menu",
   templateUrl: "menu.html",

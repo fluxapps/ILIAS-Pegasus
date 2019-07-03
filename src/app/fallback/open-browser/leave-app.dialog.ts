@@ -1,9 +1,13 @@
+/** angular */
 import {Component} from "@angular/core";
-import {InAppBrowserOptions} from "@ionic-native/in-app-browser";
 import {NavParams, ViewController} from "ionic-angular";
+/** ionic-native */
+import {InAppBrowserOptions} from "@ionic-native/in-app-browser";
+/** logging */
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({

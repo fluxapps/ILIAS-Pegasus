@@ -1,9 +1,12 @@
+/** angular */
 import {NgModule} from "@angular/core";
+import {CommonModule} from "@angular/common";
 import {IonicPageModule} from "ionic-angular";
-import {TranslateModule} from "@ngx-translate/core";
+/** news */
 import {NEWS_FEED, NewsFeedImpl} from "../../services/news/news.feed";
 import {NewsPage} from "./news";
-import {CommonModule} from "@angular/common";
+/** misc */
+import {TranslateModule} from "@ngx-translate/core";
 
 @NgModule({
     declarations: [

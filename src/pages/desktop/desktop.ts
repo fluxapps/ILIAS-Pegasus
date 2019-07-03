@@ -1,9 +1,12 @@
+/** angular */
 import {Component, Inject} from "@angular/core";
-import {IonicPage, NavController} from "ionic-angular";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {ILIASInstallation} from "../../config/ilias-config";
+import {NavController} from "ionic-angular";
+/** services */
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+/** misc */
+import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
+import {ILIASInstallation} from "../../config/ilias-config";
 
 /**
  * Generated class for the DesktopPage page.
@@ -12,7 +15,6 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
  * Ionic pages and navigation.
  */
 
-@IonicPage()
 @Component({
   selector: "page-desktop",
   templateUrl: "desktop.html",

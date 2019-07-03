@@ -1,8 +1,11 @@
+/** angular */
 import {ChangeDetectorRef, Component, Inject, OnDestroy} from "@angular/core";
+import {AlertController, NavParams} from "ionic-angular";
+/** services */
 import {BlockModel} from "../../services/block.model";
 import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
-import {AlertController, AlertOptions, NavParams} from "ionic-angular";
-import {TranslateService} from "ng2-translate";
+/** misc */
+import {TranslateService} from "@ngx-translate/core";
 import {Observable} from "rxjs/Observable";
 
 @Component({

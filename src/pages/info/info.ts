@@ -1,6 +1,7 @@
+/** angular */
 import {Component} from "@angular/core";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
-import {IonicPage} from "ionic-angular";
+/** ionic-native */
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 
 /*
   Generated class for the InfoPage page.
@@ -8,7 +9,6 @@ import {IonicPage} from "ionic-angular";
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 */
-@IonicPage()
 @Component({
   selector: "page-info",
   templateUrl: "info.html",

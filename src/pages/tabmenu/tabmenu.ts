@@ -1,12 +1,9 @@
-import { Component } from "@angular/core";
-import { NavController} from "ionic-angular";
-// import { DesktopPage } from "../desktop/desktop";
-// import { NewsPage } from "../news/news";
-// import { SettingsPage } from "../settings/settings";
-import { ObjectListPage } from "../object-list/object-list";
-// import { NewmenuPage } from "../newmenu/newmenu";
-import { TranslateService } from "ng2-translate";
-// import { MyApp } from "../../app/app.component";
+/** angular */
+import {Component} from "@angular/core";
+import {NavController} from "ionic-angular";
+/** misc */
+import {ObjectListPage} from "../object-list/object-list";
+import {TranslateService} from "@ngx-translate/core";
 
 /**
  * Generated class for the TabmenuPage tabs.

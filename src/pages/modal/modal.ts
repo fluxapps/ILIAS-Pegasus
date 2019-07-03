@@ -1,3 +1,4 @@
+/** angular */
 import {Component} from "@angular/core";
 import {NavParams} from "ionic-angular";
 

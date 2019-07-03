@@ -1,20 +1,24 @@
+/** angular */
 import {Component, Inject, NgZone} from "@angular/core";
 import {NavController, ToastController, ToastOptions, AlertController, Toast, Alert, AlertOptions, Config} from "ionic-angular";
 import {AlertButton} from "ionic-angular/components/alert/alert-options";
-import {log} from "util";
+/** services */
+import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
+import {FileService} from "../../services/file.service";
+/** models */
 import {ILIASObject} from "../../models/ilias-object";
 import {Settings} from "../../models/settings";
-import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
-import {TranslateService} from "ng2-translate/src/translate.service";
-import {Log} from "../../services/log.service";
 import {User} from "../../models/user";
 import {FileData} from "../../models/file-data";
-import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "../../config/ilias-config";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {FileService} from "../../services/file.service";
 import {DesktopItem} from "../../models/desktop-item";
+/** logging */
+import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+/** misc */
+import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "../../config/ilias-config";
+import {DataProvider} from "../../providers/data-provider.provider";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     templateUrl: "settings.html"

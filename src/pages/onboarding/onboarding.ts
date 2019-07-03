@@ -1,6 +1,6 @@
+/** angular */
 import {Component, ViewChild} from "@angular/core";
 import {NavController, ViewController} from "ionic-angular";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 /*
   Generated class for the InfoPage page.

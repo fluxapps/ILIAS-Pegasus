@@ -1,5 +1,7 @@
+/** angular */
 import {Component} from "@angular/core";
 import {NavController} from "ionic-angular";
+/** misc */
 import {Hardware} from "../../services/device/hardware-features/hardware-feature.service";
 
 @Component({
