@@ -108,7 +108,7 @@
     // background-position: top left;
     background-size: 100vw ;
     background-repeat: no-repeat;
-    background-color: map_get($colors, primary) !important;
+    // background-color: map_get($colors, primary) !important;
 
     .privacy-iq{
         display: none
@@ -171,7 +171,7 @@ ion-content.page_settings {
 // pages/login
 // --------------------------------------------------
 .page_login {
-    @extend .primary-gradient-inverted;
+    // @extend .primary-gradient-inverted;
     line-height: 1.8em;
     text-align: center;
     text-align: center;
@@ -209,9 +209,9 @@ ion-content.page_settings {
     }
 
     .styled-bottom-row{
-        background-image: url('../assets/img/header.svg');
-        background-size: 100vw ;
-        background-repeat: no-repeat;
+        // background-image: url('../assets/img/header.svg');
+        // background-size: 100vw ;
+        // background-repeat: no-repeat;
         height: 30vh;
     }
     .login-top-image{
