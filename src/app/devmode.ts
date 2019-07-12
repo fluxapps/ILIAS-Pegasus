@@ -1,4 +1,6 @@
-import {isDefined, isFunction} from "ionic-angular/es2015/util/util";
+import {isDefined} from "./util/util.function";
+import {isFunction} from "util";
+
 //import {isDevMode as isAngularDevMode} from "@angular/core";
 
 /**
@@ -14,7 +16,7 @@ export function isDevMode(): boolean {
   const monitor: IonicDevServer = <IonicDevServer>window["IonicDevServer"];
 
   return    isDefined(monitor) &&
-            isFunction(monitor.handleError); 
+            isFunction(monitor.handleError);
             // ||
             // isAngularDevMode();
 }

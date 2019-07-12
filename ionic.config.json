@@ -1,8 +1,7 @@
 {
-  "name": "ILIAS-App",
+  "name": "ionic4-starter-app",
   "integrations": {
     "cordova": {}
   },
-  "type": "ionic-angular",
-  "id": "ch.studerraimann.ilias.offline"
+  "type": "angular"
 }

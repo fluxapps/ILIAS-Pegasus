@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-toolbar color="header-element">
+        <ion-title> <ion-icon [name]=iliasObject.presenter.icon()></ion-icon> &nbsp;{{ iliasObject.title }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content padding class="page_object_details">
+    <div padding *ngIf="iliasObject.repoPath">
+        <span *ngFor="let node of iliasObject.repoPath; let last = last">
+            <span>{{node}}</span>
+            <span *ngIf="! last"> » </span>
+        </span>
+    </div>
+    <div padding *ngIf="iliasObject.description">
+        {{ iliasObject.description}}
+    </div>
+    <p text-wrap class="padding" *ngFor="let action of actions">
+        <ion-button block (click)="executeAction(action)">{{ action.title }}</ion-button>
+    </p>
+    <ion-list>
+        <ion-item text-wrap *ngFor="let detail of details">
+            {{ detail.label | translate:{value: null} }}:
+            <span *ngIf="detail.translate"> {{ detail.value | translate:{value: null} }} </span>
+            <span *ngIf="!detail.translate"> {{ detail.value}} </span>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<!-- <ion-footer>
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button>
+                <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
+            </button>
+        </ion-buttons>
+        <div color="primary" *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
+    </ion-toolbar>
+</ion-footer> -->

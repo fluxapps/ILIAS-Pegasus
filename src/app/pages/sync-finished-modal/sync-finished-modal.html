@@ -1,0 +1,27 @@
+<ion-header>
+
+  <ion-toolbar color="primary">
+    <ion-buttons start>
+    <ion-button icon-only (click)="closeModal()">
+      <ion-icon name="close"></ion-icon>
+    </ion-button>
+    </ion-buttons>
+
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content padding>
+  <p>{{ 'sync.sync_finished_text' | translate:{totalItems: totalItems, updated:updated, uptodate:uptodate} }}</p>
+
+  <p *ngIf="tooBigs.length > 0">{{ 'sync.some_files_were_too_big' | translate:[] }}</p>
+  <ul>
+    <li *ngFor="let text of tooBigs">{{ text | async}}</li>
+  </ul>
+
+  <p *ngIf="noMoreSpace.length > 0">{{ 'sync.no_more_space' | translate:[] }}</p>
+  <ul>
+    <li *ngFor="let text of noMoreSpace">{{ text | async }}</li>
+  </ul>
+</ion-content>

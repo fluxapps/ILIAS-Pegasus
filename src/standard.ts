@@ -1,4 +1,4 @@
-import {Logging} from "./services/logging/logging.service";
+import {Logging} from "./app/services/logging/logging.service";
 
 /**
  * Needs to be executed somewhere during the bootstrap process

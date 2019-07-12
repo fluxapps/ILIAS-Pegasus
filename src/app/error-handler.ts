@@ -1,24 +1,25 @@
 import {ErrorHandler, Injectable} from "@angular/core";
-import {Alert, AlertController, AlertOptions, IonicErrorHandler} from "ionic-angular";
+import {AlertController} from "@ionic/angular";
+// TODO migration Alert, AlertOptions, IonicErrorHandler from ionic-angular
 import {isNullOrUndefined, isNumber, isObject, isString} from "util";
 import {isDevMode} from "./devmode";
 import {TranslateService} from "@ngx-translate/core";
-import {Logger} from "../services/logging/logging.api";
-import {Logging} from "../services/logging/logging.service";
-import {AlertButton} from "ionic-angular/components/alert/alert-options";
+import {Logger} from "./services/logging/logging.api";
+import {Logging} from "./services/logging/logging.service";
+// TODO migration import {AlertButton} from "@ionic/angular/components/alert/alert-options";
 // errors and exceptions
 import {Error} from "tslint/lib/error";
 import {TimeoutError} from "rxjs/Rx";
-import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "../providers/http";
-import {HardwareAccessError} from "../services/device/hardware-features/hardware-access.errors";
-import {FileErrorException} from "../exceptions/FileErrorException";
-import {CantOpenFileTypeException} from "../exceptions/CantOpenFileTypeException";
-import {NoWLANException} from "../exceptions/noWLANException";
-import {OfflineException} from "../exceptions/OfflineException";
-import {RESTAPIException} from "../exceptions/RESTAPIException";
+import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "./providers/http";
+import {HardwareAccessError} from "./services/device/hardware-features/hardware-access.errors";
+import {FileErrorException} from "./exceptions/FileErrorException";
+import {CantOpenFileTypeException} from "./exceptions/CantOpenFileTypeException";
+import {NoWLANException} from "./exceptions/noWLANException";
+import {OfflineException} from "./exceptions/OfflineException";
+import {RESTAPIException} from "./exceptions/RESTAPIException";
 
 interface AlertEntry {
-    alert: Alert,
+    // TODO migration alert: Alert,
     title: string,
     message: string,
     cnt: number
@@ -40,7 +41,7 @@ export class PegasusErrorHandler implements ErrorHandler {
 
     private readonly log: Logger = Logging.getLogger(PegasusErrorHandler.name);
 
-    constructor(private readonly ionicErrorHandler: IonicErrorHandler,
+    constructor(// TODO migration private readonly ionicErrorHandler: IonicErrorHandler,
                 private readonly alert: AlertController,
                 private readonly translate: TranslateService,) {
     }
@@ -126,14 +127,15 @@ export class PegasusErrorHandler implements ErrorHandler {
             this.log.error(() => `JSON of error: ${JSON.stringify(unwrappedError)}`);
 
             if (isDevMode()) {
-                this.ionicErrorHandler.handleError(error);
+                // TODO migration this.ionicErrorHandler.handleError(error);
             } else {
                 this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("something_went_wrong"));
             }
 
         } catch (err) {
-            this.log.warn(
-                () => `Error occurred during error handling: ${this.stringifyWithoutCyclicObjects(err)}, previous error ${this.stringifyWithoutCyclicObjects(error)}`
+            this.log.warn(() =>
+                `Error occurred during error handling: ${this.stringifyWithoutCyclicObjects(err)}, ` +
+                `previous error ${this.stringifyWithoutCyclicObjects(error)}`
             );
 
             this.log.error(() => `Error unhandled of type: ${err}`);
@@ -173,6 +175,7 @@ export class PegasusErrorHandler implements ErrorHandler {
     }
 
     private displayAlert(title: string, message: string): void {
+        /* TODO migration
         const alertEntry: AlertEntry = this.displayedAlerts.filter(e => e.title === title && e.message === message)[0];
         if(alertEntry === undefined) {
             const alert: Alert = this.alert.create(<AlertOptions>{
@@ -195,7 +198,7 @@ export class PegasusErrorHandler implements ErrorHandler {
         } else {
             alertEntry.cnt++;
             alertEntry.alert.setTitle(`${alertEntry.title} (${alertEntry.cnt})`);
-        }
+        }*/
     }
 
     private stringifyWithoutCyclicObjects(errorLike: undefined|null|string|number|object): string {

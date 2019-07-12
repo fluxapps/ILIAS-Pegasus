@@ -1,0 +1,101 @@
+<ion-header>
+    <ion-toolbar color="nobg-w" class=primary-gradient>
+        <ion-title>
+          <!-- <ion-icon name="stopwatch"></ion-icon> -->
+          {{ 'new-objects.title' | translate:{value: null} }}
+        </ion-title>
+        <ion-buttons end>
+            <ion-button menuToggle>
+                <ion-icon name="menu"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content  class="new-objects">
+
+    <ion-list text-wrap *ngIf="desktopItems && desktopItems.length == 0 && footerToolbar.isLoading == false">
+        <ion-item>{{ 'new-objects.no_new_items' | translate:[] }}</ion-item>
+    </ion-list>
+
+    <ion-grid *ngIf="desktopItems && desktopItems.length == 0 && footerToolbar.isLoading == true">
+        <ion-row>
+            <ion-col>
+                <ion-spinner class="centered"></ion-spinner>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-list class="ilias-object-list">
+        <!--<ion-item-sliding>-->
+            <div *ngFor="let desktopItem of desktopItems">
+                <ion-list-header no-lines>
+                    {{desktopItem.title}}
+                    <ion-button item-right light (click)="markDesktopItemAsSeen(desktopItem)">
+                        {{'remove' | translate:{value: null} }}
+                    </ion-button>
+                </ion-list-header>
+                <ion-card>
+                <ion-item-sliding text-wrap *ngFor="let object of objects[desktopItem.refId]">
+                    <ion-item (click)="onClick(object)" *ngIf="object">
+                      <ion-avatar item-start>
+                        <img [src]=object.presenter.icon() /><!-- TODO make relative? -->
+                      </ion-avatar>
+                        <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
+
+                        {{ object.presenter.title() }}
+                        <p class="object-flags">
+                            <ion-badge color="light" *ngIf="object.isFavorite">
+                                <ion-icon color="primary" name="star"></ion-icon>
+                            </ion-badge>
+
+                            <ion-badge color="light" *ngIf="object.isOfflineAvailable && (object.isContainer() || object.type == 'file')">
+                                <ion-icon name="cloud-download" [color]="!object.needsDownload? 'primary' : 'lightish'"></ion-icon>
+                            </ion-badge>
+
+                            <ion-badge *ngIf="object.isNew" color="light">
+                                <ion-icon color="primary">
+                                    {{'new' | translate:[] }}
+                                </ion-icon>
+                            </ion-badge>
+                            <ion-badge *ngIf="object.isUpdated" color="light">
+                                <ion-icon color="primary">
+                                    {{'updated' | translate:[] }}
+                                </ion-icon>
+                            </ion-badge>
+                        </p>
+
+                        <button class="ilias-list-action-button" ion-button round color="light"  item-right (click)="showActions(object)">
+                            <ion-icon name="more" color="primary"></ion-icon>
+                        </button>
+
+                    </ion-item>
+                    <ion-item-options side="right">
+                        <ion-button light (click)="markItemAsSeen(desktopItem, object.id)">
+                            <ion-icon name="trash"></ion-icon>
+                        </ion-button>
+                    </ion-item-options>
+                </ion-item-sliding>
+              </ion-card>
+            </div>
+
+        <!--</ion-item-sliding>-->
+    </ion-list>
+
+</ion-content>
+
+
+<!-- <ion-footer>
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button>
+                <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
+            </button>
+        </ion-buttons>
+        <ion-title color="primary" *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</ion-title>
+        <ion-buttons end>
+            <button ion-button color="primary" (click)="markAllAsSeen()" *ngIf="allObjects.length > 0">
+                {{ 'new-objects.mark_as_seen' | translate:{value: null} }}
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer> -->

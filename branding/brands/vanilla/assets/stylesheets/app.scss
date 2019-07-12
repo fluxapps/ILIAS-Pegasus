@@ -16,20 +16,9 @@ ion-icon {
       width: 1em;
       height: 1em;
     }
-  
-    &[class*="custom-info"] {
-      mask-image: url(../assets/icon/info.svg);
-    }
-    &[class*="custom-qrcode"] {
-      mask-image: url(../assets/qrcode.svg);
-    }
-    &[class*="custom-spades"] {
-      mask-image: url(../assets/spades.svg);
-    }
-  
   }
 
-.content, .ion-header, ion-navbar {
+.content, .ion-header, ion-toolbar {
     font-family: 'Raleway', sans-serif !important;
 }
 

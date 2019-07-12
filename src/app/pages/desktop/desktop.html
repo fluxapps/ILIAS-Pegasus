@@ -1,0 +1,60 @@
+<!--
+  Generated template for the DesktopPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header no-border no-shadow>
+		
+    <ion-toolbar color="nobg-w" class=top-header no-border no-shadow>
+       
+        <div no-lines color="nobg-w"  text-center text-wrap>
+            <ion-header class="main-header" no-border no-shadow>
+                                Home
+            </ion-header>
+				</div>
+			
+    </ion-toolbar>
+    
+</ion-header>
+
+
+<ion-content class="page_desktop" >
+
+      <ion-grid no-padding>
+          <ion-row>
+            <ion-col col-12 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
+              <ion-card class="tile tile-cours" (click)="switchTabs('content/0')" >
+                  <!-- <ion-icon name="ai-crs-outline" ></ion-icon> -->
+                  <img class=tile-image src="assets/icon/desktop_course.svg">
+                  <ion-card-header text-uppercase class=tile-title > KURSE & Gruppen </ion-card-header>
+              </ion-card>
+            </ion-col>
+            <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
+                <ion-card class=tile (click)="switchTabs('content/1')">
+                    <img class=tile-image src="assets/icon/desktop_favourites.svg">
+                    <ion-card-header class=tile-title> FAVORITEN </ion-card-header>
+                </ion-card>
+            </ion-col>
+            <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center >
+                <ion-card class="tile" (click)="switchTabs('news')">
+                    <img class=tile-image src="assets/icon/desktop_news.svg">
+                    <ion-card-header text-uppercase class=tile-title> news </ion-card-header>
+                </ion-card>
+              </ion-col>
+              <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
+                  <ion-card class="tile" (click)="openILIASRepository()">
+                      <img class=tile-image src="assets/icon/desktop_repository.svg">
+                      <ion-card-header text-uppercase class=tile-title> Magazin </ion-card-header>
+                  </ion-card>
+              </ion-col>
+              <ion-col col-6 col-sm-4 col-md-4 col-lg-3x col-xl-3 text-center>
+                <ion-card class="tile" (click)="switchTabs('menu')">
+                    <img class=tile-image src="assets/icon/desktop_menu.svg">
+                    <ion-card-header text-uppercase class=tile-title> Menu </ion-card-header>
+                </ion-card>
+            </ion-col>
+          </ion-row>
+      </ion-grid>
+
+</ion-content>
