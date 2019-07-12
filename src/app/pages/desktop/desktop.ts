@@ -31,7 +31,7 @@ export class DesktopPage {
   ) { }
 
   async switchTabs(url: string): Promise<void> {
-      this.navCtrl.navigateForward(`tabs/${url}`);
+      await this.navCtrl.navigateForward(`tabs/${url}`);
   }
 
   //Open repo in Browser inApp for iOS, external for Android

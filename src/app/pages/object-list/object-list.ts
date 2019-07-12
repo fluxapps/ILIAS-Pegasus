@@ -44,6 +44,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
 import {DataProvider} from "../../providers/data-provider.provider";
+import {ObjectList} from "aws-sdk/clients/s3";
 
 /**
  * Summary of the state of an object-list-page
@@ -62,10 +63,10 @@ interface PageState {
 })
 export class ObjectListPage {
     /**
-     * Public variables that determine which object is displayed
+     * these variables are used to navigate from a container into another one
      */
-    private static parent: {live: ILIASObject, favorite: ILIASObject} = {live: undefined, favorite: undefined};
-    private static favorite: boolean = false;
+    static child: {live: ILIASObject, favorites: ILIASObject} = {live: undefined, favorites: undefined};
+    private static favorites: boolean;
 
     /**
      * Objects under the given parent object
@@ -75,7 +76,7 @@ export class ObjectListPage {
     /**
      * The parent container object that was clicked to display the current objects
      */
-    private currentParent: ILIASObject;
+    private parent: ILIASObject;
     pageTitle: string;
     user: User;
     private state: PageState = {
@@ -113,38 +114,42 @@ export class ObjectListPage {
                 //TODO lp private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
-        this.readFavoritesParam();
+        this.determineParentAndFavorites();
 
-        if (this.currentParent) {
-            this.pageTitle = this.currentParent.title;
-            this.pageLayout = new PageLayout(this.currentParent.type);
-            this.timeline = new TimeLine(this.currentParent.type);
+        if (this.parent) {
+            this.pageTitle = this.parent.title;
+            this.pageLayout = new PageLayout(this.parent.type);
+            this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ""; // will be updated by the observer
-            const key: string = (this.state.favorites) ? "favorites.title" : "object-list.title";
+            const key: string = (ObjectListPage.favorites) ? "favorites.title" : "object-list.title";
             translate.get(key).subscribe((lng) => this.pageTitle = lng);
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
         }
     }
 
-    /**
-     * set the parent object for live-view or favorites, depending on which one is being displayed
-     */
-    static setParent(parent: ILIASObject): void {
-        if(ObjectListPage.favorite) ObjectListPage.parent.favorite = parent;
-        else ObjectListPage.parent.live = parent;
+    static setChild(child: ILIASObject): void {
+        if(ObjectListPage.favorites) ObjectListPage.child.favorites = child;
+        else ObjectListPage.child.live = child;
     }
 
     /**
-     * reading the favorites-field from the navigation-route
+     * reading the favorites-field from the navigation-route and setting the current parent
      */
-    private readFavoritesParam(): void {
+    private determineParentAndFavorites(): void {
         const map: ParamMap = this.route.snapshot.paramMap;
-        if(map.get("favorite") !== null) {
-            this.state.favorites = map.get("favorite") !== "0";
-            this.currentParent = this.state.favorites ? ObjectListPage.parent.favorite : ObjectListPage.parent.live;
+
+        if(map.get("favorite") !== null) ObjectListPage.favorites = map.get("favorite") !== "0";
+        if(map.get("root") !== null) {
+            if(ObjectListPage.favorites) ObjectListPage.child.favorites = undefined;
+            else ObjectListPage.child.live = undefined;
         }
+
+        this.state.favorites = ObjectListPage.favorites;
+        this.parent = (ObjectListPage.favorites) ? ObjectListPage.child.favorites : ObjectListPage.child.live;
+
+        console.log(`READING fav ${map.get("favorite")} root ${map.get("root")} STATE fav ${this.state.favorites} obj ${this.parent}`); //TODO migration
     }
 
     /**
@@ -168,12 +173,10 @@ export class ObjectListPage {
      * Updates the state-object of the page
      */
     updatePageState(): void {
-        this.readFavoritesParam();
-        this.currentParent = this.state.favorites ? ObjectListPage.parent.favorite : ObjectListPage.parent.live;
         this.state.online = window.navigator.onLine;
         this.state.loadingLive = SynchronizationService.state.liveLoading;
         this.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
-        this.state.desktop = this.currentParent === undefined;
+        this.state.desktop = this.parent === undefined;
     }
 
     /**
@@ -193,7 +196,7 @@ export class ObjectListPage {
         this.checkParent();
         const action: ILIASObjectAction = this.openInIliasActionFactory(
             this.translate.instant("actions.view_in_ilias"),
-            this.linkBuilder.default().target(this.currentParent.refId)
+            this.linkBuilder.default().target(this.parent.refId)
         );
         this.executeAction(action);
     }
@@ -205,7 +208,7 @@ export class ObjectListPage {
         this.checkParent();
         const action: ILIASObjectAction = this.openInIliasActionFactory(
             this.translate.instant("actions.view_in_ilias"),
-            this.linkBuilder.timeline().target(this.currentParent.refId)
+            this.linkBuilder.timeline().target(this.parent.refId)
         );
         this.executeAction(action);
     }
@@ -222,7 +225,7 @@ export class ObjectListPage {
      * @throws Exception if the parent is null
      */
     private checkParent(): void {
-        if (this.currentParent == undefined) {
+        if (this.parent == undefined) {
             throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
         }
     }
@@ -241,7 +244,7 @@ export class ObjectListPage {
             await this.ngZone.run(() => this.loadFavoritesObjectList());
         } else {
             if (this.state.online) await this.liveLoadContent();
-            await this.ngZone.run(() => this.loadCachedObjects(this.currentParent === undefined));
+            await this.ngZone.run(() => this.loadCachedObjects(this.parent === undefined));
         }
 
         if (event) event.target.complete();
@@ -256,7 +259,7 @@ export class ObjectListPage {
      */
     async refreshContent(): Promise<void> {
         if(this.state.favorites) await this.loadFavoritesObjectList();
-        else await this.loadCachedObjects(this.currentParent === undefined);
+        else await this.loadCachedObjects(this.parent === undefined);
         this.updatePageState();
     }
 
@@ -267,7 +270,7 @@ export class ObjectListPage {
     async liveLoadContent(): Promise<void> {
         try {
             Log.write(this, "Sync start", [], []);
-            await this.sync.liveLoad(this.currentParent);
+            await this.sync.liveLoad(this.parent);
         } catch (error) {
             Log.error(this, error);
             throw error;
@@ -279,7 +282,7 @@ export class ObjectListPage {
      * @returns {Promise<void>}
      */
     async loadFavoritesObjectList(): Promise<void> {
-        if(this.currentParent === undefined) {
+        if(this.parent === undefined) {
             await this.updateUser();
             Favorites.findByUserId(this.user.id)
                 .then(favorites => {
@@ -299,7 +302,7 @@ export class ObjectListPage {
             await this.updateUser();
             this.objects = (isDesktopObject) ?
                 await DesktopItem.findByUserId(this.user.id) :
-                await ILIASObject.findByParentRefId(this.currentParent.refId, this.user.id);
+                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
 
             this.objects.sort(ILIASObject.compare);
             return Promise.resolve();

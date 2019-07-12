@@ -26,6 +26,8 @@ server.config.json
 coverage/
 dist/
 node_modules/
+out-tsc/
+e2e/
 tmp/
 temp/
 hooks/

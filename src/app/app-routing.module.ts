@@ -8,6 +8,8 @@ import {DesktopPage} from "./pages/desktop/desktop";
 import {ObjectListPage} from "./pages/object-list/object-list";
 import {NewsPage} from "./pages/news/news";
 import {MenuPage} from "./pages/menu/menu";
+import {SettingsPage} from "./pages/settings/settings";
+import {InfoPage} from "./pages/info/info";
 
 const routes: Routes = [
     {path: "", redirectTo: "login", pathMatch: "full"},
@@ -16,11 +18,15 @@ const routes: Routes = [
         children: [
             {path: "", redirectTo: "home", pathMatch: "full"},
             {path: "home", component: DesktopPage},
+            {path: "content", component: ObjectListPage},
             {path: "content/:favorite", component: ObjectListPage},
+            {path: "content/:favorite/:root", component: ObjectListPage},
             {path: "news", component: NewsPage},
             {path: "menu", component: MenuPage},
         ]
-    }
+    },
+    {path: "settings", component: SettingsPage},
+    {path: "info", component: InfoPage}
 ];
 
 @NgModule({

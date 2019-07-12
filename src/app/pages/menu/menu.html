@@ -21,11 +21,11 @@
 
 <ion-content class="page_menu primary-gradient">
   <ion-list>
-    <ion-item button color=nobg-w (click)="openPage(settingsPage)">
+    <ion-item button color=nobg-w (click)="this.navCtrl.navigateForward('settings')">
         <ion-icon item-start name="settings"></ion-icon>
       Einstellungen
     </ion-item>
-    <ion-item button color=nobg-w (click)="openPageLazy('InfoPage')">
+    <ion-item button color=nobg-w (click)="this.navCtrl.navigateForward('info')">
         <ion-icon item-start name="information-circle"></ion-icon>
         Informationen
       </ion-item>

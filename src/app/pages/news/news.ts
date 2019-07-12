@@ -1,5 +1,5 @@
 /** angular */
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, NgZone} from "@angular/core";
 import {ModalController} from "@ionic/angular";
 /** models */
 import {ILIASObject} from "../../models/ilias-object";
@@ -44,21 +44,16 @@ export class NewsPage
         private readonly sync: SynchronizationService,
         private readonly footerToolbar: FooterToolbarService,
         private readonly modal: ModalController,
+        private readonly ngZone: NgZone,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
     ionViewWillEnter(): void {
-        this.startNewsSync();
+        this.startNewsSync().then(() => this.reloadView());
         this.log.debug(() => "News view initialized.");
-        this.reloadView();
     }
-
-    // ngOnInit(): void {
-    //     this.log.debug(() => "News view initialized.");
-    //     this.reloadView();
-    // }
 
     openNews(id: number, context: number): void {
         this.log.debug(() => `open news with id ${id}, context id ${context}`);
@@ -82,9 +77,11 @@ export class NewsPage
         }
     }
 
-    reloadView(): void {
-        this.fetchPresenterNewsTuples().then(
-            (newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems});
+    async reloadView(): Promise<void> {
+        await this.ngZone.run(() =>
+            this.fetchPresenterNewsTuples()
+                .then((newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems})
+        );
     }
 
     // ------------------- object-list duplicate ----------------------------

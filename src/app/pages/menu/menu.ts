@@ -16,18 +16,8 @@ import {SettingsPage} from "../settings/settings";
     templateUrl: "menu.html",
 })
 export class MenuPage {
-    settingsPage: any = SettingsPage;
 
     constructor(public navCtrl: NavController,  private readonly logoutCtrl: LogoutProvider,) {
-    }
-
-    async openPage(page: any): Promise<void> {
-        // TODO migration await this.navCtrl.push(page);
-    }
-
-
-    async openPageLazy(page: string): Promise<void> {
-        // TODO migration await this.navCtrl.push(page);
     }
 
     async logout(): Promise<void> {

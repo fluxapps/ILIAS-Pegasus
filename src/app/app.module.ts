@@ -31,7 +31,6 @@ import {DesktopPage} from "./pages/desktop/desktop";
 import {ObjectListPage} from "./pages/object-list/object-list";
 import {LoginPage} from "./pages/login/login";
 import {ModalPage} from "./pages/modal/modal";
-import {NewObjectsPage} from "./pages/new-objects/new-objects";
 import {ObjectDetailsPage} from "./pages/object-details/object-details";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {SettingsPage} from "./pages/settings/settings";
@@ -41,6 +40,7 @@ import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-f
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
 import {NewsPage} from "./pages/news/news";
 import {MenuPage} from "./pages/menu/menu";
+import {InfoPage} from "./pages/info/info";
 //import {LoadingPage} from "./fallback/loading/loading.component";
 //import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
@@ -85,6 +85,7 @@ import {ILIASRestProvider} from "./providers/ilias-rest.provider";
 import {ILIAS_REST, ILIASRestImpl, ILIASTokenManager, TOKEN_MANAGER} from "./providers/ilias/ilias.rest";
 import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "./providers/ilias/ilias.rest-api";
 import {NEWS_REST, NewsRestImpl} from "./providers/ilias/news.rest";
+import {NEWS_FEED, NewsFeedImpl} from "./services/news/news.feed";
 import {LogoutProvider} from "./providers/logout/logout";
 import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "./providers/repository/repository.user";
 /** configs */
@@ -93,7 +94,7 @@ import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "./config/ilias.
 import {TypeORMConfigurationAdapter} from "./config/typeORM-config";
 /** learnplaces */
 /*
-// pages for learnplaces
+// pages for learnplaces TODO lp
 import {ContentPage} from "../learnplace/pages/content/content.component";
 import {MapPage} from "../learnplace/pages/map/map.component";
 import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
@@ -151,10 +152,10 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         DesktopPage,
         ObjectListPage,
         TabmenuPage,
-        NewObjectsPage,
         SettingsPage,
         NewsPage,
         MenuPage,
+        InfoPage,
         ObjectDetailsPage,
         LoginPage,
         SynchronizationPage,
@@ -187,7 +188,8 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         DesktopPage,
         ObjectListPage,
         TabmenuPage,
-        NewObjectsPage,
+        MenuPage,
+        InfoPage,
         SettingsPage,
         NewsPage,
         ObjectDetailsPage,
@@ -197,7 +199,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //LoadingPage,
         OnboardingPage,
 
-        // from src/learnplace
+        // from src/learnplace TODO lp
         //MapPage,
         //TabsPage,
         //ContentPage,
@@ -247,7 +249,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             useClass: ILIASRestImpl
         },
 
-        // from  src/providers/ilias/news.rest
+        // from src/providers/ilias/news.rest
         {
             provide: NEWS_REST,
             useClass: NewsRestImpl
@@ -289,6 +291,12 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             useClass: NewsSynchronizationImpl
         },
 
+        // from src/providers/ilias/news.feed
+        {
+            provide: NEWS_FEED,
+            useClass: NewsFeedImpl
+        },
+
         // from  src/providers/repository/repository.user
         {
             provide: USER_REPOSITORY,
@@ -296,7 +304,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         },
 
         // from src/learnplace
-        /*{
+        /* TODO lp {
             provide: LEARNPLACE_REPOSITORY,
             useClass: TypeORMLearnplaceRepository
         },
@@ -416,7 +424,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
                 ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal);
             },
             deps: [InAppBrowser, Platform, ModalController]
-        },/*
+        },/* TODO lp
         AlwaysStrategy,
         NeverStrategy,
         OnlyAtPlaceStrategy,
