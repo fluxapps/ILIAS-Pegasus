@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="300000000" id="ch.studerraimann.ilias.mfkjusb" ios-CFBundleVersion="3.0.0.0000" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Digitaler Weiterbildungscampus</name>
+<widget android-versionCode="301000000" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="3.0.1.0000" version="3.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
     <content src="index.html" />
@@ -131,6 +131,7 @@
         <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
+    <allow-navigation href="http://192.168.1.106:8100" sessionid="a18567bc" />
     <engine name="android" spec="8.0.0" />
-    <engine name="ios" spec="5.0.1" />
+    <engine name="ios" spec="~5.0.1" />
 </widget>
