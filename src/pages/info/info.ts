@@ -1,6 +1,7 @@
 import {Component} from "@angular/core";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {IonicPage} from "ionic-angular";
+import { AppVersion } from "@ionic-native/app-version";
 
 /*
   Generated class for the InfoPage page.
@@ -16,10 +17,15 @@ import {IonicPage} from "ionic-angular";
 export class InfoPage {
 
   tab: string = "info";
+  readonly appVersionStr: Promise<string>;
 
   constructor(
-    private readonly browser: InAppBrowser
-  ) {}
+    private readonly browser: InAppBrowser,
+    readonly appVersionPlugin: AppVersion
+  ) {
+
+    this.appVersionStr = this.appVersionPlugin.getVersionNumber();
+  }
 
   // call(number) {
   //   (<any> window).location = number;

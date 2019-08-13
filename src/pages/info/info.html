@@ -20,8 +20,23 @@
       <ion-card padding class="version-card">
         <ion-card-header>ILIAS Pegasus</ion-card-header>
         <ion-card-content>
-          <p>Version 3.0.0</p>
+          <p>Version {{appVersionStr | async}}</p>
         </ion-card-content>
+      </ion-card>
+      <ion-card padding class="branded-card">
+          <!-- <ion-avatar item-start> -->
+              <img padding src="assets/img/fau.svg">
+            <!-- </ion-item> -->
+          <!-- </ion-avatar> -->
+          <ion-card-header>Anpassung für StudOn</ion-card-header>
+          <ion-card-content>
+            <p>Die Bereitstellung und Anpassung der App für die FAU wurde aus
+            Studienzuschüssen finanziert. Das StudOn-Team am Institut für
+            Lern-Innovation betreut die Einführung und Nutzung der App.</p>
+          </ion-card-content>
+            <button ion-button color="primary" clear small (click)="browse('HTTPS://WWW.STUDON.FAU.DE')">
+              <ion-icon name="globe"></ion-icon>HTTPS://WWW.STUDON.FAU.DE
+            </button>
       </ion-card>
       <ion-card padding class="version-card-iq">
         <ion-card-header>Lernwelt</ion-card-header>
