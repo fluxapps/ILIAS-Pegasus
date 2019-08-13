@@ -13,11 +13,12 @@ export class ShowDetailsPageAction extends ILIASObjectAction {
 
     execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
-            /* TODO migration this.nav.push(ObjectDetailsPage, {object: this.object}).then(() => {
+            ObjectDetailsPage.setObject(this.object);
+            this.nav.navigateForward("tabs/content/details").then(() => {
                 resolve(new ILIASObjectActionNoMessage());
             }).catch(error =>{
                 reject(error);
-            });*/
+            });
         });
     }
 

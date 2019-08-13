@@ -45,9 +45,20 @@ import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {ObjectList} from "aws-sdk/clients/s3";
+import {Integer} from "aws-sdk/clients/rds";
+import {int} from "aws-sdk/clients/datapipeline";
 
 /**
- * Summary of the state of an object-list-page
+ * Used for navigation from one container into another one
+ */
+interface PageNav {
+    favorites: boolean,
+    child: {live: ILIASObject, favorites: ILIASObject},
+    depth: number
+}
+
+/**
+ * Summarizes the state of the currently displayed object-list-page
  */
 interface PageState {
     favorites: boolean,
@@ -57,28 +68,19 @@ interface PageState {
     refreshing: boolean,
     desktop: boolean,
 }
+
 @Component({
     selector: "page-object-list",
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
-    /**
-     * these variables are used to navigate from a container into another one
-     */
-    static child: {live: ILIASObject, favorites: ILIASObject} = {live: undefined, favorites: undefined};
-    private static favorites: boolean;
 
-    /**
-     * Objects under the given parent object
-     */
-    objects: Array<ILIASObject> = [];
+    private static nav: PageNav = {
+        favorites: undefined,
+        child: {live: undefined, favorites: undefined},
+        depth: undefined
+    };
 
-    /**
-     * The parent container object that was clicked to display the current objects
-     */
-    private parent: ILIASObject;
-    pageTitle: string;
-    user: User;
     private state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -88,10 +90,14 @@ export class ObjectListPage {
         desktop: undefined
     };
 
-    private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
+    private user: User;
+    private pageTitle: string;
+    private parent: ILIASObject;
+    private content: Array<ILIASObject> = [];
 
-    readonly pageLayout: PageLayout;
-    readonly timeline: TimeLine;
+    private readonly pageLayout: PageLayout;
+    private readonly timeline: TimeLine;
+    private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
     constructor(private readonly nav: NavController,
                 private readonly route: ActivatedRoute,
@@ -114,7 +120,7 @@ export class ObjectListPage {
                 //TODO lp private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {
-        this.determineParentAndFavorites();
+        this.getNavigation();
 
         if (this.parent) {
             this.pageTitle = this.parent.title;
@@ -122,34 +128,56 @@ export class ObjectListPage {
             this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = ""; // will be updated by the observer
-            const key: string = (ObjectListPage.favorites) ? "favorites.title" : "object-list.title";
+            const key: string = (ObjectListPage.nav.favorites) ? "favorites.title" : "object-list.title";
             translate.get(key).subscribe((lng) => this.pageTitle = lng);
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
         }
     }
 
-    static setChild(child: ILIASObject): void {
-        if(ObjectListPage.favorites) ObjectListPage.child.favorites = child;
-        else ObjectListPage.child.live = child;
+    /**
+     * setting the container whose content will be displayed
+     */
+    static setNavChild(child: ILIASObject): void {
+        if(ObjectListPage.nav.favorites) ObjectListPage.nav.child.favorites = child;
+        else ObjectListPage.nav.child.live = child;
+    }
+
+    /**
+     * getting the depth of the currently displayed container
+     */
+    static getNavDepth(): number {
+        return ObjectListPage.nav.depth;
+    }
+
+    /**
+     * getting a bool representing whether the current container is a favorite or not
+     */
+    static getNavFav(): boolean {
+        return ObjectListPage.nav.favorites;
     }
 
     /**
      * reading the favorites-field from the navigation-route and setting the current parent
      */
-    private determineParentAndFavorites(): void {
+    private getNavigation(): void {
         const map: ParamMap = this.route.snapshot.paramMap;
 
-        if(map.get("favorite") !== null) ObjectListPage.favorites = map.get("favorite") !== "0";
-        if(map.get("root") !== null) {
-            if(ObjectListPage.favorites) ObjectListPage.child.favorites = undefined;
-            else ObjectListPage.child.live = undefined;
+        let depth: number = 0;
+        if (map.get("depth") !== null)
+            depth  = parseInt(map.get("depth"), 10);
+        if (!depth) {
+            if (ObjectListPage.nav.favorites) ObjectListPage.nav.child.favorites = undefined;
+            else ObjectListPage.nav.child.live = undefined;
         }
+        ObjectListPage.nav.depth = depth;
 
-        this.state.favorites = ObjectListPage.favorites;
-        this.parent = (ObjectListPage.favorites) ? ObjectListPage.child.favorites : ObjectListPage.child.live;
+        let favorites: boolean = false;
+        if (map.get("favorite") !== null) favorites = map.get("favorite") !== "0";
+        ObjectListPage.nav.favorites = favorites;
 
-        console.log(`READING fav ${map.get("favorite")} root ${map.get("root")} STATE fav ${this.state.favorites} obj ${this.parent}`); //TODO migration
+        this.state.favorites = ObjectListPage.nav.favorites;
+        this.parent = (ObjectListPage.nav.favorites) ? ObjectListPage.nav.child.favorites : ObjectListPage.nav.child.live;
     }
 
     /**
@@ -211,13 +239,6 @@ export class ObjectListPage {
             this.linkBuilder.timeline().target(this.parent.refId)
         );
         this.executeAction(action);
-    }
-
-    /**
-     * Switches to Favourites-tab
-     */
-    protected switchToFavoritesTab(): void {
-        //TODO migration this.nav.parent.select(3);
     }
 
     /**
@@ -287,7 +308,7 @@ export class ObjectListPage {
             Favorites.findByUserId(this.user.id)
                 .then(favorites => {
                     favorites.sort(ILIASObject.compare);
-                    this.objects = favorites;
+                    this.content = favorites;
                 });
         }
         else await this.loadCachedObjects(false);
@@ -300,11 +321,11 @@ export class ObjectListPage {
     private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
             await this.updateUser();
-            this.objects = (isDesktopObject) ?
+            this.content = (isDesktopObject) ?
                 await DesktopItem.findByUserId(this.user.id) :
                 await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
 
-            this.objects.sort(ILIASObject.compare);
+            this.content.sort(ILIASObject.compare);
             return Promise.resolve();
         } catch (error) {
             return Promise.reject(error);
@@ -409,17 +430,15 @@ export class ObjectListPage {
         this.applyRemoveLocalFileAction(actions, iliasObject);
         this.applyRemoveLearnplaceAction(actions, iliasObject);
 
-        /* TODO migration
-        const buttons: Array<ActionSheetButton> = actions.map(action => {
-
-            return <ActionSheetButton>{
+        const buttons: any = actions.map(action => {
+            return {
                 text: action.title,
                 handler: (): void => {
                     // This action displays an alert before it gets executed
                     if (action.alert()) {
                         this.alert.create({
-                            title: action.alert().title,
-                            subTitle: action.alert().subTitle,
+                            header: action.alert().title,
+                            subHeader: action.alert().subTitle,
                             buttons: [
                                 {
                                     text: this.translate.instant("cancel"),
@@ -432,7 +451,7 @@ export class ObjectListPage {
                                     }
                                 }
                             ]
-                        }).present();
+                        }).then(it => it.present());
                     } else {
                         this.executeAction(action);
                     }
@@ -441,19 +460,17 @@ export class ObjectListPage {
 
         });
 
-        buttons.push(<ActionSheetButton>{
+        buttons.push({
             text: this.translate.instant("cancel"),
             role: "cancel",
             handler: (): void => {
             }
         });
 
-        const options: ActionSheetOptions = {
-            title: iliasObject.title,
+        this.actionSheet.create({
+            header: iliasObject.title,
             buttons: buttons
-        };
-        const actionSheet: ActionSheet = this.actionSheet.create(options);
-        actionSheet.present();*/
+        }).then(it => it.present());
     }
 
     private applyDefaultActions(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {

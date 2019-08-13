@@ -12,11 +12,12 @@ export class ShowObjectListPageAction extends ILIASObjectAction {
     }
 
     execute(): Promise<ILIASObjectActionResult> {
-        ObjectListPage.setChild(this.object);
+        ObjectListPage.setNavChild(this.object);
         return new Promise((resolve, reject) => {
-            this.navCtrl.navigateForward("tabs/content")
+            this.navCtrl.navigateForward(`tabs/content/${ObjectListPage.getNavDepth()+1}/${ObjectListPage.getNavFav() ? "1" : "0"}`)
                 .then(() => resolve(new ILIASObjectActionNoMessage()))
-                .catch(reject)});
+                .catch(reject)
+        });
     }
 
     alert(): ILIASObjectActionAlert|any {

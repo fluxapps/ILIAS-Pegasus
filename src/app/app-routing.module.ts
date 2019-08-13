@@ -10,6 +10,7 @@ import {NewsPage} from "./pages/news/news";
 import {MenuPage} from "./pages/menu/menu";
 import {SettingsPage} from "./pages/settings/settings";
 import {InfoPage} from "./pages/info/info";
+import {ObjectDetailsPage} from "./pages/object-details/object-details";
 
 const routes: Routes = [
     {path: "", redirectTo: "login", pathMatch: "full"},
@@ -18,9 +19,11 @@ const routes: Routes = [
         children: [
             {path: "", redirectTo: "home", pathMatch: "full"},
             {path: "home", component: DesktopPage},
-            {path: "content", component: ObjectListPage},
-            {path: "content/:favorite", component: ObjectListPage},
-            {path: "content/:favorite/:root", component: ObjectListPage},
+            {path: "content", component: ObjectListPage,
+                children: [{path: "details", component: ObjectDetailsPage}]
+            },
+            {path: "content/:depth", component: ObjectListPage},
+            {path: "content/:depth/:favorite", component: ObjectListPage},
             {path: "news", component: NewsPage},
             {path: "menu", component: MenuPage},
         ]

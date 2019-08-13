@@ -26,22 +26,22 @@ import {Logging} from "../../services/logging/logging.service";
 import {ILIASObject} from "../../models/ilias-object";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
+import {ObjectListPage} from "../object-list/object-list";
 
 @Component({
-    templateUrl: "object-details.html"
+    selector: "object-details-list",
+    templateUrl: "object-details.html",
 })
 export class ObjectDetailsPage {
 
-    private readonly log: Logger = Logging.getLogger(ObjectDetailsPage.name);
-
-    iliasObject: ILIASObject;
+    static iliasObject: ILIASObject;
 
     actions: Array<ILIASObjectAction>;
-
     /**
      * Holds the details of the current displayed ILIASObject
      */
     details: Array<{label: string, value: string}>;
+    private readonly log: Logger = Logging.getLogger(ObjectDetailsPage.name);
 
     constructor(public nav: NavController,
                 public dataProvider: DataProvider,
@@ -55,10 +55,12 @@ export class ObjectDetailsPage {
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-                params: NavParams) {
-        this.iliasObject = params.get("object");
-        Log.describe(this, "Showing details of: ", this.iliasObject);
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) {
+        Log.describe(this, "Showing details of: ", ObjectDetailsPage.iliasObject);
+    }
+
+    static setObject(object: ILIASObject): void {
+        ObjectDetailsPage.iliasObject = object;
     }
 
     ionViewDidLoad(): void {
@@ -126,7 +128,7 @@ export class ObjectDetailsPage {
     }
 
     private loadObjectDetails(): void {
-        this.iliasObject.presenter.details().then(details => {
+        ObjectDetailsPage.iliasObject.presenter.details().then(details => {
             Log.describe(this, "Details are displayed: ", details);
             this.details = details;
         });
@@ -134,24 +136,24 @@ export class ObjectDetailsPage {
 
     private loadAvailableActions(): void {
         this.actions = [
-          this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(this.iliasObject.refId))
+          this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(ObjectDetailsPage.iliasObject.refId))
         ];
-        if (this.iliasObject.isContainer() && !this.iliasObject.isLinked()) {
-            if (!this.iliasObject.isFavorite) {
+        if (ObjectDetailsPage.iliasObject.isContainer() && !ObjectDetailsPage.iliasObject.isLinked()) {
+            if (!ObjectDetailsPage.iliasObject.isFavorite) {
                 this.actions.push(new MarkAsFavoriteAction(
                   this.translate.instant("actions.mark_as_favorite"),
-                  this.iliasObject,
+                    ObjectDetailsPage.iliasObject,
                   this.sync)
                 );
-            } else if (this.iliasObject.isFavorite && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+            } else if (ObjectDetailsPage.iliasObject.isFavorite && ObjectDetailsPage.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject,
+                    ObjectDetailsPage.iliasObject,
                   this.file)
                 );
                 this.actions.push(new SynchronizeAction(
                   this.translate.instant("actions.synchronize"),
-                  this.iliasObject,
+                    ObjectDetailsPage.iliasObject,
                   this.sync,
                   this.modal,
                   this.translate)
@@ -159,29 +161,29 @@ export class ObjectDetailsPage {
             }
             this.actions.push(new RemoveLocalFilesAction(
               this.translate.instant("actions.remove_local_files"),
-              this.iliasObject,
+                ObjectDetailsPage.iliasObject,
               this.file,
               this.translate)
             );
         }
-        if (this.iliasObject.type == "file") {
-            this.file.existsFile(this.iliasObject).then(() => {
-                this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.iliasObject, this.file));
-                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.iliasObject,
+        if (ObjectDetailsPage.iliasObject.type == "file") {
+            this.file.existsFile(ObjectDetailsPage.iliasObject).then(() => {
+                this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), ObjectDetailsPage.iliasObject, this.file));
+                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), ObjectDetailsPage.iliasObject,
                     this.file, this.translate));
             }, () => {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
-            if (!this.iliasObject.isFavorite) {
+            if (!ObjectDetailsPage.iliasObject.isFavorite) {
                 this.actions.push(new MarkAsFavoriteAction(
                   this.translate.instant("actions.mark_as_favorite"),
-                  this.iliasObject,
+                    ObjectDetailsPage.iliasObject,
                   this.sync)
                 );
-            } else if (this.iliasObject.isFavorite && this.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+            } else if (ObjectDetailsPage.iliasObject.isFavorite && ObjectDetailsPage.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
                   this.translate.instant("actions.unmark_as_favorite"),
-                  this.iliasObject,
+                    ObjectDetailsPage.iliasObject,
                   this.file)
                 );
             }

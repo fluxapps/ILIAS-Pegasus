@@ -1,23 +1,27 @@
 <ion-header id="header-object-list">
     <ion-toolbar color="header-element">
 
-        <ion-title>
+        <ion-buttons>
+            <ion-back-button slot="start"></ion-back-button>
+        </ion-buttons>
+
+        <ion-title slot="start">
             {{ pageTitle }}
         </ion-title>
 
-        <ion-buttons *ngIf="!checkPageState({favorites: false, online: false})" end>
+        <ion-buttons *ngIf="!checkPageState({favorites: false, online: false})" slot="end">
             <div style="display:inline" *ngIf="parent !== undefined">
-                <ion-button icon-only clear *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
-                    <ion-icon name="star-outline" color="light"></ion-icon>
+                <ion-button *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
+                    add<ion-icon name="star-outline" color="light"></ion-icon>
                 </ion-button>
-                <ion-button icon-only clear *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
-                    <ion-icon name="star" color="light"></ion-icon>
+                <ion-button *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
+                    rem<ion-icon name="star" color="light"></ion-icon>
                 </ion-button>
-                <ion-button icon-only clear *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
-                    <ion-icon name="md-download" color="light"></ion-icon>
+                <ion-button *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
+                    load<ion-icon name="md-download" color="light"></ion-icon>
                 </ion-button>
-                <ion-button icon-only clear (click)="showActions(parent);$event.stopPropagation();">
-                    <ion-icon name="md-more" color="light"></ion-icon>
+                <ion-button (click)="showActions(parent);$event.stopPropagation();">
+                    ...<ion-icon name="md-more" color="light"></ion-icon>
                 </ion-button>
             </div>
         </ion-buttons>
@@ -57,7 +61,7 @@
     <div class="" *ngIf="parent !== undefined">
       <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
         <ion-avatar item-start>
-            <img [src]="pageLayout.icon"><!-- TODO make relative? -->
+            <img [src]="pageLayout.icon">
         </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
@@ -74,7 +78,7 @@
     <!-- </ion-item-divider> -->
     <!-- </ion-list-header> -->
 
-            <ion-item button detail-none text-wrap class="object-list-item bottom-line list-element" *ngFor="let object of objects" (click)="onClick(object)" color="list-element">
+            <ion-item button detail-none text-wrap class="object-list-item bottom-line list-element" *ngFor="let object of content" (click)="onClick(object)" color="list-element">
 
                 <ion-avatar item-start>
                     <img [src]="object.presenter.icon()">
@@ -95,17 +99,17 @@
                         <ion-icon color="primary" name="download"></ion-icon>
                     </ion-badge>
                 </p>-->
-                <ion-button icon-only item-end clear *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
-                    <ion-icon name="star-outline" color="primary"></ion-icon>
+                <ion-button slot="end" *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
+                    add<ion-icon name="star-outline" color="primary"></ion-icon>
                 </ion-button>
-                <ion-button icon-only item-end clear *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
-                    <ion-icon name="star" color="primary"></ion-icon>
+                <ion-button slot="end" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
+                    rem<ion-icon name="star" color="primary"></ion-icon>
                 </ion-button>
-                <ion-button icon-only item-end clear *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
-                    <ion-icon name="md-download" color="primary"></ion-icon>
+                <ion-button slot="end" *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
+                    load<ion-icon name="md-download" color="primary"></ion-icon>
                 </ion-button>
-                <ion-button icon-only item-end clear (click)="showActions(object);$event.stopPropagation();">
-                    <ion-icon name="md-more" color="primary"></ion-icon>
+                <ion-button slot="end" (click)="showActions(object);$event.stopPropagation();">
+                    ...<ion-icon name="md-more" color="primary"></ion-icon>
                 </ion-button>
                 <!--<button class="ilias-list-action-button" ion-button round color="light" item-right (click)="showActions(object)">
                     <ion-icon name="more" color="primary"></ion-icon>
@@ -114,7 +118,7 @@
 
         </ion-item-group>
             <!-- status : user in favorites, but nothing added -->
-        <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !objects.length">
+        <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !content.length">
             <ion-row justify-content-center align-items-center>
                 <ion-col col-12 text-center>
                     <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
@@ -137,11 +141,6 @@
         <ion-row>
             <ion-col col-12>
                 <ion-label text-center color="lightish" text-wrap>{{ 'object-list.offline' | translate:[] }}</ion-label>
-            </ion-col>
-        </ion-row>
-        <ion-row> 
-            <ion-col col-12>
-                <ion-button outline round block (click)="switchToFavoritesTab()">{{ 'favorites.title' | translate:[] }}</ion-button>
             </ion-col>
         </ion-row>
     </ion-grid>
