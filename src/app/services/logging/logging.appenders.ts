@@ -8,26 +8,27 @@ import {LogEntry, LogLevel, LogLevelAppender} from "./logging.api";
  */
 export class ConsoleLogAppender extends LogLevelAppender {
 
-  protected write(logEntry: LogEntry): void {
-      const time: Date = new Date(logEntry.time);
-      const message: string = `[${time.toLocaleString()}] [${LogLevel[logEntry.level]}] ${logEntry.location} - ${logEntry.message()}`;
-      switch (logEntry.level) {
-          case LogLevel.TRACE:
-          case LogLevel.DEBUG:
-              //console.trace will show stacktrace which is to verbose
-              //console.debug will not show up in the ionic remote logs
-              console.log(message);
-              return;
-          case LogLevel.INFO:
-              console.info(message);
-              return;
-          case LogLevel.WARN:
-              console.warn(message);
-              return;
-          case LogLevel.ERROR:
-          case LogLevel.FATAL:
-              console.error(message);
-              return;
-      }
-  }
+    protected write(logEntry: LogEntry): void {
+        const time: Date = new Date(logEntry.time);
+        const message: string = `[${time.toLocaleString()}] [${LogLevel[logEntry.level]}] ${logEntry.location} - ${logEntry.message()}`;
+        switch (logEntry.level) {
+            case LogLevel.TRACE:
+            case LogLevel.DEBUG:
+                //console.trace will show stacktrace which is to verbose
+                //console.debug will not show up in the ionic remote logs
+                console.log(message);
+                return;
+            case LogLevel.INFO:
+                console.info(message);
+                return;
+            case LogLevel.WARN:
+                console.warn(message);
+                return;
+            case LogLevel.ERROR:
+            case LogLevel.FATAL:
+                console.error(message);
+                return;
+        }
+    }
+
 }

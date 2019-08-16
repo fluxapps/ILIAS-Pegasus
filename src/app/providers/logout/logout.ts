@@ -1,7 +1,7 @@
 /** angular */
 import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
-import {ToastController} from "@ionic/angular";
+import {NavController, ToastController} from "@ionic/angular";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
 import {User} from "../../models/user";
@@ -25,9 +25,8 @@ export class LogoutProvider {
   constructor(public http: HttpClient,
               private readonly toast: ToastController,
               private readonly translate: TranslateService,
-    ) {
-    console.log("Hello LogoutProvider Provider");
-  }
+              private readonly nav: NavController
+    ) {}
 
   async logout(): Promise<void> {
     // await this.menu.close();
@@ -41,7 +40,7 @@ export class LogoutProvider {
     await user.save();
 
     this.loggedIn = false;
-    //TODO migration await this.appCtrl.getRootNav().setRoot(LoginPage);
+    this.nav.navigateRoot("");
 
     await this.toast.create({
       message: this.translate.instant("logout.logged_out"),

@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {Config, Events, MenuController, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
+import {Config, Events, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
@@ -25,6 +25,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {Router} from "@angular/router";
+import {Toast} from "@ionic-native/toast/ngx";
 
 @Component({
     selector: "app-root",
@@ -51,7 +52,6 @@ export class AppComponent {
         private readonly navCtrl: NavController,
         private readonly router: Router,
         private readonly platform: Platform,
-        private readonly menu: MenuController,
         private readonly translate: TranslateService,
         private readonly event: Events,
         private readonly toast: ToastController,
@@ -179,8 +179,6 @@ export class AppComponent {
 
     // TODO migration Delete as it is now in logout provider
     async logout(): Promise<void> {
-        await this.menu.close();
-
         const user: User = await User.currentUser();
         user.accessToken = undefined;
         user.refreshToken = undefined;
@@ -198,32 +196,52 @@ export class AppComponent {
      * Registers a action for the back button.
      */
     private defineBackButtonAction(): void {
+        let backButtonTapped: boolean = false;
 
-        const backbuttonTapped: number = 0;
+        this.platform.backButton.subscribeWithPriority(1, () => {
+            const url: string = this.router.url;
+            let action: string = "back";
 
-        /* TODO migration this.platform.registerBackButtonAction(() => {
-        if (this.menu.isOpen()) {
-          this.menu.close();
-          return;
-        }
-        if (!this.nav.canGoBack()) {
-          if (backbuttonTapped == 0) {
-            backbuttonTapped = 1;
-            const toast: Toast = this.toast.create({
-              message: this.translate.instant("message.back_to_exit"),
-              duration: 3000
-            });
-            toast.present();
-            setTimeout(() => {
-              backbuttonTapped = 0;
-            }, 3000);
-          } else {
-            this.platform.exitApp();
-          }
-        } else {
-          this.nav.pop();
-        }
-      });*/
+            if (
+                url.match(/content\/0/) ||
+                url.match(/content$/) ||
+                url.match(/news$/) ||
+                url.match(/menu$/)
+            ) {
+                action = "to_home";
+            }
+
+            if (url.match(/home$/)) {
+                action = (backButtonTapped) ? "close" : "ask_close";
+            }
+
+            switch (action) {
+
+                case "to_home":
+                    this.navCtrl.navigateRoot("tabs");
+                    break;
+
+                case "ask_close":
+                    backButtonTapped = true;
+                    setTimeout(() => {
+                        backButtonTapped = false;
+                    }, 3000);
+                    this.toast.create({
+                        message: this.translate.instant("message.back_to_exit"),
+                        duration: 3000
+                    }).then(function (it) { return it.present(); });
+                    break;
+
+                case "close":
+                    navigator["app"].exitApp();
+                    break;
+
+                default:
+                case "back":
+                    this.navCtrl.back();
+
+            }
+        });
     }
 
     // tslint:disable-next-line:typedef

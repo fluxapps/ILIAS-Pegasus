@@ -20,9 +20,9 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
+    selector: "page-settings",
     templateUrl: "settings.html"
 })
-
 export class SettingsPage {
 
     settingsMode: string = "general";

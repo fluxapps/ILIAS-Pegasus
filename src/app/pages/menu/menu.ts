@@ -20,6 +20,10 @@ export class MenuPage {
     constructor(public navCtrl: NavController,  private readonly logoutCtrl: LogoutProvider,) {
     }
 
+    async navigateTo(url: string): Promise<void> {
+        await this.navCtrl.navigateForward(`tabs/menu/${url}`);
+    }
+
     async logout(): Promise<void> {
         await this.logoutCtrl.logout()
     }

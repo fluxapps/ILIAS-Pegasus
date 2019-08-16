@@ -19,21 +19,21 @@ const routes: Routes = [
         children: [
             {path: "", redirectTo: "home", pathMatch: "full"},
             {path: "home", component: DesktopPage},
-            {path: "content", component: ObjectListPage,
-                children: [{path: "details", component: ObjectDetailsPage}]
-            },
-            {path: "content/:depth", component: ObjectListPage},
             {path: "content/:depth/:favorite", component: ObjectListPage},
+            {path: "content/details", component: ObjectDetailsPage},
             {path: "news", component: NewsPage},
-            {path: "menu", component: MenuPage},
+            {path: "menu/main", component: MenuPage},
+            {path: "menu/settings", component: SettingsPage},
+            {path: "menu/info", component: InfoPage}
         ]
-    },
-    {path: "settings", component: SettingsPage},
-    {path: "info", component: InfoPage}
+    }
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
+    imports: [RouterModule.forRoot(
+        routes,
+        //{enableTracing: true} // uncomment to log all navigation-events
+    )],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }

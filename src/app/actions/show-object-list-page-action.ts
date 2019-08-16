@@ -14,7 +14,7 @@ export class ShowObjectListPageAction extends ILIASObjectAction {
     execute(): Promise<ILIASObjectActionResult> {
         ObjectListPage.setNavChild(this.object);
         return new Promise((resolve, reject) => {
-            this.navCtrl.navigateForward(`tabs/content/${ObjectListPage.getNavDepth()+1}/${ObjectListPage.getNavFav() ? "1" : "0"}`)
+            this.navCtrl.navigateForward(`tabs/content/${ObjectListPage.getNavDepth()+1}/-1}`)
                 .then(() => resolve(new ILIASObjectActionNoMessage()))
                 .catch(reject)
         });

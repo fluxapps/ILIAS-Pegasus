@@ -1,31 +1,33 @@
 <ion-header id="header-object-list">
     <ion-toolbar color="header-element">
+        <ion-row>
 
-        <ion-buttons>
-            <ion-back-button slot="start"></ion-back-button>
-        </ion-buttons>
+            <ion-buttons *ngIf="!checkPageState({desktop: true})">
+                <ion-button (click)="navigateBack()"><ion-icon name="arrow-back"></ion-icon></ion-button>
+            </ion-buttons>
 
-        <ion-title slot="start">
-            {{ pageTitle }}
-        </ion-title>
+            <ion-title>
+                {{ pageTitle }}
+            </ion-title>
 
-        <ion-buttons *ngIf="!checkPageState({favorites: false, online: false})" slot="end">
-            <div style="display:inline" *ngIf="parent !== undefined">
-                <ion-button *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
-                    add<ion-icon name="star-outline" color="light"></ion-icon>
-                </ion-button>
-                <ion-button *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
-                    rem<ion-icon name="star" color="light"></ion-icon>
-                </ion-button>
-                <ion-button *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
-                    load<ion-icon name="md-download" color="light"></ion-icon>
-                </ion-button>
-                <ion-button (click)="showActions(parent);$event.stopPropagation();">
-                    ...<ion-icon name="md-more" color="light"></ion-icon>
-                </ion-button>
-            </div>
-        </ion-buttons>
+            <ion-buttons *ngIf="!checkPageState({favorites: false, online: false})">
+                <div style="display:inline" *ngIf="parent !== undefined">
+                    <ion-button *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
+                        add<ion-icon name="star-outline" color="light"></ion-icon>
+                    </ion-button>
+                    <ion-button *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
+                        rem<ion-icon name="star" color="light"></ion-icon>
+                    </ion-button>
+                    <ion-button *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
+                        load<ion-icon name="md-download" color="light"></ion-icon>
+                    </ion-button>
+                    <ion-button (click)="showActions(parent);$event.stopPropagation();">
+                        ...<ion-icon name="md-more" color="light"></ion-icon>
+                    </ion-button>
+                </div>
+            </ion-buttons>
 
+        </ion-row>
     </ion-toolbar>
 </ion-header>
 

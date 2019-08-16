@@ -1,5 +1,5 @@
 /** angular */
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, NgZone} from "@angular/core";
 import {AlertController, ModalController, NavController, NavParams, ToastController} from "@ionic/angular";
 /** ionic-native */
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
@@ -29,21 +29,22 @@ import {TranslateService} from "@ngx-translate/core";
 import {ObjectListPage} from "../object-list/object-list";
 
 @Component({
-    selector: "object-details-list",
+    selector: "page-object-details",
     templateUrl: "object-details.html",
 })
 export class ObjectDetailsPage {
 
-    static iliasObject: ILIASObject;
-
+    object: ILIASObject = new ILIASObject();
+    name: string = "ObjectDetailsPage";
     actions: Array<ILIASObjectAction>;
     /**
      * Holds the details of the current displayed ILIASObject
      */
     details: Array<{label: string, value: string}>;
-    private readonly log: Logger = Logging.getLogger(ObjectDetailsPage.name);
+    private readonly log: Logger = Logging.getLogger(this.name);
 
     constructor(public nav: NavController,
+                public ngZone: NgZone,
                 public dataProvider: DataProvider,
                 public sync: SynchronizationService,
                 public file: FileService,
@@ -56,14 +57,10 @@ export class ObjectDetailsPage {
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) {
-        Log.describe(this, "Showing details of: ", ObjectDetailsPage.iliasObject);
     }
 
-    static setObject(object: ILIASObject): void {
-        ObjectDetailsPage.iliasObject = object;
-    }
-
-    ionViewDidLoad(): void {
+    ionViewWillEnter(): void {
+        this.object = ObjectListPage.getDetailsObject();
         this.loadAvailableActions();
         this.loadObjectDetails();
     }
@@ -104,7 +101,7 @@ export class ObjectDetailsPage {
                 this.loadAvailableActions();
                 this.loadObjectDetails();
                 throw error;
-        });
+            });
     }
 
     private actionHandler(result: ILIASObjectActionResult): void {
@@ -128,7 +125,7 @@ export class ObjectDetailsPage {
     }
 
     private loadObjectDetails(): void {
-        ObjectDetailsPage.iliasObject.presenter.details().then(details => {
+        this.object.presenter.details().then(details => {
             Log.describe(this, "Details are displayed: ", details);
             this.details = details;
         });
@@ -136,55 +133,55 @@ export class ObjectDetailsPage {
 
     private loadAvailableActions(): void {
         this.actions = [
-          this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(ObjectDetailsPage.iliasObject.refId))
+            this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(this.object.refId))
         ];
-        if (ObjectDetailsPage.iliasObject.isContainer() && !ObjectDetailsPage.iliasObject.isLinked()) {
-            if (!ObjectDetailsPage.iliasObject.isFavorite) {
+        if (this.object.isContainer() && !this.object.isLinked()) {
+            if (!this.object.isFavorite) {
                 this.actions.push(new MarkAsFavoriteAction(
-                  this.translate.instant("actions.mark_as_favorite"),
-                    ObjectDetailsPage.iliasObject,
-                  this.sync)
+                    this.translate.instant("actions.mark_as_favorite"),
+                    this.object,
+                    this.sync)
                 );
-            } else if (ObjectDetailsPage.iliasObject.isFavorite && ObjectDetailsPage.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+            } else if (this.object.isFavorite && this.object.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
-                  this.translate.instant("actions.unmark_as_favorite"),
-                    ObjectDetailsPage.iliasObject,
-                  this.file)
+                    this.translate.instant("actions.unmark_as_favorite"),
+                    this.object,
+                    this.file)
                 );
                 this.actions.push(new SynchronizeAction(
-                  this.translate.instant("actions.synchronize"),
-                    ObjectDetailsPage.iliasObject,
-                  this.sync,
-                  this.modal,
-                  this.translate)
+                    this.translate.instant("actions.synchronize"),
+                    this.object,
+                    this.sync,
+                    this.modal,
+                    this.translate)
                 );
             }
             this.actions.push(new RemoveLocalFilesAction(
-              this.translate.instant("actions.remove_local_files"),
-                ObjectDetailsPage.iliasObject,
-              this.file,
-              this.translate)
+                this.translate.instant("actions.remove_local_files"),
+                this.object,
+                this.file,
+                this.translate)
             );
         }
-        if (ObjectDetailsPage.iliasObject.type == "file") {
-            this.file.existsFile(ObjectDetailsPage.iliasObject).then(() => {
-                this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), ObjectDetailsPage.iliasObject, this.file));
-                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), ObjectDetailsPage.iliasObject,
+        if (this.object.type == "file") {
+            this.file.existsFile(this.object).then(() => {
+                this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.object, this.file));
+                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.object,
                     this.file, this.translate));
             }, () => {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
-            if (!ObjectDetailsPage.iliasObject.isFavorite) {
+            if (!this.object.isFavorite) {
                 this.actions.push(new MarkAsFavoriteAction(
-                  this.translate.instant("actions.mark_as_favorite"),
-                    ObjectDetailsPage.iliasObject,
-                  this.sync)
+                    this.translate.instant("actions.mark_as_favorite"),
+                    this.object,
+                    this.sync)
                 );
-            } else if (ObjectDetailsPage.iliasObject.isFavorite && ObjectDetailsPage.iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
+            } else if (this.object.isFavorite && this.object.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
                 this.actions.push(new UnMarkAsFavoriteAction(
-                  this.translate.instant("actions.unmark_as_favorite"),
-                    ObjectDetailsPage.iliasObject,
-                  this.file)
+                    this.translate.instant("actions.unmark_as_favorite"),
+                    this.object,
+                    this.file)
                 );
             }
         }

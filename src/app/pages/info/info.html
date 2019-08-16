@@ -1,10 +1,19 @@
 <ion-header>
   <ion-toolbar color="header-element">
-    <ion-title>
-      {{'info.title' | translate:{value: null} }}
-    </ion-title>
+      <ion-row>
+
+          <ion-buttons>
+              <ion-back-button text="" icon="arrow-back"></ion-back-button>
+          </ion-buttons>
+
+          <ion-title>
+              {{'info.title' | translate:{value: null} }}
+          </ion-title>
+
+      </ion-row>
   </ion-toolbar>
 </ion-header>
+
 <ion-content padding class="page_info">
   <!-- <ion-segment padding-bottom [(ngModel)]="tab" color="button-element">
     <ion-segment-button value="info">

@@ -30,7 +30,7 @@ export class DesktopPage {
       @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
   ) { }
 
-  async switchTabs(url: string): Promise<void> {
+  async navigateTo(url: string): Promise<void> {
       await this.navCtrl.navigateForward(`tabs/${url}`);
   }
 

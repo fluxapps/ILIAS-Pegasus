@@ -1,7 +1,7 @@
 import {isDevMode} from "../../devmode";
 import {ConsoleLogAppender} from "./logging.appenders";
 import {LogAppender, LogEntry, Logger, LogLevel} from "./logging.api";
-import {hasOwnProperty} from 'tslint/lib/utils';
+import {hasOwnProperty} from "tslint/lib/utils";
 
 export namespace Logging {
 

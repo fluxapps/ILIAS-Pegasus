@@ -1,11 +1,20 @@
 <ion-header>
     <ion-toolbar color="header-element">
-        <ion-title>
-          <!-- <ion-icon name="flask"></ion-icon> -->
-          {{'settings.title' | translate:{value: null} }}
-        </ion-title>
+        <ion-row>
+
+            <ion-buttons>
+                <ion-back-button text="" icon="arrow-back"></ion-back-button>
+            </ion-buttons>
+
+            <ion-title>
+                <!-- <ion-icon name="flask"></ion-icon> -->
+                {{'settings.title' | translate:{value: null} }}
+            </ion-title>
+
+        </ion-row>
     </ion-toolbar>
 </ion-header>
+
 <ion-content padding class="page_settings">
     <!-- <ion-segment [(ngModel)]="settingsMode" color="button-element">
         <ion-segment-button value="general">
@@ -57,18 +66,17 @@
                 </ion-item>
                 <ion-item-group>
                     <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
-                    <ion-item button-right color="list-element">
-                        <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' |
-                            translate:[] }}:
+                    <ion-item color="list-element">
+                        <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' | translate:[] }}:
                             {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
                         </ion-label>
-                        <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="deleteAllFilesPrompt()">
+                        <ion-button class="ilias-list-action-button" round color="light" slot="end" (click)="deleteAllFilesPrompt()">
                             <ion-icon name="trash" color="primary"></ion-icon>
-                        </button>
+                        </ion-button>
                     </ion-item>
                 </ion-item-group>
                 <ion-col>
-                    <ion-button full block (click)="saveSettings()" color="button-element">{{'Save' | translate:{value: null} }}
+                    <ion-button full block (click)="saveSettings()" color="button-element">{{ 'Save' | translate:[] }}
                     </ion-button>
                 </ion-col>
             </div>

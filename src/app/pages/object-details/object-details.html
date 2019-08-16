@@ -1,17 +1,28 @@
 <ion-header>
     <ion-toolbar color="header-element">
-        <ion-title> <ion-icon [name]=iliasObject.presenter.icon()></ion-icon> &nbsp;{{ iliasObject.title }}</ion-title>
+        <ion-row>
+
+            <ion-buttons>
+                <ion-back-button text="" icon="arrow-back"></ion-back-button>
+            </ion-buttons>
+
+            <ion-title>
+                {{ object.title }}
+            </ion-title>
+
+        </ion-row>
     </ion-toolbar>
 </ion-header>
+
 <ion-content padding class="page_object_details">
-    <div padding *ngIf="iliasObject.repoPath">
-        <span *ngFor="let node of iliasObject.repoPath; let last = last">
+    <div padding *ngIf="object.repoPath">
+        <span *ngFor="let node of object.repoPath; let last = last">
             <span>{{node}}</span>
             <span *ngIf="! last"> » </span>
         </span>
     </div>
-    <div padding *ngIf="iliasObject.description">
-        {{ iliasObject.description}}
+    <div padding *ngIf="object.description">
+        {{ object.description }}
     </div>
     <p text-wrap class="padding" *ngFor="let action of actions">
         <ion-button block (click)="executeAction(action)">{{ action.title }}</ion-button>
@@ -20,7 +31,7 @@
         <ion-item text-wrap *ngFor="let detail of details">
             {{ detail.label | translate:{value: null} }}:
             <span *ngIf="detail.translate"> {{ detail.value | translate:{value: null} }} </span>
-            <span *ngIf="!detail.translate"> {{ detail.value}} </span>
+            <span *ngIf="!detail.translate"> {{ detail.value }} </span>
         </ion-item>
     </ion-list>
 </ion-content>

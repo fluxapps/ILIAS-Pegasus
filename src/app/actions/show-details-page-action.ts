@@ -1,9 +1,9 @@
 /** angular */
 import {NavController} from "@ionic/angular";
 /** misc */
-import {ObjectDetailsPage} from "../pages/object-details/object-details";
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
+import {ObjectListPage} from "../pages/object-list/object-list";
 
 export class ShowDetailsPageAction extends ILIASObjectAction {
 
@@ -13,10 +13,10 @@ export class ShowDetailsPageAction extends ILIASObjectAction {
 
     execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
-            ObjectDetailsPage.setObject(this.object);
+            ObjectListPage.setDetailsObject(this.object);
             this.nav.navigateForward("tabs/content/details").then(() => {
                 resolve(new ILIASObjectActionNoMessage());
-            }).catch(error =>{
+            }).catch(error => {
                 reject(error);
             });
         });
