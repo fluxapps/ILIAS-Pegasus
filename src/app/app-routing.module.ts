@@ -11,11 +11,13 @@ import {MenuPage} from "./pages/menu/menu";
 import {SettingsPage} from "./pages/settings/settings";
 import {InfoPage} from "./pages/info/info";
 import {ObjectDetailsPage} from "./pages/object-details/object-details";
+/** misc */
+import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
 
 const routes: Routes = [
-    {path: "", redirectTo: "login", pathMatch: "full"},
+    {path: "", redirectTo: "tabs", pathMatch: "full"},
     {path: "login", component: LoginPage},
-    {path: "tabs", component: TabmenuPage,
+    {path: "tabs", component: TabmenuPage, canActivate: [AuthenticationProvider],
         children: [
             {path: "", redirectTo: "home", pathMatch: "full"},
             {path: "home", component: DesktopPage},
@@ -26,7 +28,8 @@ const routes: Routes = [
             {path: "menu/settings", component: SettingsPage},
             {path: "menu/info", component: InfoPage}
         ]
-    }
+    },
+    {path: "**", redirectTo: "login"}
 ];
 
 @NgModule({

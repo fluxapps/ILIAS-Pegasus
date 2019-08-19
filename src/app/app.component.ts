@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {Config, Events, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
+import {Config, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
@@ -19,20 +19,19 @@ import {SynchronizationService} from "./services/synchronization.service";
 import {Settings} from "./models/settings";
 import {User} from "./models/user";
 /** misc */
-// TODO migration import {LogoutProvider} from "./providers/logout/logout";
 import getMessage = Logging.getMessage;
 import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {Router} from "@angular/router";
-import {Toast} from "@ionic-native/toast/ngx";
+import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
+import {ObjectListPage} from "./pages/object-list/object-list";
 
 @Component({
     selector: "app-root",
     templateUrl: "app.component.html"
 })
 export class AppComponent {
-    loggedIn: boolean = false;
     /**
      * The current logged in user
      */
@@ -41,11 +40,9 @@ export class AppComponent {
     private readonly log: Logger = Logging.getLogger(AppComponent.name);
 
     /**
-     *
      * This constructor sets on classes which are not injectable yet
      * member instances. This is a workaround for Ionic 3 update with
      * the current app architecture. This will be changed on release 2.0.0.
-     *
      */
     constructor(
         readonly footerToolbar: FooterToolbarService,
@@ -53,7 +50,6 @@ export class AppComponent {
         private readonly router: Router,
         private readonly platform: Platform,
         private readonly translate: TranslateService,
-        private readonly event: Events,
         private readonly toast: ToastController,
         private readonly sync: SynchronizationService,
         private readonly statusBar: StatusBar,
@@ -62,12 +58,11 @@ export class AppComponent {
         private readonly database: Database,
         private readonly modal: ModalController,
         private readonly config: Config,
-        // TODO migration private readonly logoutCtrl: LogoutProvider,
+        private readonly auth: AuthenticationProvider,
         private readonly appVersionPlugin: AppVersion,
         @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
         sqlite: SQLite
     ) {
-
         // Set members on classes which are not injectable
         Settings.NETWORK = this.network;
         SQLiteDatabaseService.SQLITE = sqlite;
@@ -89,13 +84,11 @@ export class AppComponent {
     private async initializeApp(): Promise<void> {
         this.log.info(() => "Initialize app");
         this.statusBar.styleLightContent();
-        this.subscribeOnGlobalEvents();
         this.defineBackButtonAction();
 
         await this.database.ready(PEGASUS_CONNECTION_NAME);
         await this.dbMigration.migrate();
 
-        //await this.router.navigate([""], {replaceUrl: true});
         await this.manageLogin();
 
         // overwrite ionic back button text with configured language
@@ -107,7 +100,7 @@ export class AppComponent {
         if(this.user !== undefined) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
             if(this.user.lastVersionLogin !== currentAppVersion) {
-                // TODO migration await this.logoutCtrl.logout();
+                await this.auth.logout();
                 return;
             }
             const settings: Settings = await Settings.findByUserId(this.user.id);
@@ -117,29 +110,16 @@ export class AppComponent {
     }
 
     /**
-     * Subscribes on global events that are used.
-     */
-    private subscribeOnGlobalEvents(): void {
-        this.event.subscribe("doLogout", () => this.logout());
-        this.event.subscribe("login", () => this.manageLogin());
-        this.event.subscribe("logout", () => this.loggedIn = false);
-        this.network.onDisconnect().subscribe(() => this.footerToolbar.offline = true);
-        this.network.onConnect().subscribe(() => this.footerToolbar.offline = false);
-    }
-
-    /**
      * Configures the translation and, if needed, displays the onboarding-modal
      *
      * If no current user is found, the default translation will be loaded and the onboarding-modal will be presented
      */
     private async manageLogin(): Promise<void> {
-        try {
-            const user: User = await User.currentUser();
-            this.loggedIn = true;
-            this.user = user;
-            await this.configureTranslation(user);
+        if(AuthenticationProvider.isLoggedIn()) {
+            this.user = AuthenticationProvider.getUser();
+            await this.configureTranslation(this.user);
             this.router.navigateByUrl("tabs");
-        } catch(error) {
+        } else {
             this.configureDefaultTranslation();
             await this.presentOnboardingModal();
         }
@@ -164,7 +144,6 @@ export class AppComponent {
      * Configures the {@link TranslateService} by the {@link navigator}.
      */
     private configureDefaultTranslation(): void {
-
         let userLang: string = navigator.language.split("-")[0];
         userLang = /(de|en)/gi.test(userLang) ? userLang : "de";
 
@@ -174,35 +153,35 @@ export class AppComponent {
     }
 
     /**
-     * Performs all steps to log out the user.
+     * displays the introduction-slides
      */
-
-    // TODO migration Delete as it is now in logout provider
-    async logout(): Promise<void> {
-        const user: User = await User.currentUser();
-        user.accessToken = undefined;
-        user.refreshToken = undefined;
-
-        await user.save();
-        this.loggedIn = false;
-        const toast: HTMLIonToastElement = await this.toast.create({
-            message: this.translate.instant("logout.logged_out"),
-            duration: 3000
+    async presentOnboardingModal(): Promise<void> {
+        const onboardingModal: HTMLIonModalElement = await this.modal.create({
+            component: OnboardingPage,
+            cssClass: "modal-fullscreen"
         });
-        await toast.present();
+        await onboardingModal.present();
     }
 
     /**
-     * Registers a action for the back button.
+     * Registers actions for the back button.
      */
     private defineBackButtonAction(): void {
         let backButtonTapped: boolean = false;
 
         this.platform.backButton.subscribeWithPriority(1, () => {
             const url: string = this.router.url;
+            
+            // default: router back-navigation
             let action: string = "back";
 
-            if (
+            // when on object-list-page, navigate back in the container-hierarchy
+            if(url.match(/content/) && !url.match(/content\/0/) && !url.match(/details/)) {
+                action = "back_in_hierarchy";
+            }
+
+            // when on one of the tabs default pages, navigate to the desktop-page
+            if(
                 url.match(/content\/0/) ||
                 url.match(/content$/) ||
                 url.match(/news$/) ||
@@ -211,11 +190,12 @@ export class AppComponent {
                 action = "to_home";
             }
 
-            if (url.match(/home$/)) {
+            // when on the desktop-page, double-tap back-button for exit
+            if(url.match(/home$/)) {
                 action = (backButtonTapped) ? "close" : "ask_close";
             }
 
-            switch (action) {
+            switch(action) {
 
                 case "to_home":
                     this.navCtrl.navigateRoot("tabs");
@@ -229,11 +209,15 @@ export class AppComponent {
                     this.toast.create({
                         message: this.translate.instant("message.back_to_exit"),
                         duration: 3000
-                    }).then(function (it) { return it.present(); });
+                    }).then(function(it) { return it.present(); });
                     break;
 
                 case "close":
                     navigator["app"].exitApp();
+                    break;
+
+                case "back_in_hierarchy":
+                    ObjectListPage.navigateBackInHierarchy(this.navCtrl);
                     break;
 
                 default:
@@ -242,14 +226,5 @@ export class AppComponent {
 
             }
         });
-    }
-
-    // tslint:disable-next-line:typedef
-    async presentOnboardingModal(): Promise<void> {
-        const onboardingModal: HTMLIonModalElement = await this.modal.create({
-            component: OnboardingPage,
-            cssClass: "modal-fullscreen"
-        });
-        await onboardingModal.present();
     }
 }

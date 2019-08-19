@@ -19,6 +19,8 @@ import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {TranslateService} from "@ngx-translate/core";
+import {AuthenticateError} from "../../providers/http";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 /**
  * Generated class for the NewsComponent component.
@@ -129,7 +131,7 @@ export class NewsPage
     }
 
     private async fetchPresenterByRefId(refId: number): Promise<ILIASObjectPresenter> {
-        const userId: number = (await User.currentUser()).id;
+        const userId: number = AuthenticationProvider.getUser().id;
         return (await ILIASObject.findByRefId(refId, userId)).presenter;
     }
 

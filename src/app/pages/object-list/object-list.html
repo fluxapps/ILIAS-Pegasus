@@ -3,7 +3,7 @@
         <ion-row>
 
             <ion-buttons *ngIf="!checkPageState({desktop: true})">
-                <ion-button (click)="navigateBack()"><ion-icon name="arrow-back"></ion-icon></ion-button>
+                <ion-button (click)="navigateBackInHierarchy()"><ion-icon name="arrow-back"></ion-icon></ion-button>
             </ion-buttons>
 
             <ion-title>
@@ -61,14 +61,14 @@
   <!-- status : display object-list, synchronization complete -->
   <ion-list  class="ilias-object-list" *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
     <div class="" *ngIf="parent !== undefined">
-      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openPageLayout()" color="list-element" class="list-element">
+      <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="list-element" class="list-element">
         <ion-avatar item-start>
             <img [src]="pageLayout.icon">
         </ion-avatar>
         <span>{{pageLayout.text | translate: []}}</span>
       </ion-item>
 
-      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openTimeline()" color="list-element" class="bottom-line list-element">
+      <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="list-element" class="bottom-line list-element">
         <ion-icon [name]=timeline.icon item-start></ion-icon>
         <span>{{timeline.text | translate: []}}</span>
       </ion-item>

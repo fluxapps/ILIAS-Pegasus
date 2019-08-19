@@ -7,6 +7,7 @@ import {USER_REPOSITORY, UserRepository} from "../../providers/repository/reposi
 import {NewsEntity} from "../../entity/news.entity";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 /**
  * The news synchronisation service synchronizes the news from ILIAS with the local stored news.
@@ -51,7 +52,7 @@ export class NewsSynchronizationImpl implements NewsSynchronization {
     const news: Array<NewsItem> = await this.newsRest.getNews();
     const mappedNews: Array<NewsEntity> = news.map(this.mapToEntity);
 
-    const activeUser: User = await User.currentUser();
+    const activeUser: User = AuthenticationProvider.getUser();
     if (activeUser !== undefined) {
         const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
         user.news = mappedNews;

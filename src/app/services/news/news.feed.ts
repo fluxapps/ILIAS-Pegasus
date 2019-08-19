@@ -6,6 +6,7 @@ import {USER_REPOSITORY, UserRepository} from "../../providers/repository/reposi
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
 import {NewsEntity} from "../../entity/news.entity";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 /**
  * ILIAS news feed which provides the already synchronized
@@ -57,7 +58,7 @@ export class NewsFeedImpl implements NewsFeed {
 
 
   async fetchAllForCurrentUser(): Promise<Array<NewsItemModel>> {
-    const activeUser: User = await User.findActiveUser();
+    const activeUser: User = AuthenticationProvider.getUser();
     const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
     const mapToModel: (entity: NewsEntity) => NewsItemModel = this.mapToModel.bind(this);
     return user.news.map(mapToModel);

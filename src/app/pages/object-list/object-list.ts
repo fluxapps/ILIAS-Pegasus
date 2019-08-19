@@ -48,6 +48,9 @@ import {ObjectList} from "aws-sdk/clients/s3";
 import {Integer} from "aws-sdk/clients/rds";
 import {int} from "aws-sdk/clients/datapipeline";
 import {bool} from "aws-sdk/clients/signer";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
+import {DefaultLinkBuilder} from "../../services/link/default.builder";
 
 // used for navigation from one container into another one
 interface NavigationState {
@@ -89,7 +92,6 @@ export class ObjectListPage {
         desktop: undefined
     };
 
-    private user: User;
     private pageTitle: string;
     private parent: ILIASObject;
     private content: Array<ILIASObject> = [];
@@ -120,33 +122,67 @@ export class ObjectListPage {
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
-    // setting the container whose content will be displayed
+    /* = = = = = = = = = = = *
+     *  GETTERS AND SETTERS  *
+     * = = = = = = = = = = = */
+
+    /**
+     * setting the container whose content will be displayed
+     */
     static setNavChild(child: ILIASObject): void {
         ObjectListPage.nav.child = child;
     }
 
-    // getting the depth of the currently displayed container
+    /**
+     * getting the depth of the currently displayed container
+     */
     static getNavDepth(): number {
         return ObjectListPage.nav.depth;
     }
 
-    // sets the object whose details will be displayed
+    /**
+     * sets the object whose details will be displayed
+     */
     static setDetailsObject(object: ILIASObject): void {
         ObjectListPage.nav.details = object;
     }
 
-    // returns the object whose details will be displayed
+    /**
+     * returns the object whose details will be displayed
+     */
     static getDetailsObject(): ILIASObject {
         return ObjectListPage.nav.details;
     }
 
-    // changes displayed container to its parent
-    async navigateBack(): Promise<void> {
-        ObjectListPage.nav.child = await ObjectListPage.nav.child.parent;
-        this.navCtrl.back();
+    /* = = = = = = = *
+     *  NAVIGATION   *
+     * = = = = = = = */
+
+    /**
+     * load the content for the chosen ILIASObject
+     */
+    ionViewWillEnter(): void {
+        this.loadContent();
     }
 
-    // reading the favorites-field from the navigation-route and setting the current parent
+    /**
+     * changes displayed container to its parent
+     */
+    static async navigateBackInHierarchy(navCtrl: NavController): Promise<void> {
+        ObjectListPage.nav.child = await ObjectListPage.nav.child.parent;
+        navCtrl.navigateBack(`tabs/content/${ObjectListPage.getNavDepth()-1}/-1`);
+    }
+
+    /**
+     * allows the template 'object-list.html' to invoke the static method 'navigateBackInHierarchy'
+     */
+    private async navigateBackInHierarchy(): Promise<void> {
+        return ObjectListPage.navigateBackInHierarchy(this.navCtrl);
+    }
+
+    /**
+     * reading the favorites-field from the navigation-route and setting the current parent
+     */
     private getNavigation(): void {
         const map: ParamMap = this.route.snapshot.paramMap;
 
@@ -159,7 +195,13 @@ export class ObjectListPage {
         console.log(`fav_get: ${favorites} fav: ${ObjectListPage.nav.favorites}`);
     }
 
-    // sets variables related to the page-content
+    /* = = = = = = = *
+     *  PAGE STATE   *
+     * = = = = = = = */
+
+    /**
+     * sets variables related to the page-content
+     */
     private setPageAttributes(): void {
         this.parent = ObjectListPage.nav.child;
 
@@ -175,19 +217,9 @@ export class ObjectListPage {
         }
     }
 
-    // load the content for the chosen ILIASObject
-    ionViewWillEnter(): void {
-        this.loadContent();
-    }
-
-    // loads the current User and updates this.user if the result is valid
-    async updateUser(): Promise<void> {
-        const newUser: User = await User.currentUser();
-        if(newUser !== undefined) this.user = newUser;
-        if(this.user === undefined) console.warn("in the page object-list, this.user is undefined");
-    }
-
-    // updates the state-object of the page
+    /**
+     * updates the state-object of the page
+     */
     updatePageState(): void {
         this.state.favorites = ObjectListPage.nav.favorites;
         this.state.online = window.navigator.onLine;
@@ -196,7 +228,9 @@ export class ObjectListPage {
         this.state.desktop = this.parent === undefined;
     }
 
-    // checks whether the page is in a given state
+    /**
+     * checks whether the page is in a given state
+     */
     checkPageState(state: Partial<PageState>): boolean {
         this.updatePageState();
         for(const p in state)
@@ -204,34 +238,13 @@ export class ObjectListPage {
         return true;
     }
 
-    // opens the parent object in ILIAS
-    openPageLayout(): void {
-        this.checkParent();
-        const action: ILIASObjectAction = this.openInIliasActionFactory(
-            this.translate.instant("actions.view_in_ilias"),
-            this.linkBuilder.default().target(this.parent.refId)
-        );
-        this.executeAction(action);
-    }
+    /* = = = = = = = = = *
+     *  LOADING CONTENT  *
+     * = = = = = = = = = */
 
-    // opens the timeline of the parent object in ILIAS
-    openTimeline(): void {
-        this.checkParent();
-        const action: ILIASObjectAction = this.openInIliasActionFactory(
-            this.translate.instant("actions.view_in_ilias"),
-            this.linkBuilder.timeline().target(this.parent.refId)
-        );
-        this.executeAction(action);
-    }
-
-    // checks the parent on null
-    private checkParent(): void {
-        if(this.parent == undefined) {
-            throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
-        }
-    }
-
-    // loads the content of the parent-container for display
+    /**
+     * loads the content of the parent-container for display
+     */
     async loadContent(event: any = undefined): Promise<void> {
         this.getNavigation();
         this.setPageAttributes();
@@ -261,14 +274,18 @@ export class ObjectListPage {
         this.content.forEach(o => o.title);
     }
 
-    // loads available content without synchronization and user-feedback
+    /**
+     * loads available content without synchronization and user-feedback
+     */
     async refreshContent(): Promise<void> {
         if(ObjectListPage.nav.favorites) await this.loadFavoritesObjectList();
         else await this.loadCachedObjects(this.parent === undefined);
         this.updatePageState();
     }
 
-    // live-load content from account
+    /**
+     * live-load content from account
+     */
     async liveLoadContent(): Promise<void> {
         try {
             Log.write(this, "Sync start", [], []);
@@ -279,11 +296,12 @@ export class ObjectListPage {
         }
     }
 
-    // load content from favorites
+    /**
+     * load content from favorites
+     */
     async loadFavoritesObjectList(): Promise<void> {
         if(this.parent === undefined) {
-            await this.updateUser();
-            Favorites.findByUserId(this.user.id)
+            Favorites.findByUserId(AuthenticationProvider.getUser().id)
                 .then(favorites => {
                     favorites.sort(ILIASObject.compare);
                     this.content = favorites;
@@ -292,13 +310,15 @@ export class ObjectListPage {
         else await this.loadCachedObjects(false);
     }
 
-    // Loads the object data from db cache
+    /**
+     * loads the object data from db cache
+     */
     private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
         try {
-            await this.updateUser();
+            const user: User = AuthenticationProvider.getUser();
             this.content = (isDesktopObject) ?
-                await DesktopItem.findByUserId(this.user.id) :
-                await ILIASObject.findByParentRefId(this.parent.refId, this.user.id);
+                await DesktopItem.findByUserId(user.id) :
+                await ILIASObject.findByParentRefId(this.parent.refId, user.id);
 
             this.content.sort(ILIASObject.compare);
             return Promise.resolve();
@@ -307,7 +327,13 @@ export class ObjectListPage {
         }
     }
 
-    // execute primary action of given object
+    /* = = = = = *
+     *  ACTIONS  *
+     * = = = = = */
+
+    /**
+     * execute primary action of given object
+     */
     onClick(iliasObject: ILIASObject): void {
         const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
@@ -319,7 +345,9 @@ export class ObjectListPage {
         }
     }
 
-    // returns the primary action for the given object
+    /**
+     * returns the primary action for the given object
+     */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
 
         if(iliasObject.isLinked()) {
@@ -383,7 +411,9 @@ export class ObjectListPage {
         }
     }
 
-    // show the action sheet for the given object
+    /**
+     * show the action sheet for the given object
+     */
     showActions(iliasObject: ILIASObject): void {
         this.updatePageState();
         const actions: Array<ILIASObjectAction> = [];
@@ -485,6 +515,22 @@ export class ObjectListPage {
         if(iliasObject.isFile())
             actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), iliasObject, this.file, this.translate));
 
+    }
+
+    /**
+     * opens the parent object or the timeline of the parent object in ILIAS
+     */
+    private openInIlias(timeline: boolean = false): void {
+        if(this.parent == undefined) {
+            throw new Exception("Can not open link for undefined. Do not call this method on ILIAS objects with no parent.");
+        }
+
+        const linkBuilder: TimelineLinkBuilder | DefaultLinkBuilder = timeline ? this.linkBuilder.timeline() : this.linkBuilder.default();
+        const action: ILIASObjectAction = this.openInIliasActionFactory(
+            this.translate.instant("actions.view_in_ilias"),
+            linkBuilder.target(this.parent.refId)
+        );
+        this.executeAction(action);
     }
 
     private applyRemoveLearnplaceAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {

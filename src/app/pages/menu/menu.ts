@@ -2,8 +2,7 @@
 import {Component} from "@angular/core";
 import {NavController} from "@ionic/angular";
 /* misc */
-import {LogoutProvider} from "../../providers/logout/logout";
-import {SettingsPage} from "../settings/settings";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 /**
  * Generated class for the MenuPage page.
@@ -17,7 +16,7 @@ import {SettingsPage} from "../settings/settings";
 })
 export class MenuPage {
 
-    constructor(public navCtrl: NavController,  private readonly logoutCtrl: LogoutProvider,) {
+    constructor(public navCtrl: NavController, private readonly auth: AuthenticationProvider) {
     }
 
     async navigateTo(url: string): Promise<void> {
@@ -25,10 +24,10 @@ export class MenuPage {
     }
 
     async logout(): Promise<void> {
-        await this.logoutCtrl.logout()
+        await this.auth.logout();
     }
 
     async openPrivacyPolicy(url: string): Promise<void> {
-        window.open(url , "_system")
+        window.open(url , "_system");
     }
 }

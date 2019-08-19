@@ -21,6 +21,7 @@ import {Logger} from "./logging/logging.api";
 import {Logging} from "./logging/logging.service";
 /** misc */
 import {isNullOrUndefined} from "util";
+import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
 //TODO lp import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 
 export interface DownloadProgress {
@@ -259,7 +260,7 @@ export class FileService {
     }
 
     private async openExistingIOS(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
-        const user: User = await User.currentUser();
+        const user: User = AuthenticationProvider.getUser();
         this.log.debug(() => `Opening file on iOS: ${this.getStorageLocation(user, fileObject)}${fileObject.data.fileName}`);
 
       window["DocumentViewer"].previewFileFromUrlOrPath(

@@ -76,6 +76,7 @@ import {
 } from "./services/link/link-builder.supplier";
 /** providers */
 import {DataProvider} from "./providers/data-provider.provider";
+import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
 import {ExecuteSyncProvider} from "./providers/execute-sync/execute-sync";
 import {FILE_DOWNLOADER, FileDownloaderImpl} from "./providers/file-transfer/file-download";
 import {FILE_UPLOADER, FileUploaderImpl} from "./providers/file-transfer/file-upload";
@@ -86,7 +87,6 @@ import {ILIAS_REST, ILIASRestImpl, ILIASTokenManager, TOKEN_MANAGER} from "./pro
 import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "./providers/ilias/ilias.rest-api";
 import {NEWS_REST, NewsRestImpl} from "./providers/ilias/news.rest";
 import {NEWS_FEED, NewsFeedImpl} from "./services/news/news.feed";
-import {LogoutProvider} from "./providers/logout/logout";
 import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "./providers/repository/repository.user";
 /** configs */
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "./config/ilias-config";
@@ -506,7 +506,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         {provide: ErrorHandler, useClass: PegasusErrorHandler},
         <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
         //<ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
-        LogoutProvider,
+        AuthenticationProvider,
         ExecuteSyncProvider,
         AppVersion
     ],

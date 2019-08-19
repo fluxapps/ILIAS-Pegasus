@@ -21,6 +21,7 @@ import {Log} from "./log.service";
 /** misc */
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
+import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -55,7 +56,6 @@ export class SynchronizationService {
     lastSyncString: string;
 
     constructor(private readonly dataProvider: DataProvider,
-                public events: Events,
                 private readonly fileService: FileService,
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
@@ -80,10 +80,7 @@ export class SynchronizationService {
                     .then( () => this.executeLiveLoad(iliasObject))
                     .catch( (error) =>
                         this.syncEnded()
-                            .then( () => {
-                                this.events.publish("sync:complete");
-                                return Promise.reject(error);
-                            })
+                            .then( () => Promise.reject(error))
                     )
                     .then(promise  => {
                         SynchronizationService.state.liveLoading = false;
@@ -225,7 +222,7 @@ export class SynchronizationService {
      * Set the user-variable of the object
      */
     private async loadCurrentUser(): Promise<void> {
-        this.user = await User.currentUser();
+        this.user = AuthenticationProvider.getUser();
     }
 
     /**

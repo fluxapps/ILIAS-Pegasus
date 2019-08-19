@@ -18,6 +18,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "../../config/ilias-config";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 @Component({
     selector: "page-settings",
@@ -61,15 +62,8 @@ export class SettingsPage {
     private init(): void {
 
         // Load settings of current user
-        User.currentUser()
-            .then(user => {
-                this.loggedInUser = user;
-                return user.settings;
-            })
-            .then(settings => {
-                this.settings = settings;
-                return Promise.resolve();
-            });
+        this.loggedInUser = AuthenticationProvider.getUser();
+        this.loggedInUser.settings.then(s => this.settings = s);
 
         // Load all users of current app showing the used disk space
         this.loadUsersAndDiskspace();

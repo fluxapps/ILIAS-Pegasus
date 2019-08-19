@@ -3,12 +3,12 @@ import {Inject, Injectable, InjectionToken} from "@angular/core";
 /** providers */
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 /** errors and exceptions */
 import {NoSuchElementError} from "../../error/errors";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";
 /** misc */
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "../../config/ilias-config";
-import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
 import {Optional} from "../../util/util.optional";
 
@@ -110,7 +110,7 @@ export class AuthTokenSupplier implements TokenSupplier {
    * @throws RESTAPIException   Thrown if the auth token request failed.
    */
   async get(): Promise<string> {
-    return this.restProvider.getAuthToken(await User.currentUser());
+    return this.restProvider.getAuthToken(AuthenticationProvider.getUser());
   }
 
 }
