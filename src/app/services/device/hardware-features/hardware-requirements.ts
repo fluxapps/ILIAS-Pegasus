@@ -1,9 +1,9 @@
 /** angular */
 import {ModalController} from "@ionic/angular";
 /** screens */
-//TODO migration import {LocationFallbackScreen} from "../../../app/fallback/location/location-fallback.component";
-//TODO migration import {WifiFallbackScreen} from "../../../app/fallback/wifi/wifi-fallback.component";
-//TODO migration import {RoamingFallbackScreen} from "../../../app/fallback/roaming/roaming-fallback.component";
+import {LocationFallbackScreen} from "../../../fallback/location/location-fallback.component";
+import {WifiFallbackScreen} from "../../../fallback/wifi/wifi-fallback.component";
+import {RoamingFallbackScreen} from "../../../fallback/roaming/roaming-fallback.component";
 /** misc */
 import {Optional} from "../../../util/util.optional";
 import {HardwareFeature, HardwareRequirement} from "./hardware-feature.service";
@@ -51,7 +51,6 @@ export abstract class AbstractRequirement implements HardwareRequirement {
             component: page,
             cssClass: "modal-fullscreen"
         });
-        // TODO migration await this.onFailureAction.ifPresent(it => modal.onDidDismiss((..._) => it()));
         await modal.present();
     }
 }
@@ -73,7 +72,7 @@ export class LocationRequirement extends AbstractRequirement {
 
         if(!(await this.diagnosticUtil.isLocationEnabled())) {
 
-            //TODO migration await this.createFallbackScreen(LocationFallbackScreen);
+            await this.createFallbackScreen(LocationFallbackScreen);
 
             throw new LocationAccessError("Can not use location: Permission Denied");
         }
@@ -97,7 +96,7 @@ export class WifiRequirement extends AbstractRequirement {
 
         if(!(await this.diagnosticUtil.isWifiEnabled())) {
 
-            //TODO migration await this.createFallbackScreen(WifiFallbackScreen);
+            await this.createFallbackScreen(WifiFallbackScreen);
 
             throw new WifiAccessError("Can not use wifi: Disabled");
         }
@@ -123,7 +122,7 @@ export class RoamingRequirement extends AbstractRequirement {
 
         if(!(await this.diagnosticUtil.isRoamingEnabled())) {
 
-            //TODO migration await this.createFallbackScreen(RoamingFallbackScreen);
+            await this.createFallbackScreen(RoamingFallbackScreen);
 
             throw new RoamingAccessError("Can not use roaming service: Disabled");
         }

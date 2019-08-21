@@ -397,6 +397,15 @@ export class ILIASObject extends ActiveRecord {
         return ILIASObject.queryDatabase(sql, parameters);
     }
 
+    /**
+     * collect all objects with pending downloads
+     */
+    static getAllOpenDownloads(user: User): Promise<Array<ILIASObject>> {
+        const sql: string = "SELECT * FROM objects WHERE isFavorite = ? AND userId = ?";
+        const parameters: Array<number> = [2, user.id];
+        return ILIASObject.queryDatabase(sql, parameters);
+    }
+
     protected static queryDatabase(sql: string, parameters: Array<{}>): Promise<Array<ILIASObject>> {
         return SQLiteDatabaseService.instance()
             .then(db => db.query(sql, parameters))
@@ -439,7 +448,7 @@ export class ILIASObject extends ActiveRecord {
     /**
      * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
      */
-    async removeFromFavorites(fileService: FileService): Promise<void> {
+    async removeFromFavorites(fileService: FileService, ignoreDeletionErrors: boolean = false): Promise<void> {
         await this.setIsFavorite(0);
         const underFavorite: boolean = await this.objectIsUnderFavorite();
         const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
@@ -451,7 +460,11 @@ export class ILIASObject extends ActiveRecord {
             for (let i: number = 0; i < newObjects.length; i++)
                 if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
 
-            await fileService.removeObject(ilObj);
+                try {
+                    await fileService.removeObject(ilObj);
+                } catch (e) {
+                    if(!ignoreDeletionErrors) throw e;
+                }
         }
     }
 

@@ -5,11 +5,12 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Routes, RouterModule} from "@angular/router";
 import {IonicModule} from "@ionic/angular";
 /** misc */
-import {InfoPage} from "./info";
+import {SettingsPage} from "./settings";
 import {TranslateModule} from "@ngx-translate/core";
+import {FileSizePipe} from "../../pipes/fileSize.pipe";
 
 const routes: Routes = [
-    {path: "", component: InfoPage}
+    {path: "", component: SettingsPage}
 ];
 
 @NgModule({
@@ -21,6 +22,9 @@ const routes: Routes = [
         TranslateModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [InfoPage]
+    declarations: [
+        SettingsPage,
+        FileSizePipe
+    ]
 })
-export class InfoPageModule {}
+export class SettingsPageModule {}

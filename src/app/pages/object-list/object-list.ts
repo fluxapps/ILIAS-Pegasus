@@ -44,10 +44,6 @@ import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
 import {DataProvider} from "../../providers/data-provider.provider";
-import {ObjectList} from "aws-sdk/clients/s3";
-import {Integer} from "aws-sdk/clients/rds";
-import {int} from "aws-sdk/clients/datapipeline";
-import {bool} from "aws-sdk/clients/signer";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
@@ -75,7 +71,6 @@ interface PageState {
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
-
     private static nav: NavigationState = {
         favorites: undefined,
         depth: undefined,
@@ -83,7 +78,7 @@ export class ObjectListPage {
         details: undefined
     };
 
-    private state: PageState = {
+    state: PageState = {
         favorites: undefined,
         online: undefined,
         loadingLive: false,
@@ -111,7 +106,7 @@ export class ObjectListPage {
                 private readonly translate: TranslateService,
                 private readonly dataProvider: DataProvider,
                 private readonly ngZone: NgZone,
-                readonly footerToolbar: FooterToolbarService,
+                private readonly footerToolbar: FooterToolbarService,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -159,25 +154,18 @@ export class ObjectListPage {
      * = = = = = = = */
 
     /**
-     * load the content for the chosen ILIASObject
-     */
-    ionViewWillEnter(): void {
-        this.loadContent();
-    }
-
-    /**
      * changes displayed container to its parent
      */
-    static async navigateBackInHierarchy(navCtrl: NavController): Promise<void> {
+    static async navigateBackInHierarchy(navCtrl: NavController, ngZone: NgZone): Promise<void> {
         ObjectListPage.nav.child = await ObjectListPage.nav.child.parent;
-        navCtrl.navigateBack(`tabs/content/${ObjectListPage.getNavDepth()-1}/-1`);
+        await ngZone.run(() => navCtrl.navigateBack(`tabs/content/${ObjectListPage.getNavDepth()-1}/-1`));
     }
 
     /**
      * allows the template 'object-list.html' to invoke the static method 'navigateBackInHierarchy'
      */
     private async navigateBackInHierarchy(): Promise<void> {
-        return ObjectListPage.navigateBackInHierarchy(this.navCtrl);
+        return ObjectListPage.navigateBackInHierarchy(this.navCtrl, this.ngZone);
     }
 
     /**
@@ -192,7 +180,16 @@ export class ObjectListPage {
 
         const favorites: number = parseInt(map.get("favorite"), 10);
         if(favorites !== -1) ObjectListPage.nav.favorites =  Boolean(favorites);
-        console.log(`fav_get: ${favorites} fav: ${ObjectListPage.nav.favorites}`);
+    }
+
+    /**
+     * load the content for the chosen ILIASObject
+     */
+    ionViewWillEnter(): void {
+        this.getNavigation();
+        this.updatePageState();
+        this.setPageAttributes();
+        this.loadContent();
     }
 
     /* = = = = = = = *
@@ -220,19 +217,23 @@ export class ObjectListPage {
     /**
      * updates the state-object of the page
      */
-    updatePageState(): void {
-        this.state.favorites = ObjectListPage.nav.favorites;
-        this.state.online = window.navigator.onLine;
-        this.state.loadingLive = SynchronizationService.state.liveLoading;
-        this.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
-        this.state.desktop = this.parent === undefined;
+    updatePageState(renderView: boolean = true): void {
+        function updateFn(page: ObjectListPage): void {
+            page.state.favorites = ObjectListPage.nav.favorites;
+            page.state.online = window.navigator.onLine;
+            page.state.loadingLive = SynchronizationService.state.liveLoading;
+            page.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
+            page.state.desktop = page.parent === undefined;
+        }
+
+        renderView ? this.ngZone.run(() => updateFn(this)) : updateFn(this);
     }
 
     /**
      * checks whether the page is in a given state
      */
     checkPageState(state: Partial<PageState>): boolean {
-        this.updatePageState();
+        this.updatePageState(false);
         for(const p in state)
             if(state[p] !== this.state[p]) return false;
         return true;
@@ -246,32 +247,29 @@ export class ObjectListPage {
      * loads the content of the parent-container for display
      */
     async loadContent(event: any = undefined): Promise<void> {
-        this.getNavigation();
-        this.setPageAttributes();
-
+        // update view for sync
         if(event) this.state.refreshing = true;
         this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
         this.updatePageState();
 
+        // execute sync
         if(ObjectListPage.nav.favorites) {
-            console.log("loading offline");
-            if(this.state.online && this.state.refreshing) await this.sync.loadAllOfflineContent();
+            if(this.state.online && this.state.refreshing) await this.ngZone.run(() => this.sync.loadAllOfflineContent());
             await this.ngZone.run(() => this.loadFavoritesObjectList());
         } else {
-            console.log("loading live");
-            if(this.state.online) await this.liveLoadContent();
+            if(this.state.online) await this.ngZone.run(() => this.liveLoadContent());
             await this.ngZone.run(() => this.loadCachedObjects(this.parent === undefined));
         }
 
-        if(event) event.target.complete();
-        this.state.refreshing = false;
+        // update view after sync
+        if(event) {
+            event.target.complete();
+            event.target.disabled = true;
+            this.state.refreshing = false;
+        }
         this.footerToolbar.removeJob(Job.Synchronize);
+        if(event) event.target.disabled = false;
         this.updatePageState();
-
-        console.log(`fav ${ObjectListPage.nav.favorites}`);
-        console.log(`parent ${this.parent ? this.parent.title : "ndef"}`);
-        console.log(`no_obj ${this.content.length}`);
-        this.content.forEach(o => o.title);
     }
 
     /**

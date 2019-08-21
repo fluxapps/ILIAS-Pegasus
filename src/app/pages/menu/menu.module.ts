@@ -8,10 +8,7 @@ import {IonicModule} from "@ionic/angular";
 import {MenuPage} from "./menu";
 
 const routes: Routes = [
-    {
-        path: "",
-        component: MenuPage
-    }
+    {path: "", component: MenuPage}
 ];
 
 @NgModule({

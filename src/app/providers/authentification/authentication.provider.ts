@@ -9,6 +9,10 @@ import {User} from "../../models/user";
 import {Log} from "../../services/log.service";
 import {ILIASInstallation} from "../../config/ilias-config";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+import {catchError} from "rxjs/operators";
+import {Exception} from "../../exceptions/Exception";
+import {FileService} from "../../services/file.service";
+import {ILIASObject} from "../../models/ilias-object";
 
 interface UserLoginData {
     iliasUserId: number,
@@ -21,7 +25,7 @@ interface UserLoginData {
 @Injectable({
     providedIn: "root"
 })
-export class AuthenticationProvider implements CanActivate { // TODO remove logoutProvider, change code in app.components, ... add to app-modules
+export class AuthenticationProvider implements CanActivate {
     private static user: User = undefined;
 
     constructor(private readonly http: HttpClient,
@@ -31,17 +35,34 @@ export class AuthenticationProvider implements CanActivate { // TODO remove logo
                 private readonly navCtrl: NavController
     ) {}
 
-    // to check wether a user is logged in
-    static isLoggedIn(): boolean {
-        return AuthenticationProvider.user !== undefined;
-    }
-
-    // returns the currently logged in user, or undefined
+    /**
+     * returns the currently logged in user, or undefined
+     */
     static getUser(): User {
         return AuthenticationProvider.user;
     }
 
-    // logging in by creating new user, or updating existing user and navigating to the main page
+    /**
+     * to check wether a user is logged in
+     */
+    static isLoggedIn(): boolean {
+        return AuthenticationProvider.user !== undefined;
+    }
+
+    /**
+     * called on initialization of app, in order to set the user-field of this class
+     */
+    static async loadUserFromDatabase(): Promise<void> {
+        try {
+            await User.currentUser().then(user => this.user = user);
+        } catch(e) {
+            this.user = undefined;
+        }
+    }
+
+    /**
+     * logging in by creating new user, or updating existing user and navigating to the main page
+     */
     async login(loginData: UserLoginData, navigate: boolean = true): Promise<void> {
         return new Promise((resolve, reject) => {
             User.findByILIASUserId(loginData.iliasUserId, loginData.iliasInstallationId).then((user: User) => {
@@ -64,7 +85,9 @@ export class AuthenticationProvider implements CanActivate { // TODO remove logo
         });
     }
 
-    // logging out the usr by resetting the authentication and navigating to the login-page
+    /**
+     * logging out the user by resetting the authentication and navigating to the login-page
+     */
     async logout(navigate: boolean = true): Promise<void> {
         AuthenticationProvider.user.accessToken = undefined;
         AuthenticationProvider.user.refreshToken = undefined;
@@ -80,7 +103,9 @@ export class AuthenticationProvider implements CanActivate { // TODO remove logo
         }).then((it: HTMLIonToastElement) => it.present());
     }
 
-    // app-login via the login-page of ILIAS in a browser
+    /**
+     * app-login via the login-page of ILIAS in a browser
+     */
     browserLogin(installation: ILIASInstallation): InAppBrowserObject {
         const url: string = `${installation.url}/login.php?target=ilias_app_oauth2&client_id=${installation.clientId}`;
         const options: InAppBrowserOptions = {location: "no", clearsessioncache: "yes", clearcache: "yes"};
@@ -115,7 +140,9 @@ export class AuthenticationProvider implements CanActivate { // TODO remove logo
         return browser;
     }
 
-    // called by the router as a guard
+    /**
+     * called by the router as a guard
+     */
     canActivate(): boolean {
         if(AuthenticationProvider.isLoggedIn())
             return true;

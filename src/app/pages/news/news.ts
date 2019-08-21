@@ -44,7 +44,7 @@ export class NewsPage
         @Inject(NEWS_FEED) private readonly newsFeed: NewsFeed,
         private readonly translate: TranslateService,
         private readonly sync: SynchronizationService,
-        private readonly footerToolbar: FooterToolbarService,
+        readonly footerToolbar: FooterToolbarService,
         private readonly modal: ModalController,
         private readonly ngZone: NgZone,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)

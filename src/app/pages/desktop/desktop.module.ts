@@ -9,10 +9,7 @@ import {DesktopPage} from "./desktop";
 
 
 const routes: Routes = [
-    {
-        path: "",
-        component: DesktopPage
-    }
+    {path: "", component: DesktopPage}
 ];
 
 @NgModule({

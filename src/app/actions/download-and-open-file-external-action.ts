@@ -47,7 +47,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
     private checkWLANAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject): void => {
             if (settings.shouldntDownloadBecauseOfWLAN()) {
-                const alert: Promise<HTMLIonAlertElement> = this.alerter.create({
+                this.alerter.create({
                     header: this.translate.instant("actions.download_without_wlan"),
                     message: this.translate.instant("actions.download_without_wlan_continue"),
                     buttons: [

@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {Events, Platform} from "@ionic/angular";
+import {AlertController, Events, Platform} from "@ionic/angular";
 /** ionic-native */
 import {Toast} from "@ionic-native/toast/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
@@ -14,7 +14,6 @@ import {Log} from "../../services/log.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
-
 
 @Component({
     templateUrl: "login.html",
@@ -36,7 +35,8 @@ export class LoginPage {
                 private readonly toast: Toast,
                 private readonly event: Events,
                 private readonly appVersionPlugin: AppVersion,
-                private readonly auth: AuthenticationProvider
+                private readonly auth: AuthenticationProvider,
+                private readonly alertCtr: AlertController
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
@@ -47,15 +47,36 @@ export class LoginPage {
     }
 
     login(): void {
+        if(!this.checkOnline()) return;
+
         const installation: ILIASInstallation = this.getSelectedInstallation();
         const browser: InAppBrowserObject = this.auth.browserLogin(installation);
 
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser");
             if(AuthenticationProvider.isLoggedIn()) {
-                this.updateLastVersionLogin().then(() => this.checkAndLoadOfflineContent());
+                this.checkAndLoadOfflineContent()
+                    .then(() => this.sync.resetSynchronization())
+                    .then(() => this.updateLastVersionLogin());
             }
         });
+    }
+
+    /**
+     * if the device is offline, inform the user with an alert and return false
+     */
+    private checkOnline(): boolean {
+        if(!window.navigator.onLine) {
+            this.alertCtr.create({
+                header: "TODO title-offline",
+                message: "TODO msg-no-login-when-offline",
+                buttons: [
+                    {text: "Ok"}
+                ]
+            }).then((alert: HTMLIonAlertElement) => alert.present());
+            return false;
+        }
+        return true;
     }
 
     /**

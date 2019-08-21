@@ -1,6 +1,7 @@
 /** angular */
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, NgZone} from "@angular/core";
 import {Config, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
+import {Router} from "@angular/router";
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
@@ -15,6 +16,7 @@ import {Logger} from "./services/logging/logging.api";
 import {Logging} from "./services/logging/logging.service";
 import {DB_MIGRATION, DBMigration} from "./services/migration/migration.api";
 import {SynchronizationService} from "./services/synchronization.service";
+import {FileService} from "./services/file.service";
 /** models */
 import {Settings} from "./models/settings";
 import {User} from "./models/user";
@@ -23,7 +25,6 @@ import getMessage = Logging.getMessage;
 import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {Router} from "@angular/router";
 import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
 import {ObjectListPage} from "./pages/object-list/object-list";
 
@@ -60,6 +61,7 @@ export class AppComponent {
         private readonly config: Config,
         private readonly auth: AuthenticationProvider,
         private readonly appVersionPlugin: AppVersion,
+        private readonly ngZone: NgZone,
         @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
         sqlite: SQLite
     ) {
@@ -69,8 +71,8 @@ export class AppComponent {
 
         // init after platform is ready and native stuff is available
         this.platform.ready().then(() => {
+            this.initializeApp();
             this.log.info(() => "Platform is ready");
-            return this.initializeApp();
         }).catch((error) => {
             const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
             const errorType: string = (error instanceof Error) ? error.name : "N/a";
@@ -83,95 +85,76 @@ export class AppComponent {
      */
     private async initializeApp(): Promise<void> {
         this.log.info(() => "Initialize app");
-        this.statusBar.styleLightContent();
-        this.defineBackButtonAction();
-
+        // database
         await this.database.ready(PEGASUS_CONNECTION_NAME);
         await this.dbMigration.migrate();
+        // user and login-dependent features
+        await AuthenticationProvider.loadUserFromDatabase();
+        this.user = AuthenticationProvider.getUser();
 
-        await this.manageLogin();
+        await this.configureTranslation();
 
-        // overwrite ionic back button text with configured language
-        this.config.set("backButtonText", this.translate.instant("back"));
+        if(AuthenticationProvider.isLoggedIn()) {
+            await this.sync.resetSynchronization();
+            await this.navCtrl.navigateRoot("tabs");
+        } else {
+            await this.presentOnboardingModal();
+        }
+
+        // style and navigation
+        this.statusBar.styleLightContent();
+        this.initializeBackButton();
 
         this.splashScreen.hide();
 
-        this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-        if(this.user !== undefined) {
+        if(AuthenticationProvider.isLoggedIn()) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
             if(this.user.lastVersionLogin !== currentAppVersion) {
                 await this.auth.logout();
                 return;
             }
+
             const settings: Settings = await Settings.findByUserId(this.user.id);
-            if (settings.downloadOnStart && window.navigator.onLine) await this.sync.loadAllOfflineContent();
+            if(settings.downloadOnStart && window.navigator.onLine) await this.sync.loadAllOfflineContent();
         }
-        this.footerToolbar.removeJob(Job.Synchronize);
     }
 
     /**
-     * Configures the translation and, if needed, displays the onboarding-modal
-     *
-     * If no current user is found, the default translation will be loaded and the onboarding-modal will be presented
+     * Configures the {@link TranslateService} depending on the given
      */
-    private async manageLogin(): Promise<void> {
+    private async configureTranslation(): Promise<void> {
         if(AuthenticationProvider.isLoggedIn()) {
-            this.user = AuthenticationProvider.getUser();
-            await this.configureTranslation(this.user);
-            this.router.navigateByUrl("tabs");
-        } else {
-            this.configureDefaultTranslation();
-            await this.presentOnboardingModal();
-        }
-    }
-
-    /**
-     * Configures the {@link TranslateService} depending on the given {@code user}.
-     *
-     * @param {User} user - the user to read its configured language
-     */
-    private async configureTranslation(user: User): Promise<void> {
-        if(this.user !== undefined) {
-            const setting: Settings = await Settings.findByUserId(user.id);
+            const setting: Settings = await Settings.findByUserId(this.user.id);
             this.translate.use(setting.language);
         } else {
-            this.translate.use("de");
+            // get the language of the navigator an check if it is supported. default is de
+            let lng: string = "de";
+            const navLng: string = navigator.language.split("-")[0];
+            ["de", "en", "it"].forEach(s => {if(navLng.match(`/${s}/i`)) lng = s;});
+            this.translate.use(lng);
         }
         this.translate.setDefaultLang("de");
-    }
-
-    /**
-     * Configures the {@link TranslateService} by the {@link navigator}.
-     */
-    private configureDefaultTranslation(): void {
-        let userLang: string = navigator.language.split("-")[0];
-        userLang = /(de|en)/gi.test(userLang) ? userLang : "de";
-
-        // this language will be used as a fallback when a translation isn't found in the current language
-        this.translate.setDefaultLang("de");
-        this.translate.use(userLang);
     }
 
     /**
      * displays the introduction-slides
      */
     async presentOnboardingModal(): Promise<void> {
-        const onboardingModal: HTMLIonModalElement = await this.modal.create({
+        await this.modal.create({
             component: OnboardingPage,
             cssClass: "modal-fullscreen"
-        });
-        await onboardingModal.present();
+        }).then((it: HTMLIonModalElement) => it.present());
     }
 
     /**
      * Registers actions for the back button.
      */
-    private defineBackButtonAction(): void {
+    private initializeBackButton(): void {
         let backButtonTapped: boolean = false;
 
-        this.platform.backButton.subscribeWithPriority(1, () => {
+        this.platform.backButton.subscribeWithPriority(0, () => {
             const url: string = this.router.url;
-            
+
             // default: router back-navigation
             let action: string = "back";
 
@@ -185,18 +168,20 @@ export class AppComponent {
                 url.match(/content\/0/) ||
                 url.match(/content$/) ||
                 url.match(/news$/) ||
-                url.match(/menu$/)
+                url.match(/menu\/main$/)
             ) {
                 action = "to_home";
             }
 
             // when on the desktop-page, double-tap back-button for exit
-            if(url.match(/home$/)) {
+            if(
+                url.match(/home$/) ||
+                url.match(/login$/)
+            ) {
                 action = (backButtonTapped) ? "close" : "ask_close";
             }
 
             switch(action) {
-
                 case "to_home":
                     this.navCtrl.navigateRoot("tabs");
                     break;
@@ -217,14 +202,15 @@ export class AppComponent {
                     break;
 
                 case "back_in_hierarchy":
-                    ObjectListPage.navigateBackInHierarchy(this.navCtrl);
+                    ObjectListPage.navigateBackInHierarchy(this.navCtrl, this.ngZone);
                     break;
 
                 default:
                 case "back":
                     this.navCtrl.back();
-
             }
         });
+
+        this.config.set("backButtonText", this.translate.instant("back"));
     }
 }

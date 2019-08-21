@@ -48,7 +48,7 @@ export class SettingsPage {
                 public footerToolbar: FooterToolbarService,
                 public translate: TranslateService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
-                public alert: AlertController,
+                public alertCtr: AlertController,
                 public dataProvider: DataProvider,
                 public fileService: FileService,
                 private readonly config: Config,
@@ -96,7 +96,7 @@ export class SettingsPage {
     }
 
     deleteLocalUserDataPrompt(user: User): void {
-        this.alert.create({
+        this.alertCtr.create({
             header: this.translate.instant("settings.delete_user_local_data_title", {"username": user.iliasLogin}),
             message: this.translate.instant("settings.delete_user_local_data_text"),
             buttons: [
@@ -177,14 +177,14 @@ export class SettingsPage {
     }
 
     deleteAllFilesPrompt(): void {
-        this.alert.create({
+        console.log("creating...");
+        this.alertCtr.create({
             header: this.translate.instant("settings.delete_all_files"),
             message: this.translate.instant("settings.delete_all_files_text"),
             buttons: [
                 {
                     text: this.translate.instant("cancel"),
                     role: "cancel",
-                    handler: (): void => { /* noop */}
                 },
                 {
                     text: this.translate.instant("ok"),
@@ -208,7 +208,7 @@ export class SettingsPage {
                     }
                 }
             ]
-        }).then((it: HTMLIonAlertElement) => it.present);
+        }).then((it: HTMLIonAlertElement) => it.present());
     }
 
     private async deleteFiles(user: User): Promise<void> {
@@ -218,7 +218,7 @@ export class SettingsPage {
     }
 
     private async showUnknownErrorOccurredAlert(): Promise<void> {
-        await this.alert.create({
+        await this.alertCtr.create({
             header: this.translate.instant("something_went_wrong"),
             buttons: [
                 {

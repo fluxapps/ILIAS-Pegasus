@@ -2,31 +2,23 @@
 import {NgModule} from "@angular/core";
 import {Routes, RouterModule} from "@angular/router";
 /** pages */
-import {LoginPage} from "./pages/login/login";
 import {TabmenuPage} from "./pages/tabmenu/tabmenu";
-import {DesktopPage} from "./pages/desktop/desktop";
-import {ObjectListPage} from "./pages/object-list/object-list";
-import {NewsPage} from "./pages/news/news";
-import {MenuPage} from "./pages/menu/menu";
-import {SettingsPage} from "./pages/settings/settings";
-import {InfoPage} from "./pages/info/info";
-import {ObjectDetailsPage} from "./pages/object-details/object-details";
 /** misc */
 import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
 
 const routes: Routes = [
     {path: "", redirectTo: "tabs", pathMatch: "full"},
-    {path: "login", component: LoginPage},
+    {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
     {path: "tabs", component: TabmenuPage, canActivate: [AuthenticationProvider],
         children: [
             {path: "", redirectTo: "home", pathMatch: "full"},
-            {path: "home", component: DesktopPage},
-            {path: "content/:depth/:favorite", component: ObjectListPage},
-            {path: "content/details", component: ObjectDetailsPage},
-            {path: "news", component: NewsPage},
-            {path: "menu/main", component: MenuPage},
-            {path: "menu/settings", component: SettingsPage},
-            {path: "menu/info", component: InfoPage}
+            {path: "home", loadChildren: "./pages/desktop/desktop.module#DesktopPageModule"},
+            {path: "content/:depth/:favorite", loadChildren: "./pages/object-list/object-list.module#ObjectListPageModule"},
+            {path: "content/details", loadChildren: "./pages/object-details/object-details.module#ObjectDetailsPageModule"},
+            {path: "news", loadChildren: "./pages/news/news.module#NewsPageModule"},
+            {path: "menu/main", loadChildren: "./pages/menu/menu.module#MenuPageModule"},
+            {path: "menu/settings", loadChildren: "./pages/settings/settings.module#SettingsPageModule"},
+            {path: "menu/info", loadChildren: "./pages/info/info.module#InfoPageModule"}
         ]
     },
     {path: "**", redirectTo: "login"}

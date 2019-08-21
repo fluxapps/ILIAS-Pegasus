@@ -1,9 +1,6 @@
 /** angular */
 import {Inject, Injectable} from "@angular/core";
-import {Events} from "@ionic/angular";
-/** rxjs */
-import {Observable} from "rxjs/Observable";
-import {merge, from} from "rxjs";
+import {AlertController} from "@ionic/angular";
 /** services */
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
@@ -62,7 +59,58 @@ export class SynchronizationService {
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
                 //TODO lp @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
                 //TODO lp @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader
+                private readonly alertCtr: AlertController
     ) {}
+
+    /**
+     * cancels all synchronization-processes and error-corrects
+     * database-entries of the corresponding ilias-objects
+     */
+    async resetSynchronization(): Promise<void> {
+        this.user = AuthenticationProvider.getUser();
+
+        this.syncOfflineQueue = [];
+        this.syncOfflineQueueCnt = 0;
+        this.recursiveSyncQueue = [];
+
+        SynchronizationService.state = {
+            liveLoading: false,
+            loadingOfflineContent: false,
+            recursiveSyncRunning: false
+        };
+
+        const objects: Array<ILIASObject> = await ILIASObject.getAllOpenDownloads(this.user);
+        if(objects.length) {
+            let dismiss: boolean = true;
+            const buttons: Array<{text: string, handler(): void;}> = window.navigator.onLine ?
+                [{
+                    text: "TODO discard",
+                    handler: (): void => {dismiss = false;}
+                }, {
+                    text: "TODO load_now",
+                    handler: (): void => {dismiss = true;}
+                }] :
+                [{
+                    text: "TODO ok",
+                    handler: (): void => {dismiss = false;}
+                }];
+
+            let objectsList: string = "<br>";
+            objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
+
+            const alert: HTMLIonAlertElement = await this.alertCtr.create({
+                header: "TODO open downloads",
+                message: `TODO there are/is ${objects.length} favorite/s that failed downloading because app was closed:${objectsList}`,
+                buttons: buttons
+            });
+            alert.present();
+            alert.onDidDismiss().then(() => {
+                if(dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
+                else this.addObjectsToSyncQueue(objects);
+            });
+        }
+
+    }
 
     /**
      * Execute synchronization
@@ -74,18 +122,16 @@ export class SynchronizationService {
     liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
         SynchronizationService.state.liveLoading = true;
 
-        return this.loadCurrentUser()
-            .then(() => {
-                return this.syncStarted()
-                    .then( () => this.executeLiveLoad(iliasObject))
-                    .catch( (error) =>
-                        this.syncEnded()
-                            .then( () => Promise.reject(error))
-                    )
-                    .then(promise  => {
-                        SynchronizationService.state.liveLoading = false;
-                        return promise;
-                    })
+        this.user = AuthenticationProvider.getUser();
+        return this.syncStarted()
+            .then( () => this.executeLiveLoad(iliasObject))
+            .catch( (error) =>
+                this.syncEnded()
+                    .then( () => Promise.reject(error))
+            )
+            .then(promise  => {
+                SynchronizationService.state.liveLoading = false;
+                return promise;
             });
     }
 
@@ -94,7 +140,9 @@ export class SynchronizationService {
      * @returns Promise<void>
      */
     async loadAllOfflineContent(): Promise<void> {
-        await this.loadCurrentUser();
+        if(SynchronizationService.state.loadingOfflineContent) return;
+
+        this.user = AuthenticationProvider.getUser();
         const favorites: Array<ILIASObject> = await Favorites.findByUserId(this.user.id);
         if(favorites.length === 0) return;
         await this.addObjectsToSyncQueue(favorites);
@@ -105,7 +153,7 @@ export class SynchronizationService {
      * @param iliasObjects
      */
     async addObjectsToSyncQueue(iliasObjects: ILIASObject|Array<ILIASObject>): Promise<void> {
-        await this.loadCurrentUser();
+        this.user = AuthenticationProvider.getUser();
         this.syncOfflineQueue = Array.prototype.concat(this.syncOfflineQueue, iliasObjects);
         this.updateOfflineSyncStatusMessage();
         if(!SynchronizationService.state.loadingOfflineContent)
@@ -161,7 +209,6 @@ export class SynchronizationService {
      * @returns Promise<SyncResults>
      */
     async loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
-        console.log("method - loadOfflineObjectRecursive");
         await iliasObject.setIsFavorite(2);
         if(SynchronizationService.state.recursiveSyncRunning) {
             let resolver: any;
@@ -218,12 +265,6 @@ export class SynchronizationService {
         );
     }
 */
-    /**
-     * Set the user-variable of the object
-     */
-    private async loadCurrentUser(): Promise<void> {
-        this.user = AuthenticationProvider.getUser();
-    }
 
     /**
      * set local recursiveSyncRunning and db entry that a sync is in progress
@@ -413,7 +454,7 @@ export class SynchronizationService {
     }
 
     async executeNewsSync(): Promise<void> {
-        await this.loadCurrentUser();
+        this.user = AuthenticationProvider.getUser();
         await this.newsSynchronization.synchronize();
         //TODO lp await this.visitJournalSynchronization.synchronize();
         await this.syncEnded();

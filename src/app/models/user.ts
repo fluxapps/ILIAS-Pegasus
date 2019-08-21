@@ -118,7 +118,7 @@ export class User extends ActiveRecord {
                 if (response.rows.length == 0) {
                     return <Promise<User>> Promise.reject("No active user found.");
                 } else {
-                    const user = new User();
+                    const user: User = new User();
                     user.readFromObject(response.rows.item(0));
                     return Promise.resolve(<User> user);
                 }

@@ -9,10 +9,7 @@ import {NewsPage} from "./news";
 import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
-    {
-        path: "",
-        component: NewsPage
-    }
+    {path: "", component: NewsPage}
 ];
 
 @NgModule({

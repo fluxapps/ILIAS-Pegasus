@@ -5,11 +5,11 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Routes, RouterModule} from "@angular/router";
 import {IonicModule} from "@ionic/angular";
 /** misc */
-import {InfoPage} from "./info";
+import {ObjectDetailsPage} from "./object-details";
 import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
-    {path: "", component: InfoPage}
+    {path: "", component: ObjectDetailsPage}
 ];
 
 @NgModule({
@@ -21,6 +21,6 @@ const routes: Routes = [
         TranslateModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [InfoPage]
+    declarations: [ObjectDetailsPage]
 })
-export class InfoPageModule {}
+export class ObjectDetailsPageModule {}

@@ -1,8 +1,7 @@
 import {AppComponent} from "./app.component";
 /** angular */
-// TODO migration ionic-angular IonicApp, IonicErrorHandler
-import {IonicModule, IonicRouteStrategy, Platform, NavController, ModalController} from "@ionic/angular";
-import {ActivatedRoute, RouteReuseStrategy} from "@angular/router";
+import {IonicModule, IonicRouteStrategy, Platform, ModalController} from "@ionic/angular";
+import {RouteReuseStrategy} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
 import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/core";
@@ -23,29 +22,22 @@ import {StatusBar} from "@ionic-native/status-bar/ngx";
 import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
 import {Toast} from "@ionic-native/toast/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
-import {MissingTranslationHandler, TranslateModule, TranslateService, TranslateLoader} from "@ngx-translate/core";
+import {TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
-//import {TestPage} from "./pages/test/test";
-import {DesktopPage} from "./pages/desktop/desktop";
-import {ObjectListPage} from "./pages/object-list/object-list";
-import {LoginPage} from "./pages/login/login";
 import {ModalPage} from "./pages/modal/modal";
-import {ObjectDetailsPage} from "./pages/object-details/object-details";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {SettingsPage} from "./pages/settings/settings";
-import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
 import {TabmenuPage} from "./pages/tabmenu/tabmenu";
-import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
-import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
-import {NewsPage} from "./pages/news/news";
-import {MenuPage} from "./pages/menu/menu";
-import {InfoPage} from "./pages/info/info";
-//import {LoadingPage} from "./fallback/loading/loading.component";
-//import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
+// below: unused pages
+//import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
+//import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
+//import {LoadingPage} from "./fallback/loading/loading.component";
 //import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 //import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+//import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
+//import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
+//import {TestPage} from "./pages/test/test";
 /** services */
 import {Builder} from "./services/builder.base";
 import {Database} from "./services/database/database";
@@ -54,7 +46,7 @@ import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.ut
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
 import {FileService} from "./services/file.service";
 import {FooterToolbarService} from "./services/footer-toolbar.service";
-//import {PegasusMissingTranslationHandler} from "./services/language/translation-missing-handler";
+import {PegasusMissingTranslationHandler} from "./services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "./services/link/default.builder";
 import {LINK_BUILDER, LinkBuilderImpl} from "./services/link/link-builder.service";
 import {LOADING_LINK_BUILDER, LoadingLinkBuilder, LoadingLinkBuilderImpl} from "./services/link/loading.builder";
@@ -141,28 +133,14 @@ import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directi
 */
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
-import {FileSizePipe} from "./pipes/fileSize.pipe";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
 
 @NgModule({
     declarations: [
         AppComponent,
-        //TestPage,
-        DesktopPage,
-        ObjectListPage,
         TabmenuPage,
-        SettingsPage,
-        NewsPage,
-        MenuPage,
-        InfoPage,
-        ObjectDetailsPage,
-        LoginPage,
-        SynchronizationPage,
-        FileSizePipe,
-        SyncFinishedModal,
         ModalPage,
-        //LoadingPage,
         OnboardingPage,
 
         // from src/learnplace
@@ -176,43 +154,35 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //LinkBlock,
         //AccordionBlock,
 
+        //TestPage,
+        //LoadingPage,
+        //SynchronizationPage,
+        //SyncFinishedModal,
         // fallback screens
         //WifiFallbackScreen,
         //LocationFallbackScreen,
         //RoamingFallbackScreen,
         LeaveAppDialog,
 
-        HardwareFeaturePage
+        //HardwareFeaturePage
     ],
     entryComponents: [
-        DesktopPage,
-        ObjectListPage,
         TabmenuPage,
-        MenuPage,
-        InfoPage,
-        SettingsPage,
-        NewsPage,
-        ObjectDetailsPage,
-        LoginPage,
-        SynchronizationPage,
-        SyncFinishedModal,
-        //LoadingPage,
         OnboardingPage,
+        LeaveAppDialog,
 
         // from src/learnplace TODO lp
         //MapPage,
         //TabsPage,
         //ContentPage,
 
+        //SyncFinishedModal,
+        //LoadingPage,
+        //HardwareFeaturePage,
         // fallback screens
         //WifiFallbackScreen,
-
-        // fallback screens
         //LocationFallbackScreen,
         //RoamingFallbackScreen,
-        LeaveAppDialog,
-
-        HardwareFeaturePage,
     ],
     imports: [
         HttpModule,
@@ -502,10 +472,9 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         DiagnosticUtil,
         Hardware,
 
-        //IonicErrorHandler,
         {provide: ErrorHandler, useClass: PegasusErrorHandler},
         <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
-        //<ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
+        <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
         AuthenticationProvider,
         ExecuteSyncProvider,
         AppVersion

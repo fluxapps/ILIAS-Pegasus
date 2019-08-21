@@ -1,12 +1,9 @@
 import {ErrorHandler, Injectable} from "@angular/core";
 import {AlertController} from "@ionic/angular";
-// TODO migration Alert, AlertOptions, IonicErrorHandler from ionic-angular
 import {isNullOrUndefined, isNumber, isObject, isString} from "util";
-import {isDevMode} from "./devmode";
 import {TranslateService} from "@ngx-translate/core";
 import {Logger} from "./services/logging/logging.api";
 import {Logging} from "./services/logging/logging.service";
-// TODO migration import {AlertButton} from "@ionic/angular/components/alert/alert-options";
 // errors and exceptions
 import {Error} from "tslint/lib/error";
 import {TimeoutError} from "rxjs/Rx";
@@ -19,7 +16,7 @@ import {OfflineException} from "./exceptions/OfflineException";
 import {RESTAPIException} from "./exceptions/RESTAPIException";
 
 interface AlertEntry {
-    // TODO migration alert: Alert,
+    alert: HTMLIonAlertElement,
     title: string,
     message: string,
     cnt: number
@@ -41,10 +38,9 @@ export class PegasusErrorHandler implements ErrorHandler {
 
     private readonly log: Logger = Logging.getLogger(PegasusErrorHandler.name);
 
-    constructor(// TODO migration private readonly ionicErrorHandler: IonicErrorHandler,
-                private readonly alert: AlertController,
-                private readonly translate: TranslateService,) {
-    }
+    constructor(private readonly alertCtr: AlertController,
+                private readonly translate: TranslateService
+    ) {}
 
     /**
      * Handles the given {@code error}.
@@ -52,15 +48,11 @@ export class PegasusErrorHandler implements ErrorHandler {
      * If the error is an instance of {@link HardwareAccessError}, it will be ignored.
      * Such an error is already handled and part of the fallback screen functionality.
      *
-     * If the app runs in the ionic dev server, the error will be delegated to the
-     * {@link IonicErrorHandler} in order to display a stacktrace.
-     *
      * @param error - the thrown error
      */
     handleError(error: undefined|null|string|number|object): void {
 
         try {
-
             const unwrappedError: Error = this.getErrorInstance(error);
 
             // Ignore HardwareAccessError
@@ -126,11 +118,7 @@ export class PegasusErrorHandler implements ErrorHandler {
             this.log.error(() => `Unhandled error occurred of type: ${unwrappedError}`);
             this.log.error(() => `JSON of error: ${JSON.stringify(unwrappedError)}`);
 
-            if (isDevMode()) {
-                // TODO migration this.ionicErrorHandler.handleError(error);
-            } else {
-                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("something_went_wrong"));
-            }
+            this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("something_went_wrong"));
 
         } catch (err) {
             this.log.warn(() =>
@@ -139,7 +127,6 @@ export class PegasusErrorHandler implements ErrorHandler {
             );
 
             this.log.error(() => `Error unhandled of type: ${err}`);
-            this.log.error(() => `JSON of error: ${JSON.stringify(err)}`);
             this.log.error(() => `Previous error unhandled of type: ${error}`);
             this.log.error(() => `JSON of previous error: ${JSON.stringify(error)}`);
         }
@@ -175,36 +162,31 @@ export class PegasusErrorHandler implements ErrorHandler {
     }
 
     private displayAlert(title: string, message: string): void {
-        /* TODO migration
         const alertEntry: AlertEntry = this.displayedAlerts.filter(e => e.title === title && e.message === message)[0];
         if(alertEntry === undefined) {
-            const alert: Alert = this.alert.create(<AlertOptions>{
-                title: title,
+            this.alertCtr.create({
+                header: title,
                 message: message,
                 buttons: [
-                    <AlertButton>{
-                        text: "Ok",
-                        handler: (_: boolean): void => {
-                            this.log.debug(() => `Alert with title "${title}" dismissed.`);
-                        }
+                    {
+                        text: "Ok"
                     }
                 ]
+            }).then((alert: HTMLIonAlertElement) => {
+                this.displayedAlerts.push({alert: alert, title: title, message: message, cnt: 1});
+                alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
+                alert.onDidDismiss().then(() => this.displayedAlerts = this.displayedAlerts.filter(e => e.title !== title && e.message !== message));
             });
-            this.displayedAlerts.push({alert: alert, title: title, message: message, cnt: 1});
-            alert.onDidDismiss(() =>
-                this.displayedAlerts = this.displayedAlerts.filter(e => e.title !== title && e.message !== message)
-            );
-            alert.present().then(() => this.log.debug(() => `Alert with title "${title}" presented.`));
         } else {
             alertEntry.cnt++;
-            alertEntry.alert.setTitle(`${alertEntry.title} (${alertEntry.cnt})`);
-        }*/
+            alertEntry.alert.header = `${alertEntry.title} (${alertEntry.cnt})`; //TODO could update header of alert
+        }
     }
 
     private stringifyWithoutCyclicObjects(errorLike: undefined|null|string|number|object): string {
-         const seen: Array<object> = [];
+        const seen: Array<object> = [];
 
-         //https://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+        //https://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
         const stringObject: string = JSON.stringify(errorLike, (key, val) => {
             if (val !== null  && val !== undefined && val instanceof Object) {
                 if (seen.indexOf(val) >= 0) {

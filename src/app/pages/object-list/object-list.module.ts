@@ -9,10 +9,7 @@ import {ObjectListPage} from "./object-list";
 import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
-    {
-        path: "",
-        component: ObjectListPage
-    }
+    {path: "", component: ObjectListPage}
 ];
 
 @NgModule({
