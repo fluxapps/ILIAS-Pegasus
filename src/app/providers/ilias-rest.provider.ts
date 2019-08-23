@@ -12,7 +12,6 @@ import {Logging} from "../services/logging/logging.service";
 /** misc */
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "./file-transfer/file-download";
 import {HttpResponse} from "./http";
-import {Profiler} from "../util/profiler";
 import {User} from "../models/user";
 
 const DEFAULT_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
@@ -62,10 +61,7 @@ export class ILIASRestProvider {
     }
 
     async getFileData(refId: number, user: User, timeout: number = 0): Promise<FileData> {
-      Profiler.addTimestamp("", true, "REST/getFileData", refId.toString());
-
       const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
-      Profiler.addTimestamp("iliasRest.get-done", false, "REST/getFileData", refId.toString());
 
       return response.handle(it =>
         it.json<FileData>(fileShema)

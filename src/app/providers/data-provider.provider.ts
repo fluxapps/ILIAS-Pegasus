@@ -9,7 +9,6 @@ import {DesktopItem} from "../models/desktop-item";
 import {Log} from "../services/log.service";
 /** misc */
 import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
-import {Profiler} from "../util/profiler";
 
 @Injectable({
     providedIn: "root"
@@ -157,7 +156,6 @@ export class DataProvider {
      */
     private saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         const id: string = (rootParent) ? rootParent.refId.toString() : "-1";
-        Profiler.addTimestamp("saveOrDeleteObjects-start", false, "PD/getObjectData", id);
         const iliasObjects: Array<ILIASObject> = [];
         const promises: Array<Promise<void>> = [];
         const objectsToDelete: Array<ILIASObject> = existingObjects;
@@ -183,7 +181,6 @@ export class DataProvider {
                 this.deleteObject(iliasObject, user);
             });
 
-            Profiler.addTimestamp("store-promise-done", false, "PD/getObjectData", id);
             return Promise.resolve(iliasObjects);
         });
     }

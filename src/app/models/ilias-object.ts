@@ -299,6 +299,52 @@ export class ILIASObject extends ActiveRecord {
         return false;
     }
 
+    /**
+     * gathers all iliasObjects that have been marked by the given user
+     */
+    static getFavoritesByUserId(userId: number, includeLoading: boolean = true): Promise<Array<ILIASObject>> {
+        return SQLiteDatabaseService.instance()
+            .then(db => db.query(`SELECT * FROM objects WHERE isFavorite ${includeLoading ? "> 0" : "= 1" } AND userId = ? ORDER BY title ASC`, [userId]))
+            .then((response) => {
+                const favorites = [];
+                for (let i = 0; i < (<any> response).rows.length; i++) {
+                    favorites.push(ILIASObject.find(<number> (<any> response).rows.item(i).id))
+                }
+                return Promise.all(favorites);
+            });
+    }
+
+    /**
+     * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
+     */
+    async removeFromFavorites(fileService: FileService, ignoreDeletionErrors: boolean = false): Promise<void> {
+        await this.setIsFavorite(0);
+        const underFavorite: boolean = await this.objectIsUnderFavorite();
+        const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
+
+        while (objectsStack.length) {
+            const ilObj: ILIASObject = objectsStack.pop();
+
+            const newObjects: Array<ILIASObject> = await ILIASObject.findByParentRefId(ilObj.refId, this.userId);
+            for (let i: number = 0; i < newObjects.length; i++)
+                if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
+
+            try {
+                await fileService.removeObject(ilObj);
+            } catch (e) {
+                if(!ignoreDeletionErrors) throw e;
+            }
+        }
+    }
+
+    /**
+     * Set property 'isFavorite' of the 'iliasObject'
+     */
+    async setIsFavorite(value: number): Promise<void> {
+        this.isFavorite = value;
+        await this.save();
+    }
+
 
     /**
      * Find ILIAS-Object by primary ID, returns a Promise resolving the fully loaded ILIASObject object
@@ -443,37 +489,6 @@ export class ILIASObject extends ActiveRecord {
             });
             return Promise.resolve(iliasObjects);
         });
-    }
-
-    /**
-     * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
-     */
-    async removeFromFavorites(fileService: FileService, ignoreDeletionErrors: boolean = false): Promise<void> {
-        await this.setIsFavorite(0);
-        const underFavorite: boolean = await this.objectIsUnderFavorite();
-        const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
-
-        while (objectsStack.length) {
-            const ilObj: ILIASObject = objectsStack.pop();
-
-            const newObjects: Array<ILIASObject> = await ILIASObject.findByParentRefId(ilObj.refId, this.userId);
-            for (let i: number = 0; i < newObjects.length; i++)
-                if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
-
-                try {
-                    await fileService.removeObject(ilObj);
-                } catch (e) {
-                    if(!ignoreDeletionErrors) throw e;
-                }
-        }
-    }
-
-    /**
-     * Set property 'isFavorite' of the 'iliasObject'
-     */
-    async setIsFavorite(value: number): Promise<void> {
-        this.isFavorite = value;
-        await this.save();
     }
 
     /**

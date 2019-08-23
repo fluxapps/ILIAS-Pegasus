@@ -177,7 +177,6 @@ export class SettingsPage {
     }
 
     deleteAllFilesPrompt(): void {
-        console.log("creating...");
         this.alertCtr.create({
             header: this.translate.instant("settings.delete_all_files"),
             message: this.translate.instant("settings.delete_all_files_text"),

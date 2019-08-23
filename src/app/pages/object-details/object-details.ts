@@ -135,55 +135,34 @@ export class ObjectDetailsPage {
         this.actions = [
             this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(this.object.refId))
         ];
-        if (this.object.isContainer() && !this.object.isLinked()) {
-            if (!this.object.isFavorite) {
-                this.actions.push(new MarkAsFavoriteAction(
-                    this.translate.instant("actions.mark_as_favorite"),
-                    this.object,
-                    this.sync)
-                );
-            } else if (this.object.isFavorite && this.object.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsFavoriteAction(
-                    this.translate.instant("actions.unmark_as_favorite"),
-                    this.object,
-                    this.file)
-                );
-                this.actions.push(new SynchronizeAction(
-                    this.translate.instant("actions.synchronize"),
-                    this.object,
-                    this.sync,
-                    this.modal,
-                    this.translate)
-                );
-            }
-            this.actions.push(new RemoveLocalFilesAction(
-                this.translate.instant("actions.remove_local_files"),
+
+        if (!this.object.isFavorite) {
+            this.actions.push(new MarkAsFavoriteAction(
+                this.translate.instant("actions.mark_as_favorite"),
                 this.object,
-                this.file,
+                this.sync)
+            );
+        } else {
+            this.actions.push(new UnMarkAsFavoriteAction(
+                this.translate.instant("actions.unmark_as_favorite"),
+                this.object,
+                this.file)
+            );
+            this.actions.push(new SynchronizeAction(
+                this.translate.instant("actions.synchronize"),
+                this.object,
+                this.sync,
+                this.modal,
                 this.translate)
             );
         }
+
         if (this.object.type == "file") {
             this.file.existsFile(this.object).then(() => {
                 this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.object, this.file));
-                this.actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), this.object,
-                    this.file, this.translate));
             }, () => {
                 Log.write(this, "No file available: Remove and Open are not available.");
             });
-            if (!this.object.isFavorite) {
-                this.actions.push(new MarkAsFavoriteAction(
-                    this.translate.instant("actions.mark_as_favorite"),
-                    this.object,
-                    this.sync)
-                );
-            } else if (this.object.isFavorite && this.object.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM) {
-                this.actions.push(new UnMarkAsFavoriteAction(
-                    this.translate.instant("actions.unmark_as_favorite"),
-                    this.object,
-                    this.file)
-                );
-            }
         }
     }
 
