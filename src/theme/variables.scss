@@ -3,3 +3,38 @@
 
 // Styles are set automatically via the branding-tool, see:
 // ./branding/README.md for more details
+
+
+$colors: (
+    primary:    #4a668b,
+    secondary:  #6EA03C,
+    danger:     #FA8228,
+    light:      #f4f4f4,
+    lightish:   #a9a9a9,
+    dark:       #222,
+    favorite:   #69BB7B,
+    main: #4a668b,
+    transparent: transparent,
+    nobg-w: (
+        base: transparent,
+        contrast: #ffffff,
+    ),
+    nobg-blue: (
+        base: transparent,
+        contrast: #12466F,
+    ),
+    light-blue: (
+        base: #ffffff,
+        contrast: #12466F,
+    ),
+    white:   #FFFFFF,
+    header-element:(
+        base:  #4a668b,
+        contrast: #ffffff,
+    ),
+    // list-element:(
+    //     base: transparent,
+    //     contrast: #ffffff,
+    // ),
+    // button-element: #ffffff,
+);
