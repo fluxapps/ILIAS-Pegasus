@@ -9,7 +9,6 @@ import {TranslateService} from "@ngx-translate/core";
 //TODO lp import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 //TODO lp import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 /** models */
-import {Favorites} from "../models/favorites";
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
@@ -66,9 +65,10 @@ export class SynchronizationService {
      * cancels all synchronization-processes and error-corrects
      * database-entries of the corresponding ilias-objects
      */
-    async resetSynchronization(): Promise<void> {
+    async resetOfflineSynchronization(askUserToLoadNow: boolean = false): Promise<void> {
         this.user = AuthenticationProvider.getUser();
 
+        // reset the object-variables
         this.syncOfflineQueue = [];
         this.syncOfflineQueueCnt = 0;
         this.recursiveSyncQueue = [];
@@ -79,37 +79,40 @@ export class SynchronizationService {
             recursiveSyncRunning: false
         };
 
+        // handle the pending downloads
         const objects: Array<ILIASObject> = await ILIASObject.getAllOpenDownloads(this.user);
-        if(objects.length) {
-            let dismiss: boolean = true;
-            const buttons: Array<{text: string, handler(): void;}> = window.navigator.onLine ?
-                [{
-                    text: "TODO discard",
-                    handler: (): void => {dismiss = false;}
-                }, {
-                    text: "TODO load_now",
-                    handler: (): void => {dismiss = true;}
-                }] :
-                [{
-                    text: "TODO ok",
-                    handler: (): void => {dismiss = false;}
-                }];
+        if(!objects.length) return;
+            if(askUserToLoadNow) {
+                let dismiss: boolean = true;
+                const buttons: Array<{text: string, handler(): void;}> = window.navigator.onLine ?
+                    [{
+                        text: "TODO remove_favorites",
+                        handler: (): void => {dismiss = true;}
+                    }, {
+                        text: "TODO load_now",
+                        handler: (): void => {dismiss = false;}
+                    }] :
+                    [{
+                        text: "TODO ok",
+                        handler: (): void => {dismiss = true;}
+                    }];
 
-            let objectsList: string = "<br>";
-            objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
+                let objectsList: string = "<br>";
+                objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
 
-            const alert: HTMLIonAlertElement = await this.alertCtr.create({
-                header: "TODO open downloads",
-                message: `TODO there are/is ${objects.length} favorite/s that failed downloading because app was closed:${objectsList}`,
-                buttons: buttons
-            });
-            alert.present();
-            alert.onDidDismiss().then(() => {
-                if(dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
-                else this.addObjectsToSyncQueue(objects);
-            });
-        }
-
+                const alert: HTMLIonAlertElement = await this.alertCtr.create({
+                    header: "TODO open downloads",
+                    message: `TODO there are/is ${objects.length} favorite/s that failed downloading because app was closed:${objectsList}`,
+                    buttons: buttons
+                });
+                alert.present();
+                alert.onDidDismiss().then(() => {
+                    if (dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
+                    else this.addObjectsToSyncQueue(objects);
+                });
+            } else {
+                objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
+            }
     }
 
     /**
@@ -143,7 +146,7 @@ export class SynchronizationService {
         if(SynchronizationService.state.loadingOfflineContent) return;
 
         this.user = AuthenticationProvider.getUser();
-        const favorites: Array<ILIASObject> = await Favorites.findByUserId(this.user.id);
+        const favorites: Array<ILIASObject> = await ILIASObject.getFavoritesByUserId(this.user.id);
         if(favorites.length === 0) return;
         await this.addObjectsToSyncQueue(favorites);
     }
@@ -239,11 +242,12 @@ export class SynchronizationService {
                 return Promise.resolve(syncResult);
             })
             .catch( (error) => {
+                if(!window.navigator.onLine) this.resetOfflineSynchronization();
                 return Promise.reject(error);
             });
     }
 
-    private async downloadContainerContent(container: ILIASObject): Promise<SyncResults> {
+    async downloadContainerContent(container: ILIASObject): Promise<SyncResults> {
         const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
         iliasObjects.push(container);
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);

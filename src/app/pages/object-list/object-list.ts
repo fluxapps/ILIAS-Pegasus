@@ -22,7 +22,6 @@ import {ILIASObject} from "../../models/ilias-object";
 import {PageLayout} from "../../models/page-layout";
 import {TimeLine} from "../../models/timeline";
 import {User} from "../../models/user";
-import {Favorites} from "../../models/favorites";
 /** actions */
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
@@ -321,7 +320,7 @@ export class ObjectListPage {
      */
     async loadFavoritesObjectList(): Promise<void> {
         if(this.parent === undefined) {
-            Favorites.findByUserId(AuthenticationProvider.getUser().id)
+            ILIASObject.getFavoritesByUserId(AuthenticationProvider.getUser().id)
                 .then(favorites => {
                     favorites.sort(ILIASObject.compare);
                     this.content = favorites;
@@ -371,7 +370,10 @@ export class ObjectListPage {
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
 
         if(iliasObject.isLinked()) {
-            return this.openInIliasActionFactory(this.translate.instant("actions.view_in_ilias"), this.linkBuilder.default().target(iliasObject.refId));
+            return this.openInIliasActionFactory(
+                this.translate.instant("actions.view_in_ilias"),
+                this.linkBuilder.default().target(iliasObject.refId)
+            );
         }
 
         if(iliasObject.isContainer()) {
@@ -442,8 +444,6 @@ export class ObjectListPage {
         this.applyMarkAsFavoriteAction(actions, iliasObject);
         this.applyUnmarkAsFavoriteAction(actions, iliasObject);
         this.applySynchronizeAction(actions, iliasObject);
-        this.applyRemoveLocalFileAction(actions, iliasObject);
-        this.applyRemoveLearnplaceAction(actions, iliasObject);
 
         const buttons: any = actions.map(action => {
             return {
@@ -516,25 +516,9 @@ export class ObjectListPage {
     }
 
     private applySynchronizeAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isOfflineAvailable  && this.state.online && iliasObject.offlineAvailableOwner != ILIASObject.OFFLINE_OWNER_SYSTEM
-            && (
-                iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()
-                ||
-                iliasObject.isFile()
-            )
-        ) {
+        if(iliasObject.isFavorite  && this.state.online) {
             actions.push(new SynchronizeAction(this.translate.instant("actions.synchronize"), iliasObject, this.sync, this.modal, this.translate));
         }
-    }
-
-    private applyRemoveLocalFileAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        if(iliasObject.isContainer() && !iliasObject.isLinked() && !iliasObject.isLearnplace()) {
-            actions.push(new RemoveLocalFilesAction(this.translate.instant("actions.remove_local_files"), iliasObject, this.file, this.translate));
-        }
-
-        if(iliasObject.isFile())
-            actions.push(new RemoveLocalFileAction(this.translate.instant("actions.remove_local_file"), iliasObject, this.file, this.translate));
-
     }
 
     /**
@@ -551,12 +535,5 @@ export class ObjectListPage {
             linkBuilder.target(this.parent.refId)
         );
         this.executeAction(action);
-    }
-
-    private applyRemoveLearnplaceAction(actions: Array<ILIASObjectAction>, iliasObject: ILIASObject): void {
-        /*TODO lp if(iliasObject.isLearnplace())
-            actions.push(this.removeLocalLearnplaceActionFactory(
-                this.translate.instant("actions.remove_local_learnplace"), iliasObject.objId, iliasObject.userId)
-            );*/
     }
 }

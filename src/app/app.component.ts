@@ -89,6 +89,7 @@ export class AppComponent {
         // database
         await this.database.ready(PEGASUS_CONNECTION_NAME);
         await this.dbMigration.migrate();
+
         // user and login-dependent features
         await AuthenticationProvider.loadUserFromDatabase();
         this.user = AuthenticationProvider.getUser();
@@ -96,7 +97,7 @@ export class AppComponent {
         await this.configureTranslation();
 
         if(AuthenticationProvider.isLoggedIn()) {
-            await this.sync.resetSynchronization();
+            await this.sync.resetOfflineSynchronization(true);
             await this.navCtrl.navigateRoot("tabs");
         } else {
             await this.presentOnboardingModal();
@@ -106,8 +107,6 @@ export class AppComponent {
         this.statusBar.styleLightContent();
         this.initializeBackButton();
 
-        this.splashScreen.hide();
-
         if(AuthenticationProvider.isLoggedIn()) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
             if(this.user.lastVersionLogin !== currentAppVersion) {
@@ -116,8 +115,10 @@ export class AppComponent {
             }
 
             const settings: Settings = await Settings.findByUserId(this.user.id);
-            if(settings.downloadOnStart && window.navigator.onLine) await this.sync.loadAllOfflineContent();
+            if(settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
         }
+
+        this.splashScreen.hide();
     }
 
     /**

@@ -56,7 +56,7 @@ export class LoginPage {
             Log.write(this, "exit browser");
             if(AuthenticationProvider.isLoggedIn()) {
                 this.checkAndLoadOfflineContent()
-                    .then(() => this.sync.resetSynchronization())
+                    .then(() => this.sync.resetOfflineSynchronization(true))
                     .then(() => this.updateLastVersionLogin());
             }
         });

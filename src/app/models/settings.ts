@@ -28,7 +28,7 @@ export class Settings extends ActiveRecord {
     /**
      * Max. allowed quota for all files the app is storing (mega bytes)
      */
-    quotaSize: number = 300;
+    quotaSize: number = 100000;
 
     /**
      * If true, execute offline-data-sync when starting the app
@@ -40,7 +40,7 @@ export class Settings extends ActiveRecord {
      */
     downloadWlan: boolean = true;
 
-    constructor(id = 0) {
+    constructor(id: number = 0) {
         super(id, new SQLiteConnector("settings", [
             "userId",
             "language",
@@ -51,7 +51,7 @@ export class Settings extends ActiveRecord {
         ]));
 
         if(id == 0) {
-            let userLang = navigator.language.split("-")[0]; // use navigator lang if available
+            let userLang: string = navigator.language.split("-")[0]; // use navigator lang if available
             userLang = /(de|en|it)/gi.test(userLang) ? userLang : "en";
 
             this.language = userLang;
@@ -67,7 +67,7 @@ export class Settings extends ActiveRecord {
         return new Promise((resolve, reject) => {
             SQLiteDatabaseService.instance().then(db => {
                 db.query("SELECT * FROM settings WHERE userId = ?", [userId]).then((response) => {
-                    const settings = new Settings();
+                    const settings: Settings = new Settings();
                     if (response.rows.length == 0) {
                         settings.userId = userId;
                         resolve(settings);
@@ -92,7 +92,7 @@ export class Settings extends ActiveRecord {
     }
 
     fileTooBig(fileObject: ILIASObject): boolean {
-        const fileSize = parseInt(fileObject.data.fileSize);
+        const fileSize: number = parseInt(fileObject.data.fileSize, 10);
             return fileSize > this.downloadSize * 1000 * 1000;
     }
 
@@ -103,7 +103,7 @@ export class Settings extends ActiveRecord {
         }
 
         return FileData.getTotalDiskSpace().then( used => {
-            const fileSize = parseInt(fileObject.data.fileSize);
+            const fileSize: number = parseInt(fileObject.data.fileSize, 10);
             return Promise.resolve(this.quotaSize * 1000 * 1000 < used + fileSize);
         });
     }
