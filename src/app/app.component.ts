@@ -2,6 +2,7 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import {Config, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
 import {Router} from "@angular/router";
+
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";

@@ -1,4 +1,4 @@
-<ion-header id="header-object-list">
+<ion-header id="header-object-list" >
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
             <ion-back-button text=""></ion-back-button>
@@ -21,7 +21,7 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content  class="page_object_list" >
+<ion-content fullscreen="true" class="page_object_list" >
     <ion-refresher  slot="fixed" (ionRefresh)="loadContent($event)">
             <ion-refresher-content color="light"
                 pullingIcon="arrow-dropdown"
@@ -44,73 +44,77 @@
     </div>
 
 
+
   <!-- status : display object-list, synchronization complete -->
-    <ion-list  *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
-        <div class="" *ngIf="parent !== undefined">
-            <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="list-element" class="list-element">
-                <ion-avatar item-start>
-                    <img [src]="pageLayout.icon">
-                </ion-avatar>
-                <span>{{pageLayout.text | translate: []}}</span>
-            </ion-item>
-
-            <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="list-element" class="bottom-line list-element">
-                <ion-icon [name]=timeline.icon item-start></ion-icon>
-                <span>{{timeline.text | translate: []}}</span>
-            </ion-item>
-        </div>
-        <ion-item-group>
-            <ion-card  button="true" *ngFor="let object of content" (click)="onClick(object)">
-                <ion-row align-items-center>
-                    <ion-col size="2">
-                        <img class="object-presenter-icon" [src]="object.presenter.icon()">
-                        <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
-                            <img src="assets/icon/obj_link.svg" class="badge-logo">
-                        </ion-badge>
-                    </ion-col>
-                    <ion-col size="7">
-                        <ion-card-content >
-                            <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
-                            {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
-                        </ion-card-content>   
-                    </ion-col>
-                    <ion-col size="1" justify-content-end>
-                        <ion-buttons>
-                            <ion-button color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
-                                <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="primary"></ion-icon>
-                            </ion-button>
-                            <ion-button color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
-                                <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="primary"></ion-icon>
-                            </ion-button>
-                            <ion-button color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
-                                <ion-icon slot="icon-only" name="md-download" color="primary"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>   
-                    </ion-col>
-                    <ion-col size="1" justify-content-end>
-                        <ion-button color="transparent"  (click)="showActions(object);$event.stopPropagation();">
-                            <ion-icon slot="icon-only" name="md-more" color="primary"></ion-icon>
-                        </ion-button>
-                    </ion-col>
-                </ion-row>  
-            </ion-card>
-        </ion-item-group>
-
-
-            <!-- status : user in favorites, but nothing added -->
-        <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !content.length">
-            <ion-row justify-content-center align-items-center>
-                <ion-col col-12 text-center>
-                    <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
-                </ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col col-12>
-                    <ion-label text-center color="lightish" text-wrap> {{ 'object-list.no_items' | translate:[] }}</ion-label>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </ion-list>
+    <ng-container  @slidelefttitle *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})" [@inOutAnimation]>
+            <ion-list  >
+                    <div class="" *ngIf="parent !== undefined">
+                        <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="list-element" class="list-element">
+                            <ion-avatar item-start>
+                                <img [src]="pageLayout.icon">
+                            </ion-avatar>
+                            <span>{{pageLayout.text | translate: []}}</span>
+                        </ion-item>
+            
+                        <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="list-element" class="bottom-line list-element">
+                            <ion-icon [name]=timeline.icon item-start></ion-icon>
+                            <span>{{timeline.text | translate: []}}</span>
+                        </ion-item>
+                    </div>
+                    <ion-item-group>
+                        <ion-card class="ion-margin-horizontal"  button="true" *ngFor="let object of content" (click)="onClick(object)">
+                            <ion-row align-items-center>
+                                <ion-col size="2">
+                                    <img class="object-presenter-icon" [src]="object.presenter.icon()">
+                                    <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
+                                        <img src="assets/icon/obj_link.svg" class="badge-logo">
+                                    </ion-badge>
+                                </ion-col>
+                                <ion-col size="7">
+                                    <ion-card-content >
+                                        <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
+                                        {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+                                    </ion-card-content>   
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-buttons>
+                                        <ion-button color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
+                                            <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="primary"></ion-icon>
+                                        </ion-button>
+                                        <ion-button color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
+                                            <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="primary"></ion-icon>
+                                        </ion-button>
+                                        <ion-button color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
+                                            <ion-icon slot="icon-only" name="md-download" color="primary"></ion-icon>
+                                        </ion-button>
+                                    </ion-buttons>   
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-button color="transparent"  (click)="showActions(object);$event.stopPropagation();">
+                                        <ion-icon slot="icon-only" name="md-more" color="primary"></ion-icon>
+                                    </ion-button>
+                                </ion-col>
+                            </ion-row>  
+                        </ion-card>
+                    </ion-item-group>
+            
+            
+                        <!-- status : user in favorites, but nothing added -->
+                    <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !content.length">
+                        <ion-row justify-content-center align-items-center>
+                            <ion-col col-12 text-center>
+                                <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col col-12>
+                                <ion-label text-center color="lightish" text-wrap> {{ 'object-list.no_items' | translate:[] }}</ion-label>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-list>
+    </ng-container>
+    
     <!-- status : user offline, not in favorites -->
     <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
         <ion-row justify-content-center align-items-center>
@@ -126,8 +130,89 @@
     </ion-grid>
 
     <!-- Sekeletion -->
-
-        <ion-list *ngIf="(checkPageState({favorites: false, loadingLive: true}) || checkPageState({favorites: true, loadingOffline: true}))">
+        <ng-container  @myInsertRemoveTrigger *ngIf="(checkPageState({favorites: false, loadingLive: true}) || checkPageState({favorites: true, loadingOffline: true}))">
+                <ion-list>
+                        <ion-card>
+                            <ion-row align-items-center>
+                                <ion-col size="2">
+                                        <ion-skeleton-text animated style="width: 50px; height: 50px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="8">
+                                    <ion-card-content >
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                    </ion-card-content>      
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                        <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                            </ion-row>  
+                        </ion-card>
+                        <ion-card>
+                            <ion-row align-items-center>
+                                <ion-col size="2">
+                                        <ion-skeleton-text animated style="width: 50px; height: 50px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="8">
+                                    <ion-card-content >
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                    </ion-card-content>      
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                        <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                            </ion-row>  
+                        </ion-card>
+                        <ion-card>
+                            <ion-row align-items-center>
+                                <ion-col size="2">
+                                        <ion-skeleton-text animated style="width: 50px; height: 50px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="8">
+                                    <ion-card-content >
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                    </ion-card-content>      
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                        <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                            </ion-row>  
+                        </ion-card>
+                        <ion-card>
+                            <ion-row align-items-center>
+                                <ion-col size="2">
+                                        <ion-skeleton-text animated style="width: 50px; height: 50px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="8">
+                                    <ion-card-content >
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                                    </ion-card-content>      
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                    <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col size="1" justify-content-end>
+                                        <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
+                                </ion-col>
+                            </ion-row>  
+                        </ion-card>
+            
+                    </ion-list>
+        </ng-container>
+        
+        <!-- <ion-list>
             <ion-card>
                 <ion-row align-items-center>
                     <ion-col size="2">
@@ -205,12 +290,7 @@
                 </ion-row>  
             </ion-card>
 
-        </ion-list>
-    <!-- </div> -->
-
-
-    
-
+        </ion-list> -->
 </ion-content>
 
 <!-- <ion-footer >

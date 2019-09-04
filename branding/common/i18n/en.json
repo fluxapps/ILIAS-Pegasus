@@ -23,6 +23,7 @@
     "close": "Close",
     "today": "Today",
     "yesterday": "Yesterday",
+    "repository": "Repository",
     "object-list": {
         "title" : "My Courses & Groups",
         "content" : "Content",

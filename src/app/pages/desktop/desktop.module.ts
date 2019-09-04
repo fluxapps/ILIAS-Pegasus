@@ -6,6 +6,7 @@ import {FormsModule} from "@angular/forms";
 import {Routes, RouterModule} from "@angular/router";
 /** misc */
 import {DesktopPage} from "./desktop";
+import { TranslateModule } from "@ngx-translate/core";
 
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
         CommonModule,
         FormsModule,
         IonicModule,
+        TranslateModule,
         RouterModule.forChild(routes)
     ],
     declarations: [DesktopPage]

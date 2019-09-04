@@ -188,6 +188,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         HttpModule,
         HttpClientModule,
         BrowserModule,
+        BrowserAnimationsModule,
         FormsModule,
         IonicModule.forRoot(),
         AppRoutingModule,
@@ -198,7 +199,6 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
                 deps: [HttpClient]
             }
         }),
-        BrowserAnimationsModule,
     ],
     providers: [
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},

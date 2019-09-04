@@ -47,6 +47,13 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
+import {
+    trigger,
+    state,
+    style,
+    animate,
+    transition
+  } from '@angular/animations';
 
 // used for navigation from one container into another one
 interface NavigationState {
@@ -69,6 +76,21 @@ interface PageState {
 @Component({
     selector: "page-object-list",
     templateUrl: "object-list.html",
+    animations: [
+        trigger('fadein', [
+          state('void', style({ opacity: 0 })),
+          transition('void => *', [
+            style({ opacity: 0 }),
+            animate('900ms ease-out', style({ opacity: 1 }))
+          ])
+        ]),
+        trigger('slidelefttitle', [
+          transition('void => *', [
+            style({ opacity: 0, transform: 'translateX(150%)' }),
+            animate('900ms 300ms ease-out', style({ transform: 'translateX(0%)', opacity: 1 }, ))
+          ])
+        ])
+      ]
 })
 export class ObjectListPage {
     private static nav: NavigationState = {
