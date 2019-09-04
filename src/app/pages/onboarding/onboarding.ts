@@ -6,6 +6,7 @@ import {ModalController} from "@ionic/angular";
     templateUrl: "onboarding.html"
 })
 export class OnboardingPage {
+    //@ts-ignore
     @ViewChild("slides") slides: any;
     slideOptions: any;
 
