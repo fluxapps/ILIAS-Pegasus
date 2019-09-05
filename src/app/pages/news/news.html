@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-toolbar color="header-element">
+    <ion-toolbar color="primary">
         <ion-buttons left>
         </ion-buttons>
         <ion-title>
@@ -22,17 +22,22 @@
     </ion-refresher>
 
     <ion-list color="list-element">
-        <ion-item *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
-            <!-- <ion-icon name="{{newsPresenter[1].icon()}}" item-left class="badge-container"></ion-icon> -->
-            <ion-avatar item-start>
-                <img src="{{newsPresenter[1].icon()}}">
-            </ion-avatar>
+        <ion-card *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
+                <ion-card-header>
+                        <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
+                        <ion-card-title> 
+                            <ion-avatar item-start>
+                                <img src="{{newsPresenter[1].icon()}}">
+                            </ion-avatar>
+                            {{newsPresenter[0].title}}
+                        </ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                            <p class="info-text">{{newsPresenter[0].subtitle}}</p>
+                            <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
+                    </ion-card-content>
 
-            <h2 class="news-title">{{newsPresenter[0].title}}</h2>
-            <p class="info-text">{{newsPresenter[0].subtitle}}</p>
-            <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
-            <ion-note class="date-note" item-end>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-note>
-        </ion-item>
+        </ion-card>
     </ion-list>
 
 </ion-content>

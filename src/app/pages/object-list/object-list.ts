@@ -51,7 +51,10 @@ import {
     state,
     style,
     animate,
-    transition
+    transition,
+    query,
+    stagger,
+    keyframes
   } from '@angular/animations';
 
 // used for navigation from one container into another one
@@ -75,21 +78,6 @@ interface PageState {
 @Component({
     selector: "page-object-list",
     templateUrl: "object-list.html",
-    animations: [
-        trigger('fadein', [
-          state('void', style({ opacity: 0 })),
-          transition('void => *', [
-            style({ opacity: 0 }),
-            animate('900ms ease-out', style({ opacity: 1 }))
-          ])
-        ]),
-        trigger('slidelefttitle', [
-          transition('void => *', [
-            style({ opacity: 0, transform: 'translateX(150%)' }),
-            animate('900ms 300ms ease-out', style({ transform: 'translateX(0%)', opacity: 1 }, ))
-          ])
-        ])
-      ]
 })
 export class ObjectListPage {
     private static nav: NavigationState = {
