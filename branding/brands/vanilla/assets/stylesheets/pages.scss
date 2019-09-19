@@ -20,6 +20,21 @@
 // ...
 //
 
+// pages/news
+// --------------------------------------------------
+.page_news {
+     //font-sizes
+     ion-card-title{
+        font-size: 1.2rem;
+        
+    }
+
+    ion-card-header{
+        padding-bottom: 0px !important;
+    }
+}
+
+
 // pages/favorites
 // --------------------------------------------------
 .page_favorites {}
@@ -32,19 +47,21 @@
 // pages/desktop
 // --------------------------------------------------
 
-
-
 .page_desktop {
     --background: url('src/assets/img/header.svg') no-repeat top center / 100vw;
     .desktop-grid{
+        padding-top: 24px;
     }
-    .tile-image{
+
+    .tile-image {
         height: auto;
         width: 60%;
         margin: auto;
         display: block;
     }
-    .tile{
+
+
+    .tile {
     opacity: 0.9;
     border-radius: 2%;
     }
@@ -56,14 +73,12 @@
 
 
 .page_menu {
-
-    // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
-    background-image: url('./assets/img/header.svg');
-    // background-color: map_get($colors, primary);
-    // background-position: top left;
-    background-size: 100vw ;
-    background-repeat: no-repeat;
-    // background-color: map_get($colors, primary) !important;
+    height: 100%;
+   .menu-bottom-image{
+       position: absolute;
+       bottom: 0;
+   }
+    
 
     .privacy-iq{
         display: none
@@ -332,11 +347,11 @@ ion-content.page_settings {
         height: 10%;
     }
 
-    ion-item {
-        margin-bottom: 5px;
-        font-size: 1.2em;
-        background-color: map-get($colors, primary);
-    }
+    // ion-item {
+    //     margin-bottom: 5px;
+    //     font-size: 1.2em;
+    //     background-color: map-get($colors, primary);
+    // }
 
     .onboarding-grid{
         height: 125px;
