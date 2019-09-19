@@ -6,7 +6,7 @@
 -->
 <ion-header no-border no-shadow>
 
-    <ion-toolbar color="nobg-w" class=top-header no-border no-shadow>
+    <ion-toolbar color="primary" class=top-header no-border no-shadow>
 
         <div no-lines color="nobg-w"  text-center text-wrap>
             <ion-header class="main-header" no-border no-shadow>Menu</ion-header>
@@ -17,10 +17,9 @@
 </ion-header>
 
 
-<ion-content class="page_menu primary-gradient">
-    <ion-list>
-
-        <ion-item button color=nobg-w (click)="navigateTo('settings')">
+<ion-content class="page_menu" color="primary">
+    <ion-list >
+        <ion-item button color="primary" (click)="navigateTo('settings')">
             <ion-icon item-start name="settings"></ion-icon>
             Einstellungen
         </ion-item>
@@ -50,4 +49,6 @@
         </ion-item>
 
     </ion-list>
+    <img class=menu-bottom-image src="assets/img/header.svg">
 </ion-content>
+
