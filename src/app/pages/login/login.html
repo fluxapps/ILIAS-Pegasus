@@ -1,4 +1,4 @@
-<ion-content no-padding class="page_login" color="nobg-w">
+<ion-content no-padding class="page_login" color="nobg-w" fullscreen="true">
 
     <ion-grid padding-top>
         <ion-row justify-content-center class=login-top-logo-row>
@@ -9,8 +9,8 @@
                 <h1 class=huge-login-header text-center>{{ 'login.hello' | translate:[]}}</h1>
         </ion-row>
         <ion-row padding justify-content-center align-items-end	 class=login-institution-row>
-            <ion-item color="nobg-w">
-                <ion-label stacked text-center></ion-label>
+            <ion-item color="primary">
+                <ion-label position="stacked" text-center></ion-label>
                 <ion-select [(ngModel)]="installationId" interface="action-sheet" text-center placeholder="{{ 'login.instructions' | translate:[]}}" >
                     <ion-select-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}</ion-select-option>
                 </ion-select>
@@ -19,11 +19,11 @@
         </ion-row>
 
         <ion-row justify-content-center>
-            <ion-button color="button-item" outline round  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</ion-button>
+            <ion-button color="tertiary" fill="outline" shape="round"  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate:[] }}</ion-button>
         </ion-row>
 
         <ion-row padding justify-content-center align-items-end class=login-version-row>
-            <ion-item color="nobg-w" text-center no-lines>
+            <ion-item color="primary" text-center no-lines>
                 Version {{appVersionStr | async}}
             </ion-item>
         </ion-row>

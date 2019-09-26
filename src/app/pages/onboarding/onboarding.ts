@@ -1,14 +1,14 @@
 /** angular */
 import {Component, ViewChild} from "@angular/core";
 import {ModalController} from "@ionic/angular";
+import { IonSlides} from '@ionic/angular';
 
 @Component({
     templateUrl: "onboarding.html"
 })
 export class OnboardingPage {
     //@ts-ignore
-    @ViewChild("slides") slides: any;
-    slideOptions: any;
+    @ViewChild("onboardingSlider")  slides: IonSlides;
 
     constructor(public modalCtrl: ModalController) { }
 

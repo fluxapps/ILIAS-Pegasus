@@ -96,8 +96,8 @@ export class ObjectListPage {
         desktop: undefined
     };
 
-    private pageTitle: string;
-    private parent: ILIASObject;
+    pageTitle: string;
+    parent: ILIASObject;
     private content: Array<ILIASObject> = [];
 
     private pageLayout: PageLayout;
@@ -108,14 +108,14 @@ export class ObjectListPage {
                 private readonly route: ActivatedRoute,
                 private readonly actionSheet: ActionSheetController,
                 private readonly file: FileService,
-                private readonly sync: SynchronizationService,
+                readonly sync: SynchronizationService,
                 private readonly modal: ModalController,
                 private readonly alert: AlertController,
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly dataProvider: DataProvider,
                 private readonly ngZone: NgZone,
-                private readonly footerToolbar: FooterToolbarService,
+                readonly footerToolbar: FooterToolbarService,
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,

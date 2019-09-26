@@ -9,7 +9,7 @@ import {AuthenticationProvider} from "./providers/authentification/authenticatio
 
 const routes: Routes = [
     // {path: "", redirectTo: "tabs", pathMatch: "full"},
-    {path: "", loadChildren: "./tabs/tabs.module#TabsPageModule",  canActivate: [AuthenticationProvider]},
+    {path: "", loadChildren: "./tabs/tabs.module#TabsPageModule", canActivate: [AuthenticationProvider]},
     {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
 //     {path: "tabs", loadChildren: "./tabs/tabs.module#TabsPageModule",
 // },
@@ -25,7 +25,7 @@ const routes: Routes = [
     //         {path: "menu/info", loadChildren: "./pages/info/info.module#InfoPageModule"}
     //     ]
     // },
-    {path: "**", redirectTo: "login"}
+    // {path: "**", redirectTo: "login"}
 ];
 
 @NgModule({

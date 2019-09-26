@@ -30,13 +30,13 @@ import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {TabmenuPage} from "./pages/tabmenu/tabmenu";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 // below: unused pages
-//import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
-//import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
-//import {LoadingPage} from "./fallback/loading/loading.component";
-//import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
-//import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
-//import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
-//import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
+import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
+import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
+// import {LoadingPage} from "./fallback/loading/loading.component";
+import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
+import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
+import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
+import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
 //import {TestPage} from "./pages/test/test";
 /** services */
 import {Builder} from "./services/builder.base";
@@ -155,16 +155,16 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //AccordionBlock,
 
         //TestPage,
-        //LoadingPage,
-        //SynchronizationPage,
-        //SyncFinishedModal,
+        // LoadingPage,
+        SynchronizationPage,
+        SyncFinishedModal,
         // fallback screens
-        //WifiFallbackScreen,
-        //LocationFallbackScreen,
-        //RoamingFallbackScreen,
+        WifiFallbackScreen,
+        LocationFallbackScreen,
+        RoamingFallbackScreen,
         LeaveAppDialog,
 
-        //HardwareFeaturePage
+        HardwareFeaturePage
     ],
     entryComponents: [
         TabmenuPage,
