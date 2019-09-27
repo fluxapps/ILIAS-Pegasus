@@ -2,7 +2,7 @@
   "ios": {
     "debug": {
       "codeSignIdentity": "iPhone Developer",
-      "provisioningProfile": "201909 Pegasus Dev",
+      "provisioningProfile": "201809_Pegasus",
       "developmentTeam": "ZQ66BZ3DPL",
       "buildFlag": [
         "-UseModernBuildSystem=0"
@@ -11,7 +11,7 @@
     },
     "release": {
       "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "201909 Pegasus Dist",
+      "provisioningProfile": "ILIAS offline Distribution",
       "developmentTeam": "ZQ66BZ3DPL",
       "buildFlag": [
         "-UseModernBuildSystem=0"

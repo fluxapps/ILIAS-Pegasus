@@ -1,3 +1,8 @@
+/**
+ * avoids exceptions during compilation when node-modules require packages in a deprecated manner
+ * the modules should be updated by their maintainers to support the new standard
+ */
+
 const fs = require("fs");
 
 replaceInFile(
@@ -7,7 +12,7 @@ replaceInFile(
 );
 
 replaceInFile(
-    "node_modules/node-gyp/lib/node-gyp.js",
+    "node_modules/node-pre-gyp/lib/node-pre-gyp.js",
     /proto.package = require\('\.\.\/package'\)/g,
     "proto.package = null"
 );

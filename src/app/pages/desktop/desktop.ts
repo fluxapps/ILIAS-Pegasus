@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {NavController} from "@ionic/angular";
+import {Events, NavController} from "@ionic/angular";
 /** services */
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
@@ -27,14 +27,16 @@ export class DesktopPage {
       private readonly navCtrl: NavController,
       @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
       private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-      @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
-  ) { }
+      @Inject(LINK_BUILDER)
+      private readonly linkBuilder: LinkBuilder
+  ) {}
 
+  // navigate to a tab
   async navigateTo(url: string): Promise<void> {
       await this.navCtrl.navigateForward(`tabs/${url}`);
   }
 
-  //Open repo in Browser inApp for iOS, external for Android
+  // open repo in Browser inApp for iOS, external for Android
   async openILIASRepository(): Promise<void> {
       const REFID_REPOSITORY: number = 1;
       this.openInIliasActionFactory(undefined, this.linkBuilder.default().target(REFID_REPOSITORY)).execute();

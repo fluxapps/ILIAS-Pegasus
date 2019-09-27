@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {ActivatedRoute, ParamMap} from "@angular/router";
+import {ActivatedRoute, ParamMap, ActivatedRouteSnapshot, Router, ResolveEnd} from "@angular/router";
 import {
     ActionSheetController,
     AlertController,
@@ -36,7 +36,6 @@ import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
 //TODO lp import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
 //TODO lp import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
 /** logging */
-import {Log} from "../../services/log.service";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
@@ -46,19 +45,11 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
-import {
-    trigger,
-    state,
-    style,
-    animate,
-    transition,
-    query,
-    stagger,
-    keyframes
-  } from '@angular/animations';
+import {Observable} from "rxjs";
+import {filter} from "rxjs/operators";
 
 // used for navigation from one container into another one
-interface NavigationState {
+interface ContentNavParams {
     favorites: boolean,
     depth: number,
     child: ILIASObject,
@@ -69,6 +60,7 @@ interface NavigationState {
 interface PageState {
     favorites: boolean,
     online: boolean,
+    loading: boolean,
     loadingLive: boolean,
     loadingOffline: boolean,
     refreshing: boolean,
@@ -80,7 +72,7 @@ interface PageState {
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
-    private static nav: NavigationState = {
+    static readonly nav: ContentNavParams = {
         favorites: undefined,
         depth: undefined,
         child: undefined,
@@ -90,6 +82,7 @@ export class ObjectListPage {
     state: PageState = {
         favorites: undefined,
         online: undefined,
+        loading: false,
         loadingLive: false,
         loadingOffline: false,
         refreshing: false,
@@ -105,6 +98,7 @@ export class ObjectListPage {
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
     constructor(private readonly navCtrl: NavController,
+                private readonly router: Router,
                 private readonly route: ActivatedRoute,
                 private readonly actionSheet: ActionSheetController,
                 private readonly file: FileService,
@@ -113,22 +107,21 @@ export class ObjectListPage {
                 private readonly alert: AlertController,
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
-                private readonly dataProvider: DataProvider,
                 private readonly ngZone: NgZone,
                 private readonly footerToolbar: FooterToolbarService,
-                private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
+                @Inject(LINK_BUILDER)
+                private readonly linkBuilder: LinkBuilder
                 //TODO lp @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
                 //TODO lp private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 //TODO lp @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 //TODO lp private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
     ) {}
 
-    /* = = = = = = = = = = = *
-     *  GETTERS AND SETTERS  *
-     * = = = = = = = = = = = */
+    /* = = = = = = = *
+     *  NAVIGATION   *
+     * = = = = = = = */
 
     /**
      * setting the container whose content will be displayed
@@ -138,67 +131,39 @@ export class ObjectListPage {
     }
 
     /**
-     * getting the depth of the currently displayed container
-     */
-    static getNavDepth(): number {
-        return ObjectListPage.nav.depth;
-    }
-
-    /**
      * sets the object whose details will be displayed
      */
-    static setDetailsObject(object: ILIASObject): void {
+    static setNavDetailsObject(object: ILIASObject): void {
         ObjectListPage.nav.details = object;
     }
 
     /**
-     * returns the object whose details will be displayed
-     */
-    static getDetailsObject(): ILIASObject {
-        return ObjectListPage.nav.details;
-    }
-
-    /* = = = = = = = *
-     *  NAVIGATION   *
-     * = = = = = = = */
-
-    /**
      * changes displayed container to its parent
      */
-    static async navigateBackInHierarchy(navCtrl: NavController, ngZone: NgZone): Promise<void> {
+    static async navigateBackInHierarchy(navCtrl: NavController): Promise<void> {
         ObjectListPage.nav.child = await ObjectListPage.nav.child.parent;
-        await ngZone.run(() => navCtrl.navigateBack(`tabs/content/${ObjectListPage.getNavDepth()-1}/-1`));
+        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
+        const depth: number = ObjectListPage.nav.depth-1;
+        await navCtrl.navigateBack(`tabs/${tab}/${depth}`);
     }
 
     /**
-     * allows the template 'object-list.html' to invoke the static method 'navigateBackInHierarchy'
+     * same as navigateBackInHierarchy above, but callable from html-template
      */
     private async navigateBackInHierarchy(): Promise<void> {
-        return ObjectListPage.navigateBackInHierarchy(this.navCtrl, this.ngZone);
+        await ObjectListPage.navigateBackInHierarchy(this.navCtrl);
     }
 
     /**
-     * reading the favorites-field from the navigation-route and setting the current parent
+     * load navigation parameters for this page from routing
      */
-    private getNavigation(): void {
-        const map: ParamMap = this.route.snapshot.paramMap;
+    private updateNavParams(): void {
+        const url: string = this.router.url;
+        const params: ParamMap = this.route.snapshot.paramMap;
 
-        const depth: number = parseInt(map.get("depth"), 10);
-        ObjectListPage.nav.depth = depth;
-        if(!depth) ObjectListPage.nav.child = undefined;
-
-        const favorites: number = parseInt(map.get("favorite"), 10);
-        if(favorites !== -1) ObjectListPage.nav.favorites =  Boolean(favorites);
-    }
-
-    /**
-     * load the content for the chosen ILIASObject
-     */
-    ionViewWillEnter(): void {
-        this.getNavigation();
-        this.updatePageState();
-        this.setPageAttributes();
-        this.loadContent();
+        ObjectListPage.nav.depth = parseInt(params.get("depth"), 10);
+        ObjectListPage.nav.favorites = Boolean(url.match(/favorites/));
+        if(!ObjectListPage.nav.depth) ObjectListPage.nav.child = undefined;
     }
 
     /* = = = = = = = *
@@ -209,6 +174,7 @@ export class ObjectListPage {
      * sets variables related to the page-content
      */
     private setPageAttributes(): void {
+        this.content = [];
         this.parent = ObjectListPage.nav.child;
 
         if(this.parent) {
@@ -221,6 +187,15 @@ export class ObjectListPage {
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
         }
+    }
+
+    /**
+     * method to set values of this.state, after which the view will be rendered
+     */
+    private setPageStateAndRender(state: Partial<PageState>): void {
+        for(const p in state)
+            this.state[p] = state[p];
+        this.updatePageState();
     }
 
     /**
@@ -253,85 +228,82 @@ export class ObjectListPage {
      * = = = = = = = = = */
 
     /**
+     * ionic will-enter-event: show that content will be loaded
+     */
+    ionViewWillEnter(): void {
+        this.updateNavParams();
+        this.setPageAttributes();
+        this.setPageStateAndRender({loading: true});
+    }
+
+    /**
+     * ionic did-enter-event: load content and display result
+     */
+    async ionViewDidEnter(): Promise<void> {
+        await this.loadAndRenderContent();
+    }
+
+    /**
      * loads the content of the parent-container for display
      */
-    async loadContent(event: any = undefined): Promise<void> {
-        // update view for sync
-        if(event) this.state.refreshing = true;
-        this.footerToolbar.addJob(Job.Synchronize, this.translate.instant("synchronisation_in_progress"));
-        this.updatePageState();
-
-        // execute sync
-        if(ObjectListPage.nav.favorites) {
-            if(this.state.online && this.state.refreshing) await this.ngZone.run(() => this.sync.loadAllOfflineContent());
-            await this.ngZone.run(() => this.loadFavoritesObjectList());
-        } else {
-            if(this.state.online) await this.ngZone.run(() => this.liveLoadContent());
-            await this.ngZone.run(() => this.loadCachedObjects(this.parent === undefined));
-        }
-
-        // update view after sync
+    async loadAndRenderContent(event: any = undefined): Promise<void> {
+        this.setPageStateAndRender({loading: true});
         if(event) {
             event.target.complete();
             event.target.disabled = true;
-            this.state.refreshing = false;
         }
+
+        // execute sync
+        if(ObjectListPage.nav.favorites) {
+            if(this.state.online && event) await this.sync.loadAllOfflineContent();
+            await this.setLoadedFavorites();
+        } else {
+            if(this.state.online) await this.sync.liveLoad(this.parent);
+            await this.setLiveLoadedContent(this.parent === undefined);
+        }
+
+        // update view after sync
         this.footerToolbar.removeJob(Job.Synchronize);
         if(event) event.target.disabled = false;
-        this.updatePageState();
+        this.setPageStateAndRender({loading: false});
     }
 
     /**
      * loads available content without synchronization and user-feedback
      */
     async refreshContent(): Promise<void> {
-        if(ObjectListPage.nav.favorites) await this.loadFavoritesObjectList();
-        else await this.loadCachedObjects(this.parent === undefined);
+        if(ObjectListPage.nav.favorites) await this.setLoadedFavorites();
+        else await this.setLiveLoadedContent(this.parent === undefined);
         this.updatePageState();
     }
 
     /**
-     * live-load content from account
+     * load favorites from db cache
      */
-    async liveLoadContent(): Promise<void> {
-        try {
-            Log.write(this, "Sync start", [], []);
-            await this.sync.liveLoad(this.parent);
-        } catch (error) {
-            Log.error(this, error);
-            throw error;
-        }
-    }
-
-    /**
-     * load content from favorites
-     */
-    async loadFavoritesObjectList(): Promise<void> {
-        if(this.parent === undefined) {
-            ILIASObject.getFavoritesByUserId(AuthenticationProvider.getUser().id)
-                .then(favorites => {
-                    favorites.sort(ILIASObject.compare);
-                    this.content = favorites;
-                });
-        }
-        else await this.loadCachedObjects(false);
+    async setLoadedFavorites(): Promise<void> {
+        const favorites: Array<ILIASObject> = (this.parent === undefined) ?
+            await ILIASObject.getFavoritesByUserId(AuthenticationProvider.getUser().id) :
+            await ILIASObject.findByParentRefId(this.parent.refId, AuthenticationProvider.getUser().id);
+        this.sortAndSetObjectList(favorites);
     }
 
     /**
      * loads the object data from db cache
      */
-    private async loadCachedObjects(isDesktopObject: boolean): Promise<void> {
-        try {
-            const user: User = AuthenticationProvider.getUser();
-            this.content = (isDesktopObject) ?
-                await DesktopItem.findByUserId(user.id) :
-                await ILIASObject.findByParentRefId(this.parent.refId, user.id);
+    private async setLiveLoadedContent(isDesktopObject: boolean): Promise<void> {
+        const user: User = AuthenticationProvider.getUser();
+        const content: Array<ILIASObject> = (isDesktopObject) ?
+            await DesktopItem.findByUserId(user.id) :
+            await ILIASObject.findByParentRefId(this.parent.refId, user.id);
+        this.sortAndSetObjectList(content);
+    }
 
-            this.content.sort(ILIASObject.compare);
-            return Promise.resolve();
-        } catch (error) {
-            return Promise.reject(error);
-        }
+    /**
+     * sort the given array of ILIAS-objects and reference them in th content-variable
+     */
+    private sortAndSetObjectList(content: Array<ILIASObject>): void {
+        content.sort(ILIASObject.compare);
+        this.content = content;
     }
 
     /* = = = = = *

@@ -30,8 +30,7 @@
     <ion-list>
         <ion-item text-wrap *ngFor="let detail of details">
             {{ detail.label | translate:{value: null} }}:
-            <span *ngIf="detail.translate"> {{ detail.value | translate:{value: null} }} </span>
-            <span *ngIf="!detail.translate"> {{ detail.value }} </span>
+            <span> {{ detail.value | translate:{value: null} }} </span>
         </ion-item>
     </ion-list>
 </ion-content>

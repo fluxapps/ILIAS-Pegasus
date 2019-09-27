@@ -1,25 +1,23 @@
 <ion-header color="primary" no-border no-shadow >
     <ion-toolbar color="primary" class=top-header no-border no-shadow>
         <div no-lines color="nobg-w" class="main-header"  text-center text-wrap>
-                Home
+            Home
         </div>
-			
     </ion-toolbar>
 </ion-header>
 
 
 <ion-content class="page_desktop">
     <ion-grid class="desktop-grid">
-            <ion-row>
+        <ion-row>
             <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile tile-cours ion-no-margin" (click)="navigateTo('content/0/0')" >
-                    <!-- <ion-icon name="ai-crs-outline" ></ion-icon> -->
+                <ion-card button="true" color="light" class="tile tile-cours ion-no-margin" (click)="navigateTo('content')" >
                     <img class=tile-image src="assets/icon/desktop_course.svg">
                     <ion-card-header text-uppercase class=tile-title > {{ 'object-list.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="navigateTo('content/0/1')">
+                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="navigateTo('favorites')">
                     <img class=tile-image src="assets/icon/desktop_favourites.svg">
                     <ion-card-header text-uppercase class=tile-title> {{ 'favorites.title' | translate}} </ion-card-header>
                 </ion-card>

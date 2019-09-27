@@ -56,11 +56,10 @@ export class ObjectDetailsPage {
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) {
-    }
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) { }
 
     ionViewWillEnter(): void {
-        this.object = ObjectListPage.getDetailsObject();
+        this.object = ObjectListPage.nav.details;
         this.loadAvailableActions();
         this.loadObjectDetails();
     }

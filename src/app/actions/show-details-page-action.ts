@@ -13,8 +13,9 @@ export class ShowDetailsPageAction extends ILIASObjectAction {
 
     execute(): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject) => {
-            ObjectListPage.setDetailsObject(this.object);
-            this.nav.navigateForward("tabs/content/details").then(() => {
+            ObjectListPage.setNavDetailsObject(this.object);
+            const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
+            this.nav.navigateForward(`tabs/${tab}/details`).then(() => {
                 resolve(new ILIASObjectActionNoMessage());
             }).catch(error => {
                 reject(error);

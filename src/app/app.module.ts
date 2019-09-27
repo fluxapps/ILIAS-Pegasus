@@ -27,7 +27,6 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
 import {ModalPage} from "./pages/modal/modal";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {TabmenuPage} from "./pages/tabmenu/tabmenu";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 // below: unused pages
 //import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
@@ -89,7 +88,6 @@ import {TypeORMConfigurationAdapter} from "./config/typeORM-config";
 // pages for learnplaces TODO lp
 import {ContentPage} from "../learnplace/pages/content/content.component";
 import {MapPage} from "../learnplace/pages/map/map.component";
-import {TabsPage} from "../learnplace/pages/tabs/tabs.component";
 // services for learnplaces
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
 import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "../learnplace/services/learnplace.management";
@@ -139,13 +137,12 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
 @NgModule({
     declarations: [
         AppComponent,
-        TabmenuPage,
         ModalPage,
         OnboardingPage,
+        LeaveAppDialog,
 
         // from src/learnplace
         //MapPage,
-        //TabsPage,
         //ContentPage,
 
         //TextBlock,
@@ -162,18 +159,15 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //WifiFallbackScreen,
         //LocationFallbackScreen,
         //RoamingFallbackScreen,
-        LeaveAppDialog,
 
         //HardwareFeaturePage
     ],
     entryComponents: [
-        TabmenuPage,
         OnboardingPage,
         LeaveAppDialog,
 
         // from src/learnplace TODO lp
         //MapPage,
-        //TabsPage,
         //ContentPage,
 
         //SyncFinishedModal,

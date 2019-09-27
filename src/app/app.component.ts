@@ -1,8 +1,7 @@
 /** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {Config, Platform, ToastController, ModalController, NavController} from "@ionic/angular";
+import {Config, Platform, ToastController, ModalController, NavController, Events} from "@ionic/angular";
 import {Router} from "@angular/router";
-
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
@@ -50,6 +49,7 @@ export class AppComponent {
         readonly footerToolbar: FooterToolbarService,
         private readonly navCtrl: NavController,
         private readonly router: Router,
+        private readonly events: Events,
         private readonly platform: Platform,
         private readonly translate: TranslateService,
         private readonly toast: ToastController,
@@ -161,14 +161,14 @@ export class AppComponent {
             let action: string = "back";
 
             // when on object-list-page, navigate back in the container-hierarchy
-            if(url.match(/content/) && !url.match(/content\/0/) && !url.match(/details/)) {
+            if(url.match(/(content|favorites)/) && !url.match(/(content|favorites)\/0/) && !url.match(/details/)) {
                 action = "back_in_hierarchy";
             }
 
             // when on one of the tabs default pages, navigate to the desktop-page
             if(
                 url.match(/content\/0/) ||
-                url.match(/content$/) ||
+                url.match(/favorites\/0/) ||
                 url.match(/news$/) ||
                 url.match(/menu\/main$/)
             ) {
@@ -204,7 +204,7 @@ export class AppComponent {
                     break;
 
                 case "back_in_hierarchy":
-                    ObjectListPage.navigateBackInHierarchy(this.navCtrl, this.ngZone);
+                    ObjectListPage.navigateBackInHierarchy(this.navCtrl);
                     break;
 
                 default:
