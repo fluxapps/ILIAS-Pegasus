@@ -1,7 +1,8 @@
 <ion-header id="header-object-list" >
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-back-button text=""></ion-back-button>
+            <ion-button *ngIf="checkPageState({desktop: false})" (click)="navigateBackInHierarchy()"><ion-icon name="arrow-back"></ion-icon></ion-button>
+            <!--ion-back-button text=""></--ion-back-button-->
         </ion-buttons>
             <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end" *ngIf="parent !== undefined">
@@ -23,31 +24,31 @@
 
 <ion-content fullscreen="true" class="page_object_list" fullscreen="true">
     <ion-refresher  slot="fixed"
-     (ionRefresh)="loadContent($event)"
+     (ionRefresh)="loadAndRenderContent($event)"
      [closeDuration]="400"
      [pullMin]="150">
             <ion-refresher-content color="medium"
                 pullingIcon="arrow-dropdown"
                 pullingText="Pull to refresh"
                 refreshingSpinner="dots"
-                refreshingText="{{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}">
+                refreshingText="{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}">
             </ion-refresher-content>
     </ion-refresher>
 
     <!-- status : synchronization in progress, refresher not pulled -->
-    <div *ngIf="checkPageState({refreshing: false}) && (checkPageState({favorites: false, loadingLive: true}) || checkPageState({favorites: true, loadingOffline: true}))">
+    <div *ngIf="checkPageState({loading: true})">
         <ion-progress-bar type="indeterminate">
         </ion-progress-bar>
         <div class="ion-text-center">
             <ion-text color="medium">
-                {{checkPageState({loadingLive: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}
+                {{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}
             </ion-text>
         </div>
-       
+
     </div>
   <!-- status : display object-list, synchronization complete -->
     <ng-container >
-            <ion-list *ngIf="checkPageState({favorites: false, online: true, loadingLive: false}) || checkPageState({favorites: true, loadingOffline: false})">
+            <ion-list *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
                     <div class="" *ngIf="parent !== undefined">
                         <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="list-element" class="list-element">
                             <ion-avatar item-start>
@@ -55,7 +56,7 @@
                             </ion-avatar>
                             <span>{{pageLayout.text | translate: []}}</span>
                         </ion-item>
-            
+
                         <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="list-element" class="bottom-line list-element">
                             <ion-icon [name]=timeline.icon item-start></ion-icon>
                             <span>{{timeline.text | translate: []}}</span>
@@ -73,7 +74,7 @@
                                     <ion-card-content >
                                         <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
                                         {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
-                                    </ion-card-content>   
+                                    </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-buttons>
@@ -86,19 +87,19 @@
                                         <ion-button color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
                                             <ion-icon slot="icon-only" name="md-download" color="primary"></ion-icon>
                                         </ion-button>
-                                    </ion-buttons>   
+                                    </ion-buttons>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-button color="transparent"  (click)="showActions(object);$event.stopPropagation();">
                                         <ion-icon slot="icon-only" name="md-more" color="primary"></ion-icon>
                                     </ion-button>
                                 </ion-col>
-                            </ion-row>  
+                            </ion-row>
                         </ion-card>
-            
-            
+
+
                         <!-- status : user in favorites, but nothing added -->
-                    <ion-grid *ngIf="checkPageState({favorites: true, desktop: true}) && !content.length">
+                    <ion-grid *ngIf="checkPageState({loading: false, favorites: true, desktop: true}) && !content.length">
                         <ion-row justify-content-center align-items-center>
                             <ion-col col-12 text-center>
                                 <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
@@ -112,7 +113,7 @@
                     </ion-grid>
                 </ion-list>
     </ng-container>
-    
+
     <!-- status : user offline, not in favorites -->
     <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
         <ion-row justify-content-center align-items-center>
@@ -128,7 +129,7 @@
     </ion-grid>
 
     <!-- Sekeletion -->
-        <ng-container *ngIf="(checkPageState({favorites: false, loadingLive: true}) || checkPageState({favorites: true, loadingOffline: true}))">
+        <ng-container *ngIf="(checkPageState({loading: true}) && (checkPageState({favorites: true}) || checkPageState({favorites: false, online: true})))">
                         <ion-card>
                             <ion-row align-items-center>
                                 <ion-col size="2">
@@ -138,7 +139,7 @@
                                     <ion-card-content >
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                                    </ion-card-content>      
+                                    </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
@@ -146,7 +147,7 @@
                                 <ion-col size="1" justify-content-end>
                                         <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
                                 </ion-col>
-                            </ion-row>  
+                            </ion-row>
                         </ion-card>
                         <ion-card>
                             <ion-row align-items-center>
@@ -157,7 +158,7 @@
                                     <ion-card-content >
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                                    </ion-card-content>      
+                                    </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
@@ -165,7 +166,7 @@
                                 <ion-col size="1" justify-content-end>
                                         <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
                                 </ion-col>
-                            </ion-row>  
+                            </ion-row>
                         </ion-card>
                         <ion-card>
                             <ion-row align-items-center>
@@ -176,7 +177,7 @@
                                     <ion-card-content >
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                                    </ion-card-content>      
+                                    </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
@@ -184,7 +185,7 @@
                                 <ion-col size="1" justify-content-end>
                                         <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
                                 </ion-col>
-                            </ion-row>  
+                            </ion-row>
                         </ion-card>
                         <ion-card>
                             <ion-row align-items-center>
@@ -195,7 +196,7 @@
                                     <ion-card-content >
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
                                         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                                    </ion-card-content>      
+                                    </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-skeleton-text animated style="width: 25px; height: 25px"></ion-skeleton-text>
@@ -203,8 +204,8 @@
                                 <ion-col size="1" justify-content-end>
                                         <ion-skeleton-text animated style="width: 5px; height: 25px"></ion-skeleton-text>
                                 </ion-col>
-                            </ion-row>  
+                            </ion-row>
                         </ion-card>
-            
+
         </ng-container>
 </ion-content>

@@ -12,7 +12,7 @@
     "karma:singlerun": "karma start ./test/karma.conf.js",
     "test": "npm run tslint && npm run karma:singlerun",
     "setbrand": "node ./branding/set_brand.js",
-    "postinstall": "node ./tools/patch-webpack.js"
+    "postinstall": "node ./tools/patch-webpack.js && node ./tools/patch-platform-android9.js"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
@@ -59,7 +59,7 @@
     "com-sarriaroman-photoviewer": "^1.1.11",
     "constants": "0.0.2",
     "cordova": "^9.0.0",
-    "cordova-android": "^8.0.0",
+    "cordova-android": "8.1.0",
     "cordova-android-support-gradle-release": "^3.0.1",
     "cordova-custom-config": "^5.1.0",
     "cordova-ios": "5.0.1",

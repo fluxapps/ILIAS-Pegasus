@@ -11,9 +11,24 @@
     // font
     --ion-font-family:  "Raleway", sans-serif;
 
+    // Custom Tab Colorr
+
+    ion-tab-button.tab-selected {
+        ion-icon, ion-label {
+          color: var(--ion-color-primary) !important;
+          --ion-color-base: var(--ion-color-primarry) !important;
+        }
+      }
+
+      ion-tab-button {
+        ion-icon, ion-label {
+          color: var(--ion-color-medium) !important;
+          --ion-color-base: var(--ion-color-medium) !important;
+        }
+      }
+    
 
     // colors
-
     --ion-item-border-color: transparent;
 
     --ion-color-primary: #4a668b;
@@ -23,19 +38,19 @@
     --ion-color-primary-shade: #415a7a;
     --ion-color-primary-tint: #5c7597;
   
-    --ion-color-secondary: #6EA03C;
-    --ion-color-secondary-rgb: 110,160,60;
-    --ion-color-secondary-contrast: #000000;
-    --ion-color-secondary-contrast-rgb: 0,0,0;
+    --ion-color-secondary: transparent;
+    --ion-color-secondary-rgb: 255,255,255,0;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255,255,255;
     --ion-color-secondary-shade: #618d35;
     --ion-color-secondary-tint: #7daa50;
   
     --ion-color-tertiary: transparent;
-    --ion-color-tertiary-rgb: 250,130,40;
-    --ion-color-tertiary-contrast: #000000;
-    --ion-color-tertiary-contrast-rgb: 0,0,0;
-    --ion-color-tertiary-shade: #dc7223;
-    --ion-color-tertiary-tint: #fb8f3e;
+    --ion-color-tertiary-rgb: 255,255,255;
+    --ion-color-tertiary-contrast: #4a668b;
+    --ion-color-tertiary-contrast-rgb: 74,102,139;
+    --ion-color-tertiary-shade: #d7d8da;
+    --ion-color-tertiary-tint: #f5f6f9;
   
     --ion-color-success: #10dc60;
     --ion-color-success-rgb: 16,220,96;
@@ -86,46 +101,20 @@
     --ion-color-transparent-shade: #d7d8da;
     --ion-color-transparent-tint: #f5f6f9;
 
+    //tabbar colors
+
+    ion-tabs{
+        --color: #1c1c21;                     // already exists
+        --ion-tabbar-color: rgba(var(--ion-text-color-rgb), 0.4);    // suggested
+        --ion-tabbar-color-selected: var(--ion-text-color);          // suggested
+     }
+
     
   }
 
-$colors: (
-    primary:    #4a668b,
-    secondary:  #6EA03C,
-    danger:     #FA8228,
-    light:      #f4f4f4,
-    lightish:   #a9a9a9,
-    dark:       #222,
-    favorite:   #69BB7B,
-    main: #4a668b,
-    transparent: transparent,
-    nobg-w: (
-        base: transparent,
-        contrast: #ffffff,
-    ),
-    nobg-blue: (
-        base: transparent,
-        contrast: #12466F,
-    ),
-    light-blue: (
-        base: #ffffff,
-        contrast: #12466F,
-    ),
-    white:   #FFFFFF,
-    header-element:(
-        base:  #4a668b,
-        contrast: #ffffff,
-    ),
-    // list-element:(
-    //     base: transparent,
-    //     contrast: #ffffff,
-    // ),
-    // button-element: #ffffff,
-);
-
 // gradients
 
-$gradient-col1: map_get($colors, primary);
+$gradient-col1:  #003c66;
 $gradient-col2: #003c66;
 
 .primary-gradient {
@@ -140,8 +129,8 @@ $gradient-col2: #003c66;
     color:white;
 }
 
-// misc
+// // misc
 
-.white-text {
-    color: white;
-}
+// .white-text {
+//     color: white;
+// }
