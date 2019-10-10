@@ -7,7 +7,7 @@ before_script:
   - npm install
 
 stages:
-  - test
+  # - test
 
 test:
   stage: test
