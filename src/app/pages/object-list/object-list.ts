@@ -89,8 +89,8 @@ export class ObjectListPage {
         desktop: undefined
     };
 
-    private pageTitle: string;
-    private parent: ILIASObject;
+    pageTitle: string;
+    parent: ILIASObject;
     private content: Array<ILIASObject> = [];
 
     private pageLayout: PageLayout;
@@ -102,7 +102,7 @@ export class ObjectListPage {
                 private readonly route: ActivatedRoute,
                 private readonly actionSheet: ActionSheetController,
                 private readonly file: FileService,
-                private readonly sync: SynchronizationService,
+                readonly sync: SynchronizationService,
                 private readonly modal: ModalController,
                 private readonly alert: AlertController,
                 private readonly toast: ToastController,
