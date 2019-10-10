@@ -1,7 +1,6 @@
 /** angular */
 import {Component, ViewChild} from "@angular/core";
-import {ModalController} from "@ionic/angular";
-import { IonSlides} from '@ionic/angular';
+import {ModalController, IonSlides} from "@ionic/angular";
 
 @Component({
     templateUrl: "onboarding.html"
