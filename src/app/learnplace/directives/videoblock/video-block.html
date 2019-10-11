@@ -1,0 +1,11 @@
+<ion-card *ngIf="videoBlock.visible">
+  <ion-card-content (click)="play()">
+    <img src="assets/icon/play_video.svg">
+  </ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="!videoBlock.visible" color=primary>
+  <ion-card-content>
+    {{"learnplace.block.video.too_far_away" | translate}}
+  </ion-card-content>
+</ion-card>

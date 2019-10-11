@@ -6,8 +6,8 @@ import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
-//TODO lp import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
-//TODO lp import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
+import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
+import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
 /** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
@@ -18,12 +18,14 @@ import {Log} from "./log.service";
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
+import {Observable, from} from "rxjs";
 
 export interface SynchronizationState {
     liveLoading: boolean,
     loadingOfflineContent: boolean,
     recursiveSyncRunning: boolean
 }
+
 interface SyncEntry {
     object: ILIASObject,
     resolver: any,
@@ -56,8 +58,8 @@ export class SynchronizationService {
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
-                //TODO lp @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
-                //TODO lp @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader
+                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
+                @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
                 private readonly alertCtr: AlertController
     ) {}
 
@@ -254,26 +256,23 @@ export class SynchronizationService {
         await Promise.all(syncResults.fileDownloads).catch(
             () => console.warn(`Encountered some problem in method 'downloadContainerContent' with container ${container.title}`)
         );
-        //TODO lp await this.downloadLearnplaces(iliasObjects).toPromise();
+        await this.downloadLearnplaces(iliasObjects).toPromise();
         return syncResults;
     }
-/*TODO lp
     private downloadLearnplaces(tree: Array<ILIASObject>): Observable<{}> {
-        return merge(...tree
+        return Observable.merge(...tree
             .filter(it => it.isLearnplace())
             .map(it => from(
-                this.learnplaceLoader.load(it.objId).then(() => {
-            it.needsDownload = false;
-                })
-            ))
+                this.learnplaceLoader.load(it.objId).then(
+                    () => it.needsDownload = false
+                )))
         );
     }
-*/
 
     /**
      * set local recursiveSyncRunning and db entry that a sync is in progress
      */
-    protected async syncStarted(): Promise<any> {
+    protected async syncStarted(): Promise<void> {
         return new Promise((resolve, reject) => {
             SynchronizationService.state.recursiveSyncRunning = true;
             SQLiteDatabaseService.instance().then(db => {
@@ -460,7 +459,7 @@ export class SynchronizationService {
     async executeNewsSync(): Promise<void> {
         this.user = AuthenticationProvider.getUser();
         await this.newsSynchronization.synchronize();
-        //TODO lp await this.visitJournalSynchronization.synchronize();
+        await this.visitJournalSynchronization.synchronize();
         await this.syncEnded();
     }
 

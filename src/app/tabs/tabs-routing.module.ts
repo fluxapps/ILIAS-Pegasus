@@ -1,7 +1,6 @@
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {TabsPage} from "./tabs.page";
-import {ObjectListPage} from "../pages/object-list/object-list";
 
 const routes: Routes = [
     {path: "", component: TabsPage,

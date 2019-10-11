@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {AlertController, ModalController, NavController, NavParams, ToastController} from "@ionic/angular";
+import {AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 /** ionic-native */
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 /** service */

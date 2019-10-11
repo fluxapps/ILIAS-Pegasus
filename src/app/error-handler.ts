@@ -116,10 +116,9 @@ export class PegasusErrorHandler implements ErrorHandler {
             }
 
             this.log.error(() => `Unhandled error occurred of type: ${unwrappedError}`);
-            this.log.error(() => `JSON of error: ${JSON.stringify(unwrappedError)}`);
+            this.log.error(() => `JSON of error: ${this.stringifyWithoutCyclicObjects(unwrappedError)}`);
 
             this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("something_went_wrong"));
-
         } catch (err) {
             this.log.warn(() =>
                 `Error occurred during error handling: ${this.stringifyWithoutCyclicObjects(err)}, ` +
@@ -128,7 +127,6 @@ export class PegasusErrorHandler implements ErrorHandler {
 
             this.log.error(() => `Error unhandled of type: ${err}`);
             this.log.error(() => `Previous error unhandled of type: ${error}`);
-            this.log.error(() => `JSON of previous error: ${JSON.stringify(error)}`);
         }
     }
 

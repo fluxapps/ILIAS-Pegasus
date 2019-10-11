@@ -22,7 +22,7 @@ import {Logging} from "./logging/logging.service";
 /** misc */
 import {isNullOrUndefined} from "util";
 import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
-//TODO lp import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -38,15 +38,15 @@ export class FileService {
 
     private log: Logger = Logging.getLogger(FileService.name);
 
-    constructor(protected events: Events,
-                       protected platform: Platform,
-                       protected rest: ILIASRestProvider,
-                       protected translate: TranslateService,
-                       private readonly file: File,
-                       private readonly network: Network,
-                //TODO lp @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager
-                ) {
-    }
+    constructor(
+        protected events: Events,
+        protected platform: Platform,
+        protected rest: ILIASRestProvider,
+        protected translate: TranslateService,
+        private readonly file: File,
+        private readonly network: Network,
+        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager
+    ) {}
 
 
     /**
@@ -177,7 +177,7 @@ export class FileService {
 
         const user: User = await User.find(fileObject.userId);
         if(fileObject.isLearnplace()) {
-            //TODO lp await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
+            await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
             return;
         }
         if (fileObject.data.hasOwnProperty("fileName")) {

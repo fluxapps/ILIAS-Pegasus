@@ -1,6 +1,6 @@
 import {AppComponent} from "./app.component";
 /** angular */
-import {IonicModule, IonicRouteStrategy, Platform, ModalController} from "@ionic/angular";
+import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
 import {RouteReuseStrategy} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
@@ -22,20 +22,19 @@ import {StatusBar} from "@ionic-native/status-bar/ngx";
 import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
 import {Toast} from "@ionic-native/toast/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
-import {TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
+import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
-import {ModalPage} from "./pages/modal/modal";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 // below: unused pages
+import {LoadingPage} from "./learnplace/fallback/loading/loading.component";
 import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
 import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
-// import {LoadingPage} from "./fallback/loading/loading.component";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
-import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
+//import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
 //import {TestPage} from "./pages/test/test";
 /** services */
 import {Builder} from "./services/builder.base";
@@ -79,29 +78,28 @@ import {OAUTH2_DATA_SUPPLIER, TOKEN_RESPONSE_CONSUMER} from "./providers/ilias/i
 import {NEWS_REST, NewsRestImpl} from "./providers/ilias/news.rest";
 import {NEWS_FEED, NewsFeedImpl} from "./services/news/news.feed";
 import {USER_REPOSITORY, UserRepository, UserTypeORMRepository} from "./providers/repository/repository.user";
+import {UniqueDeviceID} from "@ionic-native/unique-device-id/ngx";
 /** configs */
 import {CONFIG_PROVIDER, ILIASConfigProvider} from "./config/ilias-config";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "./config/ilias.rest-config";
 import {TypeORMConfigurationAdapter} from "./config/typeORM-config";
 /** learnplaces */
-/*
-// pages for learnplaces TODO lp
-import {ContentPage} from "../learnplace/pages/content/content.component";
-import {MapPage} from "../learnplace/pages/map/map.component";
+//import {ContentPage} from "./learnplace/pages/content/content.component"; TODO lp
+//import {MapPage} from "./learnplace/pages/map/map.component";
 // services for learnplaces
-import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../learnplace/services/block.service";
-import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "../learnplace/services/learnplace.management";
-import {LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER} from "../learnplace/services/loader/resource";
-import {MAP_SERVICE, VisibilityManagedMapService} from "../learnplace/services/map.service";
-import {VisibilityStrategyApplier} from "../learnplace/services/visibility/visibility.context";
-import {AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy} from "../learnplace/services/visibility/visibility.strategy";
+import {BLOCK_SERVICE, VisibilityManagedBlockService} from "./learnplace/services/block.service";
+import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "./learnplace/services/learnplace.management";
+import {LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader} from "./learnplace/services/loader/learnplace";
+import {HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER} from "./learnplace/services/loader/resource";
+import {MAP_SERVICE, VisibilityManagedMapService} from "./learnplace/services/map.service";
+import {VisibilityStrategyApplier} from "./learnplace/services/visibility/visibility.context";
+import {AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy} from "./learnplace/services/visibility/visibility.strategy";
 import {
     SynchronizedVisitJournalWatch,
     VISIT_JOURNAL_SYNCHRONIZATION,
     VISIT_JOURNAL_WATCH,
     VisitJournalSynchronizationImpl
-} from "../learnplace/services/visitjournal.service";
+} from "./learnplace/services/visitjournal.service";
 import {
     AccordionMapper,
     LinkBlockMapper,
@@ -109,26 +107,25 @@ import {
     TextBlockMapper,
     VideoBlockMapper,
     VisitJournalMapper
-} from "../learnplace/services/loader/mappers";
+} from "./learnplace/services/loader/mappers";
 // providers for learnplaces
-import {LEARNPLACE_REPOSITORY, TypeORMLearnplaceRepository} from "../learnplace/providers/repository/learnplace.repository";
-import {MAP_REPOSITORY, TypeORMMapRepository} from "../learnplace/providers/repository/map.repository";
-import {TypeORMVisitJournalRepository, VISIT_JOURNAL_REPOSITORY} from "../learnplace/providers/repository/visitjournal.repository";
-import {ILIASLearnplaceAPI, LEARNPLACE_API} from "../learnplace/providers/rest/learnplace.api";
+import {LEARNPLACE_REPOSITORY, TypeORMLearnplaceRepository} from "./learnplace/providers/repository/learnplace.repository";
+import {MAP_REPOSITORY, TypeORMMapRepository} from "./learnplace/providers/repository/map.repository";
+import {TypeORMVisitJournalRepository, VISIT_JOURNAL_REPOSITORY} from "./learnplace/providers/repository/visitjournal.repository";
+import {ILIASLearnplaceAPI, LEARNPLACE_API} from "./learnplace/providers/rest/learnplace.api";
 // actions for learnplaces
-import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "../actions/open-learnplace-action";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction} from "./learnplace/actions/open-learnplace-action";
 import {
     REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
     RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
-} from "../actions/remove-local-learnplace-action";
+} from "./learnplace/actions/remove-local-learnplace-action";
 // directives for learnplaces
-import {AccordionBlock} from "../learnplace/directives/accordion/accordion.directive";
-import {LinkBlock} from "../learnplace/directives/linkblock/link-block.directive";
-import {PictureBlock} from "../learnplace/directives/pictureblock/pictureblock.directive";
-import {TextBlock} from "../learnplace/directives/textblock/textblock.directive";
-import {VideoBlock} from "../learnplace/directives/videoblock/videoblock.directive";
-*/
+import {AccordionBlock} from "./learnplace/directives/accordion/accordion.directive";
+import {LinkBlock} from "./learnplace/directives/linkblock/link-block.directive";
+import {PictureBlock} from "./learnplace/directives/pictureblock/pictureblock.directive";
+import {TextBlock} from "./learnplace/directives/textblock/textblock.directive";
+import {VideoBlock} from "./learnplace/directives/videoblock/videoblock.directive";
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
@@ -137,13 +134,13 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
 @NgModule({
     declarations: [
         AppComponent,
-        ModalPage,
+        //ModalPage,
         OnboardingPage,
         LeaveAppDialog,
 
         // from src/learnplace
-        //MapPage,
-        //ContentPage,
+        //MapPage, TODO lp
+        //ontentPage,
 
         //TextBlock,
         //PictureBlock,
@@ -152,9 +149,9 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //AccordionBlock,
 
         //TestPage,
-        // LoadingPage,
+        LoadingPage,
         SynchronizationPage,
-        SyncFinishedModal,
+        //SyncFinishedModal,
         // fallback screens
         //WifiFallbackScreen,
         //LocationFallbackScreen,
@@ -166,12 +163,12 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         OnboardingPage,
         LeaveAppDialog,
 
-        // from src/learnplace TODO lp
+        // from src/learnplace
         //MapPage,
-        //ContentPage,
+        //ContentPage, TODO lp
 
         //SyncFinishedModal,
-        //LoadingPage,
+        LoadingPage,
         //HardwareFeaturePage,
         // fallback screens
         //WifiFallbackScreen,
@@ -268,7 +265,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         },
 
         // from src/learnplace
-        /* TODO lp {
+        {
             provide: LEARNPLACE_REPOSITORY,
             useClass: TypeORMLearnplaceRepository
         },
@@ -296,14 +293,14 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             provide: MAP_SERVICE,
             useClass: VisibilityManagedMapService
         },
-        {
-            provide: BLOCK_SERVICE,
-            useClass: VisibilityManagedBlockService
-        },
+        //{
+        //    provide: BLOCK_SERVICE,
+        //    useClass: VisibilityManagedBlockService
+        //},
         {
             provide: VISIT_JOURNAL_WATCH,
             useClass: SynchronizedVisitJournalWatch
-        },*/
+        },
 
         // Link service
         {
@@ -314,7 +311,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             provide: TOKEN_SUPPLIER,
             useClass: AuthTokenSupplier
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: DEFAULT_LINK_BUILDER,
             useFactory: (
                 installationLink: InstallationLinkSupplier,
@@ -325,7 +322,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             },
             deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: NEWS_LINK_BUILDER,
             useFactory: (
                 installationLink: InstallationLinkSupplier,
@@ -336,21 +333,21 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             },
             deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: LOADING_LINK_BUILDER,
             useFactory: (installationLink: InstallationLinkSupplier): () => LoadingLinkBuilder => {
                 return (): LoadingLinkBuilder => new LoadingLinkBuilderImpl(installationLink);
             },
             deps: [INSTALLATION_LINK_PROVIDER]
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: LOGIN_LINK_BUILDER,
             useFactory: (): () => LoginLinkBuilder => {
                 return (): LoginLinkBuilder => new LoginLinkBuilderImpl();
             },
             deps: []
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: RESOURCE_LINK_BUILDER,
             useFactory: (
                 installationLink: InstallationLinkSupplier,
@@ -361,7 +358,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             },
             deps: [INSTALLATION_LINK_PROVIDER, TOKEN_SUPPLIER, USER_REPOSITORY]
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: TIMELINE_LINK_BUILDER,
             useFactory: (
                 installationLink: InstallationLinkSupplier,
@@ -378,7 +375,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         },
 
         // Actions
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
             useFactory: (browser: InAppBrowser, platform: Platform, modal: ModalController):
                 (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction => {
@@ -388,7 +385,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
                 ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal);
             },
             deps: [InAppBrowser, Platform, ModalController]
-        },/* TODO lp
+        },
         AlwaysStrategy,
         NeverStrategy,
         OnlyAtPlaceStrategy,
@@ -416,7 +413,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             useClass: LearnplaceManagerImpl
         },
 
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: OPEN_LEARNPLACE_ACTION_FACTORY,
             useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
                 (nav: NavController, learnplaceObjectId: number, learnplaceName: string, modalController: ModalController): OpenLearnplaceAction =>
@@ -424,13 +421,13 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
             ,
             deps: [LEARNPLACE_LOADER]
         },
-        <FactoryProvider>{
+        <FactoryProvider> {
             provide: REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
             useFactory: (learnplaceManager: LearnplaceManager, translate: TranslateService): RemoveLocalLearnplaceActionFunction =>
                 (title: string, objectId: number, userId: number): RemoveLocalLearnplaceAction =>
                     new RemoveLocalLearnplaceAction(learnplaceManager, translate, title, objectId, userId),
             deps: [LEARNPLACE_MANAGER, TranslateService]
-        },*/
+        },
 
         // file transfer provider
         <ClassProvider> {
@@ -471,7 +468,8 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
         AuthenticationProvider,
         ExecuteSyncProvider,
-        AppVersion
+        AppVersion,
+        UniqueDeviceID
     ],
     exports: [
         TranslateModule

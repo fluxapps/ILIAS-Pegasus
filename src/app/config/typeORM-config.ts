@@ -3,17 +3,16 @@ import {Injectable} from "@angular/core";
 /** entries */
 import {NewsEntity} from "../entity/news.entity";
 import {UserEntity} from "../entity/user.entity";
-/*TODO lp
-import {AccordionEntity} from "../learnplace/entity/accordion.entity";
-import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
-import {LinkblockEntity} from "../learnplace/entity/linkblock.entity";
 import {LocationEntity} from "../learnplace/entity/location.entity";
+import {LearnplaceEntity} from "../learnplace/entity/learnplace.entity";
+import {AccordionEntity} from "../learnplace/entity/accordion.entity";
+import {LinkblockEntity} from "../learnplace/entity/linkblock.entity";
 import {MapEntity} from "../learnplace/entity/map.entity";
 import {PictureBlockEntity} from "../learnplace/entity/pictureBlock.entity";
 import {TextblockEntity} from "../learnplace/entity/textblock.entity";
 import {VideoBlockEntity} from "../learnplace/entity/videoblock.entity";
 import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
-import {VisitJournalEntity} from "../learnplace/entity/visit-journal.entity";*/
+import {VisitJournalEntity} from "../learnplace/entity/visit-journal.entity";
 /** misc */
 import {isDevMode} from "../devmode";
 import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";
@@ -43,8 +42,8 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
                 .setLocation("default")
                 .enableLogging(isDevMode())
                 .addEntity(
-                    /*TODO lp LearnplaceEntity,
                     LocationEntity,
+                    LearnplaceEntity,
                     MapEntity,
                     VisibilityEntity,
                     TextblockEntity,
@@ -52,7 +51,7 @@ export class TypeORMConfigurationAdapter implements DatabaseConfigurationAdapter
                     VideoBlockEntity,
                     LinkblockEntity,
                     AccordionEntity,
-                    VisitJournalEntity,*/
+                    VisitJournalEntity,
                     UserEntity,
                     NewsEntity
                 )

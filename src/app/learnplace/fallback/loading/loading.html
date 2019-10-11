@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-toolbar color="nobg-w"></ion-toolbar>
+</ion-header>
+<ion-content class=page_loading color="nobg-w">
+
+    <!-- <img src="assets/img/walking_pony.png"  class="walking-pony"> -->
+    <ion-grid>
+
+      <ion-row>
+        <ion-col>
+          <ion-spinner color="white" class="centered"></ion-spinner>
+        </ion-col>
+      </ion-row>
+
+      <ion-row justify-content-center padding>
+        <!-- <h1 text-center color="white">
+          <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading" class=big-spinner></ion-spinner>
+        </h1> -->
+      </ion-row>
+      <ion-row justify-content-center padding>
+        <h1 text-center color="white">
+          {{'fallback.loading' | translate:{value: null} }}
+        </h1>
+          <span text-center class=loading-subtitle>
+
+          {{'fallback.loading_subtitle' | translate:{value: null} }}
+        </span>
+      </ion-row>
+    </ion-grid>
+
+</ion-content>

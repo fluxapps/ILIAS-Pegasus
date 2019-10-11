@@ -1,6 +1,5 @@
-/** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {ActivatedRoute, ParamMap, ActivatedRouteSnapshot, Router, ResolveEnd} from "@angular/router";
+import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {
     ActionSheetController,
     AlertController,
@@ -8,45 +7,33 @@ import {
     NavController,
     ToastController
 } from "@ionic/angular";
-/** ionic-native */
-import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
-/** services */
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {SynchronizationService} from "../../services/synchronization.service";
-/** models */
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
 import {PageLayout} from "../../models/page-layout";
 import {TimeLine} from "../../models/timeline";
 import {User} from "../../models/user";
-/** actions */
 import {DownloadAndOpenFileExternalAction} from "../../actions/download-and-open-file-external-action";
 import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
 import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
-import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
 import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-//TODO lp import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
-//TODO lp import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
-/** logging */
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../learnplace/actions/open-learnplace-action";
+import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../learnplace/actions/remove-local-learnplace-action";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-/** misc */
 import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
-import {DataProvider} from "../../providers/data-provider.provider";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
-import {Observable} from "rxjs";
-import {filter} from "rxjs/operators";
 
 // used for navigation from one container into another one
 interface ContentNavParams {
@@ -112,11 +99,11 @@ export class ObjectListPage {
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(LINK_BUILDER)
-                private readonly linkBuilder: LinkBuilder
-                //TODO lp @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
-                //TODO lp private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
-                //TODO lp @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
-                //TODO lp private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
+                private readonly linkBuilder: LinkBuilder,
+                @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
+                private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
+                @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction
     ) {}
 
     /* = = = = = = = *
@@ -341,7 +328,7 @@ export class ObjectListPage {
         }
 
         if(iliasObject.isLearnplace()) {
-            //TODO lp return this.openLearnplaceActionFactory(this.nav, iliasObject.objId, iliasObject.title, this.modal);
+            return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
         }
 
         if(iliasObject.type == "file") {

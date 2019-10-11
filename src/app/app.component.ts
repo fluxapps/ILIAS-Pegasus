@@ -161,7 +161,12 @@ export class AppComponent {
             let action: string = "back";
 
             // when on object-list-page, navigate back in the container-hierarchy
-            if(url.match(/(content|favorites)/) && !url.match(/(content|favorites)\/0/) && !url.match(/details/)) {
+            if(
+                url.match(/(content|favorites)/) &&
+                !url.match(/(content|favorites)\/0/) &&
+                !url.match(/details/) &&
+                !url.match(/learnplace/)
+            ) {
                 action = "back_in_hierarchy";
             }
 
@@ -183,6 +188,13 @@ export class AppComponent {
                 action = (backButtonTapped) ? "close" : "ask_close";
             }
 
+            if(
+                url.match(/learnplace/)
+            ) {
+                action = "back_to_content";
+            }
+
+            console.log(`BACK ${action}`);
             switch(action) {
                 case "to_home":
                     this.navCtrl.navigateRoot("tabs");

@@ -1,0 +1,25 @@
+ion-app._gmaps_cdv_ .nav-decor{
+  background-color: transparent !important;
+}
+
+map {
+
+  #map {
+    height: 90%;
+    width: 100%;
+    position: absolute !important;
+    top: 0 !important;
+    // bottom: 0 !important;
+    left: 0 !important ;
+    right: 0 !important;
+    z-index: 0;
+  }
+
+  // ///fixes the tab change issue
+  // .ion-tabs-fix {
+	//    ion-tabs {
+	// 	height: calc(100% + 56px) !important;
+	//   }
+  // }
+
+}

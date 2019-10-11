@@ -1,0 +1,10 @@
+<ion-card *ngIf="textBlock.visible">
+  <ion-card-content [innerHTML]="textBlock.content">
+  </ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="!textBlock.visible" color=primary>
+  <ion-card-content>
+    {{"learnplace.block.text.too_far_away" | translate}}
+  </ion-card-content>
+</ion-card>

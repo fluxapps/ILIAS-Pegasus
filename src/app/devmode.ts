@@ -13,14 +13,14 @@ import {isFunction} from "util";
  * @returns {boolean} true if the pegasus dev mode is enabled, otherwise false.
  */
 export function isDevMode(): boolean {
-  const monitor: IonicDevServer = <IonicDevServer>window["IonicDevServer"];
+    const monitor: IonicDevServer = <IonicDevServer>window["IonicDevServer"];
 
-  return    isDefined(monitor) &&
-            isFunction(monitor.handleError);
-            // ||
-            // isAngularDevMode();
+    return    isDefined(monitor) &&
+        isFunction(monitor.handleError);
+    // ||
+    // isAngularDevMode();
 }
 
 interface IonicDevServer {
-  handleError(): void
+    handleError(): void
 }
