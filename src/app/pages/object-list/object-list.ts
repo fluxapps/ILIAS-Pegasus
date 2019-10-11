@@ -135,6 +135,15 @@ export class ObjectListPage {
     }
 
     /**
+     * navigates back to last page in object-list
+     */
+    static async navigateBackToObjectList(navCtrl: NavController): Promise<void> {
+        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
+        const depth: number = ObjectListPage.nav.depth;
+        await navCtrl.navigateBack(`tabs/${tab}/${depth}`);
+    }
+
+    /**
      * same as navigateBackInHierarchy above, but callable from html-template
      */
     private async navigateBackInHierarchy(): Promise<void> {
@@ -244,6 +253,8 @@ export class ObjectListPage {
         if(ObjectListPage.nav.favorites) {
             if(this.state.online && event) await this.sync.loadAllOfflineContent();
             await this.setLoadedFavorites();
+            // wait for offline sync
+            await this.waitForOfflineSync();
         } else {
             if(this.state.online) await this.sync.liveLoad(this.parent);
             await this.setLiveLoadedContent(this.parent === undefined);
@@ -253,6 +264,13 @@ export class ObjectListPage {
         this.footerToolbar.removeJob(Job.Synchronize);
         if(event) event.target.disabled = false;
         this.setPageStateAndRender({loading: false});
+    }
+
+    /**
+     * the method returns when the offline sync is not running, checking all 0.1s
+     */
+    async waitForOfflineSync(): Promise<void> {
+        while(this.state.loadingOffline) await new Promise((): NodeJS.Timeout => setTimeout(undefined, 100));
     }
 
     /**

@@ -1,6 +1,6 @@
 /** angular */
 import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
+import {Injectable, NgZone} from "@angular/core";
 import {CanActivate} from "@angular/router";
 import {NavController, ToastController} from "@ionic/angular";
 /** misc */
@@ -32,7 +32,8 @@ export class AuthenticationProvider implements CanActivate {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly browser: InAppBrowser,
-                private readonly navCtrl: NavController
+                private readonly navCtrl: NavController,
+                private readonly ngZone: NgZone
     ) {}
 
     /**
@@ -73,7 +74,7 @@ export class AuthenticationProvider implements CanActivate {
 
                 user.save().then(() => {
                     AuthenticationProvider.user = user;
-                    if(navigate) this.navCtrl.navigateRoot("tabs");
+                    if(navigate) this.ngZone.run(() => this.navCtrl.navigateRoot("tabs"));
                     resolve();
                 }, (err) => {
                     Log.error(this, err);
@@ -150,15 +151,4 @@ export class AuthenticationProvider implements CanActivate {
         this.navCtrl.navigateRoot("login");
         return false;
     }
-
-    /* TODO add events to login-logout-methods?
-     * Subscribes on global events that are used
-     *
-    private subscribeOnGlobalEvents(): void {
-        this.event.subscribe("doLogout", () => this.logout());
-        this.event.subscribe("login", () => this.manageLogin());
-        this.event.subscribe("logout", () => this.loggedIn = false);
-        this.network.onDisconnect().subscribe(() => this.footerToolbar.offline = true);
-        this.network.onConnect().subscribe(() => this.footerToolbar.offline = false);
-    }*/
 }

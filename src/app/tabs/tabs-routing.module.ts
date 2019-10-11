@@ -7,36 +7,36 @@ const routes: Routes = [
         children: [
             {path: "home",
                 children: [
-                    {path: "", loadChildren: "../pages/desktop/desktop.module#DesktopPageModule"}
+                    {path: "", loadChildren: "../pages/desktop/desktop.module#DesktopPageModule"},
                 ]
             },
             {path: "content",
                 children: [
+                    {path: "", redirectTo: "0", pathMatch: "full"},
                     {path: "details", loadChildren: "../pages/object-details/object-details.module#ObjectDetailsPageModule"},
                     {path: ":depth", loadChildren: "../pages/object-list/object-list.module#ObjectListPageModule"},
-                    {path: "", redirectTo: "0", pathMatch: "full"}
                 ]
             },
             {path: "news",
                 children: [
-                    {path: "", loadChildren: "../pages/news/news.module#NewsPageModule"}
+                    {path: "", loadChildren: "../pages/news/news.module#NewsPageModule"},
                 ]
             },
             {path: "favorites",
                 children: [
+                    {path: "", redirectTo: "0", pathMatch: "full"},
                     {path: "details", loadChildren: "../pages/object-details/object-details.module#ObjectDetailsPageModule"},
                     {path: ":depth", loadChildren: "../pages/object-list/object-list.module#ObjectListPageModule"},
-                    {path: "", redirectTo: "0", pathMatch: "full"}
                 ]
             },
             {path: "menu",
                 children: [
                     {path: "", loadChildren: "../pages/menu/menu.module#MenuPageModule"},
                     {path: "settings", loadChildren: "../pages/settings/settings.module#SettingsPageModule"},
-                    {path: "info", loadChildren: "../pages/info/info.module#InfoPageModule"}
+                    {path: "info", loadChildren: "../pages/info/info.module#InfoPageModule"},
                 ]
             },
-            {path: "**", redirectTo: "home"}
+            {path: "**", redirectTo: "home"},
         ]
     }
 ];

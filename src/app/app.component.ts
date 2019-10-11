@@ -194,7 +194,6 @@ export class AppComponent {
                 action = "back_to_content";
             }
 
-            console.log(`BACK ${action}`);
             switch(action) {
                 case "to_home":
                     this.navCtrl.navigateRoot("tabs");
@@ -217,6 +216,10 @@ export class AppComponent {
 
                 case "back_in_hierarchy":
                     ObjectListPage.navigateBackInHierarchy(this.navCtrl);
+                    break;
+
+                case "back_to_content":
+                    ObjectListPage.navigateBackToObjectList(this.navCtrl);
                     break;
 
                 default:
