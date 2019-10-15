@@ -5,7 +5,6 @@ import {RouteReuseStrategy} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
 import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/core";
-import {HttpModule} from "@angular/http";
 import {BrowserModule} from "@angular/platform-browser";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 /** ionic-native */
@@ -176,7 +175,6 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         //RoamingFallbackScreen,
     ],
     imports: [
-        HttpModule,
         HttpClientModule,
         BrowserModule,
         BrowserAnimationsModule,
