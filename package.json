@@ -50,7 +50,7 @@
     "@ionic-native/streaming-media": "^5.9.0",
     "@ionic-native/toast": "^5.9.0",
     "@ionic-native/unique-device-id": "^5.14.0",
-    "@ionic/angular": "^4.9.0",
+    "@ionic/angular": "^4.11.1",
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
