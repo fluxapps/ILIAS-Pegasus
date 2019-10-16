@@ -95,7 +95,7 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly ngZone: NgZone,
-                private readonly footerToolbar: FooterToolbarService,
+                readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(LINK_BUILDER)

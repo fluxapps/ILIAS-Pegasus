@@ -153,9 +153,9 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         SynchronizationPage,
         //SyncFinishedModal,
         // fallback screens
-        //WifiFallbackScreen,
-        //LocationFallbackScreen,
-        //RoamingFallbackScreen,
+        WifiFallbackScreen,
+        LocationFallbackScreen,
+        RoamingFallbackScreen,
 
         HardwareFeaturePage
     ],

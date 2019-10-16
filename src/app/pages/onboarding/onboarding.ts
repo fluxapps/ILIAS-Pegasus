@@ -11,13 +11,32 @@ export class OnboardingPage {
 
     constructor(public modalCtrl: ModalController) { }
 
+    ionViewDidLoad(): void{
+    }
+
     nextSlide(): void {
-        this.slides.slideNext();
+        
+        console.log("FIRRED")
+        this.slides.getActiveIndex().then(index => {
+            console.log(index);
+            if (index == 2){
+                this.dismiss()
+            } else {
+                this.slides.slideNext(300);
+            }
+         });
     }
 
     dismiss(): void {
         this.modalCtrl.dismiss({
             "dismissed": true
+        });
+    }
+
+    slideChanged(): void { 
+        console.log("FIRRED")
+        this.slides.getActiveIndex().then(index => {
+           console.log(index);
         });
     }
 }
