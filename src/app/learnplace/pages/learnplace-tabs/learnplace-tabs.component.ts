@@ -4,6 +4,7 @@ import {ContentPage, ContentPageParams} from "../content/content.component";
 import {NavController} from "@ionic/angular";
 import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 import {VISIT_JOURNAL_WATCH, VisitJournalWatch} from "../../services/visitjournal.service";
+import {ObjectListPage} from "../../../pages/object-list/object-list";
 
 @Component({
     templateUrl: "learnplace-tabs.html",
@@ -52,6 +53,10 @@ export class LearnplaceTabsPage implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.visitJournalWatch.stop();
+    }
+
+    private closeLearnplace(): void {
+        ObjectListPage.navigateBackToObjectList(this.nav);
     }
 }
 

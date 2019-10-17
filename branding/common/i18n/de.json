@@ -153,7 +153,13 @@
         "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
         "some_files_were_too_big": "Einige Dateien waren zu gross und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigrösse in den Einstellungen oder laden Sie die Datei manuell herunter.",
         "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
-        "pull_to_sync": "zum Aktualisieren herunterziehen"
+        "pull_to_sync": "zum Aktualisieren herunterziehen",
+        "remove_from_favorites": "Von Favoriten entfernen",
+        "load_now": "Jetzt laden",
+        "ok": "Ok",
+        "open_downloads_title": "Offene Downloads",
+        "open_downloads_text_sng": "Das Laden des folgenden Objekts konnte nicht abgeschlossen werden:",
+        "open_downloads_text_plr": "Das Laden der folgenden NUM Objekte konnte nicht abgeschlossen werden:"
     },
     "login": {
         "title": "Login",
