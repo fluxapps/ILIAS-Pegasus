@@ -262,6 +262,7 @@ export class SynchronizationService {
         await this.downloadLearnplaces(iliasObjects).toPromise();
         return syncResults;
     }
+
     private downloadLearnplaces(tree: Array<ILIASObject>): Observable<{}> {
         return Observable.merge(...tree
             .filter(it => it.isLearnplace())

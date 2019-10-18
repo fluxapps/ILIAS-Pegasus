@@ -32,9 +32,6 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         await loadingPage.present();
         try {
             await this.loader.load(this.learnplaceObjectId);
-
-            //TODO lp
-            //await this.navCtrl.navigateForward(TabsPage, <TabsPageParams>{learnplaceObjectId: this.learnplaceObjectId, learnplaceName: this.learnplaceName});
             LearnplaceTabsPage.setNavParams(this.learnplaceObjectId, this.learnplaceName);
             await this.navCtrl.navigateForward("learnplace");
             await loadingPage.dismiss();

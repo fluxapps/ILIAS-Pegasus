@@ -20,7 +20,7 @@ export class MarkAsFavoriteAction extends ILIASObjectAction {
     async execute(): Promise<ILIASObjectActionResult> {
         await this.object.setIsFavorite(2);
 
-        this.object.needsDownload = true; // TODO sync needed?
+        this.object.needsDownload = true;
         await this.object.save();
 
         await this.syncService.addObjectsToSyncQueue(this.object);

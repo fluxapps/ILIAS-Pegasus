@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild} from "@angular/core";
+import {ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild} from "@angular/core";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {AlertController, IonContent} from "@ionic/angular";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
@@ -13,7 +13,7 @@ import {LearnplaceTabsPage} from "../learnplace-tabs/learnplace-tabs.component";
     selector: "map",
     templateUrl: "map.html"
 })
-export class MapPage implements AfterViewInit, OnDestroy {
+export class MapPage implements OnDestroy {
     //@ts-ignore
     @ViewChild("content") content: IonContent;
 
@@ -36,19 +36,11 @@ export class MapPage implements AfterViewInit, OnDestroy {
     ionViewWillEnter(): void {
         this.learnplaceObjectId = LearnplaceTabsPage.mapPageParams.learnplaceObjectId;
         this.title = LearnplaceTabsPage.mapPageParams.learnplaceName;
-        this.ngAfterViewInitTmp();
-    }
-
-    ngAfterViewInit(): void { }
-
-    ngAfterViewInitTmp(): void {
         console.log(this.learnplaceObjectId);
-        // TODO lp maybe wrap in angular-zone, see https://forum.ionicframework.com/t/ionic-4-what-is-equivalent-of-v3-content-resize/137405/5
         this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
             .subscribe(
                 this.init.bind(this),
                 error => {
-
                     this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
                     this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
                 });

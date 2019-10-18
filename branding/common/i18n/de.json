@@ -24,6 +24,7 @@
     "today": "Heute",
     "yesterday": "Gestern",
     "repository": "Magazin",
+    "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
         "content" : "Inhalt",

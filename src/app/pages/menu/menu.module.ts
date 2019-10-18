@@ -6,6 +6,7 @@ import {Routes, RouterModule} from "@angular/router";
 import {IonicModule} from "@ionic/angular";
 /** misc */
 import {MenuPage} from "./menu";
+import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
     {path: "", component: MenuPage}
@@ -17,6 +18,7 @@ const routes: Routes = [
         FormsModule,
         ReactiveFormsModule,
         IonicModule,
+        TranslateModule,
         RouterModule.forChild(routes)
     ],
     declarations: [MenuPage]
