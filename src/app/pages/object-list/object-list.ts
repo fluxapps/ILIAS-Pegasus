@@ -95,7 +95,7 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly ngZone: NgZone,
-                private readonly footerToolbar: FooterToolbarService,
+                readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
                 @Inject(LINK_BUILDER)
@@ -104,7 +104,7 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction
-    ) {}
+    ) { }
 
     /* = = = = = = = *
      *  NAVIGATION   *
@@ -251,10 +251,11 @@ export class ObjectListPage {
 
         // execute sync
         if(ObjectListPage.nav.favorites) {
-            if(this.state.online && event) await this.sync.loadAllOfflineContent();
-            await this.setLoadedFavorites();
             // wait for offline sync
             await this.waitForOfflineSync();
+            if(this.state.online && event) await this.sync.loadAllOfflineContent();
+            // collect all offline available objects
+            await this.setLoadedFavorites();
         } else {
             if(this.state.online) await this.sync.liveLoad(this.parent);
             await this.setLiveLoadedContent(this.parent === undefined);
@@ -270,7 +271,14 @@ export class ObjectListPage {
      * the method returns when the offline sync is not running, checking all 0.1s
      */
     async waitForOfflineSync(): Promise<void> {
-        while(this.state.loadingOffline) await new Promise((): NodeJS.Timeout => setTimeout(undefined, 100));
+        while(this.state.loadingOffline) await new Promise((resolve, reject) => {
+            const wait: NodeJS.Timeout = setTimeout(() => {
+                clearTimeout(wait);
+                this.updatePageState(false);
+                resolve();
+            }, 100)
+        });
+        this.updatePageState();
     }
 
     /**

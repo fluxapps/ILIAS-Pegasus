@@ -48,7 +48,6 @@ export class LoginPage {
 
     login(): void {
         if(!this.checkOnline()) return;
-
         const installation: ILIASInstallation = this.getSelectedInstallation();
         const browser: InAppBrowserObject = this.auth.browserLogin(installation);
 

@@ -85,17 +85,17 @@ export class SynchronizationService {
         const objects: Array<ILIASObject> = await ILIASObject.getAllOpenDownloads(this.user);
         if(!objects.length) return;
             if(askUserToLoadNow) {
-                let dismiss: boolean = true;
+                let dismiss: boolean = false;
                 const buttons: Array<{text: string, handler(): void;}> = window.navigator.onLine ?
                     [{
-                        text: "TODO remove_favorites",
+                        text: this.translate.instant("sync.remove_from_favorites"),
                         handler: (): void => {dismiss = true;}
                     }, {
-                        text: "TODO load_now",
+                        text: this.translate.instant("sync.load_now"),
                         handler: (): void => {dismiss = false;}
                     }] :
                     [{
-                        text: "TODO ok",
+                        text: this.translate.instant("sync.ok"),
                         handler: (): void => {dismiss = true;}
                     }];
 
@@ -103,8 +103,11 @@ export class SynchronizationService {
                 objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
 
                 const alert: HTMLIonAlertElement = await this.alertCtr.create({
-                    header: "TODO open downloads",
-                    message: `TODO there are/is ${objects.length} favorite/s that failed downloading because app was closed:${objectsList}`,
+                    header: this.translate.instant("sync.open_downloads_title"),
+                    message: ((objects.length === 1) ?
+                        this.translate.instant("sync.open_downloads_text_sng") :
+                        this.translate.instant("sync.open_downloads_text_plr").replace(/NUM/, objects.length.toString(10))
+                    ) + objectsList,
                     buttons: buttons
                 });
                 alert.present();
@@ -259,6 +262,7 @@ export class SynchronizationService {
         await this.downloadLearnplaces(iliasObjects).toPromise();
         return syncResults;
     }
+
     private downloadLearnplaces(tree: Array<ILIASObject>): Observable<{}> {
         return Observable.merge(...tree
             .filter(it => it.isLearnplace())

@@ -1,14 +1,15 @@
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
-import {MapPage, MapPageParams} from "../map/map.component";
+import {Component, Inject, OnDestroy} from "@angular/core";
+import {MapPageParams} from "../map/map.component";
 import {ContentPage, ContentPageParams} from "../content/content.component";
 import {NavController} from "@ionic/angular";
 import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 import {VISIT_JOURNAL_WATCH, VisitJournalWatch} from "../../services/visitjournal.service";
+import {ObjectListPage} from "../../../pages/object-list/object-list";
 
 @Component({
     templateUrl: "learnplace-tabs.html",
 })
-export class LearnplaceTabsPage implements OnInit, OnDestroy {
+export class LearnplaceTabsPage implements OnDestroy {
 
     static mapPageParams: MapPageParams;
     static contentPageParams: ContentPageParams;
@@ -35,16 +36,10 @@ export class LearnplaceTabsPage implements OnInit, OnDestroy {
         };
     }
 
-    ionViewWillEnter(): void {//TODO lp runs
+    ionViewWillEnter(): void {
         this.title = LearnplaceTabsPage.mapPageParams.learnplaceName;
         this.visitJournalWatch.setLearnplace(LearnplaceTabsPage.mapPageParams.learnplaceObjectId);
         this.visitJournalWatch.start();
-        this.ngOnInitTmp();
-    }
-
-    ngOnInit(): void { }
-
-    ngOnInitTmp(): void {//TODO lp runs
         this.hardware.requireLocation()
             .onFailure(() => this.nav.pop())
             .check();
@@ -52,6 +47,10 @@ export class LearnplaceTabsPage implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.visitJournalWatch.stop();
+    }
+
+    private closeLearnplace(): void {
+        ObjectListPage.navigateBackToObjectList(this.nav);
     }
 }
 
