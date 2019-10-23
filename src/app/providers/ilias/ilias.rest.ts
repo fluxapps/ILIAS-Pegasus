@@ -180,16 +180,20 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
    * @throws {HttpRequestError} if the response is not ok
    */
    private async updateAccessToken(credentials: ClientCredentials): Promise<string> {
+      const body: Map<string, string> = new Map<string, string>()
+          .set("api_key", credentials.clientId)
+          .set("api_secret", credentials.clientSecret)
+          .set("grant_type", "refresh_token")
+          .set("refresh_token", credentials.token.refreshToken);
 
      const headers: Array<[string, string]> = [
-       ["api_key", credentials.clientId],
-       ["api_secret", credentials.clientSecret],
-       ["grant_type", "refresh_token"],
-       ["refresh_token", credentials.token.refreshToken]
+         ["Content-Type", "application/x-www-form-urlencoded; charset=utf-8"],
+         ["Accept", "application/json; charset=utf-8"]
      ];
 
      this.log.info(() => "Refresh access token by refresh token");
-     const response: HttpResponse = await this.httpClient.post(credentials.accessTokenURL, undefined, <RequestOptions>{headers: headers});
+     const response: HttpResponse =
+         await this.httpClient.post(credentials.accessTokenURL, this.formURLEncode(body), <RequestOptions>{headers: headers});
 
      return response.handle<Promise<string>>(async(it): Promise<string> => {
        const data: OAuth2Token = it.json<OAuth2Token>(oAuthTokenSchema);
@@ -197,6 +201,23 @@ export const ILIAS_REST: InjectionToken<ILIASRest> = new InjectionToken("token f
 
        return data.access_token;
      });
+   }
+
+   private formURLEncode(fieldMap: ReadonlyMap<string, string>): string {
+       const fields: Array<string> = new Array<string>();
+       for (const field of fieldMap.entries()) {
+           fields.push(`${field[0]}=${field[1]}`);
+       }
+
+       const rawString: string = fields.reduceRight((prev: string, curr: string) => {
+           if (prev.length > 0) {
+               return prev + `&${curr}`
+           }
+
+           return curr;
+       }, "");
+
+       return encodeURI(rawString);
    }
 }
 
