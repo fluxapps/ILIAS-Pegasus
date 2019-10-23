@@ -44,8 +44,6 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
-        <hook src="tools/update_pods.sh" type="before_platform_add" />
-        <hook src="tools/run_pods.sh" type="after_platform_add" />
         <preference name="BackupWebStorage" value="none" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
