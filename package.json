@@ -111,6 +111,7 @@
     "stream": "0.0.2",
     "text-encoding": "^0.6.4",
     "tls": "0.0.1",
+    "tslib": "^1.10.0",
     "typeorm": "^0.1.21",
     "typescript": "^3.5.3",
     "uglifyjs-webpack-plugin": "^2.1.3",
