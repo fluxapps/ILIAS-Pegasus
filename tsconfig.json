@@ -9,6 +9,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
