@@ -29,7 +29,12 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
-              }
+              },
+                {
+                    "glob": "**/*.svg",
+                    "input": "node_modules/mapbox-gl/src/css/svg",
+                    "output": "./svg"
+                }
             ],
             "styles": [
               {
@@ -37,7 +42,10 @@
               },
               {
                 "input": "src/global.scss"
-              }
+              },
+                {
+                    "input": "node_modules/mapbox-gl/src/css/mapbox-gl.css"
+                }
             ],
             "scripts": []
           },
