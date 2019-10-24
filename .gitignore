@@ -56,3 +56,4 @@ iq_config.xml
 .env
 bin
 simulation
+.ionic/
