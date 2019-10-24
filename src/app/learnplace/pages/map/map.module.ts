@@ -14,7 +14,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        TranslateModule,
+        TranslateModule.forChild(),
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
