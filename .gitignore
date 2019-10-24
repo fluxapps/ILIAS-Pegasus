@@ -53,6 +53,6 @@ branding/common/config/server.config.json
 src/assets/testinstallation_config.json
 build*.sh
 iq_config.xml
-
+.env
 bin
 simulation
