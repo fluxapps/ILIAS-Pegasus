@@ -1,8 +1,8 @@
 {
-  "name": "ilias-pegasus",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular",
-  "telemetry": false
+    "name": "ilias-pegasus",
+    "integrations": {
+        "cordova": {}
+    },
+    "type": "angular",
+    "telemetry": false
 }
