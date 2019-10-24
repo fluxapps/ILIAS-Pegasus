@@ -1,7 +1,8 @@
 {
-  "name": "ionic4-starter-app",
+  "name": "ilias-pegasus",
   "integrations": {
     "cordova": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "telemetry": false
 }
