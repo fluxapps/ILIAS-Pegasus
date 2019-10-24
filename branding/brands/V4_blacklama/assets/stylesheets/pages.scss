@@ -219,7 +219,6 @@ ion-content.page_settings {
 // learnplace_map
 // --------------------------------------------------
 .page_learnplace_map {
-    @extend .primary-gradient;
 
     ion-app._gmaps_cdv_ .nav-decor {
         background-color: transparent !important;
@@ -321,7 +320,6 @@ ion-content.page_settings {
 // app/fallback/open-browser/leave-app.dialog.scss
 // --------------------------------------------------
 .page_leave_app_dialog {
-    @extend .primary-gradient;
 
     #webr-icon {
         height: auto !important;

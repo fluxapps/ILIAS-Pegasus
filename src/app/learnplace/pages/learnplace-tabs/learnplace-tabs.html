@@ -1,6 +1,6 @@
 <ion-header>
 
-    <ion-toolbar color="nobg-w" class=primary-gradient>
+    <ion-toolbar color="primary">
         <ion-title>
             <ion-icon name="pin"></ion-icon>
             {{title}}
@@ -8,11 +8,6 @@
         <ion-buttons slot="start">
             <ion-button (click)="closeLearnplace()"><ion-icon name="arrow-back"></ion-icon></ion-button>
         </ion-buttons>
-        <!-- <ion-buttons end>
-          <button ion-button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-          </button>
-        </ion-buttons> -->
     </ion-toolbar>
 
 </ion-header>
@@ -20,7 +15,7 @@
 <ion-tabs #learnplace class="learnplace-tabs">
     <ion-tab-bar><!-- TODO lp [root]="mapPage" [rootParams]="mapPageParams" tabTitle="Map" tabIcon="map" -->
         <ion-tab-button tab="map">
-            <ion-icon name="map"></ion-icon>
+            <ion-icon name="Navigate"></ion-icon>
             <ion-label>Map</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="content">
