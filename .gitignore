@@ -37,7 +37,8 @@ plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
 src/assets/*
-resources
+resources/
+!branding/brands/*/resources/
 
 
 bin/android-*-unsigned.apk
