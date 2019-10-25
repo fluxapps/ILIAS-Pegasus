@@ -2,7 +2,7 @@
   "ios": {
     "debug": {
       "codeSignIdentity": "iPhone Developer",
-      "provisioningProfile": "201809_Pegasus",
+      "provisioningProfile": "201909 Pegasus Dev",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "development"
     },
