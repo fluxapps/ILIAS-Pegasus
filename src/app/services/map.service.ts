@@ -38,11 +38,9 @@ export interface CameraOptions {
 
 /**
  * Describes a standard map that is used in the map service.
- * It exposes allowed method from a google map and hides methods
+ * It exposes allowed method from the current map implementation and hides methods
  * that should not be used directly and only be accessed via
  * the {@link MapBuilder}.
- *
- * @see https://ionicframework.com/docs/native/google-maps
  *
  * @author nmaerchy <nm@studer-raimann.ch> | nschaefli <ns@studer-raimann.ch>
  * @version 2.0.0
