@@ -7,7 +7,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {LocationWatch} from "./location";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
-import {Geolocation} from "@ionic-native/geolocation/ngx";
+import {Geolocation} from "../../services/device/geolocation/geolocation.service";
 import {isDefined} from "../../util/util.function";
 import {IllegalStateError} from "../../error/errors";
 import {IliasCoordinates} from "./geodesy";

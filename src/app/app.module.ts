@@ -10,7 +10,6 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 /** ionic-native */
 import {Diagnostic} from "@ionic-native/diagnostic/ngx";
 import {File} from "@ionic-native/file/ngx";
-import {Geolocation} from "@ionic-native/geolocation/ngx";
 import {HTTP} from "@ionic-native/http/ngx";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {Network} from "@ionic-native/network/ngx";
@@ -451,7 +450,6 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         Toast,
         PegasusHttpClient,
         SplashScreen,
-        Geolocation,
         PhotoViewer,
         StreamingMedia,
         HTTP,
