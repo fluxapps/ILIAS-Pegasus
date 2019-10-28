@@ -1,6 +1,8 @@
 import {Observable, TeardownLogic} from "rxjs";
 import {shareReplay} from "rxjs/operators";
 import { Injectable } from "@angular/core";
+import {Logger} from "../../logging/logging.api";
+import {Logging} from "../../logging/logging.service";
 
 const geoOptions: PositionOptions = {
     enableHighAccuracy: true,
@@ -21,10 +23,15 @@ const geoOptions: PositionOptions = {
 @Injectable()
 export class Geolocation {
 
+    private readonly log: Logger = Logging.getLogger("Geolocation");
+
     private readonly position$: Observable<Position> = new Observable<Position>((subscriber): TeardownLogic => {
         const handle: number = navigator.geolocation.watchPosition(
             (it) => subscriber.next(it),
-            (error) => subscriber.error(error),
+            (error) => {
+                this.log.error(() => `PositionError: ${error}`);
+                subscriber.error(error)
+            },
             geoOptions
         );
         return (): void => navigator.geolocation.clearWatch(handle);
@@ -35,10 +42,7 @@ export class Geolocation {
      * Checks if the Geolocation API is defined.
      */
     get isAvailable(): boolean {
-        return (
-            "geolocation" in navigator &&
-            typeof navigator.geolocation === "object"
-        );
+        return (("geolocation" in navigator) && (typeof navigator.geolocation === "object"));
     }
 
     /**
@@ -49,6 +53,7 @@ export class Geolocation {
      */
     async getCurrentPosition(): Promise<Position> {
         if (!this.isAvailable) {
+            this.log.error(() => "Can't fetch position without geolocation api.");
             throw new Error("Can't fetch position without geolocation api.");
         }
 
@@ -65,6 +70,7 @@ export class Geolocation {
      */
     watchPosition(): Observable<Position> {
         if (!this.isAvailable) {
+            this.log.error(() => "Can't fetch position without geolocation api.");
             throw new Error("Can't fetch position without geolocation api.");
         }
 
