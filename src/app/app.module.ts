@@ -38,6 +38,7 @@ import {LocationFallbackScreen} from "./fallback/location/location-fallback.comp
 import {Builder} from "./services/builder.base";
 import {Database} from "./services/database/database";
 import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "./services/database/database.api";
+import {GeolocationModule} from "./services/device/geolocation/geolocation.module";
 import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.util";
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
 import {FileService} from "./services/file.service";
@@ -180,6 +181,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         FormsModule,
         IonicModule.forRoot(),
         AppRoutingModule,
+        GeolocationModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
