@@ -14,8 +14,8 @@ import {LearnplaceTabsPage} from "../learnplace-tabs/learnplace-tabs.component";
     templateUrl: "map.html"
 })
 export class MapPage implements OnDestroy {
-    //@ts-ignore
-    @ViewChild("content") content: IonContent;
+
+    @ViewChild("content", {"static": false}) content: IonContent;
 
     private learnplaceObjectId: number;
     title: string;
@@ -38,12 +38,13 @@ export class MapPage implements OnDestroy {
         this.title = LearnplaceTabsPage.mapPageParams.learnplaceName;
         console.log(this.learnplaceObjectId);
         this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
-            .subscribe(
-                this.init.bind(this),
-                error => {
+            .subscribe({
+                next: this.init.bind(this),
+                error: (error): void => {
                     this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
                     this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
-                });
+                }
+            });
     }
 
     ngOnDestroy(): void {

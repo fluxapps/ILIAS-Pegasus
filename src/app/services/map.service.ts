@@ -201,7 +201,7 @@ export class MapBuilder {
       this.applyIfNotUndefined(this.markerOptions, (marker) => {
           mapboxMap.once("load", () => {
               mapboxMap.loadImage(
-                  "assets/icon/map_marker.png",
+                  "assets/icon/map_marker_001.png",
                   (error, image) => {
                   if (error) throw error;
                   const imageName: string = "learnplace";
