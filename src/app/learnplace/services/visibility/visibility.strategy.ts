@@ -1,9 +1,9 @@
 import {VisibilityAware} from "./visibility.context";
 import {Inject, Injectable} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {Geolocation} from "@ionic-native/geolocation/ngx";
 import {LearnplaceEntity} from "../../entity/learnplace.entity";
 import {NoSuchElementError} from "../../../error/errors";
+import {Geolocation} from "../../../services/device/geolocation/geolocation.service";
 import {IliasCoordinates} from "../geodesy";
 import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {isDefined} from "../../../util/util.function";
@@ -268,7 +268,8 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
         const user: Observable<UserEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser())
             .map(it => it.get());
 
-        const learnplaceCoordinate: Observable<IliasCoordinates> = learnplace.map(it => new IliasCoordinates(it.location.latitude, it.location.longitude));
+        const learnplaceCoordinate: Observable<IliasCoordinates> =
+            learnplace.map(it => new IliasCoordinates(it.location.latitude, it.location.longitude));
 
         return Observable.forkJoin(learnplace, user, learnplaceCoordinate, (learnplace, user, learnplaceCoordinates) => {
             if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {

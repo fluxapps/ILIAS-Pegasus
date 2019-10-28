@@ -3,6 +3,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
+import {GeolocationModule} from "../services/device/geolocation/geolocation.module";
 
 const routes: Routes = [
     {path: "", loadChildren: "./pages/learnplace-tabs/learnplace-tabs.module#LearnplaceTabsPageModule"}
@@ -14,7 +15,8 @@ const routes: Routes = [
         FormsModule,
         ReactiveFormsModule,
         IonicModule,
-        RouterModule.forChild(routes)
+        RouterModule.forChild(routes),
+        GeolocationModule
     ],
     exports: [RouterModule]
 })
