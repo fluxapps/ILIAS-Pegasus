@@ -49,7 +49,7 @@ export class LearnplaceTabsPage implements OnDestroy {
         this.visitJournalWatch.stop();
     }
 
-    private closeLearnplace(): void {
+    closeLearnplace(): void {
         ObjectListPage.navigateBackToObjectList(this.nav);
     }
 }

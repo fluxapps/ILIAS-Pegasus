@@ -1,3 +1,4 @@
+import { OnboardingPageModule } from './pages/onboarding/onboarding.module';
 import {AppComponent} from "./app.component";
 /** angular */
 import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
@@ -23,7 +24,7 @@ import {AppVersion} from "@ionic-native/app-version/ngx";
 import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
-import {OnboardingPage} from "./pages/onboarding/onboarding";
+// import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
 // below: unused pages
 import {LoadingPage} from "./learnplace/fallback/loading/loading.component";
@@ -129,12 +130,14 @@ import {VideoBlock} from "./learnplace/directives/videoblock/videoblock.directiv
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
+// import {OnboardingPageModule} from "./pages/onboarding/onboarding.module"
+import { from } from 'rxjs';
 
 @NgModule({
     declarations: [
         AppComponent,
         //ModalPage,
-        OnboardingPage,
+        // OnboardingPage,
         LeaveAppDialog,
 
         // from src/learnplace
@@ -159,7 +162,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         HardwareFeaturePage
     ],
     entryComponents: [
-        OnboardingPage,
+        // OnboardingPage,
         LeaveAppDialog,
 
         // from src/learnplace
@@ -182,6 +185,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         IonicModule.forRoot(),
         AppRoutingModule,
         GeolocationModule,
+        OnboardingPageModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
