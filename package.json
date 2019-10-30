@@ -169,7 +169,6 @@
       "polarcape-cordova-plugin-document-handler": {},
       "cordova-plugin-streaming-media": {},
       "cordova-plugin-advanced-http": {},
-      "cordova-custom-config": {},
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "27.+"
       },
@@ -183,7 +182,8 @@
       "com-sarriaroman-photoviewer": {},
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-inappbrowser": {},
-      "cordova-unique-device-id": {}
+      "cordova-unique-device-id": {},
+      "cordova-custom-config": {}
     },
     "platforms": [
       "android",
