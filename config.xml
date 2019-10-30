@@ -134,9 +134,6 @@
     <plugin name="cordova-android-support-gradle-release" spec="^2.0.1">
         <variable name="ANDROID_SUPPORT_VERSION" value="27.+" />
     </plugin>
-    <plugin name="cordova-plugin-ionic-webview" spec="4.0.1">
-        <variable name="ANDROID_SUPPORT_ANNOTATIONS_VERSION" value="27.+" />
-    </plugin>
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
     <plugin name="cordova-plugin-file-opener2" spec="2.2.0">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
