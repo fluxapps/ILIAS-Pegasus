@@ -43,7 +43,7 @@
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "com-sarriaroman-photoviewer": "^1.1.11",
+    "com-sarriaroman-photoviewer": "^1.2.4",
     "cordova-android": "8.1.0",
     "cordova-android-support-gradle-release": "^3.0.1",
     "cordova-ios": "5.0.1",
@@ -180,12 +180,12 @@
       "cordova-plugin-file-opener2": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
-      "com-sarriaroman-photoviewer": {},
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-unique-device-id": {},
       "cordova-custom-config": {},
-      "cordova-plugin-geolocation": {}
+      "cordova-plugin-geolocation": {},
+      "com-sarriaroman-photoviewer": {}
     },
     "platforms": [
       "android",
