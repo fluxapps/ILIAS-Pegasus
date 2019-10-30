@@ -166,11 +166,11 @@
       "polarcape-cordova-plugin-document-handler": {},
       "cordova-plugin-streaming-media": {},
       "cordova-android-support-gradle-release": {
-        "ANDROID_SUPPORT_VERSION": "27.+"
+        "ANDROID_SUPPORT_VERSION": "28.+"
       },
       "cordova-plugin-app-version": {},
       "cordova-plugin-file-opener2": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+        "ANDROID_SUPPORT_V4_VERSION": "28.+"
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-inappbrowser": {},
