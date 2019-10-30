@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;}
+	.st1{clip-path:url(#SVGID_2_);fill:url(#SVGID_3_);}
+	.st2{fill:#004990;}
+</style>
+<g id="Ebene_2">
+</g>
+<g id="Layer_1">
+	<rect class="st0" width="32" height="32"/>
+	<g>
+		<g>
+			<defs>
+				<rect id="SVGID_1_" x="6" y="4" width="20" height="14"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			
+				<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="-1740.3666" y1="1166.3367" x2="-1739.3666" y2="1166.3367" gradientTransform="matrix(20 0 0 -20 34813.332 23337.7344)">
+				<stop  offset="0" style="stop-color:#538132"/>
+				<stop  offset="1.980000e-02" style="stop-color:#004990"/>
+				<stop  offset="1" style="stop-color:#118ACB"/>
+			</linearGradient>
+			<rect x="6" y="4" class="st1" width="20" height="14"/>
+		</g>
+	</g>
+	<path d="M26,16H6v2h5.3l-3.9,8.6c-0.2,0.5,0,1.1,0.5,1.3C8,28,8.1,28,8.2,28c0.4,0,0.7-0.2,0.9-0.6l1.5-3.3h10.7l1.5,3.3
+		c0.2,0.4,0.5,0.6,0.9,0.6c0.1,0,0.3,0,0.4-0.1c0.5-0.2,0.7-0.8,0.5-1.3L20.7,18H26V16z M18.6,18.2l1.8,4h-8.9l1.8-4
+		c0-0.1,0-0.1,0-0.2h5.1C18.6,18.1,18.6,18.1,18.6,18.2z"/>
+	<rect x="-49.1" y="23.8" class="st2" width="20.2" height="24.7"/>
+</g>
+</svg>
