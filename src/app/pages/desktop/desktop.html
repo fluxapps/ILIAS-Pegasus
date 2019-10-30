@@ -11,31 +11,31 @@
     <ion-grid class="desktop-grid">
         <ion-row>
             <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile tile-cours ion-no-margin" (pointerdown)="navigateTo('content')" >
+                <ion-card button="true" color="light" class="tile tile-cours ion-no-margin" (click)="navigateTo('content')" >
                     <img class=tile-image src="assets/icon/desktop_course.svg">
                     <ion-card-header text-uppercase class=tile-title > {{ 'object-list.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile ion-no-margin" (pointerdown)="navigateTo('favorites')">
+                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="navigateTo('favorites')">
                     <img class=tile-image src="assets/icon/desktop_favourites.svg">
                     <ion-card-header text-uppercase class=tile-title> {{ 'favorites.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center >
-                <ion-card button="true" color="light" class="tile ion-no-margin" (pointerdown)="navigateTo('news')">
+                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="navigateTo('news')">
                     <img class=tile-image src="assets/icon/desktop_news.svg">
                     <ion-card-header text-uppercase class=tile-title> {{ 'news.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile ion-no-margin" (pointerdown)="openILIASRepository()">
+                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="openILIASRepository()">
                     <img class=tile-image src="assets/icon/desktop_repository.svg">
                     <ion-card-header text-uppercase class=tile-title> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" color="light" class="tile ion-no-margin" (pointerdown)="navigateTo('menu')">
+                <ion-card button="true" color="light" class="tile ion-no-margin" (click)="navigateTo('menu')">
                     <img class=tile-image src="assets/icon/desktop_menu.svg">
                     <ion-card-header text-uppercase class=tile-title> {{ 'menu' | translate}} </ion-card-header>
                 </ion-card>

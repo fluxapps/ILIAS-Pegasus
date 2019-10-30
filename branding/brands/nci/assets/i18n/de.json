@@ -1,0 +1,24 @@
+{
+    "test": "der test",
+
+    "login": {
+        "hello":"Willkommen zu Nato Joint Advanced Distributed Learning!"
+    },
+
+    "onboarding": {
+        "title1": "Mit NATO JADL kannst Du:",
+        "function1": "Deine ILIAS Kursunterlagen auf Deinem Smartphone nutzen.",
+        "function2": "Deine Kurse & Dateien offline verfügbar machen.",
+        "function3": "Dich einmal einloggen und bleibst dann immer eingeloggt.",
+        "title2": "Eine dezentrale App",
+        "concept1": "Die NATO JADL App verbindet Dich mit der ILIAS Installation Deiner Institution, Uni oder Schule. Und nur mit dieser.",
+        "concept2": "Wenn Deine Institution noch nicht mitmacht, schreib uns doch an",
+        "title3":"Deine Daten sind sicher!",
+        "datasecurity1": "Deine Daten werden nur auf Deinem Gerät gespeichert. Die App erhebt keinerlei personenbezogene Daten. Wenn Du dies im Detail prüfen möchtest, findest Du hier die",
+        "datasecurity2": "Datenschutzerklärung",
+        "datasecurity3": "ILIAS Pegasus ist ein Open Source Projekt. Wenn Du Dich selbst überzeugen möchtest, was die App tut, dann kannst Du hier den Code einsehen:",
+        "next":"Weiter",
+        "start": "Los geht's"
+      }
+    
+}
