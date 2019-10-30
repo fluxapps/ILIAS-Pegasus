@@ -122,13 +122,9 @@
     <plugin name="cordova-sqlite-storage" spec="^3.2.0" />
     <plugin name="cordova-plugin-x-toast" spec="^2.7.2" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
-    <plugin name="cordova.plugins.diagnostic" spec="^3.9.2">
-        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
-    </plugin>
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="polarcape-cordova-plugin-document-handler" spec="^1.0.14" />
     <plugin name="cordova-plugin-streaming-media" spec="^2.2.0" />
-    <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="cordova-custom-config" spec="^5.1.0" />
     <plugin name="cordova-android-support-gradle-release" spec="^2.0.1">
         <variable name="ANDROID_SUPPORT_VERSION" value="27.+" />
