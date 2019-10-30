@@ -33,3 +33,7 @@ export function isObject(value: unknown): boolean {
 export function isString(value: unknown): boolean {
     return typeof value === "string";
 }
+
+export function hasOwnProperty(value: object, key: string): boolean {
+    return value.hasOwnProperty("key");
+}
