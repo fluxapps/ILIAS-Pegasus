@@ -2,7 +2,7 @@ import {VisibilityEntity} from "./visibility.entity";
 import {
   Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
   RelationOptions
-} from "typeorm";
+} from "typeorm/browser";
 
 @Entity("PictureBlock")
 export class PictureBlockEntity {

@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn} from "typeorm/browser";
 import {LearnplaceEntity} from "./learnplace.entity";
 
 @Entity("Location")

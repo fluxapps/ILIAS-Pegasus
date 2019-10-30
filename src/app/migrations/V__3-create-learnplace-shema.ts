@@ -1,5 +1,5 @@
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner, Table, TableColumn, TableForeignKey} from "typeorm";
+import {QueryRunner, Table, TableColumn, TableForeignKey} from "typeorm/browser";
 
 /**
  * Migration for Lernorte 2.0.

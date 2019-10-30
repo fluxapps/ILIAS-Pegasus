@@ -1,7 +1,7 @@
 import {
   Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
   RelationOptions
-} from "typeorm";
+} from "typeorm/browser";
 import {VisibilityEntity} from "./visibility.entity";
 
 @Entity("LinkBlock")

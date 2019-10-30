@@ -1,5 +1,5 @@
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner, Table, TableColumn} from "typeorm";
+import {QueryRunner, Table, TableColumn} from "typeorm/browser";
 
 /**
  * Migration for News page.

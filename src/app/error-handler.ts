@@ -1,6 +1,6 @@
 import {ErrorHandler, Injectable} from "@angular/core";
 import {AlertController} from "@ionic/angular";
-import {isNullOrUndefined, isNumber, isObject, isString} from "util";
+import {isNullOrUndefined, isNumber, isObject, isString} from "./util/util.function";
 import {TranslateService} from "@ngx-translate/core";
 import {Logger} from "./services/logging/logging.api";
 import {Logging} from "./services/logging/logging.service";

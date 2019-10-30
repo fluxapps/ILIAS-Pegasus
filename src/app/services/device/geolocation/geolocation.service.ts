@@ -28,8 +28,12 @@ export class Geolocation {
     private readonly position$: Observable<Position> = new Observable<Position>((subscriber): TeardownLogic => {
         const handle: number = navigator.geolocation.watchPosition(
             (it) => subscriber.next(it),
-            (error) => {
-                this.log.error(() => `PositionError: ${error}`);
+            (error: PositionError) => {
+                const messages: Map<number, string> = new Map<number, string>();
+                messages.set(error.PERMISSION_DENIED, "PERMISSION_DENIED");
+                messages.set(error.POSITION_UNAVAILABLE, "POSITION_UNAVAILABLE");
+                messages.set(error.TIMEOUT, "TIMEOUT");
+                this.log.error(() => `PositionError: code -> ${messages.has(error.code) ? messages.get(error.code) : error.code} message -> ${error.message}`);
                 subscriber.error(error)
             },
             geoOptions

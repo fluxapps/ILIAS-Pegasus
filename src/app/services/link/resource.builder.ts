@@ -4,7 +4,7 @@ import {INSTALLATION_LINK_PROVIDER, InstallationLinkSupplier, TOKEN_SUPPLIER, To
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {IllegalStateError, NoSuchElementError} from "../../error/errors";
 import {UserEntity} from "../../entity/user.entity";
-import {isString} from "util";
+import {isString} from "../../util/util.function";
 
 /**
  * Build arbitrary links to ILIAS resources like pictures and videos.

@@ -1,5 +1,5 @@
 import {VisibilityEntity} from "./visibility.entity";
-import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn, RelationOptions} from "typeorm";
+import {Column, Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn, RelationOptions} from "typeorm/browser";
 
 @Entity("VideoBlock")
 export class VideoBlockEntity {

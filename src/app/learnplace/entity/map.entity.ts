@@ -3,7 +3,7 @@ import {
   Column,
   Entity, JoinColumn, JoinColumnOptions, OneToOne, PrimaryGeneratedColumn,
   RelationOptions
-} from "typeorm";
+} from "typeorm/browser";
 import {LearnplaceEntity} from "./learnplace.entity";
 
 @Entity("Map")

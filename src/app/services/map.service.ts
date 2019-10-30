@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl"
-import {isUndefined} from "util";
 import {environment} from "../../environments/environment";
+import {isDefined, isNullOrUndefined} from "../util/util.function";
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -243,7 +243,7 @@ export class MapBuilder {
    * @throws Error if the given {@code object} is undefined
    */
   private throwIfUndefined<T>(object: T | undefined, error: () => Error): void {
-    if (isUndefined(object)) {
+    if (isNullOrUndefined(object)) {
       throw error();
     }
   }
@@ -255,7 +255,7 @@ export class MapBuilder {
    * @param {(object: T) => void} apply the function to execute with the given {@code object} as parameter
    */
   private applyIfNotUndefined<T>(object: T | undefined, apply: (object: T) => void): void {
-    if (!isUndefined(object)) {
+    if (isDefined(object)) {
       apply(object);
     }
   }

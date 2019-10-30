@@ -1,5 +1,5 @@
 import {InjectionToken} from "@angular/core";
-import {QueryRunner} from "typeorm";
+import {QueryRunner} from "typeorm/browser";
 
 const BASE_10: number = 10;
 const VERSION_NUMBER: number = 1;

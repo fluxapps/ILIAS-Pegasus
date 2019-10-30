@@ -1,6 +1,6 @@
 import {CommonDatabaseOptions, DatabaseBootstraper} from "./database.api";
-import {ConnectionOptions, QueryRunner} from "typeorm";
-import {CordovaConnectionOptions} from "typeorm/driver/cordova/CordovaConnectionOptions";
+import {ConnectionOptions, QueryRunner} from "typeorm/browser";
+//import {CordovaConnectionOptions} from "typeorm/driver/cordova/CordovaConnectionOptions";
 
 /**
  * Describes a cordova database connection.
@@ -70,7 +70,7 @@ export class CordovaDatabaseConnectionImpl implements CordovaDatabaseConnection,
 
   getOptions(): ConnectionOptions {
 
-    return <CordovaConnectionOptions>{
+    return <ConnectionOptions>{
       name: this.name,
       type: "cordova",
       database: this.database,

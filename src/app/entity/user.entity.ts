@@ -7,7 +7,7 @@ import {
     ManyToMany,
     PrimaryGeneratedColumn,
     RelationOptions
-} from "typeorm";
+} from "typeorm/browser";
 import {NewsEntity} from "./news.entity";
 
 @Entity("users")

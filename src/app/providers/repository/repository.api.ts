@@ -4,7 +4,7 @@ import {Database} from "../../services/database/database";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
-import {Connection, getConnection} from "typeorm";
+import {Connection, getConnection} from "typeorm/browser";
 import {Optional} from "../../util/util.optional";
 
 /**

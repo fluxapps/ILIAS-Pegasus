@@ -19,7 +19,7 @@ import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 /** misc */
-import {Connection, getConnection, QueryRunner} from "typeorm";
+import {Connection, getConnection, QueryRunner} from "typeorm/browser";
 import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
 
 /**

@@ -4,7 +4,7 @@ import {Inject, Injectable} from "@angular/core";
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
 /** misc */
-import {createConnection} from "typeorm";
+import {createConnection} from "typeorm/browser";
 import {
     DATABASE_CONFIGURATION_ADAPTER,
     DatabaseConfigurationAdapter,
@@ -65,7 +65,7 @@ export class Database {
             await <Promise<void>>(connection["init"]());
             this.log.info(() => `Connection ${connectionName} bootstrapped`);
         }
-        
+
         this.readyConnections.push(connectionName);
     }
 }

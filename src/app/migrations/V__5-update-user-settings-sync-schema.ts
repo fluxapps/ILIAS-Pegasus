@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner} from "typeorm";
+import {QueryRunner} from "typeorm/browser";
 
 export class UpdateUserSettingsSyncSchema implements Migration {
 

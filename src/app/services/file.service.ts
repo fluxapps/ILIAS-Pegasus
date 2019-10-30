@@ -20,7 +20,7 @@ import {NoWLANException} from "../exceptions/noWLANException";
 import {Logger} from "./logging/logging.api";
 import {Logging} from "./logging/logging.service";
 /** misc */
-import {isNullOrUndefined} from "util";
+import {isNullOrUndefined} from "../util/util.function";
 import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 

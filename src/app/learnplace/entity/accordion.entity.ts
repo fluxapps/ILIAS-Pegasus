@@ -4,7 +4,7 @@ import {
   JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToOne,
   PrimaryGeneratedColumn,
   RelationOptions
-} from "typeorm";
+} from "typeorm/browser";
 import {LinkblockEntity} from "./linkblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";

@@ -1,5 +1,4 @@
-import {isNullOrUndefined} from "util";
-import {isDefined} from "./util.function";
+import {isDefined, isNullOrUndefined} from "./util.function";
 import {NoSuchElementError} from "../error/errors";
 
 /**

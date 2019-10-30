@@ -1,5 +1,5 @@
 import {Injectable, InjectionToken} from "@angular/core";
-import {ConnectionOptions, QueryRunner} from "typeorm";
+import {ConnectionOptions, QueryRunner} from "typeorm/browser";
 import {CordovaDatabaseConnection, CordovaDatabaseConnectionImpl} from "./cordova.database";
 import {NoSuchElementError} from "../../error/errors";
 
