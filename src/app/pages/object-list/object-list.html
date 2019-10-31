@@ -50,17 +50,19 @@
     <ng-container >
             <ion-list *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
                     <div class="" *ngIf="parent !== undefined">
-                        <ion-item  no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="list-element" class="list-element">
-                            <ion-avatar item-start>
-                                <img [src]="pageLayout.icon">
-                            </ion-avatar>
-                            <span>{{pageLayout.text | translate: []}}</span>
-                        </ion-item>
+                        <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element">
+                            <ion-card-content>
+                                <ion-icon name="information-circle-outline" item-start></ion-icon>
+                                <span>{{pageLayout.text | translate: []}}</span>
+                            </ion-card-content>
+                        </ion-card>
 
-                        <ion-item no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="list-element" class="bottom-line list-element">
-                            <ion-icon [name]=timeline.icon item-start></ion-icon>
-                            <span>{{timeline.text | translate: []}}</span>
-                        </ion-item>
+                        <ion-card no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="primary" class="bottom-line list-element">
+                            <ion-card-content>
+                                <ion-icon [name]=timeline.icon item-start></ion-icon>
+                                <span>{{timeline.text | translate: []}}</span>
+                            </ion-card-content>
+                        </ion-card>
                     </div>
                         <ion-card   class="ion-margin-horizontal"  button="true" *ngFor="let object of content" (click)="onClick(object)">
                             <ion-row align-items-center>
@@ -73,25 +75,26 @@
                                 <ion-col size="7">
                                     <ion-card-content >
                                         <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
-                                        {{ object.presenter.title() }} <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+                                        {{ object.presenter.title() }} 
+                                        <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
                                     </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
-                                    <ion-buttons>
-                                        <ion-button color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
+                                    <ion-buttons mode="ios">
+                                        <ion-button mode="ios" color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
                                             <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="primary"></ion-icon>
                                         </ion-button>
-                                        <ion-button color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
+                                        <ion-button mode="ios" color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
                                             <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="primary"></ion-icon>
                                         </ion-button>
-                                        <ion-button color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
+                                        <ion-button mode="ios" color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
                                             <ion-icon slot="icon-only" name="md-download" color="primary"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
-                                    <ion-button color="transparent"  (click)="showActions(object);$event.stopPropagation();">
-                                        <ion-icon slot="icon-only" name="md-more" color="primary"></ion-icon>
+                                    <ion-button mode="ios" color="transparent"  (click)="showActions(object);$event.stopPropagation();">
+                                        <ion-icon button="true" slot="icon-only" name="md-more" color="primary"></ion-icon>
                                     </ion-button>
                                 </ion-col>
                             </ion-row>
