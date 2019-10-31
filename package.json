@@ -37,7 +37,6 @@
     "@ionic-native/sqlite": "^5.16.0",
     "@ionic-native/status-bar": "^5.16.0",
     "@ionic-native/streaming-media": "^5.16.0",
-    "@ionic-native/toast": "^5.16.0",
     "@ionic-native/unique-device-id": "^5.16.0",
     "@ionic/angular": "^4.11.2",
     "@ionic/storage": "^2.2.0",
@@ -59,7 +58,6 @@
     "cordova-plugin-streaming-media": "^2.2.0",
     "cordova-plugin-video-player": "^1.0.1",
     "cordova-plugin-whitelist": "^1.3.4",
-    "cordova-plugin-x-toast": "^2.7.2",
     "cordova-sqlite-storage": "^3.4.0",
     "cordova-unique-device-id": "^1.3.2",
     "cordova.plugins.diagnostic": "^5.0.1",
@@ -150,9 +148,7 @@
     "cordova-plugin-inappbrowser",
     "cordova-plugin-file",
     "cordova-plugin-file-transfer",
-    "cordova-plugin-network-information",
-    "cordova-plugin-x-toast",
-    "cordova-plugin-googlemaps"
+    "cordova-plugin-network-information"
   ],
   "cordova": {
     "plugins": {
@@ -160,7 +156,6 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-whitelist": {},
       "cordova-sqlite-storage": {},
-      "cordova-plugin-x-toast": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-file": {},
       "polarcape-cordova-plugin-document-handler": {},
