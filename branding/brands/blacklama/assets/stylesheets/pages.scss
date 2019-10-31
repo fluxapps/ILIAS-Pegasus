@@ -141,7 +141,7 @@ ion-content.page_settings {
 // pages/login
 // --------------------------------------------------
 .page_login {
-    background-color: var(--ion-color-primary);
+    background-color: var(--ion-color-dark);
     line-height: 1.8em;
 
     #version-if-footer {
@@ -152,6 +152,8 @@ ion-content.page_settings {
     .huge-login-header {
         padding-top: 5%;
         padding-bottom: 5%;
+        padding-left: 5%;
+        padding-right: 5%;
         font-weight: 800;
         font-size: 3.0vh;
         color: white;
@@ -178,6 +180,7 @@ ion-content.page_settings {
         background-size: 100vw ;
         background-repeat: no-repeat;
         height: 30vh;
+        display: none;
     }
     .login-top-image{
         // display: none;
