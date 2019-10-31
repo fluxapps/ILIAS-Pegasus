@@ -27,7 +27,6 @@ export class DownloadFileAction extends ILIASObjectAction {
                        public translate: TranslateService,
                        public alerter: AlertController) {
         super();
-        this.title = title;
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -86,7 +85,7 @@ export class DownloadFileAction extends ILIASObjectAction {
         });
     };
 
-    alert(): ILIASObjectActionAlert {
+    alert(): ILIASObjectActionAlert | undefined {
         return undefined;
     }
 

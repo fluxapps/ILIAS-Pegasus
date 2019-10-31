@@ -1,21 +1,21 @@
 /** angular */
 import {AlertController} from "@ionic/angular";
-/** models */
-import {Settings} from "../models/settings";
-import {ILIASObject} from "../models/ilias-object";
-import {
-    ILIASObjectAction,
-    ILIASObjectActionAlert,
-    ILIASObjectActionResult,
-    ILIASObjectActionSuccess,
-    ILIASObjectActionNoMessage
-} from "./object-action";
-/** logging */
-import {Log} from "../services/log.service";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
 import {OfflineException} from "../exceptions/OfflineException";
+import {ILIASObject} from "../models/ilias-object";
+/** models */
+import {Settings} from "../models/settings";
 import {FileService} from "../services/file.service";
+/** logging */
+import {Log} from "../services/log.service";
+import {
+    ILIASObjectAction,
+    ILIASObjectActionAlert,
+    ILIASObjectActionNoMessage,
+    ILIASObjectActionResult,
+    ILIASObjectActionSuccess
+} from "./object-action";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
@@ -25,7 +25,6 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
                        public translate: TranslateService,
                        public alerter: AlertController) {
         super();
-        this.title = title;
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
