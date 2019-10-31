@@ -15,8 +15,8 @@
 
     ion-tab-button.tab-selected {
         ion-icon, ion-label {
-          color: var(--ion-color-primary) !important;
-          --ion-color-base: var(--ion-color-primarry) !important;
+          color: var(--ion-color-secondary) !important;
+          --ion-color-base: var(--ion-color-secondary) !important;
         }
       }
 
@@ -31,14 +31,14 @@
     // colors
     --ion-item-border-color: transparent;
 
-    --ion-color-primary: #e8960b;
+    --ion-color-primary: #000000;
     --ion-color-primary-rgb: 232,150,11;
-    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast: #ffffff;
     --ion-color-primary-contrast-rgb: 0,0,0;
-    --ion-color-primary-shade: #cc840a;
+    --ion-color-primary-shade: #000000;
     --ion-color-primary-tint: #eaa123;
   
-    --ion-color-secondary: #020202;
+    --ion-color-secondary: #e8960b;
     --ion-color-secondary-rgb: 2,2,2;
     --ion-color-secondary-contrast: #ffffff;
     --ion-color-secondary-contrast-rgb: 255,255,255;
@@ -73,7 +73,7 @@
     --ion-color-danger-shade: #d33939;
     --ion-color-danger-tint: #f25454;
   
-    --ion-color-dark: #222428;
+    --ion-color-dark: #000000;
     --ion-color-dark-rgb: 34,34,34;
     --ion-color-dark-contrast: #ffffff;
     --ion-color-dark-contrast-rgb: 255,255,255;

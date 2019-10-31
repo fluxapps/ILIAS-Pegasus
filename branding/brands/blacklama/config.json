@@ -1,8 +1,8 @@
 {
-  "ilias_installation_ids": [1,2,3,4,5,6,7,12,15],
+  "ilias_installation_ids": [24,7],
   "projectConfig": {
-    "id": "ch.studerraimann.ilias.offline",
-    "name": "ILIAS Pegasus",
+    "id": "ch.studerraimann.ilias.fhoevnrw",
+    "name": "Black Lama",
     "description": "Download, sync and store ILIAS-files on your device"
   }
 }
