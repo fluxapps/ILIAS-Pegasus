@@ -363,7 +363,8 @@ export class ObjectListPage {
                 iliasObject,
                 this.file,
                 this.translate,
-                this.alert
+                this.alert,
+                this.sync
             );
         }
 

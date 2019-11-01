@@ -15,6 +15,7 @@ import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
 import {CreateNews} from "../../migrations/V__4-create-news-shema";
 import {UpdateUserSettingsSyncSchema} from "../../migrations/V__5-update-user-settings-sync-schema";
 import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-and-favorites";
+import {FilesLearningProgress} from "../../migrations/V__7-files_learning_progress";
 /** logging */
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
@@ -138,7 +139,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
       new CreateLearnplace(),
       new CreateNews(),
       new UpdateUserSettingsSyncSchema(),
-      new MigrateOfflineAndFavorites()
+      new MigrateOfflineAndFavorites(),
+      new FilesLearningProgress()
     ];
   }
 }

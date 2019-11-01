@@ -178,10 +178,16 @@
       "cordova-custom-config": {},
       "cordova-plugin-geolocation": {},
       "com-sarriaroman-photoviewer": {},
-      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
       "cordova-plugin-network-information": {},
-      "cordova.plugins.diagnostic": {},
-      "cordova-plugin-advanced-http": {}
+      "cordova.plugins.diagnostic": {
+        "ANDROID_SUPPORT_VERSION": "28.+"
+      },
+      "cordova-plugin-advanced-http": {
+        "OKHTTP_VERSION": "3.10.0"
+      }
     },
     "platforms": [
       "android",

@@ -16,14 +16,18 @@ import {Log} from "../services/log.service";
 import {TranslateService} from "@ngx-translate/core";
 import {OfflineException} from "../exceptions/OfflineException";
 import {FileService} from "../services/file.service";
+import {SynchronizationService} from "../services/synchronization.service";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
-    constructor(public title: string,
-                       public fileObject: ILIASObject,
-                       public file: FileService,
-                       public translate: TranslateService,
-                       public alerter: AlertController) {
+    constructor(
+        public title: string,
+        public fileObject: ILIASObject,
+        public file: FileService,
+        public translate: TranslateService,
+        public alerter: AlertController,
+        public sync: SynchronizationService
+    ) {
         super();
         this.title = title;
     }
@@ -36,10 +40,13 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
         else if (this.fileObject.needsDownload) {
             const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
-            return this.checkWLANAndDownload(settings);
+            const result: Promise<ILIASObjectActionResult> = this.checkWLANAndDownload(settings);
+            await result.then(() => this.sync.synchronizeFileLearningProgresses());
+            return result;
         }
         else {
             await this.file.open(this.fileObject);
+            await this.sync.synchronizeFileLearningProgresses();
             return new ILIASObjectActionNoMessage();
         }
     }

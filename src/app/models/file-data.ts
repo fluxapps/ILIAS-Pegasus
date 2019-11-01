@@ -1,6 +1,7 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {User} from "./user";
+import {ILIASObject} from "./ilias-object";
 
 /**
  * Holds additional meta data for ILIAS file objects
@@ -44,6 +45,16 @@ export class FileData extends ActiveRecord {
      */
     fileVersionDateLocal: string;
 
+    /**
+     * status of the learning progress (equivalent to whether the file has been downloaded or not)
+     */
+    fileLearningProgress: boolean;
+
+    /**
+     * is true when the learning progress must be synced with the ILIAS-installation
+     */
+    fileLearningProgressPushToServer: boolean;
+
     constructor(id: number = 0) {
         super(id, new SQLiteConnector("files", [
             "iliasObjectId",
@@ -53,6 +64,8 @@ export class FileData extends ActiveRecord {
             "fileExtension",
             "fileVersionDate",
             "fileVersionDateLocal",
+            "fileLearningProgress",
+            "fileLearningProgressPushToServer"
         ]));
     }
 
@@ -77,7 +90,7 @@ export class FileData extends ActiveRecord {
                 return db.query("SELECT * FROM files WHERE iliasObjectId = ?", [iliasObjectId]);
             })
             .then((response: any) => {
-                const fileData = new FileData();
+                const fileData: FileData = new FileData();
                 if (response.rows.length == 0) {
                     fileData.iliasObjectId = iliasObjectId;
                 } else {
@@ -125,6 +138,23 @@ export class FileData extends ActiveRecord {
                 }
                 return Promise.resolve(usedDiskSpace);
             });
+    }
+
+    /**
+     * Returns an array of FileData-objects with unsynced learning progresses, so
+     * fileLearningProgress is TRUE and fileLearningProgressPushToServer is TRUE
+     */
+    static async getOpenLearningProgressPosts(): Promise<Array<FileData>> {
+        const sql: string = "SELECT iliasObjectId FROM files WHERE fileLearningProgressPushToServer = TRUE";
+        const response: any = await SQLiteDatabaseService.instance().then(db => db.query(sql));
+
+        const unsynced: Array<FileData> = [];
+        for (let i: number = 0; i < response.rows.length; i++) {
+            const fd: FileData = await FileData.find(response.rows.item(i).iliasObjectId);
+            unsynced.push(fd);
+        }
+
+        return unsynced;
     }
 
     /**
