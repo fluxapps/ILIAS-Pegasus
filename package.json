@@ -29,6 +29,7 @@
     "@ionic-native/core": "^5.16.0",
     "@ionic-native/diagnostic": "^5.16.0",
     "@ionic-native/file": "^5.16.0",
+    "@ionic-native/file-opener": "^5.16.0",
     "@ionic-native/http": "^5.16.0",
     "@ionic-native/in-app-browser": "^5.16.0",
     "@ionic-native/network": "^5.16.0",

@@ -1,4 +1,4 @@
-import { OnboardingPageModule } from './pages/onboarding/onboarding.module';
+import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
 import {AppComponent} from "./app.component";
 /** angular */
 import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
@@ -42,6 +42,7 @@ import {GeolocationModule} from "./services/device/geolocation/geolocation.modul
 import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.util";
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
 import {FileService} from "./services/file.service";
+import {FilesystemModule} from "./services/filesystem/filesystem.module";
 import {FooterToolbarService} from "./services/footer-toolbar.service";
 import {PegasusMissingTranslationHandler} from "./services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "./services/link/default.builder";
@@ -184,6 +185,7 @@ import { from } from 'rxjs';
         IonicModule.forRoot(),
         AppRoutingModule,
         GeolocationModule,
+        FilesystemModule,
         OnboardingPageModule,
         TranslateModule.forRoot({
             loader: {

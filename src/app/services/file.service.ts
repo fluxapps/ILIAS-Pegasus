@@ -308,15 +308,6 @@ export class FileService {
     }
 
     /**
-     * @param A
-     * @param B
-     * @returns {boolean}
-     */
-    static isAOlderThanB(A: string, B: string): boolean {
-        return (Date.parse(B) > Date.parse(A));
-    }
-
-    /**
      * Set the fileVersionDateLocal to fileVersionDate from ILIAS
      * @param fileObject
      */
