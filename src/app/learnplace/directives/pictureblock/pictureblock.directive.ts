@@ -1,11 +1,11 @@
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {PictureBlockModel} from "../../services/block.model";
-import {Platform} from "@ionic/angular";
-import {File} from "@ionic-native/file/ngx";
-import {PhotoViewer, PhotoViewerOptions} from "@ionic-native/photo-viewer/ngx";
+import {Component, Inject, Input, OnInit} from "@angular/core";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {File} from "@ionic-native/file/ngx";
+import {Platform} from "@ionic/angular";
+import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {PictureBlockModel} from "../../services/block.model";
 
 @Component({
     selector: "picture-block",
@@ -23,12 +23,12 @@ export class PictureBlock implements OnInit {
     constructor(
         private readonly platform: Platform,
         private readonly file: File,
-        private readonly photoViewer: PhotoViewer,
+        @Inject(FILESYSTEM_TOKEN) private readonly filesystem: Filesystem,
         private readonly sanitizer: DomSanitizer
     ) {
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
 
         const fileName: string = this.pictureBlock.thumbnail.split("/").pop();
         const path: string = this.pictureBlock.thumbnail.replace(fileName, "");
@@ -41,8 +41,8 @@ export class PictureBlock implements OnInit {
         });
     }
 
-    show(): void {
-        this.photoViewer.show(`${this.getStorageLocation()}${this.pictureBlock.url}`, this.pictureBlock.title, <PhotoViewerOptions>{share: false});
+    async show(): Promise<void> {
+        await this.filesystem.open(this.pictureBlock.url);
     }
 
     private getStorageLocation(): string {
