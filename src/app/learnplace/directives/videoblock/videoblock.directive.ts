@@ -1,10 +1,10 @@
-import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {VideoBlockModel} from "../../services/block.model";
-import {Platform} from "@ionic/angular";
+import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {File} from "@ionic-native/file/ngx";
-import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
+import {Platform} from "@ionic/angular";
 import {Subscription} from "rxjs/Subscription";
+import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {isDefined} from "../../../util/util.function";
+import {VideoBlockModel} from "../../services/block.model";
 
 @Component({
   selector: "video-block",
@@ -20,8 +20,7 @@ export class VideoBlock implements OnInit, OnDestroy {
   constructor(
     private readonly platform: Platform,
     private readonly file: File,
-    private readonly streaming: StreamingMedia,
-    private readonly detectorRef: ChangeDetectorRef
+    @Inject(FILESYSTEM_TOKEN) private readonly filesystem: Filesystem,
   ) {}
 
 
@@ -38,17 +37,6 @@ export class VideoBlock implements OnInit, OnDestroy {
   }
 
   play(): void {
-    this.streaming.playVideo(`${this.getStorageLocation()}${this.videoBlock.url}`);
-  }
-
-  private getStorageLocation(): string {
-    if (this.platform.is("android")) {
-      return this.file.externalApplicationStorageDirectory;
-    }
-    if (this.platform.is("ios")) {
-      return this.file.dataDirectory;
-    }
-
-    throw new Error("Unsupported platform. Can not return a storage location.");
+      this.filesystem.open(this.videoBlock.url);
   }
 }

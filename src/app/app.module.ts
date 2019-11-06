@@ -17,7 +17,6 @@ import {Network} from "@ionic-native/network/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import {SQLite} from "@ionic-native/sqlite/ngx";
 import {StatusBar} from "@ionic-native/status-bar/ngx";
-import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
@@ -455,7 +454,6 @@ import { from } from 'rxjs';
         SQLite,
         PegasusHttpClient,
         SplashScreen,
-        StreamingMedia,
         HTTP,
 
         // from src/services/device/hardware-features
