@@ -137,6 +137,7 @@ export class SynchronizationService {
                 this.syncEnded()
                     .then( () => Promise.reject(error))
             )
+            .then(promise => {this.processOpenSynchronizationTasks(); return promise})
             .then(promise  => {
                 SynchronizationService.state.liveLoading = false;
                 return promise;
@@ -176,6 +177,7 @@ export class SynchronizationService {
             this.syncOfflineQueue = [];
             this.syncOfflineQueueCnt = 0;
             SynchronizationService.state.loadingOfflineContent = false;
+            this.processOpenSynchronizationTasks();
             return;
         }
 
@@ -464,6 +466,7 @@ export class SynchronizationService {
         this.user = AuthenticationProvider.getUser();
         await this.newsSynchronization.synchronize();
         await this.visitJournalSynchronization.synchronize();
+        await this.processOfflineSyncQueue();
         await this.syncEnded();
     }
 
@@ -476,6 +479,23 @@ export class SynchronizationService {
             .then(() => this.syncEnded())
             .then( () => Promise.resolve(iliasObjects))
             .catch(await this.syncEnded());
+    }
+
+    /**
+     * this method is called by all main synchronization events, after their completion. it contains a list of
+     * tasks that should periodically be processed in order to maintain a synchronized state with the ILIAS-server
+     */
+    private async processOpenSynchronizationTasks(): Promise<void> {
+        await this.synchronizeFileLearningProgresses();
+    }
+
+    /**
+     * loads all file-entries where the fileLearningProgressPushToServer-flag is set to true, and invokes
+     * a method that posts for each result
+     */
+    async synchronizeFileLearningProgresses(): Promise<void> {
+        const unsynced: Array<FileData> = await FileData.getOpenLearningProgressPosts();
+        await this.fileService.postLearningProgressDone(unsynced);
     }
 }
 

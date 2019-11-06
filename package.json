@@ -170,8 +170,12 @@
       "cordova-plugin-geolocation": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-network-information": {},
-      "cordova.plugins.diagnostic": {},
-      "cordova-plugin-advanced-http": {}
+      "cordova.plugins.diagnostic": {
+        "ANDROID_SUPPORT_VERSION": "28.+"
+      },
+      "cordova-plugin-advanced-http": {
+        "OKHTTP_VERSION": "3.10.0"
+      }
     },
     "platforms": [
       "android",

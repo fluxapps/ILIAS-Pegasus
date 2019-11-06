@@ -92,6 +92,25 @@ export class ILIASRestProvider {
             exclusive: false
         });
     }
+
+    /**
+     * Posts learning-progress-to-done matching the given {@code fileObjectId}
+     *
+     * @param {number} fileObjectId - the file object id in ILIAS
+     *
+     * @throws {HttpRequestError} if the request fails
+     */
+    async postLearningProgressDone(fileObjectId: number): Promise<void> {
+        const response: HttpResponse = await this.iliasRest.post(
+            `/v2/ilias-app/files/${fileObjectId}/learning-progress-to-done`,
+            {},
+            <ILIASRequestOptions>{contentType: "application/json"}
+        );
+
+        return response.handle<void>(_ => {
+            this.log.trace(() => `Successfully posted learning-progress-to-done for iliasObjId ${fileObjectId}`);
+        });
+    }
 }
 
 interface AuthToken {
@@ -158,6 +177,7 @@ export interface FileData {
   fileType: string
   fileVersion: string
   fileVersionDate: string
+  fileLearningProgress: boolean
 }
 
 const fileShema: object = {
@@ -169,7 +189,8 @@ const fileShema: object = {
     "fileSize": {"type": "string"},
     "fileType": {"type": "string"},
     "fileVersion": {"type": "string"},
-    "fileVersionDate": {"type": "string"}
+    "fileVersionDate": {"type": "string"},
+    "fileLearningProgress": {"type": "boolean"}
   },
-  "required": ["fileExtension", "fileName", "fileSize", "fileType", "fileVersion", "fileVersionDate"]
+  "required": ["fileExtension", "fileName", "fileSize", "fileType", "fileVersion", "fileVersionDate", "fileLearningProgress"]
 };

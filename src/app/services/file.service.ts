@@ -223,9 +223,14 @@ export class FileService {
      * @returns {Promise<T>}
      */
     async open(fileObject: ILIASObject): Promise<void> {
-      await this.platform.ready();
-      const fileEntry: FileEntry = await this.existsFile(fileObject);
-      return this.openExisting(fileEntry, fileObject);
+        await this.platform.ready();
+        const fileEntry: FileEntry = await this.existsFile(fileObject);
+        await this.openExisting(fileEntry, fileObject);
+
+        // update the learning progress
+        const fd: FileData = await FileData.find(fileObject.id);
+        fd.fileLearningProgressPushToServer = !fd.fileLearningProgress;
+        await fd.save();
     }
 
     private openExisting(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
@@ -363,6 +368,21 @@ export class FileService {
             });
         });
     }
+
+    /**
+     * Invokes rest-method that posts learning-progress-to-done
+     * @param unsynced
+     */
+    async postLearningProgressDone(unsynced: Array<FileData>): Promise<void> {
+        for (let i: number = 0; i < unsynced.length; i++) {
+            const fd: FileData = unsynced[i];
+            const io: ILIASObject = await ILIASObject.find(fd.iliasObjectId);
+            await this.rest.postLearningProgressDone(io.objId);
+            fd.fileLearningProgressPushToServer = false;
+            await fd.save();
+        }
+    }
+
 
     /**
      * returns the online / offline status.

@@ -82,10 +82,7 @@ import {CONFIG_PROVIDER, ILIASConfigProvider} from "./config/ilias-config";
 import {Oauth2DataSupplierImpl, TokenResponseConsumerImpl} from "./config/ilias.rest-config";
 import {TypeORMConfigurationAdapter} from "./config/typeORM-config";
 /** learnplaces */
-//import {ContentPage} from "./learnplace/pages/content/content.component"; TODO lp
-//import {MapPage} from "./learnplace/pages/map/map.component";
 // services for learnplaces
-import {BLOCK_SERVICE, VisibilityManagedBlockService} from "./learnplace/services/block.service";
 import {LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl} from "./learnplace/services/learnplace.management";
 import {LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader} from "./learnplace/services/loader/learnplace";
 import {HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER} from "./learnplace/services/loader/resource";
