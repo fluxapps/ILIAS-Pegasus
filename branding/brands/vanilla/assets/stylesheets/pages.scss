@@ -79,6 +79,10 @@
        bottom: 0;
    }
 
+    ion-list{
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
     .privacy-iq{
         display: none
@@ -567,7 +571,7 @@ body
   background:$candleShadow;
   transform:translate(-80%,0%);
   animation:changeto-greater 3s infinite linear;
-  
+
 }
 .light__wave
 {
@@ -641,7 +645,7 @@ body
   65%
   {
      transform:scale(1,1) translate(60%,-25%);
-    
+
   }
   70%
   {
@@ -651,7 +655,7 @@ body
   {
     transform:scale(1,1) translate(60%,-25%);
   }
-  
+
 }
 
 @keyframes uff{
@@ -683,7 +687,7 @@ body
     height:0px;
     left:30%;
   }
-  
+
 }
 
 @keyframes change-background
@@ -695,7 +699,7 @@ body
   {
     background:$lightsOutBg;
   }
- 
+
 }
 @keyframes move-left{
   0%,59%,100%
@@ -772,16 +776,16 @@ body
     transform:scale(1.15,0.85) translate(60%,-15%);
     background:#fff;
     border-color:$candleShadow;
-     
+
   }
-  
+
   // 80%
   // {
   //   background:$angerColor;
   //   alpha:0.5;
   //   border-color:$angerColor;
   // }
-  
+
   91%
   {
     left:20%;
@@ -805,7 +809,7 @@ body
     left:20%;
     transform:scale(1.0,1.0) translate(60%,-15%);
   }
-  
+
 }
 @keyframes stick-animation{
    0%,40%{
@@ -865,7 +869,7 @@ body
   top:0%;
     transform:translate(-50%,-100%);
   }
- 
+
 }
 @keyframes expand-light
 {
@@ -888,7 +892,7 @@ body
      transform:translate(-25%,-50%) scale(2.5,2.5);
     border:2px solid rgba(255,255,255,0.2);
   }
-  
+
 }
 @keyframes dance-fire
 {

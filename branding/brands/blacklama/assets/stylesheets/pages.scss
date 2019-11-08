@@ -26,7 +26,7 @@
      //font-sizes
      ion-card-title{
         font-size: 1.2rem;
-        
+
     }
 
     ion-card-header{
@@ -78,7 +78,11 @@
        position: absolute;
        bottom: 0;
    }
-    
+
+    ion-list{
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
     .privacy-iq{
         display: none
@@ -184,7 +188,7 @@ ion-content.page_settings {
     }
     .login-top-image{
         // display: none;
-        
+
     }
 
     // a, img {
@@ -215,8 +219,8 @@ ion-content.page_settings {
 }
 
 .page_object_list {
-   
-   
+
+
 }
 
 // learnplace_map
@@ -282,32 +286,32 @@ ion-content.page_settings {
 // pages/onboarding
 // --------------------------------------------------
 .page_onboarding {
-    
+
     ion-slide {
         height: 100vh;
         flex-direction: column;
     }
-    
+
     img {
         // max-width: 50vw;
         max-height: 20vh;
         overflow: hidden;
     }
-    
-    
+
+
     .step-one {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);
         font-size: 2vh;
-        
+
     }
-    
+
     .step-two {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);
         font-size: 2vh;
     }
-    
+
     .step-three {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);

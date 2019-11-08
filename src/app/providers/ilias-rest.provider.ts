@@ -108,7 +108,7 @@ export class ILIASRestProvider {
         );
 
         return response.handle<void>(_ => {
-            this.log.trace(() => `Successfully posted learning-progress-to-done for iliasObjId ${fileRefId}`);
+            this.log.trace(() => `Successfully posted learning-progress-to-done for iliasRefId ${fileRefId}`);
         });
     }
 }
