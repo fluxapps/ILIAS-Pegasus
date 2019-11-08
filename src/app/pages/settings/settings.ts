@@ -118,8 +118,8 @@ export class SettingsPage {
     }
 
     async saveSettings(): Promise<void> {
-        this.settings.downloadSize = Math.min(this.settings.downloadSize, 9999);
-        this.settings.quotaSize = Math.min(this.settings.quotaSize, 99999);
+        this.settings.downloadSize = Math.min(this.settings.downloadSize, 10000);
+        this.settings.quotaSize = Math.min(this.settings.quotaSize, 100000);
 
         if (this.settings.userId) {
             this.log.debug(() => "Saving settings.");

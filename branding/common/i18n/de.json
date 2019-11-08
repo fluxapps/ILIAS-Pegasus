@@ -166,7 +166,9 @@
         "title": "Login",
         "hello":"Willkommen zu ILIAS Pegasus!",
         "instructions":"Wähle deine Installation.",
-        "login": "Anmelden"
+        "login": "Anmelden",
+        "offline_title": "Keine Internetverbindung",
+        "offline_content": "Die Anmeldung kann nur mit einer Internetverbindung durchgeführt werden."
     },
     "object_type": {
         "crs" : "Kurs",

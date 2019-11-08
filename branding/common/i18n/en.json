@@ -165,7 +165,9 @@
         "hello":"Welcome to ILIAS Pegasus!",
         "instructions":"Choose your institution",
         "instructions2":"Choose your institution",
-        "login": "Login"
+        "login": "Login",
+        "offline_title": "No Internet connection",
+        "offline_content": "In order to login, your device needs to be connected to the Internet."
     },
     "object_type": {
         "crs" : "Course",
