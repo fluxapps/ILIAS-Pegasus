@@ -61,7 +61,7 @@ export class ILIASRestProvider {
     }
 
     async getFileData(refId: number, user: User, timeout: number = 0): Promise<FileData> {
-      const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
+      const response: HttpResponse = await this.iliasRest.get(`/v3/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
 
       return response.handle(it =>
         it.json<FileData>(fileShema)
@@ -94,21 +94,21 @@ export class ILIASRestProvider {
     }
 
     /**
-     * Posts learning-progress-to-done matching the given {@code fileObjectId}
+     * Posts learning-progress-to-done matching the given {@code fileRefId}
      *
-     * @param {number} fileObjectId - the file object id in ILIAS
+     * @param {number} fileRefId - a reference id in ILIAS of the file
      *
      * @throws {HttpRequestError} if the request fails
      */
-    async postLearningProgressDone(fileObjectId: number): Promise<void> {
+    async postLearningProgressDone(fileRefId: number): Promise<void> {
         const response: HttpResponse = await this.iliasRest.post(
-            `/v2/ilias-app/files/${fileObjectId}/learning-progress-to-done`,
+            `/v3/ilias-app/files/${fileRefId}/learning-progress-to-done`,
             {},
             <ILIASRequestOptions>{contentType: "application/json"}
         );
 
         return response.handle<void>(_ => {
-            this.log.trace(() => `Successfully posted learning-progress-to-done for iliasObjId ${fileObjectId}`);
+            this.log.trace(() => `Successfully posted learning-progress-to-done for iliasObjId ${fileRefId}`);
         });
     }
 }

@@ -386,7 +386,7 @@ export class FileService {
         for (let i: number = 0; i < unsynced.length; i++) {
             const fd: FileData = unsynced[i];
             const io: ILIASObject = await ILIASObject.find(fd.iliasObjectId);
-            await this.rest.postLearningProgressDone(io.objId);
+            await this.rest.postLearningProgressDone(io.refId);
             fd.fileLearningProgressPushToServer = false;
             await fd.save();
         }

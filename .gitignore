@@ -55,6 +55,7 @@ src/assets/testinstallation_config.json
 build*.sh
 iq_config.xml
 .env
+src/environments/environment.ts
 bin
 simulation
 .ionic/

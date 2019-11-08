@@ -28,6 +28,7 @@ export class MigrateOfflineAndFavorites implements Migration {
     }
 
     async down(queryRunner: QueryRunner): Promise<void> {
+        // the changes cannot be undone, because the favorites from before the up-migration are lost
         return;
     }
 }
