@@ -115,18 +115,12 @@ import {
     RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
 } from "./learnplace/actions/remove-local-learnplace-action";
-// directives for learnplaces
-import {AccordionBlock} from "./learnplace/directives/accordion/accordion.directive";
-import {LinkBlock} from "./learnplace/directives/linkblock/link-block.directive";
-import {PictureBlock} from "./learnplace/directives/pictureblock/pictureblock.directive";
-import {TextBlock} from "./learnplace/directives/textblock/textblock.directive";
-import {VideoBlock} from "./learnplace/directives/videoblock/videoblock.directive";
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
 // import {OnboardingPageModule} from "./pages/onboarding/onboarding.module"
-import { from } from 'rxjs';
+import { WebView } from "@ionic-native/ionic-webview/ngx";
 
 @NgModule({
     declarations: [
@@ -452,6 +446,7 @@ import { from } from 'rxjs';
         PegasusHttpClient,
         SplashScreen,
         HTTP,
+        WebView,
 
         // from src/services/device/hardware-features
         Diagnostic,
