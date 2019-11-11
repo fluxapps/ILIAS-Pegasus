@@ -16,7 +16,7 @@
     ,
     "android": {
         "debug": {
-            "packageType": "bundle"
+            "packageType": "apk"
         },
         "release": {
             "packageType": "bundle"

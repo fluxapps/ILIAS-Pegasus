@@ -13,12 +13,12 @@
       "packageType": "app-store"
     }
   },
-  "android": {
-      "debug": {
-          "packageType": "bundle"
-      },
-      "release": {
-          "packageType": "bundle"
-      }
-  }
+    "android": {
+        "debug": {
+            "packageType": "apk"
+        },
+        "release": {
+            "packageType": "bundle"
+        }
+    }
 }
