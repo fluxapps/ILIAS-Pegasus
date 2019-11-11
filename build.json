@@ -12,5 +12,13 @@
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "app-store"
     }
+  },
+  "android": {
+      "debug": {
+          "packageType": "bundle"
+      },
+      "release": {
+          "packageType": "bundle"
+      }
   }
 }
