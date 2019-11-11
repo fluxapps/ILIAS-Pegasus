@@ -42,7 +42,7 @@
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "cordova-android": "8.1.0",
+    "cordova-android": "^8.1.0",
     "cordova-android-support-gradle-release": "^3.0.1",
     "cordova-ios": "5.0.1",
     "cordova-plugin-advanced-http": "^2.2.0",
@@ -180,8 +180,8 @@
       }
     },
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }
