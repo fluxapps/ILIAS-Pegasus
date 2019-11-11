@@ -2,9 +2,8 @@
 import {NavController} from "@ionic/angular";
 /** misc */
 import {ILIASObject} from "../models/ilias-object";
-import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
 import {ObjectListPage} from "../pages/object-list/object-list";
-import {ActivatedRoute} from "@angular/router";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
 
 export class ShowObjectListPageAction extends ILIASObjectAction {
 
@@ -16,18 +15,15 @@ export class ShowObjectListPageAction extends ILIASObjectAction {
         super();
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
         ObjectListPage.setNavChild(this.object);
-        return new Promise((resolve, reject) => {
-            const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
-            const depth: number = ObjectListPage.nav.depth+1;
-            this.navCtrl.navigateForward(`tabs/${tab}/${depth}`)
-                .then(() => resolve(new ILIASObjectActionNoMessage()))
-                .catch(reject)
-        });
+        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
+        const depth: number = ObjectListPage.nav.depth+1;
+        await this.navCtrl.navigateForward(`tabs/${tab}/${depth}`);
+        return new ILIASObjectActionNoMessage();
     }
 
-    alert(): ILIASObjectActionAlert|any {
+    alert(): ILIASObjectActionAlert | undefined {
         return undefined;
     }
 }

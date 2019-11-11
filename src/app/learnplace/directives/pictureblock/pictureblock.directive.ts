@@ -1,11 +1,12 @@
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {PictureBlockModel} from "../../services/block.model";
-import {Platform} from "@ionic/angular";
-import {File} from "@ionic-native/file/ngx";
-import {PhotoViewer, PhotoViewerOptions} from "@ionic-native/photo-viewer/ngx";
+import {Component, Inject, Input, OnInit} from "@angular/core";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {File} from "@ionic-native/file/ngx";
+import {Platform} from "@ionic/angular";
+import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
+import {PictureBlockModel} from "../../services/block.model";
+import {WebView} from "@ionic-native/ionic-webview/ngx";
 
 @Component({
     selector: "picture-block",
@@ -23,26 +24,28 @@ export class PictureBlock implements OnInit {
     constructor(
         private readonly platform: Platform,
         private readonly file: File,
-        private readonly photoViewer: PhotoViewer,
-        private readonly sanitizer: DomSanitizer
+        @Inject(FILESYSTEM_TOKEN) private readonly filesystem: Filesystem,
+        private readonly sanitizer: DomSanitizer,
+        private readonly webview: WebView
     ) {
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
 
-        const fileName: string = this.pictureBlock.thumbnail.split("/").pop();
-        const path: string = this.pictureBlock.thumbnail.replace(fileName, "");
-
-        this.file.readAsDataURL(`${this.getStorageLocation()}${path}`, fileName).then(data => {
-            this.embeddedSrc = this.sanitizer.bypassSecurityTrustUrl(data);
-        }).catch(error => {
+        try {
+            const fileName: string = this.pictureBlock.thumbnail.split("/").pop();
+            const path: string = this.pictureBlock.thumbnail.replace(fileName, "");
+            let url: string = (await this.file.resolveLocalFilesystemUrl(`${this.getStorageLocation()}${path}/${fileName}`)).toURL();
+            url = this.webview.convertFileSrc(url);
+            this.embeddedSrc = this.sanitizer.bypassSecurityTrustUrl(url);
+        } catch (error) {
             this.log.warn(() => `Could not load thumbnail: url: ${this.pictureBlock.thumbnail}`);
             this.log.debug(() => `Thumbnail load error: ${JSON.stringify(error)}`);
-        });
+        }
     }
 
-    show(): void {
-        this.photoViewer.show(`${this.getStorageLocation()}${this.pictureBlock.url}`, this.pictureBlock.title, <PhotoViewerOptions>{share: false});
+    async show(): Promise<void> {
+        await this.filesystem.open(this.pictureBlock.url);
     }
 
     private getStorageLocation(): string {

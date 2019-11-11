@@ -1,4 +1,4 @@
-import { OnboardingPageModule } from './pages/onboarding/onboarding.module';
+import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
 import {AppComponent} from "./app.component";
 /** angular */
 import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
@@ -14,12 +14,9 @@ import {File} from "@ionic-native/file/ngx";
 import {HTTP} from "@ionic-native/http/ngx";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {Network} from "@ionic-native/network/ngx";
-import {PhotoViewer} from "@ionic-native/photo-viewer/ngx";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import {SQLite} from "@ionic-native/sqlite/ngx";
 import {StatusBar} from "@ionic-native/status-bar/ngx";
-import {StreamingMedia} from "@ionic-native/streaming-media/ngx";
-import {Toast} from "@ionic-native/toast/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
@@ -43,6 +40,7 @@ import {GeolocationModule} from "./services/device/geolocation/geolocation.modul
 import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.util";
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
 import {FileService} from "./services/file.service";
+import {FilesystemModule} from "./services/filesystem/filesystem.module";
 import {FooterToolbarService} from "./services/footer-toolbar.service";
 import {PegasusMissingTranslationHandler} from "./services/language/translation-missing-handler";
 import {DEFAULT_LINK_BUILDER, DefaultLinkBuilder, DefaultLinkBuilderImpl} from "./services/link/default.builder";
@@ -121,6 +119,8 @@ import {
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
+// import {OnboardingPageModule} from "./pages/onboarding/onboarding.module"
+import { WebView } from "@ionic-native/ionic-webview/ngx";
 
 @NgModule({
     declarations: [
@@ -160,6 +160,7 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         IonicModule.forRoot(),
         AppRoutingModule,
         GeolocationModule,
+        FilesystemModule,
         OnboardingPageModule,
         TranslateModule.forRoot({
             loader: {
@@ -428,12 +429,10 @@ import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./ac
         File,
         Network,
         SQLite,
-        Toast,
         PegasusHttpClient,
         SplashScreen,
-        PhotoViewer,
-        StreamingMedia,
         HTTP,
+        WebView,
 
         // from src/services/device/hardware-features
         Diagnostic,

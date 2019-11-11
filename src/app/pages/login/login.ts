@@ -1,23 +1,21 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {AlertController, Events, Platform} from "@ionic/angular";
 /** ionic-native */
-import {Toast} from "@ionic-native/toast/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {InAppBrowserObject} from "@ionic-native/in-app-browser/ngx";
+import {AlertController, Events, Platform} from "@ionic/angular";
+import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
+import {Settings} from "../../models/settings";
 /** models */
 import {User} from "../../models/user";
-import {Settings} from "../../models/settings";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 /** logging */
 import {Log} from "../../services/log.service";
 /** misc */
 import {SynchronizationService} from "../../services/synchronization.service";
-import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 
 @Component({
-    templateUrl: "login.html",
-    providers: [Toast]
+    templateUrl: "login.html"
 })
 export class LoginPage {
 
@@ -32,7 +30,6 @@ export class LoginPage {
     constructor(private readonly platform: Platform,
                 private readonly sync: SynchronizationService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ILIASConfigProvider,
-                private readonly toast: Toast,
                 private readonly event: Events,
                 private readonly appVersionPlugin: AppVersion,
                 private readonly auth: AuthenticationProvider,

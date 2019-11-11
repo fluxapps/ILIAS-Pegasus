@@ -564,8 +564,8 @@ export class ILIASObject extends ActiveRecord {
     }
 
     static findByUserId(userId: number): Promise<Array<ILIASObject>> {
-        const sql = "SELECT * FROM objects WHERE userId = ?";
-        const parameters = [userId];
+        const sql: string = "SELECT * FROM objects WHERE userId = ?";
+        const parameters: Array<number> = [userId];
         return ILIASObject.queryDatabase(sql, parameters);
     }
 
@@ -573,9 +573,9 @@ export class ILIASObject extends ActiveRecord {
      * returns 0 for crs, 1 for grp, 2 for fold, 3 for file and 9999 for all the rest.
      * @returns {number}
      */
-    getOrderByType() {
+    getOrderByType(): number {
         const lastPlace: number = 9999;
-        const a = this.order[this.type];
+        const a: number = this.order[this.type];
         return a ? a : lastPlace;
     }
 
@@ -600,9 +600,9 @@ export class ILIASObject extends ActiveRecord {
     /**
      * Deletes the object from the database
      * Note: delete is a reserved word ;)
-     * @returns {Promise<any>}
+     * @returns {Promise<object>}
      */
-    destroy(): Promise<{}> {
+    destroy(): Promise<object> {
         return super.destroy();
     }
 }

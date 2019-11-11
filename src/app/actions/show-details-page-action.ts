@@ -11,19 +11,14 @@ export class ShowDetailsPageAction extends ILIASObjectAction {
         super();
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        return new Promise((resolve, reject) => {
-            ObjectListPage.setNavDetailsObject(this.object);
-            const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
-            this.nav.navigateForward(`tabs/${tab}/details`).then(() => {
-                resolve(new ILIASObjectActionNoMessage());
-            }).catch(error => {
-                reject(error);
-            });
-        });
+    async execute(): Promise<ILIASObjectActionResult> {
+        ObjectListPage.setNavDetailsObject(this.object);
+        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
+        await this.nav.navigateForward(`tabs/${tab}/details`);
+        return new ILIASObjectActionNoMessage();
     }
 
-    alert(): ILIASObjectActionAlert|any {
+    alert(): ILIASObjectActionAlert | undefined {
         return undefined;
     }
 }

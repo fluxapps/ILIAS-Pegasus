@@ -27,8 +27,8 @@ export class MarkAsFavoriteAction extends ILIASObjectAction {
         return Promise.resolve(new ILIASObjectActionNoMessage());
     }
 
-    alert(): ILIASObjectActionAlert|any {
-        return null;
+    alert(): ILIASObjectActionAlert | undefined {
+        return undefined;
     }
 
 }

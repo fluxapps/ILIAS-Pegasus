@@ -9,9 +9,9 @@ export class RemoveLocalFilesAction extends ILIASObjectAction {
         super();
     }
 
-    execute(): Promise<ILIASObjectActionResult> {
-        return this.file.removeRecursive(this.containerObject)
-            .then(() => new ILIASObjectActionSuccess(this.translate.instant("actions.removed_local_files")));
+    async execute(): Promise<ILIASObjectActionResult> {
+        await this.file.removeRecursive(this.containerObject);
+        return new ILIASObjectActionSuccess(this.translate.instant("actions.removed_local_files"));
     }
 
     alert(): ILIASObjectActionAlert {

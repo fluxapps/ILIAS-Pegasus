@@ -25,18 +25,14 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         private readonly modal: ModalController
     ) { super() }
 
-    execute(): Promise<ILIASObjectActionResult> {
+    async execute(): Promise<ILIASObjectActionResult> {
+        const ilasLink: string = await this.target.build();
 
-        return (async(): Promise<ILIASObjectActionResult> => {
+        if(this.platform.is("android"))   this.openUserDialog(() => this.openBrowserAndroid(ilasLink));
+        else  if(this.platform.is("ios")) this.openUserDialog(() => this.openBrowserIos(ilasLink));
+        else throw new IllegalStateError("Unsupported platform, unable to open browser for unsupported platform.");
 
-            const ilasLink: string = await this.target.build();
-
-            if(this.platform.is("android"))   this.openUserDialog(() => this.openBrowserAndroid(ilasLink));
-            else  if(this.platform.is("ios")) this.openUserDialog(() => this.openBrowserIos(ilasLink));
-            else throw new IllegalStateError("Unsupported platform, unable to open browser for unsupported platform.");
-
-            return new ILIASObjectActionNoMessage();
-        })();
+        return new ILIASObjectActionNoMessage();
     }
 
     private openUserDialog(leaveAction: LeaveAppAction): void {
