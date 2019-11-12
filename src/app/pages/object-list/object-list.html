@@ -82,19 +82,19 @@
                                 <ion-col size="1" justify-content-end>
                                     <ion-buttons mode="ios">
                                         <ion-button mode="ios" color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
-                                            <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="primary"></ion-icon>
+                                            <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="secondary"></ion-icon>
                                         </ion-button>
                                         <ion-button mode="ios" color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
-                                            <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="primary"></ion-icon>
+                                            <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="secondary"></ion-icon>
                                         </ion-button>
                                         <ion-button mode="ios" color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
-                                            <ion-icon slot="icon-only" name="md-download" color="primary"></ion-icon>
+                                            <ion-icon slot="icon-only" name="md-download" color="secondary"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-button mode="ios" color="transparent"  (click)="showActions(object);$event.stopPropagation();">
-                                        <ion-icon button="true" slot="icon-only" name="md-more" color="primary"></ion-icon>
+                                        <ion-icon button="true" slot="icon-only" name="md-more" color="secondary"></ion-icon>
                                     </ion-button>
                                 </ion-col>
                             </ion-row>
