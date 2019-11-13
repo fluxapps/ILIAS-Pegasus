@@ -8,7 +8,7 @@
     },
     "release": {
       "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "ILIAS offline Distribution",
+      "provisioningProfile": "4a16ac21-f3be-415f-bb34-6db8a0d86a8b",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "app-store"
     }
