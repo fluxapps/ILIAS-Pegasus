@@ -134,7 +134,8 @@
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
     "typescript": "^3.5.3",
-    "uglifyjs-webpack-plugin": "^2.2.0"
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "xml-js": "^1.6.11"
   },
   "description": "ILIAS-Pegasus",
   "cordovaPlugins": [
