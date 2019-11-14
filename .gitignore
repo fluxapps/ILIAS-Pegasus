@@ -30,7 +30,7 @@ out-tsc/
 e2e/
 tmp/
 temp/
-hooks/
+./hooks/
 platforms/
 plugins/
 plugins/android.json
