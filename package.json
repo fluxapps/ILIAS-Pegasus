@@ -3,6 +3,7 @@
   "author": "studer-raimann ag",
   "homepage": "https://studer-raimann.ch/",
   "private": true,
+  "version": "4.0.0",
   "scripts": {
     "start": "ionic cordova emulate",
     "build:release:ios": "NODE_OPTIONS=--max_old_space_size=4096 ionic cordova build ios --release --prod --device",
@@ -13,8 +14,8 @@
     "test": "npm run tslint && npm run karma:singlerun",
     "setbrand": "node ./branding/set_brand.js",
     "postinstall": "node ./tools/patch-platform-android9.js",
-    "ionic:build:before": "node ./tools/update-angular-environment.js",
-    "ionic:serve:before": "node ./tools/update-angular-environment.js"
+    "ionic:build:before": "node ./tools/hooks/ionicBuildBefore.js",
+    "ionic:serve:before": "node ./tools/hooks/ionicServeBefore.js"
   },
   "dependencies": {
     "@angular/animations": "^8.2.13",
