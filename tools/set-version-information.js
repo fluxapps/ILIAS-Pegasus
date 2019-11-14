@@ -1,12 +1,7 @@
 const package = require("../package.json");
-const os = require("os");
-const { exec } = require("child_process");
-const path = require("path");
-const { existsSync } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 const colors = require("colors");
-
-const IOS_PLATFORM_PATH = path.join(process.cwd(), "platforms", "ios");
-const ANDROID_PLATFORM_PATH = path.join(process.cwd(), "platforms", "android");
+const { js2xml, xml2js } = require("xml-js");
 
 const BUILD_NUMBER_PATTERN = /^\d+(\.\d+){0,2}$/.compile();
 
@@ -36,22 +31,6 @@ function fetchBuildNumber() {
     return buildNumber;
 }
 
-
-async function startAndAwaitProcess(command, cwd) {
-    return new Promise((resolve, reject) => {
-        const proc = exec(command, {
-            cwd
-        });
-        const resolveHandler = (exitCode, signal) => resolve({exitCode, signal});
-        proc.once("exit", resolveHandler);
-        proc.once("error", (error) => {
-            proc.off("exit", resolveHandler);
-            console.error(colors.red(`Command "${command}" failed.`), error);
-            reject(error);
-        });
-    });
-}
-
 function generateAndroidVersionCode() {
     let revision = fetchBuildNumber().replace(/^.*?\./, "");
     if (revision.length > 2) {
@@ -72,23 +51,21 @@ function generateAndroidVersionCode() {
 }
 
 async function setAppVersions() {
-    if (os.platform() === "darwin" && existsSync(IOS_PLATFORM_PATH)) {
-        await startAndAwaitProcess(`xcrun agvtool new-marketing-version ${package.version}`, IOS_PLATFORM_PATH);
-        console.log(colors.blue(`Set iOS short version to ${package.version}`));
+    // increment the version for cordova
+    const cordovaConfig = "config.xml";
+    const configJson = xml2js(readFileSync(cordovaConfig).toString());
+    configJson.elements[0].attributes["version"] = package.version;
+    console.log(colors.blue(`Set App version to ${package.version}`));
 
-        const buildNumber = fetchBuildNumber();
-        await startAndAwaitProcess(`xcrun agvtool new-version ${buildNumber}`, IOS_PLATFORM_PATH);
-        console.log(colors.blue(`Set iOS build version to ${buildNumber}`));
-    }
+    const buildNumber = fetchBuildNumber();
+    const androidVersionCode = generateAndroidVersionCode();
+    configJson.elements[0].attributes["ios-CFBundleVersion"] = buildNumber;
+    console.log(colors.blue(`Set iOS build version to ${buildNumber}`));
+    configJson.elements[0].attributes["android-versionCode"] = androidVersionCode;
+    console.log(colors.blue(`Set Android version code to ${androidVersionCode}`));
 
-    if (existsSync(ANDROID_PLATFORM_PATH)) {
-        // Set version code for android builds
-        const androidVersionCode = generateAndroidVersionCode();
-        process.env["ORG_GRADLE_PROJECT_cdvVersionCode"] = androidVersionCode;
-        console.log(colors.blue(`Set Android version code to ${androidVersionCode}`));
-        process.env["ORG_GRADLE_PROJECT_cdvVersionName"] = package.version;
-        console.log(colors.blue(`Set Android version name to ${package.version}`));
-    }
+    const configXml = js2xml(configJson, { compact: false, spaces: 4 });
+    writeFileSync(cordovaConfig, configXml);
 }
 
 setAppVersions();
