@@ -1,4 +1,8 @@
 {
-  "ilias_installation_ids": [10],
-  "condig_id": "ch.studerraimann.ilias.iq"
+  "ilias_installation_ids": [1,2,3,4,5,6,12,22,7,14],
+  "projectConfig": {
+    "id": "ch.studerraimann.ilias.offline",
+    "name": "Lernwelt",
+    "description": "Download, sync and store ILIAS-files on your device"
+  }
 }
