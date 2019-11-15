@@ -6,7 +6,7 @@ import {
 import {LearnplaceLoader} from "../services/loader/learnplace";
 import {NavController, ModalController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
-import {LearnplaceTabsPage} from "../pages/learnplace-tabs/learnplace-tabs.component";
+import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -32,12 +32,12 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         await loadingPage.present();
         try {
             await this.loader.load(this.learnplaceObjectId);
-            LearnplaceTabsPage.setNavParams(this.learnplaceObjectId, this.learnplaceName);
+            LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
+            LearnplaceNavParams.learnplaceName = this.learnplaceName;
             await this.navCtrl.navigateForward("learnplace");
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
-        }
-        catch (error) {
+        } catch (error) {
             await loadingPage.dismiss();
             throw error;
         }

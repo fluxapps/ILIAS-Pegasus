@@ -26,7 +26,8 @@ import {Logging} from "../../services/logging/logging.service";
 import {ILIASObject} from "../../models/ilias-object";
 import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
-import {ObjectListPage} from "../object-list/object-list";
+import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
+import {ObjectListNavParams} from "../object-list/object-list.nav-params";
 
 @Component({
     selector: "page-object-details",
@@ -59,7 +60,7 @@ export class ObjectDetailsPage {
                 @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) { }
 
     ionViewWillEnter(): void {
-        this.object = ObjectListPage.nav.details;
+        this.object = ObjectListNavParams.details;
         this.loadAvailableActions();
         this.loadObjectDetails();
     }
@@ -124,7 +125,7 @@ export class ObjectDetailsPage {
     }
 
     private loadObjectDetails(): void {
-        this.object.presenter.details().then(details => {
+        ILIASObjectPresenterFactory.instance(this.object).details().then(details => {
             Log.describe(this, "Details are displayed: ", details);
             this.details = details;
         });

@@ -4,9 +4,6 @@ import {User} from "./user";
 /** services */
 import {SQLiteDatabaseService} from "../services/database.service";
 import {FileService} from "../services/file.service";
-/** presenters */
-import {ILIASObjectPresenter} from "../presenters/object-presenter";
-import {ILIASObjectPresenterFactory} from "../presenters/presenter-factory";
 /** logging */
 import {Log} from "../services/log.service";
 
@@ -122,8 +119,6 @@ export class ILIASObject extends ActiveRecord {
     createdAt: string;
     updatedAt: string;
 
-    protected _presenter: ILIASObjectPresenter;
-
     constructor(id: number = 0) {
         super(id, new SQLiteConnector("objects", [
             "userId",
@@ -225,17 +220,6 @@ export class ILIASObject extends ActiveRecord {
 
     isLearnplace(): boolean {
       return this.type == "xsrl";
-    }
-
-    /**
-     * @returns {ILIASObjectPresenter}
-     */
-    get presenter(): ILIASObjectPresenter {
-        if (!this._presenter) {
-            this._presenter = ILIASObjectPresenterFactory.instance(this);
-        }
-
-        return this._presenter;
     }
 
     /**

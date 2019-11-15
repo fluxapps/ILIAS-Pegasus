@@ -34,14 +34,9 @@ import {Exception} from "../../exceptions/Exception";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
-
-// used for navigation from one container into another one
-interface ContentNavParams {
-    favorites: boolean,
-    depth: number,
-    child: ILIASObject,
-    details: ILIASObject
-}
+import {ObjectListNavParams} from "./object-list.nav-params";
+import {ILIASObjectPresenter} from "../../presenters/object-presenter";
+import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -59,13 +54,6 @@ interface PageState {
     templateUrl: "object-list.html",
 })
 export class ObjectListPage {
-    static readonly nav: ContentNavParams = {
-        favorites: undefined,
-        depth: undefined,
-        child: undefined,
-        details: undefined
-    };
-
     state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -78,7 +66,7 @@ export class ObjectListPage {
 
     pageTitle: string;
     parent: ILIASObject;
-    private content: Array<ILIASObject> = [];
+    private content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
 
     private pageLayout: PageLayout;
     private timeline: TimeLine;
@@ -111,26 +99,12 @@ export class ObjectListPage {
      * = = = = = = = */
 
     /**
-     * setting the container whose content will be displayed
-     */
-    static setNavChild(child: ILIASObject): void {
-        ObjectListPage.nav.child = child;
-    }
-
-    /**
-     * sets the object whose details will be displayed
-     */
-    static setNavDetailsObject(object: ILIASObject): void {
-        ObjectListPage.nav.details = object;
-    }
-
-    /**
      * changes displayed container to its parent
      */
     static async navigateBackInHierarchy(navCtrl: NavController): Promise<void> {
-        ObjectListPage.nav.child = await ObjectListPage.nav.child.parent;
-        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
-        const depth: number = ObjectListPage.nav.depth-1;
+        ObjectListNavParams.child = await ObjectListNavParams.child.parent;
+        const tab: string = ObjectListNavParams.favorites ? "favorites" : "content";
+        const depth: number = ObjectListNavParams.depth-1;
         await navCtrl.navigateBack(`tabs/${tab}/${depth}`);
     }
 
@@ -138,8 +112,8 @@ export class ObjectListPage {
      * navigates back to last page in object-list
      */
     static async navigateBackToObjectList(navCtrl: NavController): Promise<void> {
-        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
-        const depth: number = ObjectListPage.nav.depth;
+        const tab: string = ObjectListNavParams.favorites ? "favorites" : "content";
+        const depth: number = ObjectListNavParams.depth;
         await navCtrl.navigateBack(`tabs/${tab}/${depth}`);
     }
 
@@ -157,9 +131,9 @@ export class ObjectListPage {
         const url: string = this.router.url;
         const params: ParamMap = this.route.snapshot.paramMap;
 
-        ObjectListPage.nav.depth = parseInt(params.get("depth"), 10);
-        ObjectListPage.nav.favorites = Boolean(url.match(/favorites/));
-        if(!ObjectListPage.nav.depth) ObjectListPage.nav.child = undefined;
+        ObjectListNavParams.depth = parseInt(params.get("depth"), 10);
+        ObjectListNavParams.favorites = Boolean(url.match(/favorites/));
+        if(!ObjectListNavParams.depth) ObjectListNavParams.child = undefined;
     }
 
     /* = = = = = = = *
@@ -171,7 +145,7 @@ export class ObjectListPage {
      */
     private setPageAttributes(): void {
         this.content = [];
-        this.parent = ObjectListPage.nav.child;
+        this.parent = ObjectListNavParams.child;
 
         if(this.parent) {
             this.pageTitle = this.parent.title;
@@ -179,7 +153,7 @@ export class ObjectListPage {
             this.timeline = new TimeLine(this.parent.type);
         } else {
             this.pageTitle = "";
-            this.translate.get((ObjectListPage.nav.favorites) ? "favorites.title" : "object-list.title").subscribe((lng) => this.pageTitle = lng);
+            this.translate.get((ObjectListNavParams.favorites) ? "favorites.title" : "object-list.title").subscribe((lng) => this.pageTitle = lng);
             this.pageLayout = new PageLayout();
             this.timeline = new TimeLine();
         }
@@ -199,7 +173,7 @@ export class ObjectListPage {
      */
     updatePageState(renderView: boolean = true): void {
         function updateFn(page: ObjectListPage): void {
-            page.state.favorites = ObjectListPage.nav.favorites;
+            page.state.favorites = ObjectListNavParams.favorites;
             page.state.online = window.navigator.onLine;
             page.state.loadingLive = SynchronizationService.state.liveLoading;
             page.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
@@ -250,7 +224,7 @@ export class ObjectListPage {
         }
 
         // execute sync
-        if(ObjectListPage.nav.favorites) {
+        if(ObjectListNavParams.favorites) {
             // wait for offline sync
             await this.waitForOfflineSync();
             if(this.state.online && event) await this.sync.loadAllOfflineContent();
@@ -285,7 +259,7 @@ export class ObjectListPage {
      * loads available content without synchronization and user-feedback
      */
     async refreshContent(): Promise<void> {
-        if(ObjectListPage.nav.favorites) await this.setLoadedFavorites();
+        if(ObjectListNavParams.favorites) await this.setLoadedFavorites();
         else await this.setLiveLoadedContent(this.parent === undefined);
         this.updatePageState();
     }
@@ -305,17 +279,19 @@ export class ObjectListPage {
      */
     private async setLiveLoadedContent(isDesktopObject: boolean): Promise<void> {
         const user: User = AuthenticationProvider.getUser();
-        const content: Array<ILIASObject> = (isDesktopObject) ?
+        const loaded: Array<ILIASObject> = (isDesktopObject) ?
             await DesktopItem.findByUserId(user.id) :
             await ILIASObject.findByParentRefId(this.parent.refId, user.id);
-        this.sortAndSetObjectList(content);
+        this.sortAndSetObjectList(loaded);
     }
 
     /**
-     * sort the given array of ILIAS-objects and reference them in th content-variable
+     * sort the given array of ILIAS-objects and set the content-variable
      */
-    private sortAndSetObjectList(content: Array<ILIASObject>): void {
-        content.sort(ILIASObject.compare);
+    private sortAndSetObjectList(ilObjects: Array<ILIASObject>): void {
+        ilObjects.sort(ILIASObject.compare);
+        const content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
+        ilObjects.forEach(o => content.push({object: o, presenter: ILIASObjectPresenterFactory.instance(o)}));
         this.content = content;
     }
 

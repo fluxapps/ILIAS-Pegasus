@@ -1,7 +1,6 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Settings} from "./settings";
-import {ILIASObject} from "./ilias-object";
 
 export class User extends ActiveRecord {
 
@@ -163,25 +162,10 @@ export class User extends ActiveRecord {
     /**
      * Deletes the object from the database
      * Note: delete is a reserved word ;)
-     * @returns {Promise<any>}
+     * @returns {Promise<object>}
      */
-    destroy(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const promises = [];
-            ILIASObject.findByUserId(this.id).then(objects => {
-                objects.forEach(object => {
-                    promises.push(object.destroy());
-                });
-            });
-
-            promises.push(super.destroy());
-
-            Promise.all(promises).then(() => {
-                resolve();
-            }).catch(error => {
-                reject(error);
-            });
-        });
+    destroy(): Promise<object> {
+        return super.destroy();
     }
 
     /**

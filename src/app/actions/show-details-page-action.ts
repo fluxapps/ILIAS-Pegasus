@@ -3,18 +3,22 @@ import {NavController} from "@ionic/angular";
 /** misc */
 import {ILIASObject} from "../models/ilias-object";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
-import {ObjectListPage} from "../pages/object-list/object-list";
+import {ObjectListNavParams} from "../pages/object-list/object-list.nav-params";
 
 export class ShowDetailsPageAction extends ILIASObjectAction {
 
-    constructor(public title: string, public object: ILIASObject, public nav: NavController) {
+    constructor(
+        public title: string,
+        public object: ILIASObject,
+        public navCtrl: NavController
+    ) {
         super();
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
-        ObjectListPage.setNavDetailsObject(this.object);
-        const tab: string = ObjectListPage.nav.favorites ? "favorites" : "content";
-        await this.nav.navigateForward(`tabs/${tab}/details`);
+        ObjectListNavParams.details = this.object;
+        const tab: string = ObjectListNavParams.favorites ? "favorites" : "content";
+        await this.navCtrl.navigateForward(`tabs/${tab}/details`);
         return new ILIASObjectActionNoMessage();
     }
 

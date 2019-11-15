@@ -46,7 +46,7 @@ export class FileObjectPresenter extends GenericILIASObjectPresenter {
         return this.fileReady() && !this.iliasObject.needsDownload;
     }
 
-    protected getFormattedSize() {
+    protected getFormattedSize(): string {
         return (this.iliasObject.data.hasOwnProperty("fileSize")) ? ILIASAppUtils.formatSize(this.iliasObject.data.fileSize) : "";
     }
 }

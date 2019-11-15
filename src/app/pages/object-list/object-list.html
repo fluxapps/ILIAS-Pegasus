@@ -64,36 +64,36 @@
                             </ion-card-content>
                         </ion-card>
                     </div>
-                        <ion-card   class="ion-margin-horizontal"  button="true" *ngFor="let object of content" (click)="onClick(object)">
+                        <ion-card   class="ion-margin-horizontal"  button="true" *ngFor="let entry of content" (click)="onClick(entry.object)">
                             <ion-row align-items-center>
                                 <ion-col size="2">
-                                    <img class="object-presenter-icon" [src]="object.presenter.icon()">
-                                    <ion-badge *ngIf="object.isLinked()" color="nobg-w" class="badge-link">
+                                    <img class="object-presenter-icon" [src]="entry.presenter.icon()">
+                                    <ion-badge *ngIf="entry.object.isLinked()" color="nobg-w" class="badge-link">
                                         <img src="assets/icon/obj_link.svg" class="badge-logo">
                                     </ion-badge>
                                 </ion-col>
                                 <ion-col size="7">
                                     <ion-card-content >
-                                        <span *ngIf="object.presenter.showTypeAsText()">{{ object.presenter.typeLangVar() | translate:[] }}:</span>
-                                        {{ object.presenter.title() }} 
-                                        <span *ngIf="!object.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+                                        <span *ngIf="entry.presenter.showTypeAsText()">{{ entry.presenter.typeLangVar() | translate:[] }}:</span>
+                                        {{ entry.presenter.title() }}
+                                        <span *ngIf="!entry.presenter.title()">{{ 'no_title' | translate:[] }}</span>
                                     </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
                                     <ion-buttons mode="ios">
-                                        <ion-button mode="ios" color="transparent"  *ngIf="!object.isFavorite" (click)="executeSetFavoriteValueAction(object, true);$event.stopPropagation();">
+                                        <ion-button mode="ios" color="transparent"  *ngIf="!entry.object.isFavorite" (click)="executeSetFavoriteValueAction(entry.object, true);$event.stopPropagation();">
                                             <ion-icon button="true" slot="icon-only" src="./assets/icon/favorites-outline.svg" color="secondary"></ion-icon>
                                         </ion-button>
-                                        <ion-button mode="ios" color="transparent" *ngIf="object.isFavorite === 1" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation();">
+                                        <ion-button mode="ios" color="transparent" *ngIf="entry.object.isFavorite === 1" (click)="executeSetFavoriteValueAction(entry.object, false);$event.stopPropagation();">
                                             <ion-icon slot="icon-only" src="./assets/icon/favorites.svg" color="secondary"></ion-icon>
                                         </ion-button>
-                                        <ion-button mode="ios" color="transparent"  *ngIf="object.isFavorite === 2" (click)="executeSetFavoriteValueAction(object, false);$event.stopPropagation()">
+                                        <ion-button mode="ios" color="transparent"  *ngIf="entry.object.isFavorite === 2" (click)="executeSetFavoriteValueAction(entry.object, false);$event.stopPropagation()">
                                             <ion-icon slot="icon-only" name="md-download" color="secondary"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
                                 </ion-col>
                                 <ion-col size="1" justify-content-end>
-                                    <ion-button mode="ios" color="transparent"  (click)="showActions(object);$event.stopPropagation();">
+                                    <ion-button mode="ios" color="transparent"  (click)="showActions(entry.object);$event.stopPropagation();">
                                         <ion-icon button="true" slot="icon-only" name="md-more" color="secondary"></ion-icon>
                                     </ion-button>
                                 </ion-col>

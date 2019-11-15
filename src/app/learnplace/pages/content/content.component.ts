@@ -4,7 +4,7 @@ import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
 import {AlertController} from "@ionic/angular";
 import {TranslateService} from "@ngx-translate/core";
 import {Observable} from "rxjs/Observable";
-import {LearnplaceTabsPage} from "../learnplace-tabs/learnplace-tabs.component";
+import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     templateUrl: "content.html"
@@ -23,8 +23,8 @@ export class ContentPage implements OnDestroy {
     ) { }
 
     ionViewWillEnter(): void {
-        this.learnplaceId = LearnplaceTabsPage.mapPageParams.learnplaceObjectId;
-        this.title = LearnplaceTabsPage.mapPageParams.learnplaceName;
+        this.learnplaceId = LearnplaceNavParams.learnplaceObjectId;
+        this.title = LearnplaceNavParams.learnplaceName;
 
         // we detect property changes, when a block list is emitted to update the UI with the new block list
         this.blockList = this.blockService.getBlockList(this.learnplaceId).do(_ => this.detectorRef.detectChanges());
@@ -33,9 +33,4 @@ export class ContentPage implements OnDestroy {
     ngOnDestroy(): void {
         this.blockService.shutdown();
     }
-}
-
-export interface ContentPageParams {
-    readonly learnplaceId: number;
-    readonly learnplaceName: string;
 }

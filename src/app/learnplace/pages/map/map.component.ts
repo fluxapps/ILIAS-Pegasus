@@ -7,7 +7,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Subscription} from "rxjs/Subscription";
-import {LearnplaceTabsPage} from "../learnplace-tabs/learnplace-tabs.component";
+import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     selector: "map",
@@ -34,8 +34,8 @@ export class MapPage implements OnDestroy {
     ) { }
 
     ionViewWillEnter(): void {
-        this.learnplaceObjectId = LearnplaceTabsPage.mapPageParams.learnplaceObjectId;
-        this.title = LearnplaceTabsPage.mapPageParams.learnplaceName;
+        this.learnplaceObjectId = LearnplaceNavParams.learnplaceObjectId;
+        this.title = LearnplaceNavParams.learnplaceName;
         console.log(this.learnplaceObjectId);
         this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
             .subscribe({
@@ -88,9 +88,4 @@ export class MapPage implements OnDestroy {
                 .build();
         }
     }
-}
-
-export interface MapPageParams {
-    readonly learnplaceObjectId: number;
-    readonly learnplaceName: string;
 }

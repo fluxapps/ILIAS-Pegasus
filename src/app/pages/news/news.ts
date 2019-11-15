@@ -21,6 +21,7 @@ import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticateError} from "../../providers/http";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 
 /**
  * Generated class for the NewsComponent component.
@@ -32,8 +33,8 @@ import {AuthenticationProvider} from "../../providers/authentification/authentic
     selector: "newsPresenters",
     templateUrl: "news.html"
 })
-export class NewsPage 
-// implements OnInit 
+export class NewsPage
+// implements OnInit
 {
 
     newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
@@ -132,7 +133,8 @@ export class NewsPage
 
     private async fetchPresenterByRefId(refId: number): Promise<ILIASObjectPresenter> {
         const userId: number = AuthenticationProvider.getUser().id;
-        return (await ILIASObject.findByRefId(refId, userId)).presenter;
+        const ilObj: ILIASObject = await ILIASObject.findByRefId(refId, userId);
+        return ILIASObjectPresenterFactory.instance(ilObj);
     }
 
     private async fetchPresenterNewsTuples(): Promise<Array<[NewsItemModel, ILIASObjectPresenter]>> {
