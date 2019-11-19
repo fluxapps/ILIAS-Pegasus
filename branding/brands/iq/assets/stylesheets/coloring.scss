@@ -14,10 +14,19 @@
     // --ion-font-family:  "Raleway", sans-serif;
 
     // Custom Tab Colorr
+    --ion-background-color:       linear-gradient(to top, #017C8E, #AFD0CA);
+    --ion-text-color: white !important;
+    ion-card{
+    border-radius: 0px;
+    border-color: white;
+    border-style: solid;
+    border-width: 3px;
+    color: white;
+    }
 
     ion-tab-button.tab-selected {
         ion-icon, ion-label {
-          color: var(--ion-color-primary) !important;
+          color: var(--ion-color-secondary) !important;
           --ion-color-base: var(--ion-color-primarry) !important;
         }
       }
@@ -125,10 +134,11 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
+      --ion-background-color:       linear-gradient(to bottom, #017C8E, #000000);
   
       --ion-border-color: var(--ion-color-dark-shade);
-      --ion-background-color: var(--ion-color-dark);
-      --ion-background-color-rgb: var(--ion-color-dark-rgb);
+      // --ion-background-color: var(--ion-color-dark);
+      // --ion-background-color-rgb: var(--ion-color-dark-rgb);
       --ion-text-color: var(--ion-color-light);
       --ion-text-color-rgb: var(--ion-color-light-rgb);
   
@@ -154,7 +164,7 @@
 
       //colorr Variables
 
-      --ion-color-primary: #222428;
+      --ion-color-primary: #017C8E;
       --ion-color-primary-rgb: 34,36,40;
       --ion-color-primary-contrast: #ffffff;
       --ion-color-primary-contrast-rgb: 255,255,255;
