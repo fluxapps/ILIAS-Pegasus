@@ -22,8 +22,8 @@
 
       ion-tab-button {
         ion-icon, ion-label {
-          color: var(--ion-color-medium) !important;
-          --ion-color-base: var(--ion-color-medium) !important;
+          color: var(--ion-color-light-grey) !important;
+          --ion-color-base: var(--ion-color-light-grey) !important;
         }
       }
     
@@ -101,6 +101,13 @@
     --ion-color-transparent-shade: #d7d8da;
     --ion-color-transparent-tint: #f5f6f9;
 
+    --ion-color-light-grey: #c4c4c4;
+    --ion-color-light-grey-rgb: 196,196,196;
+    --ion-color-light-grey-contrast: #000000;
+    --ion-color-light-grey-contrast-rgb: 0,0,0;
+    --ion-color-light-grey-shade: #acacac;
+    --ion-color-light-grey-tint: #cacaca;
+
     //tabbar colors
 
     ion-tabs{
@@ -159,6 +166,13 @@
       --ion-color-secondary-shade: #415a7a;
       --ion-color-secondary-tint: #5c7597;
 
+      --ion-color-light-grey: #c4c4c4;
+      --ion-color-light-grey-rgb: 196,196,196;
+      --ion-color-light-grey-contrast: #000000;
+      --ion-color-light-grey-contrast-rgb: 0,0,0;
+      --ion-color-light-grey-shade: #acacac;
+      --ion-color-light-grey-tint: #cacaca;
+
       // --ion-color-medium: #3b3b3b;
       // --ion-color-medium-rgb: 59,59,59;
       // --ion-color-medium-contrast: #ffffff;
@@ -206,6 +220,16 @@ $gradient-col2: #003c66;
   --ion-color-shade: var(--ion-color-transparent-shade);
   --ion-color-tint: var(--ion-color-transparent-tint);
 }
+
+.ion-color-light-grey {
+  --ion-color-base: var(--ion-color-light-grey);
+  --ion-color-base-rgb: var(--ion-color-light-grey-rgb);
+  --ion-color-contrast: var(--ion-color-light-grey-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-light-grey-contrast-rgb);
+  --ion-color-shade: var(--ion-color-light-grey-shade);
+  --ion-color-tint: var(--ion-color-light-grey-tint);
+}
+
 
 // // misc
 
