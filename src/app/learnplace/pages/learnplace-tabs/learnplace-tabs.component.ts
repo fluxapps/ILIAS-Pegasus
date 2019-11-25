@@ -1,16 +1,15 @@
 import {Component, Inject, OnDestroy} from "@angular/core";
-import {ContentPage} from "../content/content.component";
 import {NavController} from "@ionic/angular";
 import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 import {VISIT_JOURNAL_WATCH, VisitJournalWatch} from "../../services/visitjournal.service";
 import {ObjectListPage} from "../../../pages/object-list/object-list";
 import {LearnplaceNavParams} from "./learnplace.nav-params";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
 
 @Component({
     templateUrl: "learnplace-tabs.html",
 })
-export class LearnplaceTabsPage implements OnDestroy {
-    readonly contentPage: object = ContentPage;
+export class LearnplaceTabsPage implements ViewWillEnter, OnDestroy {
 
     title: string;
 

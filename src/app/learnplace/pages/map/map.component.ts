@@ -8,12 +8,13 @@ import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Subscription} from "rxjs/Subscription";
 import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
+import {ViewWillEnter} from "ionic-lifecycle-interface";
 
 @Component({
     selector: "map",
     templateUrl: "map.html"
 })
-export class MapPage implements OnDestroy {
+export class MapPage implements ViewWillEnter, OnDestroy {
 
     @ViewChild("content", {"static": false}) content: IonContent;
 

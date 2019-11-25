@@ -62,6 +62,7 @@
     "cordova.plugins.diagnostic": "^5.0.1",
     "core-js": "^3.3.5",
     "http-status-codes": "^1.4.0",
+    "ionic-lifecycle-interface": "^1.0.7",
     "ionicons": "^4.6.2",
     "jsonschema": "^1.2.4",
     "mapbox-gl": "^1.5.0",

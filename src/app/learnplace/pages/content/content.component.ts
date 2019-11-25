@@ -5,11 +5,12 @@ import {AlertController} from "@ionic/angular";
 import {TranslateService} from "@ngx-translate/core";
 import {Observable} from "rxjs/Observable";
 import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
 
 @Component({
     templateUrl: "content.html"
 })
-export class ContentPage implements OnDestroy {
+export class ContentPage implements ViewWillEnter, OnDestroy {
 
     private learnplaceId: number;
     title: string;
