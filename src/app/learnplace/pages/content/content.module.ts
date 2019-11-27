@@ -23,7 +23,7 @@ import {
 import {BLOCK_SERVICE, VisibilityManagedBlockService} from "../../services/block.service";
 
 const routes: Routes = [
-    {path: "", component: ContentPage}
+    {path: "", component: ContentPage, pathMatch: "full"}
 ];
 
 @NgModule({

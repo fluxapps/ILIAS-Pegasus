@@ -1,8 +1,10 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {AccordionBlockModel} from "../../services/block.model";
+import {AccordionBlockModel, BlockModel} from "../../services/block.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Subscription} from "rxjs/Subscription";
 import {isDefined} from "../../../util/util.function";
+import { Observable } from "rxjs";
+import { shareReplay } from "rxjs/operators";
 
 @Component({
   selector: "accordion-block",
@@ -29,13 +31,16 @@ export class AccordionBlock implements OnInit, OnDestroy {
 
   private accordionSubscription?: Subscription;
 
+  blocks: Observable<Array<BlockModel>>;
+
   constructor(
     private readonly detectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
       this.expanded = this.accordion.expanded;
-      this.accordionSubscription = this.accordion.blocks.subscribe(_ => this.detectorRef.detectChanges())
+      this.blocks = this.accordion.blocks.pipe(shareReplay(1));
+      this.accordionSubscription = this.blocks.subscribe(_ => this.detectorRef.detectChanges())
   }
 
   ngOnDestroy(): void {

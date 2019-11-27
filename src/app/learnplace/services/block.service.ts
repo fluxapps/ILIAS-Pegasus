@@ -17,6 +17,8 @@ import {Observable} from "rxjs/Observable";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
+import { from, combineLatest } from "rxjs";
+import { mergeMap, map, tap } from "rxjs/operators";
 
 /**
  * Describes a service that can provide all block types of a single learnplace.
@@ -85,23 +87,25 @@ export class VisibilityManagedBlockService implements BlockService {
      */
     getBlockList(learnplaceObjectId: number): Observable<Array<BlockModel>> {
 
-        const learnplaceEntity: Observable<LearnplaceEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser())
-            .mergeMap(user => this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, user.get().id))
-            .map(it => it.get())
-            .do(it => this.strategyApplier.setLearnplace(it.id));
+        const learnplaceEntity: Observable<LearnplaceEntity> = from(this.userRepository.findAuthenticatedUser())
+            .pipe(
+                mergeMap(user => this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, user.get().id)),
+                map(it => it.get()),
+                tap(it => this.strategyApplier.setLearnplace(it.id))
+            );
 
-        return learnplaceEntity.mergeMap(it => {
+        return learnplaceEntity.pipe(mergeMap(it => {
 
             this.log.trace(() => `Map blocks of learnplace: id=${it.id}`);
 
-            return Observable.combineLatest<Array<BlockModel>>(
+            return combineLatest<Array<BlockModel>>(Array.of<Observable<BlockModel>>(
                 ...this.mapTextblocks(it.textBlocks),
                 ...this.mapPictureBlocks(it.pictureBlocks),
                 ...this.mapLinkBlocks(it.linkBlocks),
                 ...this.mapVideoBlocks(it.videoBlocks),
-                ...this.mapAccordionBlock(it.accordionBlocks)
-            ).map(it => it.sort((a, b) => a.sequence - b.sequence))
-        });
+                ...this.mapAccordionBlock(it.accordionBlocks))
+            ).pipe(map(it => it.sort((a, b) => a.sequence - b.sequence)))
+        }));
     }
 
     /**

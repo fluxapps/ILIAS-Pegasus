@@ -9,7 +9,7 @@ import {MapPage} from "./map.component";
 import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
-    {path: "", component: MapPage}
+    {path: "", component: MapPage, pathMatch: "full"}
 ];
 
 @NgModule({

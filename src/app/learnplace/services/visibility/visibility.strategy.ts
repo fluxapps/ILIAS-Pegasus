@@ -15,6 +15,8 @@ import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {Observable} from "rxjs/Observable";
 import {Subscriber} from "rxjs/Subscriber";
+import { filter, map, combineLatest, withLatestFrom, takeWhile, mergeMap, tap, finalize, mergeAll, shareReplay } from "rxjs/operators";
+import { from, of, forkJoin, TeardownLogic } from "rxjs";
 
 /**
  * Enumerator for available strategies.
@@ -128,7 +130,7 @@ export class NeverStrategy implements VisibilityStrategy {
      * @return {Observable<T>} an observable for the given {@code object}
      */
     on<T extends VisibilityAware>(object: T): Observable<T> {
-        return Observable.create((subscriber: Subscriber<T>) => {
+        return new Observable((subscriber: Subscriber<T>): TeardownLogic => {
             object.visible = false;
             subscriber.next(object);
             subscriber.complete();
@@ -182,24 +184,37 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
      * @return {Observable<T>} an observable for the given {@code object}
      */
     on<T extends VisibilityAware>(object: T): Observable<T> {
-        return Observable.create(async(subscriber: Subscriber<T>) => {
+        return new Observable((subscriber: Subscriber<T>): TeardownLogic => {
 
             subscriber.next(object);
 
-            const learnplace: LearnplaceEntity = (await this.learnplaceRepository.find(this.membershipId))
-                .orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`));
-
-            const learnplaceCoordinates: IliasCoordinates = new IliasCoordinates(learnplace.location.latitude, learnplace.location.longitude);
+            const learnplaceCoordinates: Observable<[IliasCoordinates, LearnplaceEntity]> = from(this.learnplaceRepository.find(this.membershipId))
+                .pipe(
+                    map((it) => it.orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`))),
+                    map((it): [IliasCoordinates, LearnplaceEntity] => [new IliasCoordinates(it.location.latitude, it.location.longitude), it])
+                );
 
             this.log.trace(() => "Watch position for visibility 'Only at Place'");
             this.watch = this.geolocation.watchPosition()
-                .filter(it => isDefined(it.coords))
-                .subscribe(location => {
+                .pipe(
+                    filter(it => isDefined(it.coords)),
+                    withLatestFrom(learnplaceCoordinates)
+                )
+                .subscribe({
+                    next: (location): void => {
 
-                    const currentCoordinates: IliasCoordinates = new IliasCoordinates(location.coords.latitude, location.coords.longitude);
-                    object.visible = learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
-                    subscriber.next(object);
+                        const learnplace: LearnplaceEntity = location[1][1];
+                        const learnplaceCoord: IliasCoordinates = location[1][0];
+
+                        const currentCoordinates: IliasCoordinates = new IliasCoordinates(location[0].coords.latitude, location[0].coords.longitude);
+                        object.visible = learnplaceCoord.isNearTo(currentCoordinates, learnplace.location.radius);
+                        subscriber.next(object);
+                    },
+                    error: (err): void => subscriber.error(err),
+                    complete: (): void => subscriber.complete()
                 });
+
+            return (): void => this.watch.unsubscribe();
         });
     }
 
@@ -262,31 +277,36 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
     on<T extends VisibilityAware>(object: T): Observable<T> {
 
         this.running = true;
-        const learnplace: Observable<LearnplaceEntity> = Observable.fromPromise(this.learnplaceRepository.find(this.membershipId))
-            .map(it => it.orElseThrow(() => new NoSuchElementError(`No learnplace found with id: ${this.membershipId}`)));
+        const learnplace: Observable<LearnplaceEntity> = from(this.learnplaceRepository.find(this.membershipId))
+            .pipe(
+                map(it => it.orElseThrow(() => new NoSuchElementError(`No learnplace found with id: ${this.membershipId}`))),
+                shareReplay(1)
+            );
 
-        const user: Observable<UserEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser())
-            .map(it => it.get());
+        const user: Observable<UserEntity> = from(this.userRepository.findAuthenticatedUser())
+            .pipe(map(it => it.get()));
 
         const learnplaceCoordinate: Observable<IliasCoordinates> =
             learnplace.map(it => new IliasCoordinates(it.location.latitude, it.location.longitude));
 
-        return Observable.forkJoin(learnplace, user, learnplaceCoordinate, (learnplace, user, learnplaceCoordinates) => {
+        return forkJoin({learnplace, user, learnplaceCoordinate}).pipe(map((it) => {
+            const { learnplace, user, learnplaceCoordinate }:
+                {learnplace: LearnplaceEntity, user: UserEntity, learnplaceCoordinate: IliasCoordinates} = it;
             if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {
                 object.visible = true;
-                return Observable.of(object);
+                return of(object);
             }
 
-            return Observable.of(
-                Observable.of(object),
-                this.geolocation.watchPosition()
-                    .takeWhile(() => this.running)
-                    .filter(it => isDefined(it.coords))
-                    .filter(it => {
+            return of(
+                of(object),
+                this.geolocation.watchPosition().pipe(
+                    takeWhile(() => this.running),
+                    filter(it => isDefined(it.coords)),
+                    filter(it => {
                         const currentCoordinates: IliasCoordinates = new IliasCoordinates(it.coords.latitude, it.coords.longitude);
-                        return learnplaceCoordinates.isNearTo(currentCoordinates, learnplace.location.radius);
-                    })
-                    .mergeMap((_) => {
+                        return learnplaceCoordinate.isNearTo(currentCoordinates, learnplace.location.radius);
+                    }),
+                    mergeMap((_) => {
                         const journal: VisitJournalEntity = new VisitJournalEntity();
                         journal.learnplace = learnplace;
                         journal.synchronized = false;
@@ -294,20 +314,21 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
                         learnplace.visitJournal.push(journal);
                         return Observable.fromPromise(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time))
                             .map((_) => journal);
-                    })
-                    .do((it) => {
+                    }),
+                    tap((it) => {
                         it.synchronized = true;
-                    })
-                    .finally(() => {
+                    }),
+                    finalize(() => {
                         return Observable.fromPromise(this.learnplaceRepository.save(learnplace));
-                    })
-                    .map((_) => {
+                    }),
+                    map((_) => {
                         object.visible = true;
                         this.shutdown();
                         return object;
                     })
-            ).mergeAll();
-        }).mergeAll();
+                )
+            ).pipe(mergeAll());
+        }), mergeAll());
     }
 
     /**

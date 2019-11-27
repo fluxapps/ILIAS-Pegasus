@@ -1,15 +1,14 @@
-import {Component, Inject, OnDestroy} from "@angular/core";
+import {Component, Inject} from "@angular/core";
 import {NavController} from "@ionic/angular";
+import {ViewDidLeave, ViewWillEnter} from "ionic-lifecycle-interface";
 import {Hardware} from "../../../services/device/hardware-features/hardware-feature.service";
 import {VISIT_JOURNAL_WATCH, VisitJournalWatch} from "../../services/visitjournal.service";
-import {ObjectListPage} from "../../../pages/object-list/object-list";
 import {LearnplaceNavParams} from "./learnplace.nav-params";
-import { ViewWillEnter } from "ionic-lifecycle-interface";
 
 @Component({
     templateUrl: "learnplace-tabs.html",
 })
-export class LearnplaceTabsPage implements ViewWillEnter, OnDestroy {
+export class LearnplaceTabsPage implements ViewWillEnter, ViewDidLeave {
 
     title: string;
 
@@ -28,11 +27,7 @@ export class LearnplaceTabsPage implements ViewWillEnter, OnDestroy {
             .check();
     }
 
-    ngOnDestroy(): void {
+    ionViewDidLeave(): void {
         this.visitJournalWatch.stop();
-    }
-
-    closeLearnplace(): void {
-        ObjectListPage.navigateBackToObjectList(this.nav);
     }
 }

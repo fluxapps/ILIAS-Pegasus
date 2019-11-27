@@ -1,22 +1,21 @@
-import {ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild} from "@angular/core";
-import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
-import {AlertController, IonContent} from "@ionic/angular";
-import {MAP_SERVICE, MapService} from "../../services/map.service";
-import {MapModel} from "../../services/block.model";
-import {TranslateService} from "@ngx-translate/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild} from "@angular/core";
+import {IonContent} from "@ionic/angular";
+import {ViewDidLeave, ViewWillEnter, ViewDidEnter} from "ionic-lifecycle-interface";
+import {Subscription} from "rxjs/Subscription";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {Subscription} from "rxjs/Subscription";
+import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
+import {MapModel} from "../../services/block.model";
+import {MAP_SERVICE, MapService} from "../../services/map.service";
 import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
-import {ViewWillEnter} from "ionic-lifecycle-interface";
 
 @Component({
     selector: "map",
     templateUrl: "map.html"
 })
-export class MapPage implements ViewWillEnter, OnDestroy {
+export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave {
 
-    @ViewChild("content", {"static": false}) content: IonContent;
+    @ViewChild("map", {"static": false}) mapElement: Element;
 
     private learnplaceObjectId: number;
     title: string;
@@ -29,15 +28,12 @@ export class MapPage implements ViewWillEnter, OnDestroy {
 
     constructor(
         @Inject(MAP_SERVICE) private readonly mapService: MapService,
-        private readonly translate: TranslateService,
-        private readonly alert: AlertController,
         private readonly detectorRef: ChangeDetectorRef,
     ) { }
 
     ionViewWillEnter(): void {
         this.learnplaceObjectId = LearnplaceNavParams.learnplaceObjectId;
         this.title = LearnplaceNavParams.learnplaceName;
-        console.log(this.learnplaceObjectId);
         this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
             .subscribe({
                 next: this.init.bind(this),
@@ -48,9 +44,16 @@ export class MapPage implements ViewWillEnter, OnDestroy {
             });
     }
 
-    ngOnDestroy(): void {
+    ionViewDidEnter(): void {
+        this.detectorRef.detectChanges();
+    }
+
+    ionViewDidLeave(): void {
         this.mapService.shutdown();
         this.mapSubscription.unsubscribe();
+        while (this.mapElement.firstChild) {
+            this.mapElement.removeChild(this.mapElement.firstChild);
+        }
     }
 
     private async init(map: MapModel): Promise<void> {

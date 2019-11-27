@@ -6,6 +6,8 @@ import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/reposito
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {Observable} from "rxjs/Observable";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
+import { from } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 /**
  * Describes a service to operate with Maps.
@@ -57,22 +59,25 @@ export class VisibilityManagedMapService implements MapService {
    */
   getMap(learnplaceObjectId: number): Observable<MapModel> {
 
-      return Observable.fromPromise(this.userRepository.findAuthenticatedUser())
-          .mergeMap(it => Observable.fromPromise(this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, it.get().id)))
-          .mergeMap(it => {
+      return from(this.userRepository.findAuthenticatedUser())
+          .pipe(
+              switchMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(learnplaceObjectId, it.get().id))),
+              switchMap(it => {
 
-              const learnplace: LearnplaceEntity = it.get();
+                  console.log("Map learnplace:", it.get());
+                  const learnplace: LearnplaceEntity = it.get();
 
-              const map: MapModel = new MapModel(
-                  learnplace.location.latitude,
-                  learnplace.location.longitude,
-                  learnplace.map.zoom,
-                  VisibilityStrategyType[learnplace.map.visibility.value]
-              );
+                  const map: MapModel = new MapModel(
+                      learnplace.location.latitude,
+                      learnplace.location.longitude,
+                      learnplace.map.zoom,
+                      VisibilityStrategyType[learnplace.map.visibility.value]
+                  );
 
-              this.visibilityStrategyApplier.setLearnplace(learnplace.id);
-              return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
-          });
+                  this.visibilityStrategyApplier.setLearnplace(learnplace.id);
+                  return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
+              })
+          );
   }
 
   /**

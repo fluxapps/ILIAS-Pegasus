@@ -33,13 +33,21 @@ export class Geolocation {
                 messages.set(error.PERMISSION_DENIED, "PERMISSION_DENIED");
                 messages.set(error.POSITION_UNAVAILABLE, "POSITION_UNAVAILABLE");
                 messages.set(error.TIMEOUT, "TIMEOUT");
+                if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) {
+                    this.log.warn(() => `TemporaryPositionError: code -> ${messages.has(error.code) ? messages.get(error.code) : error.code} message -> ${error.message}`);
+                    return;
+                }
                 this.log.error(() => `PositionError: code -> ${messages.has(error.code) ? messages.get(error.code) : error.code} message -> ${error.message}`);
-                subscriber.error(error)
+                subscriber.error(error);
             },
             geoOptions
         );
-        return (): void => navigator.geolocation.clearWatch(handle);
-    }).pipe(shareReplay(1));
+        this.log.debug(() => `Geolocation API handle acquired -> ${handle}`);
+        return (): void => {
+            navigator.geolocation.clearWatch(handle);
+            this.log.debug(() => `Geolocation API handle released -> ${handle}`);
+        };
+    });
 
 
     /**

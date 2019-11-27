@@ -4,8 +4,9 @@ import {
     ILIASObjectActionNoMessage, ILIASObjectActionResult
 } from "../../actions/object-action";
 import {LearnplaceLoader} from "../services/loader/learnplace";
-import {NavController, ModalController} from "@ionic/angular";
+import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
+import {Router} from "@angular/router";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 
 /**
@@ -18,7 +19,7 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
 
     constructor(
         private readonly loader: LearnplaceLoader,
-        private readonly navCtrl: NavController,
+        private readonly nav: NavController,
         private readonly learnplaceObjectId: number,
         private readonly learnplaceName: string,
         private readonly modal: ModalController
@@ -34,7 +35,7 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
             await this.loader.load(this.learnplaceObjectId);
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
             LearnplaceNavParams.learnplaceName = this.learnplaceName;
-            await this.navCtrl.navigateForward("learnplace");
+            await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {

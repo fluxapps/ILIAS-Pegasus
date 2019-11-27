@@ -2,7 +2,7 @@ import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
 import {AppComponent} from "./app.component";
 /** angular */
 import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
-import {RouteReuseStrategy} from "@angular/router";
+import {RouteReuseStrategy, Router} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
 import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/core";

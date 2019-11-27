@@ -145,7 +145,7 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
             .mergeMap(it => this.learnplaceRepository.findByObjectIdAndUserId(this.learnplaceObjectId, it.id))
             .map(it => it.get());
 
-        this.log.trace(() => "Start watching the device's location")
+        this.log.trace(() => "Start watching the device's location");
         const position: Observable<IliasCoordinates> = this.geolocation.watchPosition()
             .filter(it => isDefined(it.coords)) // filter errors
             .map(it => new IliasCoordinates(it.coords.latitude, it.coords.longitude))

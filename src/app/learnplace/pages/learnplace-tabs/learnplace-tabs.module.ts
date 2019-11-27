@@ -11,9 +11,9 @@ import {TranslateModule} from "@ngx-translate/core";
 const routes: Routes = [
     {path: "", component: LearnplaceTabsPage,
         children: [
-            {path: "", redirectTo: "content", pathMatch: "full"},
+            {path: "", redirectTo: "content"},
             {path: "content", loadChildren: "../content/content.module#ContentPageModule"},
-            {path: "map", loadChildren: "../map/map.module#MapPageModule"}
+            {path: "map", loadChildren: "../map/map.module#MapPageModule"},
         ]
     }
 ];
@@ -27,6 +27,7 @@ const routes: Routes = [
         IonicModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [LearnplaceTabsPage]
+    declarations: [LearnplaceTabsPage],
+    exports: [RouterModule]
 })
 export class LearnplaceTabsPageModule {}
