@@ -41,7 +41,7 @@
     animation-duration: 3s;
     animation-delay: 13s;
     animation-iteration-count: infinite; }
-  
+
   @keyframes fold {
     0% {
       -webkit-animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -215,14 +215,14 @@
     white-space: pre-line;
 }
 .main-header{
-    color: white !important;
+    color: var(--ion-color-primary-contrast) !important;
     font-weight: bold;
     font-size: 3.75vmax;
     margin: auto;
     position: relative;
     padding-bottom: 1vh;
     padding-top: 3vh;
-    z-index: -9999 !important;  
+    z-index: -9999 !important;
 }
 
 .very-small-font{

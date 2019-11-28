@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {NavController, ToastController, AlertController, Config} from "@ionic/angular";
+import {AlertController, Config, NavController, ToastController} from "@ionic/angular";
 /** services */
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {FileService} from "../../services/file.service";
@@ -19,6 +19,7 @@ import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from ".
 import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {ThemeService} from "../../services/theme.service";
 
 @Component({
     selector: "page-settings",
@@ -125,6 +126,7 @@ export class SettingsPage {
             this.log.debug(() => "Saving settings.");
             try {
                 await this.settings.save();
+                await ThemeService.setCustomColor(); // TODO (dev) remove
             } catch (e) {
                 console.log(`ERR ${e.message}`);
             }

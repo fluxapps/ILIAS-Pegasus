@@ -7,31 +7,31 @@
 import {Migration, MigrationVersion} from "../services/migration/migration.api";
 import {QueryRunner} from "typeorm/browser";
 
-export class FilesLearningProgress implements Migration {
+export class SettingsThemeColor implements Migration {
 
-    readonly version: MigrationVersion = new MigrationVersion("V__7");
+    readonly version: MigrationVersion = new MigrationVersion("V__8");
 
     async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            "ALTER TABLE files " +
-            "ADD fileLearningProgress BOOLEAN"
+            "ALTER TABLE settings " +
+            "ADD themeColorHex TEXT"
         );
 
         await queryRunner.query(
-            "ALTER TABLE files " +
-            "ADD fileLearningProgressPushToServer BOOLEAN"
+            "ALTER TABLE settings " +
+            "ADD themeColorBright BOOLEAN"
         );
     }
 
     async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            "ALTER TABLE files " +
-            "DROP fileLearningProgress"
+            "ALTER TABLE settings " +
+            "DROP themeColorHex"
         );
 
         await queryRunner.query(
-            "ALTER TABLE files " +
-            "DROP fileLearningProgressPushToServer"
+            "ALTER TABLE settings " +
+            "DROP themeColorBright"
         );
     }
 }
