@@ -1,6 +1,6 @@
 /** angular */
 import {Component, Inject, NgZone} from "@angular/core";
-import {Config, Platform, ToastController, ModalController, NavController, Events} from "@ionic/angular";
+import {Config, Events, ModalController, NavController, Platform, ToastController} from "@ionic/angular";
 import {Router} from "@angular/router";
 /** ionic-native */
 import {Network} from "@ionic-native/network/ngx";
@@ -11,22 +11,21 @@ import {AppVersion} from "@ionic-native/app-version/ngx";
 /** services */
 import {SQLiteDatabaseService} from "./services/database.service";
 import {Database} from "./services/database/database";
-import {FooterToolbarService, Job} from "./services/footer-toolbar.service";
+import {FooterToolbarService} from "./services/footer-toolbar.service";
 import {Logger} from "./services/logging/logging.api";
 import {Logging} from "./services/logging/logging.service";
 import {DB_MIGRATION, DBMigration} from "./services/migration/migration.api";
 import {SynchronizationService} from "./services/synchronization.service";
-import {FileService} from "./services/file.service";
 /** models */
 import {Settings} from "./models/settings";
 import {User} from "./models/user";
-/** misc */
-import getMessage = Logging.getMessage;
 import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
 import {ObjectListPage} from "./pages/object-list/object-list";
+/** misc */
+import getMessage = Logging.getMessage;
 
 @Component({
     selector: "app-root",

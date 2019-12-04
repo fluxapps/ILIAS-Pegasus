@@ -40,6 +40,16 @@ export class Settings extends ActiveRecord {
      */
     downloadWlan: boolean = true;
 
+    /**
+     * Color that is set in the PegasusHelper-plugin
+     */
+    themeColorHex: string = "";
+
+    /**
+     * Color that is set in the PegasusHelper-plugin
+     */
+    themeColorBright: boolean = false;
+
     constructor(id: number = 0) {
         super(id, new SQLiteConnector("settings", [
             "userId",
@@ -47,7 +57,9 @@ export class Settings extends ActiveRecord {
             "downloadSize",
             "quotaSize",
             "downloadOnStart",
-            "downloadWlan"
+            "downloadWlan",
+            "themeColorHex",
+            "themeColorBright"
         ]));
 
         if(id == 0) {

@@ -158,7 +158,7 @@ ion-content.page_settings {
         padding-bottom: 5%;
         font-weight: 800;
         font-size: 3.0vh;
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
     .login-top-logo-row{
@@ -309,7 +309,7 @@ ion-content.page_settings {
     }
 
     .link {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
 }
@@ -326,11 +326,11 @@ ion-content.page_settings {
     }
 
     h1 {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
     a {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
     // .fallback-icon{
@@ -994,7 +994,7 @@ body
     }
 
     .loading-subtitle {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
 }
@@ -1017,15 +1017,15 @@ body
     }
 
     h1 {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
     ion-label {
-        color: white;
+        color: var(--ion-color-primary-contrast);
     }
 
     ion-spinner svg * {
-        stroke: white !important;
+        stroke: var(--ion-color-primary-contrast) !important;
     }
 
 }

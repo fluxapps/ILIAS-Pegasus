@@ -13,6 +13,7 @@ import {AuthenticationProvider} from "../../providers/authentification/authentic
 import {Log} from "../../services/log.service";
 /** misc */
 import {SynchronizationService} from "../../services/synchronization.service";
+import {ThemeService} from "../../services/theme.service";
 
 @Component({
     templateUrl: "login.html"
@@ -43,6 +44,10 @@ export class LoginPage {
       this.appVersionStr = this.appVersionPlugin.getVersionNumber();
     }
 
+    ionViewWillEnter(): void {
+        ThemeService.setDefaultColor();
+    }
+
     login(): void {
         if(!this.checkOnline()) return;
         const installation: ILIASInstallation = this.getSelectedInstallation();
@@ -53,7 +58,8 @@ export class LoginPage {
             if(AuthenticationProvider.isLoggedIn()) {
                 this.checkAndLoadOfflineContent()
                     .then(() => this.sync.resetOfflineSynchronization(true))
-                    .then(() => this.updateLastVersionLogin());
+                    .then(() => this.updateLastVersionLogin())
+                    .then(() => ThemeService.setCustomColor());
             }
         });
     }
