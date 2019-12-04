@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild} from "@angular/core";
 import {IonContent} from "@ionic/angular";
 import {ViewDidLeave, ViewWillEnter, ViewDidEnter} from "ionic-lifecycle-interface";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";

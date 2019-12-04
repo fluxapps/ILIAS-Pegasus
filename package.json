@@ -69,7 +69,6 @@
     "polarcape-cordova-plugin-document-handler": "^1.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
-    "rxjs-compat": "^6.5.2",
     "text-encoding": "^0.7.0",
     "tslib": "^1.10.0",
     "typeorm": "^0.1.21",

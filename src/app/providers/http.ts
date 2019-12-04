@@ -1,17 +1,16 @@
+import {HttpClient as Http, HttpHeaders, HttpParams, HttpResponse as Response, XhrFactory} from "@angular/common/http";
 /** angular */
 import {Injectable} from "@angular/core";
-import {HttpClient as Http, HttpHeaders, HttpParams, HttpResponse as Response, XhrFactory} from "@angular/common/http";
-import {isDefined} from "../util/util.function";
-/** rxjs */
-import {Observable} from "rxjs";
+import * as HttpStatus from "http-status-codes";
+/** misc */
+import {Validator, ValidatorResult} from "jsonschema";
+import {throwError as observableThrowError} from "rxjs";
 import {catchError, retry, tap} from "rxjs/operators";
+import {IllegalStateError} from "../error/errors";
 /** logging */
 import {Logger} from "../services/logging/logging.api";
 import {Logging} from "../services/logging/logging.service";
-/** misc */
-import {Validator, ValidatorResult} from "jsonschema";
-import {IllegalStateError} from "../error/errors";
-import * as HttpStatus from "http-status-codes";
+import {isDefined} from "../util/util.function";
 
 /**
  * Abstracts the Http service of angular in async methods.
@@ -53,7 +52,7 @@ export class HttpClient {
         catchError((error) => {
             this.log.error(() => `Http GET request failed: resource=${url}`);
             this.log.debug(() => `Http GET request error: ${JSON.stringify(error)}`);
-            return Observable.throw(new UnfinishedHttpRequestError(`Could not finish request: url=${url}`));
+            return observableThrowError(new UnfinishedHttpRequestError(`Could not finish request: url=${url}`));
         })
     ).toPromise();
 
@@ -82,7 +81,7 @@ export class HttpClient {
         catchError((error) => {
             this.log.error(() => `Http POST request failed: resource=${url}`);
             this.log.debug(() => `Http POST request error: ${JSON.stringify(error)}`);
-            return Observable.throw(new UnfinishedHttpRequestError(`Could not finish POST request: url=${url}`));
+            return observableThrowError(new UnfinishedHttpRequestError(`Could not finish POST request: url=${url}`));
         })
     ).toPromise();
 

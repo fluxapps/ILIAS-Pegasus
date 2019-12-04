@@ -13,11 +13,10 @@ import {TextblockEntity} from "../entity/textblock.entity";
 import {PictureBlockEntity} from "../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../entity/linkblock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
-import {Observable} from "rxjs/Observable";
+import {Observable,  from, combineLatest } from "rxjs";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import { from, combineLatest } from "rxjs";
 import { mergeMap, map, tap } from "rxjs/operators";
 
 /**
@@ -156,12 +155,12 @@ export class VisibilityManagedBlockService implements BlockService {
         return accordionBlockList
             .map(accordion => {
 
-                const blockList: Observable<Array<BlockModel>> = Observable.combineLatest<Array<BlockModel>>(
+                const blockList: Observable<Array<BlockModel>> = combineLatest<Array<BlockModel>>([
                     ...this.mapTextblocks(accordion.textBlocks),
                     ...this.mapPictureBlocks(accordion.pictureBlocks),
                     ...this.mapLinkBlocks(accordion.linkBlocks),
                     ...this.mapVideoBlocks(accordion.videoBlocks)
-                ).map(it => it.sort((a, b) => a.sequence - b.sequence));
+                ]).pipe(map(it => it.sort((a, b) => a.sequence - b.sequence)));
 
                 const model: AccordionBlockModel = new AccordionBlockModel(
                     accordion.sequence,

@@ -6,7 +6,7 @@ import {
 import {Injectable} from "@angular/core";
 import {isDefined} from "../../../util/util.function";
 import {IllegalStateError} from "../../../error/errors";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 /**
  * Describes an object that can be visible or not.

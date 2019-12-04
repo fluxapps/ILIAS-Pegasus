@@ -16,8 +16,7 @@ import {
 } from "./mappers";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
-import {Observable} from "rxjs/Observable";
-import {throwError, of, EMPTY, from} from "rxjs";
+import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest} from "rxjs";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {TextblockEntity} from "../../entity/textblock.entity";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
@@ -26,6 +25,7 @@ import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {AccordionEntity} from "../../entity/accordion.entity";
 import {isDefined} from "../../../util/util.function";
 import uuid from "uuid-js";
+import { mergeMap, map, mergeAll, catchError } from "rxjs/operators";
 
 /**
  * Describes a loader for a single learnplace.
@@ -85,43 +85,44 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
      */
     load(objectId: number): Promise<void> {
 
-        const learnplace: Observable<LearnPlace> = Observable.fromPromise(this.learnplaceAPI.getLearnPlace(objectId));
-        const blocks: Observable<BlockObject> = Observable.fromPromise(this.learnplaceAPI.getBlocks(objectId));
-        const journalEntries: Observable<Array<JournalEntry>> = Observable.fromPromise(this.learnplaceAPI.getJournalEntries(objectId));
+        const learnplace: Observable<LearnPlace> = from(this.learnplaceAPI.getLearnPlace(objectId));
+        const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
+        const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));
 
         const user: Observable<Optional<UserEntity>> = from(this.userRepository.findAuthenticatedUser());
 
-        const learnplaceEntity: Observable<LearnplaceEntity> = user
-            .mergeMap(it => Observable.fromPromise(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id)))
-            .map(it => it.orElse(new LearnplaceEntity().applies(function(): void {
+        const learnplaceEntity: Observable<LearnplaceEntity> = user.pipe(
+            mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
+            map(it => it.orElse(new LearnplaceEntity().applies(function(): void {
                 this.id = uuid.create(4);
-            })));
+            })))
+        );
 
-        const visitJournalEntities: Observable<Array<VisitJournalEntity>> = Observable.forkJoin(learnplaceEntity, journalEntries,
-            (learnplaceEntity, journalEntries) => Observable.fromPromise(this.visitJournalMapper.map(learnplaceEntity.visitJournal, journalEntries))
-        ).mergeAll();
+        const visitJournalEntities: Observable<Array<VisitJournalEntity>> = forkJoin(learnplaceEntity, journalEntries,
+            (learnplaceEntity, journalEntries) => from(this.visitJournalMapper.map(learnplaceEntity.visitJournal, journalEntries))
+        ).pipe(mergeAll());
 
-        const textBlockEntities: Observable<Array<TextblockEntity>> = Observable.forkJoin(learnplaceEntity, blocks,
-            (entity, blocks) => Observable.fromPromise(this.textBlockMapper.map(entity.textBlocks, blocks.text))
-        ).mergeAll();
+        const textBlockEntities: Observable<Array<TextblockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.textBlockMapper.map(entity.textBlocks, blocks.text))
+        ).pipe(mergeAll());
 
-        const pictureBlockEntities: Observable<Array<PictureBlockEntity>> = Observable.forkJoin(learnplaceEntity, blocks,
-            (entity, blocks) => Observable.fromPromise(this.pictureBlockMapper.map(entity.pictureBlocks, blocks.picture))
-        ).mergeAll();
+        const pictureBlockEntities: Observable<Array<PictureBlockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.pictureBlockMapper.map(entity.pictureBlocks, blocks.picture))
+        ).pipe(mergeAll());
 
-        const linkBlockEntities: Observable<Array<LinkblockEntity>> = Observable.forkJoin(learnplaceEntity, blocks,
-            (entity, blocks) => Observable.fromPromise(this.linkBlockMapper.map(entity.linkBlocks, blocks.iliasLink))
-        ).mergeAll();
+        const linkBlockEntities: Observable<Array<LinkblockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.linkBlockMapper.map(entity.linkBlocks, blocks.iliasLink))
+        ).pipe(mergeAll());
 
-        const videoBlockEntities: Observable<Array<VideoBlockEntity>> = Observable.forkJoin(learnplaceEntity, blocks,
-            (entity, blocks) => Observable.fromPromise(this.videoBlockMapper.map(entity.videoBlocks, blocks.video))
-        ).mergeAll();
+        const videoBlockEntities: Observable<Array<VideoBlockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.videoBlockMapper.map(entity.videoBlocks, blocks.video))
+        ).pipe(mergeAll());
 
-        const accordionBlockEntities: Observable<Array<AccordionEntity>> = Observable.forkJoin(learnplaceEntity, blocks,
-            (entity, blocks) => Observable.fromPromise(this.accordionMapper.map(entity.accordionBlocks, blocks.accordion))
-        ).mergeAll();
+        const accordionBlockEntities: Observable<Array<AccordionEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.accordionMapper.map(entity.accordionBlocks, blocks.accordion))
+        ).pipe(mergeAll());
 
-        return Observable.combineLatest(
+        return combineLatest(
             learnplace,
             user,
             learnplaceEntity,
@@ -158,23 +159,27 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                     this.videoBlocks = videoBlocks;
                     this.accordionBlocks = accordionBlocks;
                 })
-        ).mergeMap(it => Observable.fromPromise(this.learnplaceRepository.save(it)))
-            .mergeMap(_ => Observable.empty()) // we want to emit void, so we map the save observable to an empty one
-            .catch((error, _) => {
+        )
+            .pipe(
+                mergeMap(it => from(this.learnplaceRepository.save(it))),
+                mergeMap(_ => EMPTY), // we want to emit void, so we map the save observable to an empty one
+                catchError((error, _) => {
 
-                if (error instanceof HttpRequestError || error instanceof UnfinishedHttpRequestError) {
-                    return learnplaceEntity;
-                }
+                    if (error instanceof HttpRequestError || error instanceof UnfinishedHttpRequestError) {
+                        return learnplaceEntity;
+                    }
 
-                return throwError(error);
-            }).mergeMap(it => {
+                    return throwError(error);
+                }),
+                mergeMap(it => {
 
-                if(isDefined(it.id)) {
-                    return Observable.fromPromise(this.learnplaceRepository.exists(it.id));
-                }
+                    if(isDefined(it.id)) {
+                        return from(this.learnplaceRepository.exists(it.id));
+                    }
 
-                return of(false);
-            }).mergeMap(exists => {
+                    return of(false);
+                }),
+                mergeMap(exists => {
 
                 if(exists) {
                     this.log.warn(() => `Learnplace with object id "${objectId}" could not be loaded, but is available from local storage`);
@@ -183,7 +188,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
 
                 return throwError(new LearnplaceLoadingError(`Could not load learnplace with id "${objectId}" over http connection`));
 
-            }).toPromise();
+                })
+            ).toPromise();
     }
 }
 

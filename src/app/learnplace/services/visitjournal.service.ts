@@ -1,3 +1,5 @@
+
+import {mergeMap, filter, takeWhile, map, tap, catchError, withLatestFrom } from "rxjs/operators";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../providers/repository/visitjournal.repository";
@@ -13,7 +15,7 @@ import {IllegalStateError} from "../../error/errors";
 import {IliasCoordinates} from "./geodesy";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
-import {Observable} from "rxjs/Observable";
+import {Observable,  from, combineLatest, of } from "rxjs";
 
 /**
  * Describes a synchronization that manages un-synchronized visit journal entries.
@@ -139,39 +141,46 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
         this.running = true;
 
-        const user: Observable<UserEntity> = Observable.fromPromise(this.userRepository.findAuthenticatedUser()).map(it => it.get());
+        const user: Observable<UserEntity> = from(this.userRepository.findAuthenticatedUser()).pipe(map(it => it.get()));
 
-        const learnplace: Observable<LearnplaceEntity> = user
-            .mergeMap(it => this.learnplaceRepository.findByObjectIdAndUserId(this.learnplaceObjectId, it.id))
-            .map(it => it.get());
+        const learnplace: Observable<LearnplaceEntity> = user.pipe(
+            mergeMap(it => this.learnplaceRepository.findByObjectIdAndUserId(this.learnplaceObjectId, it.id)),
+            map(it => it.get()),);
 
         this.log.trace(() => "Start watching the device's location");
-        const position: Observable<IliasCoordinates> = this.geolocation.watchPosition()
-            .filter(it => isDefined(it.coords)) // filter errors
-            .map(it => new IliasCoordinates(it.coords.latitude, it.coords.longitude))
-            .takeWhile(_ => this.running);
+        const position: Observable<IliasCoordinates> = this.geolocation.watchPosition().pipe(
+            filter(it => isDefined(it.coords)), // filter errors
+            map(it => new IliasCoordinates(it.coords.latitude, it.coords.longitude)),
+            takeWhile(_ => this.running),);
 
-        Observable.combineLatest(user, learnplace, position)
-            .filter(this.checkConditions)
-            .map(it => {
+        combineLatest([user, learnplace, position])
+            .pipe(
+                filter(this.checkConditions),
+                map((it: [UserEntity, LearnplaceEntity, IliasCoordinates]): VisitJournalEntity => {
 
-                const user: UserEntity = it[0];
+                    const user: UserEntity = it[0];
 
-                return new VisitJournalEntity().applies<VisitJournalEntity>(function(): void {
-                    this.userId = user.iliasUserId;
-                    this.time = Math.floor(Date.now() / 1000); // unix time in seconds
-                    this.synchronized = false;
-                })
-            })
-            .mergeMap(it => Observable.fromPromise(this.learnplaceAPI.addJournalEntry(this.learnplaceObjectId, it.time))
-                .map(_ => it)
-                .do(it => it.synchronized = true)
-                .catch((..._) => Observable.of(it))
-            ).combineLatest(learnplace, (visitJournal, learnplace) => learnplace.applies<LearnplaceEntity>(function(): void {
-            this.visitJournal.push(visitJournal)
-        })).subscribe(it => {
-            this.learnplaceRepository.save(it);
-        });
+                    return new VisitJournalEntity().applies<VisitJournalEntity>(function(): void {
+                        this.userId = user.iliasUserId;
+                        this.time = Math.floor(Date.now() / 1000); // unix time in seconds
+                        this.synchronized = false;
+                    })
+                }),
+                mergeMap((it: VisitJournalEntity) => from(this.learnplaceAPI.addJournalEntry(this.learnplaceObjectId, it.time))
+                    .pipe(
+                        map(_ => it),
+                        tap(it => { it.synchronized = true; }),
+                        catchError((..._) => of(it))
+                    )
+                ),
+                withLatestFrom(learnplace, (visitJournal: VisitJournalEntity, learnplace: LearnplaceEntity): LearnplaceEntity =>
+                    learnplace.applies<LearnplaceEntity>(function(): void {
+                        this.visitJournal.push(visitJournal);
+                }))
+            )
+            .subscribe((it: LearnplaceEntity) => {
+                this.learnplaceRepository.save(it);
+            });
     }
 
     /**

@@ -1,6 +1,6 @@
 import {VisibilityAware} from "./visibility/visibility.context";
 import {SafeHtml} from "@angular/platform-browser";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 
 /**

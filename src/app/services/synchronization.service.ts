@@ -18,7 +18,7 @@ import {Log} from "./log.service";
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
-import {Observable, from} from "rxjs";
+import {Observable, from, merge} from "rxjs";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -266,7 +266,7 @@ export class SynchronizationService {
     }
 
     private downloadLearnplaces(tree: Array<ILIASObject>): Observable<{}> {
-        return Observable.merge(...tree
+        return merge(...tree
             .filter(it => it.isLearnplace())
             .map(it => from(
                 this.learnplaceLoader.load(it.objId).then(

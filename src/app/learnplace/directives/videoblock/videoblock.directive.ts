@@ -1,7 +1,7 @@
 import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {File} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {isDefined} from "../../../util/util.function";
 import {VideoBlockModel} from "../../services/block.model";

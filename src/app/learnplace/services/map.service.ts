@@ -4,9 +4,8 @@ import {VisibilityStrategyApplier} from "./visibility/visibility.context";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
-import {Observable} from "rxjs/Observable";
+import {Observable,  from } from "rxjs";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
-import { from } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
 /**

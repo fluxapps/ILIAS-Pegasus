@@ -1,9 +1,8 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {AccordionBlockModel, BlockModel} from "../../services/block.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription,  Observable } from "rxjs";
 import {isDefined} from "../../../util/util.function";
-import { Observable } from "rxjs";
 import { shareReplay } from "rxjs/operators";
 
 @Component({

@@ -6,7 +6,7 @@ import {Logger} from "./services/logging/logging.api";
 import {Logging} from "./services/logging/logging.service";
 // errors and exceptions
 import {Error} from "tslint/lib/error";
-import {TimeoutError} from "rxjs/Rx";
+import {TimeoutError} from "rxjs";
 import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "./providers/http";
 import {HardwareAccessError} from "./services/device/hardware-features/hardware-access.errors";
 import {FileErrorException} from "./exceptions/FileErrorException";

@@ -12,7 +12,7 @@ import {User} from "../../../models/user";
 import {ILIASObject} from "../../../models/ilias-object";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {isDefined} from "../../../util/util.function";
 
 @Component({

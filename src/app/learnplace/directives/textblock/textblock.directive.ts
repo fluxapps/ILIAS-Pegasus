@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {TextBlockModel} from "../../services/block.model";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {isDefined} from "../../../util/util.function";
 
 @Component({

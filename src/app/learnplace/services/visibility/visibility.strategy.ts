@@ -1,3 +1,6 @@
+
+import {Subscription, Observable, Subscriber,  from, of, forkJoin, TeardownLogic } from "rxjs";
+import {map,  filter, withLatestFrom, takeWhile, mergeMap, tap, finalize, mergeAll, shareReplay } from "rxjs/operators";
 import {VisibilityAware} from "./visibility.context";
 import {Inject, Injectable} from "@angular/core";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
@@ -7,16 +10,11 @@ import {Geolocation} from "../../../services/device/geolocation/geolocation.serv
 import {IliasCoordinates} from "../geodesy";
 import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {isDefined} from "../../../util/util.function";
-import {Subscription} from "rxjs/Subscription";
 import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {Observable} from "rxjs/Observable";
-import {Subscriber} from "rxjs/Subscriber";
-import { filter, map, combineLatest, withLatestFrom, takeWhile, mergeMap, tap, finalize, mergeAll, shareReplay } from "rxjs/operators";
-import { from, of, forkJoin, TeardownLogic } from "rxjs";
 
 /**
  * Enumerator for available strategies.
@@ -287,7 +285,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
             .pipe(map(it => it.get()));
 
         const learnplaceCoordinate: Observable<IliasCoordinates> =
-            learnplace.map(it => new IliasCoordinates(it.location.latitude, it.location.longitude));
+            learnplace.pipe(map(it => new IliasCoordinates(it.location.latitude, it.location.longitude)));
 
         return forkJoin({learnplace, user, learnplaceCoordinate}).pipe(map((it) => {
             const { learnplace, user, learnplaceCoordinate }:
@@ -312,14 +310,14 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
                         journal.synchronized = false;
                         journal.time = Date.now() / 1000;
                         learnplace.visitJournal.push(journal);
-                        return Observable.fromPromise(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time))
-                            .map((_) => journal);
+                        return from(this.learnplaceAPI.addJournalEntry(learnplace.objectId, journal.time)).pipe(
+                            map((_) => journal));
                     }),
                     tap((it) => {
                         it.synchronized = true;
                     }),
                     finalize(() => {
-                        return Observable.fromPromise(this.learnplaceRepository.save(learnplace));
+                        return from(this.learnplaceRepository.save(learnplace));
                     }),
                     map((_) => {
                         object.visible = true;

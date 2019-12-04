@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from "@angular/core";
 import {ViewDidLeave, ViewWillEnter, ViewDidEnter} from "ionic-lifecycle-interface";
-import {NEVER} from "rxjs";
-import {Observable} from "rxjs/Observable";
+import {NEVER, Observable} from "rxjs";
 import {shareReplay, tap} from "rxjs/operators";
 import {BlockModel} from "../../services/block.model";
 import {BLOCK_SERVICE, BlockService} from "../../services/block.service";
