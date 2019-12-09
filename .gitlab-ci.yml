@@ -2,6 +2,7 @@
     stage: test
     before_script:
         - npm ci
+    timeout: "15m"
     variables:
         npm_config_cache: "$CI_BUILDS_DIR/.node_cache_pegasus"
         CHROME_BIN: "chromium-browser"
