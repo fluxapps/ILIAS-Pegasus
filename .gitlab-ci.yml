@@ -4,6 +4,7 @@
         - npm ci
     variables:
         npm_config_cache: "$CI_BUILDS_DIR/.node_cache_pegasus"
+        CHROME_BIN: "chromium-browser"
     script:
         - npx ng test
     tags:
