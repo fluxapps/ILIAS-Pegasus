@@ -59,3 +59,4 @@ src/environments/environment.ts
 bin
 simulation
 .ionic/
+./test/
