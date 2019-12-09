@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component} from "@angular/core";
 import {NavController} from "@ionic/angular";
 
 @Component({
@@ -6,7 +6,7 @@ import {NavController} from "@ionic/angular";
     templateUrl: "./tabs.page.html",
     styleUrls: ["./tabs.page.scss"],
 })
-export class TabsPage implements OnInit {
+export class TabsPage {
     constructor(
         private readonly navCtrl: NavController
     ) {}
@@ -14,9 +14,5 @@ export class TabsPage implements OnInit {
     // navigate to a tab
     async navigateTo(url: string): Promise<void> {
         await this.navCtrl.navigateForward(`tabs/${url}`);
-    }
-
-    ngOnInit(): void {
-        return;
     }
 }
