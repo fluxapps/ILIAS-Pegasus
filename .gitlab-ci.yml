@@ -1,16 +1,36 @@
-cache:
-  key: node
-  paths:
-    - node_modules
+.test_browser: &test_browser
+    stage: test
+    before_script:
+        - npm ci
+    variables:
+        npm_config_cache: "$CI_BUILDS_DIR/.node_cache_pegasus"
+    script:
+        - npx ng test
+    tags:
+        - docker
 
-before_script:
-  - npm install
+cache:
+  key: "ilias_pegasus_node_cache"
+  paths:
+    - "$npm_config_cache"
 
 stages:
   - test
 
-test:
-  stage: test
-  script: npm test
-  tags:
-    - node
+test:chrome_77:
+    <<: *test_browser
+    image:
+      name: zenika/alpine-chrome:77-with-node
+      entrypoint: ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage", "--no-sandbox"]
+
+test:chrome_76:
+    <<: *test_browser
+    image:
+      name: zenika/alpine-chrome:76-with-node
+      entrypoint: ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage", "--no-sandbox"]
+
+test:chrome_75:
+    <<: *test_browser
+    image:
+        name: zenika/alpine-chrome:75-with-node
+        entrypoint: ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage", "--no-sandbox"]
