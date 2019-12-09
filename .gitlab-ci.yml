@@ -8,8 +8,6 @@
         CHROME_BIN: "chromium-browser"
     script:
         - npx ng test
-    tags:
-        - docker
 
 cache:
   key: "ilias_pegasus_node_cache"
