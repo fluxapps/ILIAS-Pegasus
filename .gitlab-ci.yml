@@ -4,7 +4,7 @@
         - npm ci
     timeout: "15m"
     variables:
-        npm_config_cache: "$CI_BUILDS_DIR/.node_cache_pegasus"
+        npm_config_cache: &npm_cache_path "$CI_BUILDS_DIR/.node_cache_pegasus"
         CHROME_BIN: "chromium-browser"
     script:
         - npm run test:ci
@@ -16,7 +16,20 @@ cache:
     - "$npm_config_cache"
 
 stages:
+  - lint
   - test
+
+lint:
+    stage: lint
+    before_script:
+        - npm ci
+    timeout: "5m"
+    variables:
+        npm_config_cache: *npm_cache_path
+    script:
+        - npm run lint
+    allow_failure: true
+    image: node:lts-alpine
 
 test:chrome_77:
     <<: *test_browser
