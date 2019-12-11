@@ -15,6 +15,8 @@ declare const require: any;
 // Inject object methods.
 useStandard();
 
+Error.stackTraceLimit = Infinity;
+
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
