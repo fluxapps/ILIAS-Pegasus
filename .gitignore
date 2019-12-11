@@ -60,3 +60,4 @@ bin
 simulation
 .ionic/
 ./test/
+./coverage/
