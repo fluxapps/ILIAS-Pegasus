@@ -7,7 +7,7 @@
         npm_config_cache: "$CI_BUILDS_DIR/.node_cache_pegasus"
         CHROME_BIN: "chromium-browser"
     script:
-        - npx ng test
+        - npx ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
 
 cache:
   key: "ilias_pegasus_node_cache"
