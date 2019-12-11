@@ -8,6 +8,7 @@
         CHROME_BIN: "chromium-browser"
     script:
         - npm run test:ci
+    coverage: '/All files \|\s*(\d+(\.\d+)?)/'
 
 cache:
   key: "ilias_pegasus_node_cache"
