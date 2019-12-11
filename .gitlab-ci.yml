@@ -19,19 +19,12 @@ stages:
 
 test:chrome_77:
     <<: *test_browser
-    image:
-      name: zenika/alpine-chrome:77-with-node
-      entrypoint: &test_entry_point ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222"]
-
+    image: zenika/alpine-chrome:77-with-node
 
 test:chrome_76:
     <<: *test_browser
-    image:
-      name: zenika/alpine-chrome:76-with-node
-      entrypoint: *test_entry_point
+    image: zenika/alpine-chrome:76-with-node
 
 test:chrome_75:
     <<: *test_browser
-    image:
-        name: zenika/alpine-chrome:75-with-node
-        entrypoint: *test_entry_point
+    image: zenika/alpine-chrome:75-with-node
