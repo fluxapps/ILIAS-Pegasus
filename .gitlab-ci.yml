@@ -25,6 +25,3 @@ test:chrome_76:
     <<: *test_browser
     image: zenika/alpine-chrome:76-with-node
 
-test:chrome_75:
-    <<: *test_browser
-    image: zenika/alpine-chrome:75-with-node
