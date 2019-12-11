@@ -265,8 +265,7 @@ describe("a picture block mapper", () => {
         mockPlatform.is
           .withArgs("ios") // just to use mock the File correct
           .and.returnValue(true);
-        spyOnProperty(mockFile, "dataDirectory") // ios uses this property
-          .and.returnValue("test/");
+        mockFile.dataDirectory = "test/"; // ios uses this property
         const deleteStub: jasmine.Spy = mockFile.removeFile;
         deleteStub.and.returnValue(Promise.resolve());
 
@@ -494,8 +493,7 @@ describe("a video block mapper", () => {
         mockPlatform.is
           .withArgs("ios") // just to use mock the File correct
           .and.returnValue(true);
-        spyOnProperty(mockFile, "dataDirectory") // ios uses this property
-          .and.returnValue("test/");
+        mockFile.dataDirectory = "test/"; // ios uses this property
         const deleteStub: jasmine.Spy = mockFile.removeFile;
         deleteStub.and.returnValue(Promise.resolve());
 
