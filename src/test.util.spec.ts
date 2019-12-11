@@ -10,11 +10,16 @@ function isProperty(descriptor: PropertyDescriptor): boolean {
     );
 }
 
-export function createSpyObject<T>(ctor: new(...args: Array<unknown>) => T): jasmine.SpyObj<T> {
-    const proto: unknown = ctor.prototype;
-    if (typeof proto === "undefined") {
+function validatePrototype<T>(ctor: new(...args: Array<unknown>) => T): void {
+    if (typeof ctor.prototype === "undefined") {
         throw new Error("Can not mock object with undefined prototype!");
     }
+}
+
+export function createSpyObject<T>(ctor: new(...args: Array<unknown>) => T): jasmine.SpyObj<T> {
+    const proto: unknown = ctor.prototype;
+    validatePrototype(ctor);
+
     const propertyDescriptors: Array<[string, PropertyDescriptor]> = Object.entries(Object.getOwnPropertyDescriptors(proto));
     const validPropertyNames: ReadonlyArray<string> = propertyDescriptors
         .filter((it) => isProperty(it[1]))
