@@ -74,7 +74,7 @@ export class FileDownloaderImpl implements FileDownloader{
             this.log.trace(() => `Download-${requestId}: Clear cookies for request.`);
             this.http.clearCookies();
             this.log.trace(() => `Download-${requestId}: Redirects enabled: ${options.followRedirects}`);
-            this.http.setFollowRedirect(!options.followRedirects);
+            this.http.setFollowRedirect(options.followRedirects);
             const response: HTTPResponseWorkaround =
                 (await this.http.downloadFile(options.url, options.body, options.headers, options.filePath)) as HTTPResponseWorkaround;
 

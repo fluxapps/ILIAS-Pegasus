@@ -74,7 +74,7 @@ export class FileUploaderImpl implements FileUploader{
             this.log.trace(() => `Upload-${requestId}: Clear cookies for request.`);
             this.http.clearCookies();
             this.log.trace(() => `Upload-${requestId}: Redirects enabled: ${options.followRedirects}`);
-            this.http.setFollowRedirect(!options.followRedirects);
+            this.http.setFollowRedirect(options.followRedirects);
             const response: HTTPResponseWorkaround =
                 (await this.http.uploadFile(options.url, "", options.headers, options.filePath, options.name)) as HTTPResponseWorkaround;
             this.log.trace(() => `Upload-${requestId}: Transfer finished.`);
