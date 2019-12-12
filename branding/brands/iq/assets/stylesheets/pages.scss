@@ -49,7 +49,7 @@
 
 .page_desktop {
   // background-image: linear-gradient(197deg, rgba(100,100,100,1) 0%, rgba(63,63,63,1) 13.5%, rgba(29,29,29,1) 33.33%, rgba(0,0,0,1) 100%) !important;
-    
+
     // background-color: var(--ion-color-primary);
     // --background: url('src/assets/img/header.svg') no-repeat top center / 100vw;
     .desktop-grid{
@@ -61,6 +61,7 @@
         width: 100%;
         margin: auto;
         display: block;
+        pointer-events: none;
     }
 
 

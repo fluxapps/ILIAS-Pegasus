@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 👍
 - MapBox support for "Learnplaces"
 - Angular routing
-- A changlog file 
+- A changlog file
+- Dynamic theming with the PegasusHelper plugin
 
 ### Changed 🚀
 - Angular Version

@@ -19,7 +19,7 @@ export class SettingsThemeColor implements Migration {
 
         await queryRunner.query(
             "ALTER TABLE settings " +
-            "ADD themeColorBright BOOLEAN"
+            "ADD themeContrastColor BOOLEAN"
         );
     }
 
@@ -31,7 +31,7 @@ export class SettingsThemeColor implements Migration {
 
         await queryRunner.query(
             "ALTER TABLE settings " +
-            "DROP themeColorBright"
+            "DROP themeContrastColor"
         );
     }
 }

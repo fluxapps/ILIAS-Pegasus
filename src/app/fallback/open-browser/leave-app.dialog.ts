@@ -8,6 +8,7 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
+import {ThemeService} from "../../services/theme.service";
 
 
 @Component({
@@ -16,8 +17,8 @@ import {TranslateService} from "@ngx-translate/core";
 export class LeaveAppDialog {
 
     private readonly log: Logger = Logging.getLogger(LeaveAppDialog.name);
-
     private readonly params: LeaveAppDialogNavParams;
+    private themeIonicContrastColor: string;
 
     constructor(
         private readonly nav: NavParams,
@@ -25,6 +26,13 @@ export class LeaveAppDialog {
         private readonly translate: TranslateService
     ) {
         this.params = <LeaveAppDialogNavParams>nav.data;
+    }
+
+    ionViewWillEnter(): void {
+        this.themeIonicContrastColor = "light";
+        if(ThemeService.customIsSet) {
+            this.themeIonicContrastColor = ThemeService.customColorContrast ? "light" : "dark";
+        }
     }
 
     dismiss(): void {
