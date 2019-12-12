@@ -1,5 +1,5 @@
 /** angular */
-import {HttpResponse as Response} from "@angular/common/http";
+import {HttpResponse as Response, HttpHeaders} from "@angular/common/http";
 import {InjectionToken, Injectable} from "@angular/core";
 /** ionic-native */
 import {HTTP, HTTPResponse} from "@ionic-native/http/ngx";
@@ -74,7 +74,7 @@ export class FileDownloaderImpl implements FileDownloader{
             this.log.trace(() => `Download-${requestId}: Clear cookies for request.`);
             this.http.clearCookies();
             this.log.trace(() => `Download-${requestId}: Redirects enabled: ${options.followRedirects}`);
-            this.http.disableRedirect(!options.followRedirects);
+            this.http.setFollowRedirect(!options.followRedirects);
             const response: HTTPResponseWorkaround =
                 (await this.http.downloadFile(options.url, options.body, options.headers, options.filePath)) as HTTPResponseWorkaround;
 
@@ -85,7 +85,7 @@ export class FileDownloaderImpl implements FileDownloader{
                 status: response.status,
                 statusText: "",
                 body: new ArrayBuffer(0),
-                headers: response.headers
+                headers: new HttpHeaders(response.headers)
             }));
         }
         catch (error) {

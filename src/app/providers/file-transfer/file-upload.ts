@@ -1,5 +1,5 @@
 /** angular */
-import {HttpResponse as Response} from "@angular/common/http";
+import {HttpResponse as Response, HttpHeaders} from "@angular/common/http";
 import {InjectionToken, Injectable} from "@angular/core";
 /** ionic-native */
 import {HTTP, HTTPResponse} from "@ionic-native/http/ngx";
@@ -74,7 +74,7 @@ export class FileUploaderImpl implements FileUploader{
             this.log.trace(() => `Upload-${requestId}: Clear cookies for request.`);
             this.http.clearCookies();
             this.log.trace(() => `Upload-${requestId}: Redirects enabled: ${options.followRedirects}`);
-            this.http.disableRedirect(!options.followRedirects);
+            this.http.setFollowRedirect(!options.followRedirects);
             const response: HTTPResponseWorkaround =
                 (await this.http.uploadFile(options.url, "", options.headers, options.filePath, options.name)) as HTTPResponseWorkaround;
             this.log.trace(() => `Upload-${requestId}: Transfer finished.`);
@@ -92,7 +92,7 @@ export class FileUploaderImpl implements FileUploader{
                 status: response.status,
                 statusText: "",
                 body: bodyBuffer,
-                headers: response.headers
+                headers: new HttpHeaders(response.headers)
             }));
         }
         catch (error) {
