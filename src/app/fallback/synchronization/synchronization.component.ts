@@ -1,6 +1,5 @@
-import { Component } from "@angular/core";
-import {FooterToolbarService} from "../../../services/footer-toolbar.service";
-import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {Component} from "@angular/core";
+import {FooterToolbarService} from "../../services/footer-toolbar.service";
 
 @Component({
   templateUrl: "synchronization.html"

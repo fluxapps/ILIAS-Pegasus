@@ -1,0 +1,54 @@
+<!--
+  Generated template for the MenuPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header no-border no-shadow>
+
+    <ion-toolbar color="primary" class=top-header no-border no-shadow>
+
+        <div no-lines color="nobg-w"  text-center text-wrap>
+            <ion-header class="main-header" no-border no-shadow>Menu</ion-header>
+        </div>
+
+    </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content class="page_menu" color="primary">
+    <ion-list >
+        <ion-item button color="primary" (click)="navigateTo('settings')">
+            <ion-icon item-start name="settings"></ion-icon>
+            {{ 'settings.title' | translate }}
+        </ion-item>
+        <ion-item button color=nobg-w (click)="navigateTo('info')">
+            <ion-icon item-start name="information-circle"></ion-icon>
+            {{ 'info.title' | translate }}
+        </ion-item>
+        <ion-item button color="nobg-w" (click)="openPrivacyPolicy('https://www.ilias-pegasus.de/datenschutz/')" class="privacy-pegasus">
+            <ion-icon item-start name="checkmark-circle-outline"></ion-icon>
+            {{ 'datasecurity.title' | translate }}
+        </ion-item>
+        <ion-item button color="nobg-w" (click)="openPrivacyPolicy('https://iq-lernen.de/Datenschutzerklaerung_ILIAS_IQ.pdf')"class="privacy-iq">
+            <ion-icon item-start name="checkmark-circle-outline"></ion-icon>
+            {{ 'datasecurity.title' | translate }}
+        </ion-item>
+        <ion-item button color="nobg-w" (click)="openPrivacyPolicy('https://zwh.de/Datenschutzerklaerung_2018_August.pdf')"class="privacy-zwh">
+            <ion-icon item-start name="checkmark-circle-outline"></ion-icon>
+            {{ 'datasecurity.title' | translate }}
+        </ion-item>
+        <ion-item button color="nobg-w" (click)="openPrivacyPolicy('https://www.digitaler-weiterbildungscampus.de/datenschutzerklaerung.html')"class="privacy-mfkjusb">
+            <ion-icon item-start name="checkmark-circle-outline"></ion-icon>
+            {{ 'datasecurity.title' | translate }}
+        </ion-item>
+        <ion-item button color=nobg-w (click)="logout()">
+            <ion-icon item-start name="exit"></ion-icon>
+            {{ 'logout.title' | translate }}
+        </ion-item>
+
+    </ion-list>
+    <img class=menu-bottom-image src="assets/img/header.svg">
+</ion-content>
+

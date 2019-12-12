@@ -1,0 +1,167 @@
+<ion-header>
+  <ion-toolbar color="primary">
+      <ion-row>
+
+          <ion-buttons>
+              <ion-back-button text="" icon="arrow-back"></ion-back-button>
+          </ion-buttons>
+
+          <ion-title>
+              {{'info.title' | translate:{value: null} }}
+          </ion-title>
+
+      </ion-row>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding class="page_info">
+  <div [ngSwitch]="tab">
+    <div *ngSwitchCase="'info'">
+      <!--KARTE BUGS-->
+      <ion-card padding class="version-card">
+        <ion-card-header>
+            <ion-card-title>ILIAS Pegasus</ion-card-title>
+            <ion-card-subtitle>Version 4.0.0</ion-card-subtitle>
+        </ion-card-header>
+       
+        <!-- s -->
+      </ion-card>
+      <ion-card padding class="version-card-iq">
+        <ion-card-header>Lernwelt</ion-card-header>
+        <ion-card-content>
+          <p>Basierend auf ILIAS-Pegasus</p>
+          <p>Version 2.0.2</p>
+        </ion-card-content>
+      </ion-card>
+      <ion-card padding class="reporting-card">
+        <ion-card-header>
+          <ion-card-title>Anregungen und Hinweise zu Fehlern</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <p>Hast du einen Fehler gefunden? Bitte hilf uns die App zu verbessern. Melde dich bei:</p>
+            <a (click)="browse('mailto:support@ilias-pegasus.de')">support@ilias-pegasus.de</a>
+        </ion-card-content>
+      </ion-card>
+      <ion-card padding class="reporting-card-iq">
+          <ion-item text-wrap>
+              <h2>Zentralstelle für die Weiterbildung im Handwerk e. V.</h2>
+              <p>Bereitstellung und Design </p>
+            </ion-item>
+        <ion-card-content>
+            Ansprechpartnerin: <br>
+            Anna Wunderle (UX & UI Design) <br>
+            Tel: 0211/302009-56 <br>
+            <p>awunderle@zwh.de</p>
+          <!-- </button> -->
+        </ion-card-content>
+        <ion-button color="primary" clear small (click)="browse('https://zwh.de')">
+          <ion-icon name="globe"></ion-icon> https://zwh.de
+        </ion-button>
+      </ion-card>
+      <!--KARTE INHALT-->
+      <ion-card padding>
+        <ion-card-header>
+          <ion-card-title>Inhaltshinweis</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich. Für die Optimierung der App werden Nutzungsdaten anonymisiert protokolliert und ausgewertet.</p>
+        </ion-card-content>
+      </ion-card>
+      <!--KARTE STURA-->
+      <ion-card padding class="stura-card">    
+          <img src="assets/img/stura.jpg">
+          <ion-card-header>
+              <ion-card-title>Studierendenrat der Universität Freiburg</ion-card-title>
+              <ion-card-subtitle>Finanzierung</ion-card-subtitle>
+          </ion-card-header>
+        <ion-card-content>
+          <p>Die Spezifikation und die Entwicklung der ersten Version der App wurden finanziert durch das Studierendenvorschlagsbudget des Studierendenrates der Universität Freiburg.</p>
+        </ion-card-content>
+        <div>
+          <ion-button color="primary" fill="clear" (click)="browse('https://www.stura.uni-freiburg.de')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.stura.uni-freiburg.de
+          </ion-button>
+        </div>
+      </ion-card>
+      <!-- KARTE UNIFR -->
+      <ion-card padding class="freiburg-card">
+        <img src="assets/img/unifrei.jpg">
+        <ion-card-header>
+            <ion-card-title>Rechenzentrum Albert-Ludwigs-Universität Freiburg</ion-card-title>
+            <ion-card-subtitle>Projektleitung</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Das Rechenzentrum der Universität Freiburg hat die Spezifikations- und Umsetzungsphase der App geleitet.</p>
+        </ion-card-content>
+        <div>
+          <ion-button color="primary" fill="clear" (click)="browse('https://www.rz.uni-freiburg.de')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.rz.uni-freiburg.de
+          </ion-button>
+        </div>
+      </ion-card>
+      <!-- KARTE UNIMAR -->
+      <ion-card padding class="marburg-card">
+        <img src="assets/img/unimar.png">
+        <ion-card-header>
+            <ion-card-title>Hochschulrechenzentrum Philipps-Universität Marburg</ion-card-title>
+            <ion-card-subtitle>Verantwortlich für das ILIAS RESTPlugin</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Das Hochschulrechenzentrum der Philipps-Universität Marburg ermöglicht mit dem ILIAS RESTPlugin die Schnittstelle zu ILIAS.</p>
+        </ion-card-content>
+        <div>
+          <ion-button color="primary" fill="clear" (click)="browse('https://www.uni-marburg.de/hrz')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.uni-marburg.de/hrz
+          </ion-button>
+        </div>
+      </ion-card>
+      <!-- KARTE SIG MOBILE -->
+      <ion-card padding class="sig-card">
+          <ion-card-header>
+              <ion-card-title>ILIAS SIG Mobile</ion-card-title>
+              <ion-card-subtitle>Community und Koordination Weiterentwicklung</ion-card-subtitle>
+          </ion-card-header>
+        <ion-card-content>
+          <p>Die Special Interest Group (SIG) ILIAS Mobile ist verantwortlich für die Koordination der Weiterentwicklung der App und bietet einen Raum für Diskussionen rund um die App.</p>
+        </ion-card-content>
+        <div>
+          <ion-button color="primary" fill="clear" (click)="browse('https://www.ilias.de/docu/goto_docu_grp_5182.html')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.ilias.de/SIG-Mobile
+          </ion-button>
+        </div>
+      </ion-card>
+      <!--KARTE studer raimann ag-->
+      <ion-card padding>
+          <img src="assets/img/sturai.png">
+          <ion-card-header>
+              <ion-card-title>studer + raimann ag</ion-card-title>
+              <ion-card-subtitle>App-Entwicklung & Wartung</ion-card-subtitle>
+          </ion-card-header>
+        <ion-card-content>
+          <p>Die App wurde umgesetzt und wird gewartet durch die studer + raimann ag, IT- and Learning-Solutions.</p>
+        </ion-card-content>
+        <div>
+          <ion-button color="primary" fill="clear" (click)="browse('https://www.studer-raimann.ch')">
+            <ion-icon name="globe"></ion-icon>&nbsp;https://www.studer-raimann.ch
+          </ion-button>
+        </div>
+      </ion-card>
+    </div>
+    <ion-list *ngSwitchCase="'guide'">
+      <ion-card>
+        <ion-card-content>
+          <p>{{ 'info.instructions1' | translate:[]}}</p>
+          <!--<p>-->
+          <div>
+            <div class="centered">
+              <ion-icon name="cloud-download" color="lightish"></ion-icon> &rarr;
+              <ion-icon name="cloud-download" color="primary"></ion-icon>
+            </div>
+          </div>
+          <!--</p>-->
+          <p>{{ 'info.instructions2' | translate:[]}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </div>
+</ion-content>

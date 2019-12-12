@@ -1,0 +1,47 @@
+<ion-header>
+    <ion-toolbar color="header-element">
+        <ion-row>
+
+            <ion-buttons>
+                <ion-back-button text="" icon="arrow-back"></ion-back-button>
+            </ion-buttons>
+
+            <ion-title>
+                {{ object.title }}
+            </ion-title>
+
+        </ion-row>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding class="page_object_details">
+    <div padding *ngIf="object.repoPath">
+        <span *ngFor="let node of object.repoPath; let last = last">
+            <span>{{node}}</span>
+            <span *ngIf="! last"> » </span>
+        </span>
+    </div>
+    <div padding *ngIf="object.description">
+        {{ object.description }}
+    </div>
+    <p text-wrap class="padding" *ngFor="let action of actions">
+        <ion-button block (click)="executeAction(action)">{{ action.title }}</ion-button>
+    </p>
+    <ion-list>
+        <ion-item text-wrap *ngFor="let detail of details">
+            {{ detail.label | translate:{value: null} }}:
+            <span> {{ detail.value | translate:{value: null} }} </span>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<!-- <ion-footer>
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button>
+                <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
+            </button>
+        </ion-buttons>
+        <div color="primary" *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
+    </ion-toolbar>
+</ion-footer> -->
