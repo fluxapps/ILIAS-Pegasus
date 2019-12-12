@@ -144,7 +144,7 @@ export class PictureBlockMapper implements ArrayMapper<PictureBlockEntity, Pictu
         await this.removeFile(oldUrl);
       }
 
-      entity.applies(function(): void {
+      entity.applies<PictureBlockEntity>(function(): void {
         this.iliasId = pictureBlock.id;
         this.sequence = pictureBlock.sequence;
         this.title = pictureBlock.title;
@@ -252,17 +252,17 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
 
     for(const videoBlock of remote) {
 
-      const entity: VideoBlockEntity = findIn(local, videoBlock, (entity, block) => entity.iliasId == block.id)
+      const entity: VideoBlockEntity = findIn(local, videoBlock, (entity, block) => entity.iliasId === block.id)
         .orElse(new VideoBlockEntity());
 
-      if (entity.hash != videoBlock.hash) {
+      if (entity.hash !== videoBlock.hash) {
         this.log.trace(() => `Hash of video does not match: Download video ${videoBlock.url}`);
         const oldUrl: string = entity.url;
         entity.url = await this.resourceTransfer.transfer(videoBlock.url);
         await this.removeFile(oldUrl);
       }
 
-      entity.applies(function(): void {
+      entity.applies<VideoBlockEntity>(function(): void {
         this.iliasId = videoBlock.id;
         this.sequence = videoBlock.sequence;
         this.hash = videoBlock.hash;
@@ -278,7 +278,7 @@ export class VideoBlockMapper implements ArrayMapper<VideoBlockEntity, VideoBloc
   private async removeFile(path: string | undefined): Promise<void> {
 
     // if path is undefined, there was never a picture before to remove
-    if (isDefined(path)) {
+    if (isDefined(path) && path.length > 0) {
       const fileName: string = path.split("/").pop();
       const pathOnly: string = path.replace(fileName, "");
 

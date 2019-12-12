@@ -94,7 +94,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         const learnplaceEntity: Observable<LearnplaceEntity> = user.pipe(
             mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
             map(it => it.orElse(new LearnplaceEntity().applies(function(): void {
-                this.id = uuid.create(4);
+                this.id = uuid.create(4).toString();
             })))
         );
 
