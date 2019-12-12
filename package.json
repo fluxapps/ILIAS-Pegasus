@@ -113,7 +113,7 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
-    "typescript": "^3.5.3",
+    "typescript": "~3.5.3",
     "xml-js": "^1.6.11"
   },
   "description": "ILIAS-Pegasus",
