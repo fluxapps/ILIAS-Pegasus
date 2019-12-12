@@ -67,7 +67,7 @@ declare global {
     /**
      * Calls the specified function {@code block} with 'this' value and returns 'this' value.
      */
-    applies<T>(block: () => void): T;
+    applies<T>(block: (this: T) => void): T;
 
     /**
      * Calls the specified function {@code block} with 'this' value as its argument and returns 'this' value.
