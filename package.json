@@ -63,7 +63,7 @@
     "http-status-codes": "^1.4.0",
     "ionic-lifecycle-interface": "^1.0.7",
     "ionicons": "^4.6.2",
-    "jsonschema": "^1.2.4",
+    "jsonschema": "^1.2.5",
     "mapbox-gl": "^1.5.0",
     "polarcape-cordova-plugin-document-handler": "^1.1.0",
     "reflect-metadata": "^0.1.13",
