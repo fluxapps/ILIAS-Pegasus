@@ -25,7 +25,7 @@ import {VideoBlockEntity} from "../../entity/videoblock.entity";
 import {AccordionEntity} from "../../entity/accordion.entity";
 import {isDefined} from "../../../util/util.function";
 import uuid from "uuid-js";
-import { mergeMap, map, mergeAll, catchError } from "rxjs/operators";
+import {mergeMap, map, mergeAll, catchError} from "rxjs/operators";
 
 /**
  * Describes a loader for a single learnplace.
@@ -46,6 +46,7 @@ export interface LearnplaceLoader {
      */
     load(objectId: number): Promise<void>
 }
+
 export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new InjectionToken("token four learnplace loader");
 
 /**
@@ -70,7 +71,8 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         private readonly videoBlockMapper: VideoBlockMapper,
         private readonly accordionMapper: AccordionMapper,
         private readonly visitJournalMapper: VisitJournalMapper
-    ) {}
+    ) {
+    }
 
     /**
      * Loads all relevant data of the learnplace matching
@@ -173,7 +175,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                 }),
                 mergeMap(it => {
 
-                    if(isDefined(it.id)) {
+                    if (isDefined(it.id)) {
                         return from(this.learnplaceRepository.exists(it.id));
                     }
 
@@ -181,12 +183,12 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                 }),
                 mergeMap(exists => {
 
-                if(exists) {
-                    this.log.warn(() => `Learnplace with object id "${objectId}" could not be loaded, but is available from local storage`);
-                    return EMPTY;
-                }
+                    if (exists) {
+                        this.log.warn(() => `Learnplace with object id "${objectId}" could not be loaded, but is available from local storage`);
+                        return EMPTY;
+                    }
 
-                return throwError(new LearnplaceLoadingError(`Could not load learnplace with id "${objectId}" over http connection`));
+                    return throwError(new LearnplaceLoadingError(`Could not load learnplace with id "${objectId}" over http connection`));
 
                 })
             ).toPromise();
