@@ -6,6 +6,8 @@
     variables:
         npm_config_cache: &npm_cache_path "$CI_BUILDS_DIR/.node_cache_pegasus"
         CHROME_BIN: "chromium-browser"
+        MAPBOX_API_KEY: "key-is-not-required"
+        PRODUCTION: "false"
     script:
         - npm run test:ci
     coverage: '/All files \|\s*(\d+(\.\d+)?)/'
