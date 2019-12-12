@@ -75,14 +75,6 @@
                         </ion-button>
                     </ion-item>
                 </ion-item-group>
-                <ion-item text-wrap color="list-element"><!-- TODO (dev) remove color entry -->
-                    <ion-label>Color</ion-label>
-                    <ion-input type="text" text-right [(ngModel)]="settings.themeColorHex"></ion-input>
-                </ion-item>
-                <ion-item text-wrap color="list-element"><!-- TODO (dev) remove color entry -->
-                    <ion-label>Bright</ion-label>
-                    <ion-toggle [(ngModel)]="settings.themeColorBright"></ion-toggle>
-                </ion-item>
                 <ion-col>
                     <ion-button expand="block" (click)="saveSettings()" >{{ 'Save' | translate:[] }}
                     </ion-button>

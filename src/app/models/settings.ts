@@ -48,7 +48,7 @@ export class Settings extends ActiveRecord {
     /**
      * Color that is set in the PegasusHelper-plugin
      */
-    themeColorBright: boolean = false;
+    themeContrastColor: boolean = false;
 
     constructor(id: number = 0) {
         super(id, new SQLiteConnector("settings", [
@@ -59,7 +59,7 @@ export class Settings extends ActiveRecord {
             "downloadOnStart",
             "downloadWlan",
             "themeColorHex",
-            "themeColorBright"
+            "themeContrastColor"
         ]));
 
         if(id == 0) {

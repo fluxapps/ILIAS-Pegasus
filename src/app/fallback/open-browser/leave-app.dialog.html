@@ -18,7 +18,7 @@
       </h1>
       </ion-row>
       <ion-row padding justify-content-center>
-        <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button" color="light">{{'fallback.browser_ok' | translate:{value: null} }}</ion-button>
+        <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button" [color]="themeIonicContrastColor">{{'fallback.browser_ok' | translate:{value: null} }}</ion-button>
       </ion-row>
       <ion-row padding justify-content-center>
         <a text-center id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate:{value: null} }}</a>

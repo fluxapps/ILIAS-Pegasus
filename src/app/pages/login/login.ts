@@ -14,6 +14,9 @@ import {Log} from "../../services/log.service";
 /** misc */
 import {SynchronizationService} from "../../services/synchronization.service";
 import {ThemeService} from "../../services/theme.service";
+import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
+import {sync} from "ionicons/icons";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     templateUrl: "login.html"
@@ -34,7 +37,8 @@ export class LoginPage {
                 private readonly event: Events,
                 private readonly appVersionPlugin: AppVersion,
                 private readonly auth: AuthenticationProvider,
-                private readonly alertCtr: AlertController
+                private readonly alertCtr: AlertController,
+                private readonly translate: TranslateService,
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
@@ -56,10 +60,11 @@ export class LoginPage {
         browser.on("exit").subscribe(() => {
             Log.write(this, "exit browser");
             if(AuthenticationProvider.isLoggedIn()) {
-                this.checkAndLoadOfflineContent()
+                this.sync.synchronizeThemeData()
+                    .then(() => ThemeService.setCustomColor())
+                    .then(() => this.checkAndLoadOfflineContent())
                     .then(() => this.sync.resetOfflineSynchronization(true))
-                    .then(() => this.updateLastVersionLogin())
-                    .then(() => ThemeService.setCustomColor());
+                    .then(() => this.updateLastVersionLogin());
             }
         });
     }
@@ -70,8 +75,8 @@ export class LoginPage {
     private checkOnline(): boolean {
         if(!window.navigator.onLine) {
             this.alertCtr.create({
-                header: "TODO title-offline",
-                message: "TODO msg-no-login-when-offline",
+                header: this.translate.instant("offline_title"),
+                message: this.translate.instant("offline_content"),
                 buttons: [
                     {text: "Ok"}
                 ]

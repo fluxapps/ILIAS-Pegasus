@@ -19,6 +19,9 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
 import {Observable, from, merge} from "rxjs";
+import {ThemeService} from "./theme.service";
+import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
+import {Settings} from "../models/settings";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -60,7 +63,8 @@ export class SynchronizationService {
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
                 @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
                 @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-                private readonly alertCtr: AlertController
+                private readonly alertCtr: AlertController,
+                private readonly rest: ILIASRestProvider
     ) {}
 
     /**
@@ -487,6 +491,7 @@ export class SynchronizationService {
      */
     private async processOpenSynchronizationTasks(): Promise<void> {
         await this.synchronizeFileLearningProgresses();
+        await this.synchronizeThemeData().then(() => ThemeService.setCustomColor());
     }
 
     /**
@@ -494,8 +499,21 @@ export class SynchronizationService {
      * a method that posts for each result
      */
     async synchronizeFileLearningProgresses(): Promise<void> {
+        if(!window.navigator.onLine) return;
+
         const unsynced: Array<FileData> = await FileData.getOpenLearningProgressPosts();
         await this.fileService.postLearningProgressDone(unsynced);
+    }
+
+    /**
+     * loads the parameters of the theme from ILIAS
+     */
+    async synchronizeThemeData(): Promise<void> {
+        const themeData: ThemeData = await this.rest.getThemeData();
+        const settings: Settings = await AuthenticationProvider.getUser().settings;
+        settings.themeColorHex = `#${themeData.themePrimaryColor}`;
+        settings.themeContrastColor = themeData.themeContrastColor;
+        await settings.save();
     }
 }
 

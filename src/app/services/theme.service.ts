@@ -6,6 +6,9 @@ import {Settings} from "../models/settings";
     providedIn: "root"
 })
 export class ThemeService {
+    static customIsSet: boolean;
+    static customColorHex: string;
+    static customColorContrast: boolean;
 
     private static colorNames: Array<string> = [
         "primary_shade",
@@ -65,7 +68,8 @@ export class ThemeService {
             )
         );
 
-        ThemeService.setCSVColors("tile-image", themeCols["primary_tint"])
+        ThemeService.setCSVColors("tile-image", themeCols["primary_tint"]);
+        ThemeService.customIsSet = true;
     }
 
     /**
@@ -77,6 +81,8 @@ export class ThemeService {
                 document.documentElement.style.removeProperty(property)
             )
         );
+
+        ThemeService.customIsSet = false;
     }
 
     /**
@@ -102,7 +108,7 @@ export class ThemeService {
     }
 
     /**
-     * collects all CSV-images if the class className and changes the primary color
+     * collects all CSV-images of the class className and changes the primary color
      */
     private static setCSVColors(className: string, hex: string): void {
         const svgs: HTMLCollection = document.getElementsByClassName(className);
@@ -130,19 +136,19 @@ export class ThemeService {
      */
     private static async getThemeColors(): Promise<object> {
         const settings: Settings = await AuthenticationProvider.getUser().settings;
-        const primary: string =  ThemeService.getCustomColor(settings);
-        const bright: boolean = settings.themeColorBright;
+        ThemeService.customColorHex =  ThemeService.getCustomColor(settings);
+        ThemeService.customColorContrast = settings.themeContrastColor;
 
-        function toRgbRange(v: number): number { // TODO Q: limit valid input range to rng-+12
+        function toRgbRange(v: number): number {
             return Math.max(0, Math.min(255, v));
         }
 
-        const normal: Array<number> = ThemeService.hexToRgb(primary);
+        const normal: Array<number> = ThemeService.hexToRgb(ThemeService.customColorHex);
         const shade: Array<number> = normal.map(v => toRgbRange(v - 12));
         const tint: Array<number> = normal.map(v => toRgbRange(v + 12), 255);
 
-        const contrast: Array<number> =  bright ? [10, 10, 10] : [255, 255, 255];
-        const cShade: Array<number> = bright ? contrast.map(v => toRgbRange(v + 40)) : contrast.map(v => toRgbRange(v - 40));
+        const contrast: Array<number> =  ThemeService.customColorContrast ? [255, 255, 255] : [10, 10, 10];
+        const cShade: Array<number> = ThemeService.customColorContrast ? contrast.map(v => toRgbRange(v - 40)) : contrast.map(v => toRgbRange(v + 40));
 
         return {
             "primary_shade" : ThemeService.rgbToHex(shade),
