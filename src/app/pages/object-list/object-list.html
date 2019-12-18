@@ -37,7 +37,7 @@
 
   <!-- status : display object-list, synchronization complete -->
     <ng-container >
-            <ion-list *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
+            <ion-list  *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
                     <div class="" *ngIf="parent !== undefined">
                         <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element">
                             <ion-card-content>
@@ -53,7 +53,7 @@
                             </ion-card-content>
                         </ion-card>
                     </div>
-                        <ion-card   class="ion-margin-horizontal"  button="true" *ngFor="let entry of content" (click)="onClick(entry.object)">
+                        <ion-card class="ion-margin-horizontal"  button="true" *ngFor="let entry of content" (click)="onClick(entry.object)">
                             <ion-row align-items-center>
                                 <ion-col size="2">
                                     <img class="object-presenter-icon" [src]="entry.presenter.icon()">
@@ -121,7 +121,7 @@
     <!-- Sekeletion -->
         <ng-container *ngIf="(checkPageState({loading: true}) && (checkPageState({favorites: true}) || checkPageState({favorites: false, online: true})))">
             <!-- status : synchronization in progress, refresher not pulled -->
-            <ion-card>
+            <ion-card class=loading-card color=secondary>
                 <ion-row>
                         <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
                 </ion-row>
