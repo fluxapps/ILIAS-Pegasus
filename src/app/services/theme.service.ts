@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../providers/authentication.provider";
 import {Settings} from "../models/settings";
 
 @Injectable({

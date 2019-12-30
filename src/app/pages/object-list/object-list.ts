@@ -31,7 +31,7 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";

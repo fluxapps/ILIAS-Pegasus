@@ -3,7 +3,7 @@ import {Inject, Injectable, InjectionToken} from "@angular/core";
 /** providers */
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 /** errors and exceptions */
 import {NoSuchElementError} from "../../error/errors";
 import {RESTAPIException} from "../../exceptions/RESTAPIException";

@@ -55,6 +55,7 @@ import {DB_MIGRATION, MIGRATION_SUPPLIER} from "./services/migration/migration.a
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "./services/migration/migration.service";
 import {NEWS_SYNCHRONIZATION, NewsSynchronizationImpl} from "./services/news/news.synchronization";
 import {SynchronizationService} from "./services/synchronization.service";
+import {LocalStorageService} from "./services/local-storage.service";
 import {
     AuthTokenSupplier,
     INSTALLATION_LINK_PROVIDER,
@@ -65,7 +66,7 @@ import {
 } from "./services/link/link-builder.supplier";
 /** providers */
 import {DataProvider} from "./providers/data-provider.provider";
-import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "./providers/authentication.provider";
 import {ExecuteSyncProvider} from "./providers/execute-sync/execute-sync";
 import {FILE_DOWNLOADER, FileDownloaderImpl} from "./providers/file-transfer/file-download";
 import {FILE_UPLOADER, FileUploaderImpl} from "./providers/file-transfer/file-upload";
@@ -425,6 +426,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         ThemeService,
         FileService,
         SynchronizationService,
+        LocalStorageService,
         DataProviderFileObjectHandler,
         StatusBar,
         InAppBrowser,

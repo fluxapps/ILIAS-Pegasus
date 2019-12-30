@@ -20,7 +20,7 @@ import {Logging} from "../../services/logging/logging.service";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticateError} from "../../providers/http";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 
 /**

@@ -22,7 +22,7 @@ import {User} from "./models/user";
 import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "./providers/authentication.provider";
 import {ObjectListPage} from "./pages/object-list/object-list";
 /** misc */
 import getMessage = Logging.getMessage;

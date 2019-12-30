@@ -8,7 +8,7 @@ import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../con
 import {Settings} from "../../models/settings";
 /** models */
 import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 /** logging */
 import {Log} from "../../services/log.service";
 /** misc */
