@@ -18,12 +18,12 @@ export class LeaveAppDialog {
 
     private readonly log: Logger = Logging.getLogger(LeaveAppDialog.name);
     private readonly params: LeaveAppDialogNavParams;
-    private themeIonicContrastColor: string;
+    themeIonicContrastColor: string;
 
     constructor(
         private readonly nav: NavParams,
         private readonly modalCtrl: ModalController,
-        private readonly translate: TranslateService
+        readonly translate: TranslateService
     ) {
         this.params = <LeaveAppDialogNavParams>nav.data;
     }
