@@ -7,10 +7,9 @@ import {Settings} from "../../models/settings";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {SynchronizationService} from "../../services/synchronization.service";
-import {ThemeColorService} from "../../services/theme-color.service";
 import {TranslateService} from "@ngx-translate/core";
-import {IconProvider} from "../../providers/theme/icon.provider";
 import {SetupClientPage} from "../../fallback/setup-client/setup-client.component";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 @Component({
     templateUrl: "login.html"
@@ -33,7 +32,7 @@ export class LoginPage {
                 private readonly auth: AuthenticationProvider,
                 private readonly alertCtr: AlertController,
                 private readonly translate: TranslateService,
-                private readonly iconProvider: IconProvider,
+                private readonly themeProvider: ThemeProvider,
                 private readonly modal: ModalController,
                 private readonly navCtrl: NavController,
                 private readonly ngZone: NgZone
@@ -47,7 +46,7 @@ export class LoginPage {
     }
 
     ionViewWillEnter(): void {
-        ThemeColorService.setDefaultColor();
+        ThemeProvider.setDefaultColor();
     }
 
     login(): void {
@@ -76,8 +75,7 @@ export class LoginPage {
      */
     private async loginSequence(): Promise<void> {
         await this.updateLastVersionLogin();
-        await this.sync.synchronizeThemeData();
-        await this.iconProvider.loadResources();
+        await this.themeProvider.synchronizeAndSetCustomTheme();
         await this.checkAndLoadOfflineContent();
         await this.sync.resetOfflineSynchronization(true);
     }

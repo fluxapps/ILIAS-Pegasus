@@ -38,7 +38,7 @@ import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "./serv
 import {GeolocationModule} from "./services/device/geolocation/geolocation.module";
 import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.util";
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
-import {ThemeColorService} from "./services/theme-color.service";
+import {CssStyleService} from "./services/theme/css-style.service";
 import {FileService} from "./services/file.service";
 import {FilesystemModule} from "./services/filesystem/filesystem.module";
 import {FooterToolbarService} from "./services/footer-toolbar.service";
@@ -423,7 +423,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         ILIASRestProvider,
         FooterToolbarService,
         DataProvider,
-        ThemeColorService,
+        CssStyleService,
         FileService,
         SynchronizationService,
         LocalStorageService,

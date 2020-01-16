@@ -7,7 +7,7 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 /** misc */
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ILIASInstallation} from "../../config/ilias-config";
-import {ThemeColorService} from "../../services/theme-color.service";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 /**
  * Generated class for the DesktopPage page.
@@ -34,7 +34,7 @@ export class DesktopPage {
 
     // count the number of loaded SVGs and set theme once all of them are loaded
     private svgLoaded(): void {
-        ThemeColorService.setCustomColor();
+        ThemeProvider.setCustomColor();
     }
 
     // navigate to a tab

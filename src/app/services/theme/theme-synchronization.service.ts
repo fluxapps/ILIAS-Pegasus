@@ -1,12 +1,11 @@
 import {Inject, Injectable} from "@angular/core";
-import {LocalStorageService} from "./local-storage.service";
-import {LINK_BUILDER, LinkBuilder} from "./link/link-builder.service";
-import {User} from "../models/user";
-import {AuthenticationProvider} from "../providers/authentication.provider";
-import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
-import {Settings} from "../models/settings";
-import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../providers/file-transfer/file-download";
-import {ThemeColorService} from "./theme-color.service";
+import {LocalStorageService} from "../local-storage.service";
+import {LINK_BUILDER, LinkBuilder} from "../link/link-builder.service";
+import {User} from "../../models/user";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {ILIASRestProvider, ThemeData} from "../../providers/ilias-rest.provider";
+import {Settings} from "../../models/settings";
+import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {File} from "@ionic-native/file/ngx";
 
 @Injectable({
@@ -36,9 +35,6 @@ export class ThemeSynchronizationService {
         settings.themeContrastColor = themeData.themeContrastColor;
         settings.themeTimestamp = themeData.themeTimestamp;
         await settings.save();
-
-        // set custom theme in app (has no effect for vanilla version)
-        await ThemeColorService.setCustomColor();
 
         // update icons
         for (let i: number = 0; i < themeData.themeIconResources.length; i++) {
@@ -73,10 +69,11 @@ export class ThemeSynchronizationService {
             await this.downloader.download(download);
             try {
                 const svg: string = await this.file.readAsText(path, file);
-                if(svg.indexOf("svg")) return;
+                if(svg.includes("svg")) return;
             } catch (e) {
-                console.log(`problem when loading '${path}' to '${file}'`);
+                console.error(`problem when loading '${file}' to '${path}'`);
             }
         }
+        throw new Error(`Unable to load '${path}' to '${file}'`);
     }
 }

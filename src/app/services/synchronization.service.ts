@@ -14,9 +14,9 @@ import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchroniza
 import {AuthenticationProvider} from "../providers/authentication.provider";
 import {from, merge, Observable} from "rxjs";
 import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {ThemeSynchronizationService} from "./theme-synchronization.service";
+import {ThemeSynchronizationService} from "./theme/theme-synchronization.service";
 import {Log} from "./log.service";
-import {IconProvider} from "../providers/theme/icon.provider";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -62,7 +62,7 @@ export class SynchronizationService {
         @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
         @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
         @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-        private readonly iconProvider: IconProvider,
+        private readonly themeProvider: ThemeProvider,
     ) {}
 
     /**
@@ -489,8 +489,7 @@ export class SynchronizationService {
      */
     private async processOpenSynchronizationTasks(): Promise<void> {
         await this.synchronizeFileLearningProgresses();
-        await this.synchronizeThemeData();
-        await this.iconProvider.loadResources();
+        await this.themeProvider.synchronizeAndSetCustomTheme();
     }
 
     /**
@@ -502,13 +501,6 @@ export class SynchronizationService {
 
         const unsynced: Array<FileData> = await FileData.getOpenLearningProgressPosts();
         await this.fileService.postLearningProgressDone(unsynced);
-    }
-
-    /**
-     * loads the parameters of the theme from ILIAS
-     */
-    async synchronizeThemeData(): Promise<void> {
-        await this.themeSync.synchronize();
     }
 }
 

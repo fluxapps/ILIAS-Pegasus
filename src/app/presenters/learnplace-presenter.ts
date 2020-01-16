@@ -1,10 +1,10 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
-import {IconProvider} from "../providers/theme/icon.provider";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class LearnplaceObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return IconProvider.getIconSrc("xsrl");
+        return ThemeProvider.getIconSrc("xsrl");
     }
 
     showTypeAsText(): boolean {

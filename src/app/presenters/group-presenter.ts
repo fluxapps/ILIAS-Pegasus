@@ -1,10 +1,10 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
-import {IconProvider} from "../providers/theme/icon.provider";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class GroupObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return IconProvider.getIconSrc("grp");
+        return ThemeProvider.getIconSrc("grp");
         //return "assets/icon/obj_group.svg";
     }
 

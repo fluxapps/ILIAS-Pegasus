@@ -1,12 +1,6 @@
-import {ChangeDetectorRef, Component, Inject, NgZone} from "@angular/core";
+import {Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {
-    ActionSheetController,
-    AlertController,
-    ModalController,
-    NavController,
-    ToastController
-} from "@ionic/angular";
+import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -37,7 +31,7 @@ import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
-import {IconProvider} from "../../providers/theme/icon.provider";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -300,7 +294,7 @@ export class ObjectListPage {
      * method fot the template to get the source of the badge icon
      */
     private getBadgeSrc(): string {
-        return IconProvider.getIconSrc("link");
+        return ThemeProvider.getIconSrc("link");
     }
 
     /* = = = = = *
