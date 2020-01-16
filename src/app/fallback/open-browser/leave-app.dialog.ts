@@ -8,7 +8,7 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
-import {ThemeService} from "../../services/theme.service";
+import {ThemeColorService} from "../../services/theme-color.service";
 
 
 @Component({
@@ -30,8 +30,8 @@ export class LeaveAppDialog {
 
     ionViewWillEnter(): void {
         this.themeIonicContrastColor = "light";
-        if(ThemeService.customIsSet) {
-            this.themeIonicContrastColor = ThemeService.customColorContrast ? "light" : "dark";
+        if(ThemeColorService.customIsSet) {
+            this.themeIonicContrastColor = ThemeColorService.customColorContrast ? "light" : "dark";
         }
     }
 

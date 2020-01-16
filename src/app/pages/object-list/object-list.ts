@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone} from "@angular/core";
+import {ChangeDetectorRef, Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {
     ActionSheetController,
@@ -37,6 +37,7 @@ import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
+import {IconProvider} from "../../providers/theme/icon.provider";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -91,8 +92,8 @@ export class ObjectListPage {
                 @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
-                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction
-    ) { }
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
+    ) {}
 
     /* = = = = = = = *
      *  NAVIGATION   *
@@ -293,6 +294,13 @@ export class ObjectListPage {
         const content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
         ilObjects.forEach(o => content.push({object: o, presenter: ILIASObjectPresenterFactory.instance(o)}));
         this.content = content;
+    }
+
+    /**
+     * method fot the template to get the source of the badge icon
+     */
+    private getBadgeSrc(): string {
+        return IconProvider.getIconSrc("link");
     }
 
     /* = = = = = *

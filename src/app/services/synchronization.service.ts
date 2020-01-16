@@ -1,30 +1,22 @@
-/** angular */
 import {Inject, Injectable} from "@angular/core";
 import {AlertController} from "@ionic/angular";
-/** services */
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {LocalStorageService} from "./local-storage.service";
-import {LINK_BUILDER, LinkBuilder} from "./link/link-builder.service";
-/** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
-/** logging */
-import {Log} from "./log.service";
-/** misc */
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentication.provider";
 import {from, merge, Observable} from "rxjs";
-import {ThemeService} from "./theme.service";
-import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
-import {Settings} from "../models/settings";
-import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../providers/file-transfer/file-download";
+import {ILIASRestProvider} from "../providers/ilias-rest.provider";
+import {ThemeSynchronizationService} from "./theme-synchronization.service";
+import {Log} from "./log.service";
+import {IconProvider} from "../providers/theme/icon.provider";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -66,12 +58,11 @@ export class SynchronizationService {
         private readonly translate: TranslateService,
         private readonly alertCtr: AlertController,
         private readonly rest: ILIASRestProvider,
-        private readonly localStorage: LocalStorageService,
+        private readonly themeSync: ThemeSynchronizationService,
         @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
         @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
         @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-        @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
-        @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
+        private readonly iconProvider: IconProvider,
     ) {}
 
     /**
@@ -498,7 +489,8 @@ export class SynchronizationService {
      */
     private async processOpenSynchronizationTasks(): Promise<void> {
         await this.synchronizeFileLearningProgresses();
-        await this.synchronizeThemeData().then(() => ThemeService.setCustomColor());
+        await this.synchronizeThemeData();
+        await this.iconProvider.loadResources();
     }
 
     /**
@@ -516,34 +508,7 @@ export class SynchronizationService {
      * loads the parameters of the theme from ILIAS
      */
     async synchronizeThemeData(): Promise<void> {
-        // get theme data from the server
-        const user: User = AuthenticationProvider.getUser();
-        const themeData: ThemeData = await this.rest.getThemeData(user);
-
-        // update settings accordingly
-        const settings: Settings = await user.settings;
-        settings.themeColorHex = `#${themeData.themePrimaryColor}`;
-        settings.themeContrastColor = themeData.themeContrastColor;
-        settings.themeTimestamp = themeData.themeTimestamp;
-        await settings.save();
-
-        // update icons in case they changed
-        for(let i: number = 0; i < themeData.themeIconResources.length; i++) {
-            const res: string = themeData.themeIconResources[i];
-            const url: string = await this.linkBuilder.resource().resource(res).build();
-            const root: string = await this.localStorage.getStorageLocation();
-            const path: string = await this.localStorage.createDirForUser("icons");
-            const name: string = res.match(/\w*\.svg$/)[0];
-            const downloadOptions: DownloadRequestOptions = <DownloadRequestOptions> {
-                url: url,
-                filePath: `${root}${path}${name}`,
-                body: "",
-                followRedirects: true,
-                headers: {},
-                timeout: 0
-            };
-            await this.downloader.download(downloadOptions);
-        }
+        await this.themeSync.synchronize();
     }
 }
 

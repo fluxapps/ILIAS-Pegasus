@@ -209,7 +209,7 @@ export interface ThemeData {
     themePrimaryColor: string,
     themeContrastColor: boolean,
     themeTimestamp: number,
-    themeIconResources: Array<string>
+    themeIconResources: Array<{"key": string, "path": string}>
 }
 
 const themeShema: object = {
@@ -218,12 +218,17 @@ const themeShema: object = {
     "properties": {
         "themePrimaryColor": {"type": "string"},
         "themeContrastColor": {"type": "boolean"},
+        "themeTimestamp" : {"type": "integer"},
         "themeIconResources": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "object",
+                "properties": {
+                    "key": {"type": "string"},
+                    "path": {"type": "string"},
+                }
             }
         }
     },
-    "required": ["themePrimaryColor", "themeContrastColor", "themeIconResources"]
+    "required": ["themePrimaryColor", "themeContrastColor", "themeTimestamp", "themeIconResources"]
 };

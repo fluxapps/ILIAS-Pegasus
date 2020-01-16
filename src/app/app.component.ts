@@ -26,6 +26,7 @@ import {AuthenticationProvider} from "./providers/authentication.provider";
 import {ObjectListPage} from "./pages/object-list/object-list";
 /** misc */
 import getMessage = Logging.getMessage;
+import {IconProvider} from "./providers/theme/icon.provider";
 
 @Component({
     selector: "app-root",
@@ -62,6 +63,7 @@ export class AppComponent {
         private readonly auth: AuthenticationProvider,
         private readonly appVersionPlugin: AppVersion,
         private readonly ngZone: NgZone,
+        private readonly iconProvider: IconProvider,
         @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
         sqlite: SQLite
     ) {
@@ -97,6 +99,7 @@ export class AppComponent {
 
         if(AuthenticationProvider.isLoggedIn()) {
             await this.sync.resetOfflineSynchronization(true);
+            await this.iconProvider.loadResources();
             await this.navCtrl.navigateRoot("tabs");
         } else {
             await this.presentOnboardingModal();
