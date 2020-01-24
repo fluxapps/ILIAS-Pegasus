@@ -1,12 +1,8 @@
-import {LoadingPage} from "../fallback/loading/loading.component";
-import {
-    ILIASObjectAction, ILIASObjectActionAlert,
-    ILIASObjectActionNoMessage, ILIASObjectActionResult
-} from "../../actions/object-action";
+import {LoadingPage} from "../../fallback/loading/loading.component";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
 import {LearnplaceLoader} from "../services/loader/learnplace";
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
-import {Router} from "@angular/router";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 
 /**
