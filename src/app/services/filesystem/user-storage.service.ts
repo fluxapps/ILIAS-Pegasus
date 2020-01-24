@@ -1,13 +1,13 @@
 import {DirectoryEntry, File, Flags} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
-import {AuthenticationProvider} from "../providers/authentication.provider";
-import {User} from "../models/user";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {User} from "../../models/user";
 
 @Injectable({
     providedIn: "root"
 })
-export class LocalStorageService {
+export class UserStorageService {
     constructor(
         private readonly file: File,
         private readonly platform: Platform,
@@ -17,11 +17,12 @@ export class LocalStorageService {
      * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation
      *
      * @param name name of the directory
+     * @param includeStorageLocation if set to true, will include the base path for the storage of the application
      * @param createRecursive when set to true, will create the target directory if it does not exist yet
      */
-    async dirForInstallationAndUser(name: string, createRecursive: boolean = false): Promise<string> {
+    async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {
         const storageLocation: string = await this.getStorageLocation();
-        const userRoot: string = await this.rootForInstallationAndUser();
+        const userRoot: string = await this.rootForUser();
         if(createRecursive) this.createRecursive(storageLocation, userRoot, name);
         return `${storageLocation}${userRoot}/${name}/`;
     }
@@ -29,9 +30,9 @@ export class LocalStorageService {
     /**
      * Constructs an unique path for each combination of user and ILIAS-installation
      */
-    async rootForInstallationAndUser(): Promise<string> {
+    async rootForUser(): Promise<string> {
         const user: User = AuthenticationProvider.getUser();
-        return `ilias-app/ilias${user.installationId}/user${user.id.toString()}`;
+        return `ilias-app/user${user.id.toString()}`;
     }
 
     /**

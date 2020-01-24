@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {LocalStorageService} from "../../services/local-storage.service";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {File} from "@ionic-native/file/ngx";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
 import {Settings} from "../../models/settings";
@@ -22,7 +22,7 @@ export class IconProvider {
     ];
 
     constructor(
-        private readonly localStorage: LocalStorageService,
+        private readonly userStorage: UserStorageService,
         private readonly filesystem: File,
         private readonly webview: WebView,
     ) {}
@@ -40,7 +40,7 @@ export class IconProvider {
 
     async loadResources(): Promise<void> {
         if(CssStyleService.dynamicThemeEnabled()) {
-            const path: string = await this.localStorage.dirForInstallationAndUser("icons");
+            const path: string = await this.userStorage.dirForUser("icons");
             for(let i: number = 0; i < this.icons.length; i++) {
                 const icon: {key: string, loadedName: string, asset: string} = this.icons[i];
                 const settings: Settings = await AuthenticationProvider.getUser().settings;

@@ -1,5 +1,5 @@
 import {Inject, Injectable} from "@angular/core";
-import {LocalStorageService} from "../local-storage.service";
+import {UserStorageService} from "../filesystem/user-storage.service";
 import {LINK_BUILDER, LinkBuilder} from "../link/link-builder.service";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
@@ -7,6 +7,7 @@ import {ILIASRestProvider, ThemeData} from "../../providers/ilias-rest.provider"
 import {Settings} from "../../models/settings";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {File} from "@ionic-native/file/ngx";
+import {Filesystem, FILESYSTEM_TOKEN} from "../filesystem";
 
 @Injectable({
     providedIn: "root"
@@ -14,7 +15,7 @@ import {File} from "@ionic-native/file/ngx";
 export class ThemeSynchronizationService {
     constructor(
         private readonly rest: ILIASRestProvider,
-        private readonly localStorage: LocalStorageService,
+        private readonly userStorage: UserStorageService,
         @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
         private readonly file: File
@@ -41,7 +42,7 @@ export class ThemeSynchronizationService {
             // load new icon
             const res: { "key": string, "path": string } = themeData.themeIconResources[i];
             const url: string = await this.linkBuilder.resource().resource(res.path).build();
-            const path: string = await this.localStorage.dirForInstallationAndUser("icons", true);
+            const path: string = await this.userStorage.dirForUser("icons", true);
             const file: string = `${themeData.themeTimestamp}_${res.key}.svg`;
             const downloadOptions: DownloadRequestOptions = <DownloadRequestOptions> {
                 url: url,
@@ -54,7 +55,7 @@ export class ThemeSynchronizationService {
             await this.downloadAndCheckSvg(downloadOptions, path, file);
             // remove old icon
             const oldFile: string = `${memThemeTimestamp}_${res.key}.svg`;
-            await this.localStorage.removeFileIfExists(path, oldFile);
+            await this.userStorage.removeFileIfExists(path, oldFile);
         }
     }
 
