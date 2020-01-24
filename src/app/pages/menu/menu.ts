@@ -2,7 +2,7 @@
 import {Component} from "@angular/core";
 import {NavController} from "@ionic/angular";
 /* misc */
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 
 /**
  * Generated class for the MenuPage page.

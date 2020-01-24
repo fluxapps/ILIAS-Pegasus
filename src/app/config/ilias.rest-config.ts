@@ -10,7 +10,7 @@ import {
 } from "../providers/ilias/ilias.rest-api";
 import {User} from "../models/user";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "./ilias-config";
-import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../providers/authentication.provider";
 import {DomSanitizer} from "@angular/platform-browser";
 import {USER_REPOSITORY, UserRepository} from "../providers/repository/repository.user";
 

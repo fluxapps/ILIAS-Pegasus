@@ -21,15 +21,14 @@ import {AppVersion} from "@ionic-native/app-version/ngx";
 import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
-// import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
-// below: unused pages
 import {LoadingPage} from "./learnplace/fallback/loading/loading.component";
 import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
-import {SynchronizationPage} from "./fallback/synchronization/synchronization.component";
+import {SetupClientPage} from "./fallback/setup-client/setup-client.component";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
+//import {OnboardingPage} from "./pages/onboarding/onboarding";
 //import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
 //import {TestPage} from "./pages/test/test";
 /** services */
@@ -39,7 +38,7 @@ import {DATABASE_CONFIGURATION_ADAPTER, DatabaseConnectionRegistry} from "./serv
 import {GeolocationModule} from "./services/device/geolocation/geolocation.module";
 import {DiagnosticUtil} from "./services/device/hardware-features/diagnostics.util";
 import {Hardware} from "./services/device/hardware-features/hardware-feature.service";
-import {ThemeService} from "./services/theme.service";
+import {CssStyleService} from "./services/theme/css-style.service";
 import {FileService} from "./services/file.service";
 import {FilesystemModule} from "./services/filesystem/filesystem.module";
 import {FooterToolbarService} from "./services/footer-toolbar.service";
@@ -55,6 +54,7 @@ import {DB_MIGRATION, MIGRATION_SUPPLIER} from "./services/migration/migration.a
 import {SimpleMigrationSupplier, TypeOrmDbMigration} from "./services/migration/migration.service";
 import {NEWS_SYNCHRONIZATION, NewsSynchronizationImpl} from "./services/news/news.synchronization";
 import {SynchronizationService} from "./services/synchronization.service";
+import {LocalStorageService} from "./services/local-storage.service";
 import {
     AuthTokenSupplier,
     INSTALLATION_LINK_PROVIDER,
@@ -65,8 +65,8 @@ import {
 } from "./services/link/link-builder.supplier";
 /** providers */
 import {DataProvider} from "./providers/data-provider.provider";
-import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
-import {ExecuteSyncProvider} from "./providers/execute-sync/execute-sync";
+import {AuthenticationProvider} from "./providers/authentication.provider";
+import {IconProvider} from "./providers/theme/icon.provider";
 import {FILE_DOWNLOADER, FileDownloaderImpl} from "./providers/file-transfer/file-download";
 import {FILE_UPLOADER, FileUploaderImpl} from "./providers/file-transfer/file-upload";
 import {DataProviderFileObjectHandler} from "./providers/handlers/file-object-handler";
@@ -132,7 +132,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 
         //TestPage,
         LoadingPage,
-        SynchronizationPage,
+        SetupClientPage,
         //SyncFinishedModal,
         // fallback screens
         WifiFallbackScreen,
@@ -147,6 +147,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 
         //SyncFinishedModal,
         LoadingPage,
+        SetupClientPage,
         //HardwareFeaturePage,
         // fallback screens
         //WifiFallbackScreen,
@@ -422,9 +423,10 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         ILIASRestProvider,
         FooterToolbarService,
         DataProvider,
-        ThemeService,
+        CssStyleService,
         FileService,
         SynchronizationService,
+        LocalStorageService,
         DataProviderFileObjectHandler,
         StatusBar,
         InAppBrowser,
@@ -445,7 +447,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         <ClassProvider>{provide: XhrFactory, useClass: PegasusXhrFactory, multi: false},
         <ClassProvider>{provide: MissingTranslationHandler, useClass: PegasusMissingTranslationHandler, multi: false},
         AuthenticationProvider,
-        ExecuteSyncProvider,
+        IconProvider,
         AppVersion,
         UniqueDeviceID
     ],

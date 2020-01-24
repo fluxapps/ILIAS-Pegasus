@@ -1,27 +1,22 @@
-/** angular */
 import {Inject, Injectable} from "@angular/core";
 import {AlertController} from "@ionic/angular";
-/** services */
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-/** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
-/** logging */
-import {Log} from "./log.service";
-/** misc */
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
-import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
-import {Observable, from, merge} from "rxjs";
-import {ThemeService} from "./theme.service";
-import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
-import {Settings} from "../models/settings";
+import {AuthenticationProvider} from "../providers/authentication.provider";
+import {from, merge, Observable} from "rxjs";
+import {ILIASRestProvider} from "../providers/ilias-rest.provider";
+import {ThemeSynchronizationService} from "./theme/theme-synchronization.service";
+import {Log} from "./log.service";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -56,15 +51,18 @@ export class SynchronizationService {
     lastSync: Date;
     lastSyncString: string;
 
-    constructor(private readonly dataProvider: DataProvider,
-                private readonly fileService: FileService,
-                private readonly footerToolbar: FooterToolbarService,
-                private readonly translate: TranslateService,
-                @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
-                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
-                @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-                private readonly alertCtr: AlertController,
-                private readonly rest: ILIASRestProvider
+    constructor(
+        private readonly dataProvider: DataProvider,
+        private readonly fileService: FileService,
+        private readonly footerToolbar: FooterToolbarService,
+        private readonly translate: TranslateService,
+        private readonly alertCtr: AlertController,
+        private readonly rest: ILIASRestProvider,
+        private readonly themeSync: ThemeSynchronizationService,
+        @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
+        @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
+        @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
+        private readonly themeProvider: ThemeProvider,
     ) {}
 
     /**
@@ -491,7 +489,7 @@ export class SynchronizationService {
      */
     private async processOpenSynchronizationTasks(): Promise<void> {
         await this.synchronizeFileLearningProgresses();
-        await this.synchronizeThemeData().then(() => ThemeService.setCustomColor());
+        await this.themeProvider.synchronizeAndSetCustomTheme();
     }
 
     /**
@@ -503,17 +501,6 @@ export class SynchronizationService {
 
         const unsynced: Array<FileData> = await FileData.getOpenLearningProgressPosts();
         await this.fileService.postLearningProgressDone(unsynced);
-    }
-
-    /**
-     * loads the parameters of the theme from ILIAS
-     */
-    async synchronizeThemeData(): Promise<void> {
-        const themeData: ThemeData = await this.rest.getThemeData();
-        const settings: Settings = await AuthenticationProvider.getUser().settings;
-        settings.themeColorHex = `#${themeData.themePrimaryColor}`;
-        settings.themeContrastColor = themeData.themeContrastColor;
-        await settings.save();
     }
 }
 

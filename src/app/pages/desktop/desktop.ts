@@ -1,13 +1,13 @@
 /** angular */
 import {Component, Inject} from "@angular/core";
-import {Events, NavController} from "@ionic/angular";
+import {NavController} from "@ionic/angular";
 /** services */
 import {Builder} from "../../services/builder.base";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 /** misc */
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
 import {ILIASInstallation} from "../../config/ilias-config";
-import {ThemeService} from "../../services/theme.service";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 /**
  * Generated class for the DesktopPage page.
@@ -23,7 +23,6 @@ import {ThemeService} from "../../services/theme.service";
 export class DesktopPage {
 
     readonly installations: Array<ILIASInstallation> = [];
-    private svgCnt: number = 0;
 
     constructor(
         private readonly navCtrl: NavController,
@@ -34,12 +33,8 @@ export class DesktopPage {
     ) {}
 
     // count the number of loaded SVGs and set theme once all of them are loaded
-    private svgLoading(): void {
-        this.svgCnt++;
-        if(this.svgCnt === 5) {
-            ThemeService.setCustomColor();
-            this.svgCnt = 0;
-        }
+    private svgLoaded(): void {
+        ThemeProvider.setCustomColor();
     }
 
     // navigate to a tab

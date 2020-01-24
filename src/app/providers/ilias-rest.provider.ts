@@ -13,6 +13,7 @@ import {Logging} from "../services/logging/logging.service";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "./file-transfer/file-download";
 import {HttpResponse} from "./http";
 import {User} from "../models/user";
+import {Settings} from "../models/settings";
 
 const DEFAULT_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
@@ -111,8 +112,10 @@ export class ILIASRestProvider {
         });
     }
 
-    async getThemeData(): Promise<ThemeData> {
-        const response: HttpResponse = await this.iliasRest.get("/v3/ilias-app/theme", DEFAULT_OPTIONS);
+    async getThemeData(user: User): Promise<ThemeData> {
+        const settings: Settings = await user.settings;
+        const opt: ILIASRequestOptions = {accept: "application/json", urlParams: [["timestamp", settings.themeTimestamp.toString()]]};
+        const response: HttpResponse = await this.iliasRest.get("/v3/ilias-app/theme", opt);
 
         return response.handle(it =>
             it.json<ThemeData>(themeShema)
@@ -204,7 +207,9 @@ const fileShema: object = {
 
 export interface ThemeData {
     themePrimaryColor: string,
-    themeContrastColor: boolean
+    themeContrastColor: boolean,
+    themeTimestamp: number,
+    themeIconResources: Array<{"key": string, "path": string}>
 }
 
 const themeShema: object = {
@@ -212,7 +217,18 @@ const themeShema: object = {
     "type": "object",
     "properties": {
         "themePrimaryColor": {"type": "string"},
-        "themeContrastColor": {"type": "boolean"}
+        "themeContrastColor": {"type": "boolean"},
+        "themeTimestamp" : {"type": "integer"},
+        "themeIconResources": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {"type": "string"},
+                    "path": {"type": "string"},
+                }
+            }
+        }
     },
-    "required": ["themePrimaryColor", "themeContrastColor"]
+    "required": ["themePrimaryColor", "themeContrastColor", "themeTimestamp", "themeIconResources"]
 };

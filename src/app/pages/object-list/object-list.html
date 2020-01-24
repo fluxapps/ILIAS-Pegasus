@@ -58,7 +58,7 @@
                                 <ion-col size="2">
                                     <img class="object-presenter-icon" [src]="entry.presenter.icon()">
                                     <ion-badge *ngIf="entry.object.isLinked()" color="nobg-w" class="badge-link">
-                                        <img src="assets/icon/obj_link.svg" class="badge-logo">
+                                        <img src="{{this.getBadgeSrc()}}" class="badge-logo">
                                     </ion-badge>
                                 </ion-col>
                                 <ion-col size="7">
@@ -123,7 +123,7 @@
             <!-- status : synchronization in progress, refresher not pulled -->
             <ion-card>
                 <ion-row>
-                        <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
+                    <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
                 </ion-row>
             </ion-card>
 

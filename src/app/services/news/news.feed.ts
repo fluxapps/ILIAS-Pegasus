@@ -6,7 +6,7 @@ import {USER_REPOSITORY, UserRepository} from "../../providers/repository/reposi
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
 import {NewsEntity} from "../../entity/news.entity";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 
 /**
  * ILIAS news feed which provides the already synchronized

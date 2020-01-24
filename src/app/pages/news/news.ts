@@ -1,26 +1,18 @@
-/** angular */
 import {Component, Inject, NgZone} from "@angular/core";
 import {ModalController} from "@ionic/angular";
-/** models */
 import {ILIASObject} from "../../models/ilias-object";
-import {User} from "../../models/user";
-/** services */
 import {Builder} from "../../services/builder.base";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {NEWS_FEED, NewsFeed, NewsItemModel} from "../../services/news/news.feed";
 import {SynchronizationService} from "../../services/synchronization.service";
-/** actions */
 import {ILIASObjectAction} from "../../actions/object-action";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-/** logging */
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-/** misc */
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {TranslateService} from "@ngx-translate/core";
-import {AuthenticateError} from "../../providers/http";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 
 /**
@@ -40,7 +32,6 @@ export class NewsPage
     newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
     private readonly log: Logger = Logging.getLogger(NewsPage.name);
 
-
     constructor(
         @Inject(NEWS_FEED) private readonly newsFeed: NewsFeed,
         private readonly translate: TranslateService,
@@ -50,7 +41,7 @@ export class NewsPage
         private readonly ngZone: NgZone,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-        @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder
+        @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
     ) {}
 
     ionViewWillEnter(): void {

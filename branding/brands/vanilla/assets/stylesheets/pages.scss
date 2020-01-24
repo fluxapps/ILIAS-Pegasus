@@ -32,6 +32,10 @@
     ion-card-header{
         padding-bottom: 0px !important;
     }
+
+    .object-presenter-icon{
+        height:4rem;
+    }
 }
 
 
@@ -211,14 +215,10 @@ ion-content.page_settings {
 
 // pages/object-list
 // --------------------------------------------------
-
-.object-presenter-icon{
-    height:3rem;
-}
-
 .page_object_list {
-
-
+    .object-presenter-icon{
+        height:3rem;
+    }
 }
 
 // learnplace_map
