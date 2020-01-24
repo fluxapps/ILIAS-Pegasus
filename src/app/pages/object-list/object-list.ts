@@ -31,7 +31,11 @@ import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
-import {ThemeProvider} from "../../providers/theme/theme.provider";
+import {
+    OPEN_LEARNING_MODULE_ACTION_FACTORY,
+    OpenLearningModuleAction,
+    OpenLearningModuleActionFunction
+} from "../../learningmodule/actions/open-learning-module-action";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -87,7 +91,10 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-    ) {}
+                @Inject(OPEN_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openLearningModuleActionFactory: OpenLearningModuleActionFunction,
+                // TODO dev implement @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+    ) { }
 
     /* = = = = = = = *
      *  NAVIGATION   *
@@ -335,7 +342,11 @@ export class ObjectListPage {
             return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
         }
 
-        if(iliasObject.type == "file") {
+        if(iliasObject.type == "htlm") {
+            return this.openLearningModuleActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
+        }
+
+        if(iliasObject.type == "file") { // TODO dev
             return new DownloadAndOpenFileExternalAction(
                 this.translate.instant("actions.download_and_open_in_external_app"),
                 iliasObject,

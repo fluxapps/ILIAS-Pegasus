@@ -29,14 +29,14 @@
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()" (click)="openILIASRepository()"></object>
+                <ion-card button="true" class="tile ion-no-margin tile4" (click)="openILIASRepository()">
+                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoading()" (click)="openILIASRepository()"></object>
                     <ion-card-header text-uppercase class=tile-title> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('menu')">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
+                <ion-card button="true" class="tile ion-no-margin tile5" (click)="navigateTo('menu')">
+                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoading()"></object>
                     <ion-card-header text-uppercase class=tile-title> {{ 'menu' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>

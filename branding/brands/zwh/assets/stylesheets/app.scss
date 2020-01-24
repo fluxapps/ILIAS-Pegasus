@@ -4,91 +4,44 @@
 //
 // NOTE: @import "coloring"; is called before this file is imported
 
-@import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
 @import "icons";
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
+
+ion-icon {
+    &[class*="custom-"] {
+      mask-size: contain;
+      mask-position: 50% 50%;
+      mask-repeat: no-repeat;
+      background: currentColor;
+      width: 1em;
+      height: 1em;
+    }
+  }
 
 .content, .ion-header, ion-toolbar {
-    font-family: 'Arial', sans-serif !important;
+    font-family: 'Raleway', sans-serif !important;
 }
 
-ion-slide{
-    overflow: auto !important;
-}
-
-.slide-zoom {
-    text-align: center;
-    position: absolute;
-    top: 0;
-    display: block;
-    width: 100%;
-    height: auto;
-    padding: 50px 10px;
+.top-header{
+  border-width: 0px !important;
+  --padding-top: 0px !important;
+    --padding-start: 0px !important;
+    --padding-right: 0px !important;
+    --padding-end: 0px !important;
 }
 
 
-.ilias-object-list {
-    ion-item {
-        min-height: 7rem;
-    }
-    &.list-md > .item-block:first-child {
-        border: none;
-    }
-    &.list-md > .item-block:last-child {
-        border: none;
-    }
-    &.list-ios > .item-block:first-child {
-        border: none;
-    }
-    &.list-ios > .item-block:last-child {
-        border: none;
-    }
+// Typogrtaphie
+
+h1{
+  font-weight: 800;
 }
 
-.object-flags {
-    padding-top: 5px;
+ion-tab-bar{
+  --color-selected: #000 !important;
 }
 
-.ilias-list-action-button {
-    min-width: 35px;
-    min-height: 35px;
-    ion-icon {
-        font-size: 2.4rem;
-    }
-}
+// Animations
 
-ion-spinner.centered {
-    display: block;
-    margin: auto;
-}
-.card-md div.centered {
-    text-align: center;
-}
 
-.small-date {
-    font-size: small;
-    padding-left: 5px;
-}
 
-.modal-fullscreen {
-    .modal-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-.ios .modal-fullscreen {
-    .modal-wrapper {
-        // top: 26px;
-    }
-}
-
-#menu-logo {
-    right: -28%;
-    top: 75%;
-    width: 80%;
-    position: absolute;
-}

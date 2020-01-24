@@ -1,10 +1,10 @@
-import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
+import {OnboardingPageModule} from "./pages/onboarding/onboarding.module";
 import {AppComponent} from "./app.component";
 /** angular */
-import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
-import {RouteReuseStrategy, Router} from "@angular/router";
+import {IonicModule, IonicRouteStrategy, ModalController, NavController, Platform} from "@ionic/angular";
+import {RouteReuseStrategy} from "@angular/router";
 import {FormsModule} from "@angular/forms";
-import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
+import {HttpClient, HttpClientModule, XhrFactory} from "@angular/common/http";
 import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/core";
 import {BrowserModule} from "@angular/platform-browser";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -18,7 +18,7 @@ import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import {SQLite} from "@ionic-native/sqlite/ngx";
 import {StatusBar} from "@ionic-native/status-bar/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
-import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
+import {MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
@@ -116,12 +116,18 @@ import {
     RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
 } from "./learnplace/actions/remove-local-learnplace-action";
+/** learning modules */
+import {
+    OPEN_LEARNING_MODULE_ACTION_FACTORY,
+    OpenLearningModuleAction,
+    OpenLearningModuleActionFunction
+} from "./learningmodule/actions/open-learning-module-action";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/loader";
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
-// import {OnboardingPageModule} from "./pages/onboarding/onboarding.module"
-import { WebView } from "@ionic-native/ionic-webview/ngx";
+import {WebView} from "@ionic-native/ionic-webview/ngx";
 
 @NgModule({
     declarations: [
@@ -283,6 +289,11 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
             useClass: SynchronizedVisitJournalWatch
         },
 
+        {
+            provide: LEARNING_MODULE_LOADER,
+            useClass: RestLearningModuleLoader
+        },
+
         // Link service
         {
             provide: INSTALLATION_LINK_PROVIDER,
@@ -401,6 +412,14 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
                     new OpenLearnplaceAction(loader, nav, learnplaceObjectId, learnplaceName, modalController)
             ,
             deps: [LEARNPLACE_LOADER]
+        },
+        <FactoryProvider> {
+            provide: OPEN_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (loader: LearningModuleLoader): OpenLearningModuleActionFunction =>
+                (nav: NavController, learningModuleObjectId: number, learningModuleName: string, modalController: ModalController):
+                    OpenLearningModuleAction => new OpenLearningModuleAction(loader, nav, learningModuleObjectId, learningModuleName, modalController)
+            ,
+            deps: [LEARNING_MODULE_LOADER]
         },
         <FactoryProvider> {
             provide: REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
