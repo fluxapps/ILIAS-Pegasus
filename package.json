@@ -150,7 +150,9 @@
       "cordova-unique-device-id": {},
       "cordova-custom-config": {},
       "cordova-plugin-geolocation": {},
-      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
       "cordova-plugin-network-information": {},
       "cordova.plugins.diagnostic": {
         "ANDROID_SUPPORT_VERSION": "28.+"

@@ -1,8 +1,4 @@
 {
-  "ilias_installation_ids": [11,25,27,28,29,7],
-  "projectConfig": {
-    "id": "ch.studerraimann.ilias.zwh",
-    "name": "Lernwelt ZWH",
-    "description": "Download, sync and store ILIAS-files on your device"
-  }
+  "ilias_installation_ids": [11],
+  "condig_id": "ch.studerraimann.ilias.zwh"
 }

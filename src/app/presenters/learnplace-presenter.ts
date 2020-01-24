@@ -1,9 +1,10 @@
 import {GenericILIASObjectPresenter} from "./object-presenter";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class LearnplaceObjectPresenter extends GenericILIASObjectPresenter {
 
     icon(): string {
-        return "assets/icon/obj_location.svg";
+        return ThemeProvider.getIconSrc("xsrl");
     }
 
     showTypeAsText(): boolean {

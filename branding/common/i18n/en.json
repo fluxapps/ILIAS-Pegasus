@@ -249,8 +249,7 @@
         "browser_no": "No. return!",
         "loading": "Learnplace",
         "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download.",
-        "synchronization": "Welcome!",
-        "synchronization_subtitle": "Please wait a few seconds while we synchronize your ILIAS-account."
+        "synchronization": "Please wait a few seconds while we synchronize with ILIAS ..."
     },
     "onboarding": {
       "title1": "With the help of this app you can:",

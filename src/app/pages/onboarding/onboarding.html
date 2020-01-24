@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-toolbar class="onboarding-toolbar" color=nobg-w>
+	<ion-toolbar class="onboarding-toolbar" color=primary>
 		<ion-buttons slot="primary">
 		  <ion-button (click)="nextSlide()">
 				{{ 'onboarding.next' | translate:[]}}
@@ -7,7 +7,7 @@
 		</ion-buttons>
 	  </ion-toolbar>
 </ion-header>
-<ion-content class="page_onboarding" fullscreen=true padding>
+<ion-content class="page_onboarding" fullscreen=true>
 		<ion-slides pager="true" #slides (ionSlideDrag)="slideChanged()">
 				<ion-slide class="step-one">
 					<img src="assets/img/onboarding_welcome.png">

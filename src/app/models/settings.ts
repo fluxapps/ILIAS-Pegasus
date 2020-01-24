@@ -50,6 +50,11 @@ export class Settings extends ActiveRecord {
      */
     themeContrastColor: boolean = false;
 
+    /**
+     * Time when the currently loaded theme was introduced
+     */
+    themeTimestamp: number = 0;
+
     constructor(id: number = 0) {
         super(id, new SQLiteConnector("settings", [
             "userId",
@@ -59,7 +64,8 @@ export class Settings extends ActiveRecord {
             "downloadOnStart",
             "downloadWlan",
             "themeColorHex",
-            "themeContrastColor"
+            "themeContrastColor",
+            "themeTimestamp"
         ]));
 
         if(id == 0) {

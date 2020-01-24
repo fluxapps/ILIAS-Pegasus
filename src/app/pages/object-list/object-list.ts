@@ -1,12 +1,6 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {
-    ActionSheetController,
-    AlertController,
-    ModalController,
-    NavController,
-    ToastController
-} from "@ionic/angular";
+import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -31,12 +25,13 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "@ngx-translate/core";
 import {Exception} from "../../exceptions/Exception";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {TimelineLinkBuilder} from "../../services/link/timeline.builder";
 import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -91,8 +86,8 @@ export class ObjectListPage {
                 @Inject(OPEN_LEARNPLACE_ACTION_FACTORY)
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
-                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction
-    ) { }
+                private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
+    ) {}
 
     /* = = = = = = = *
      *  NAVIGATION   *
@@ -293,6 +288,13 @@ export class ObjectListPage {
         const content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
         ilObjects.forEach(o => content.push({object: o, presenter: ILIASObjectPresenterFactory.instance(o)}));
         this.content = content;
+    }
+
+    /**
+     * method fot the template to get the source of the badge icon
+     */
+    private getBadgeSrc(): string {
+        return ThemeProvider.getIconSrc("link");
     }
 
     /* = = = = = *

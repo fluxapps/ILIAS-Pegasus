@@ -1,22 +1,15 @@
-/** angular */
-import {Component, Inject} from "@angular/core";
-/** ionic-native */
+import {Component, Inject, NgZone} from "@angular/core";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {InAppBrowserObject} from "@ionic-native/in-app-browser/ngx";
-import {AlertController, Events, Platform} from "@ionic/angular";
+import {AlertController, Events, ModalController, NavController, Platform} from "@ionic/angular";
 import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {Settings} from "../../models/settings";
-/** models */
 import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
-/** logging */
-import {Log} from "../../services/log.service";
-/** misc */
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {SynchronizationService} from "../../services/synchronization.service";
-import {ThemeService} from "../../services/theme.service";
-import {ILIASRestProvider} from "../../providers/ilias-rest.provider";
-import {sync} from "ionicons/icons";
 import {TranslateService} from "@ngx-translate/core";
+import {SetupClientPage} from "../../fallback/setup-client/setup-client.component";
+import {ThemeProvider} from "../../providers/theme/theme.provider";
 
 @Component({
     templateUrl: "login.html"
@@ -39,6 +32,10 @@ export class LoginPage {
                 private readonly auth: AuthenticationProvider,
                 private readonly alertCtr: AlertController,
                 private readonly translate: TranslateService,
+                private readonly themeProvider: ThemeProvider,
+                private readonly modal: ModalController,
+                private readonly navCtrl: NavController,
+                private readonly ngZone: NgZone
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
@@ -49,24 +46,38 @@ export class LoginPage {
     }
 
     ionViewWillEnter(): void {
-        ThemeService.setDefaultColor();
+        ThemeProvider.setDefaultColor();
     }
 
     login(): void {
         if(!this.checkOnline()) return;
         const installation: ILIASInstallation = this.getSelectedInstallation();
         const browser: InAppBrowserObject = this.auth.browserLogin(installation);
+        const loadingPage: Promise<HTMLIonModalElement> = this.modal.create({
+            component: SetupClientPage,
+            cssClass: "modal-fullscreen"
+        });
 
         browser.on("exit").subscribe(() => {
-            Log.write(this, "exit browser");
             if(AuthenticationProvider.isLoggedIn()) {
-                this.sync.synchronizeThemeData()
-                    .then(() => ThemeService.setCustomColor())
-                    .then(() => this.checkAndLoadOfflineContent())
-                    .then(() => this.sync.resetOfflineSynchronization(true))
-                    .then(() => this.updateLastVersionLogin());
+                loadingPage.then(modal => {
+                    modal.present()
+                        .then(() => this.loginSequence())
+                        .then(() => this.ngZone.run(() => this.navCtrl.navigateRoot("tabs")))
+                        .then(() => modal.dismiss());
+                })
             }
         });
+    }
+
+    /**
+     * the sequence of tasks that is performed after a successful login
+     */
+    private async loginSequence(): Promise<void> {
+        await this.updateLastVersionLogin();
+        await this.themeProvider.synchronizeAndSetCustomTheme();
+        await this.checkAndLoadOfflineContent();
+        await this.sync.resetOfflineSynchronization(true);
     }
 
     /**
@@ -77,9 +88,7 @@ export class LoginPage {
             this.alertCtr.create({
                 header: this.translate.instant("offline_title"),
                 message: this.translate.instant("offline_content"),
-                buttons: [
-                    {text: "Ok"}
-                ]
+                buttons: [{text: "Ok"}]
             }).then((alert: HTMLIonAlertElement) => alert.present());
             return false;
         }

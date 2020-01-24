@@ -5,6 +5,7 @@ import {FileService} from "../services/file.service";
 import {Log} from "../services/log.service";
 /** misc */
 import {ILIASObject} from "../models/ilias-object";
+import {ThemeProvider} from "../providers/theme/theme.provider";
 
 /**
  * Decorator to present data of ILIASObjects in the view.
@@ -59,7 +60,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
     ) {}
 
     icon(): string {
-        return "assets/icon/obj_link.svg";
+        return ThemeProvider.getIconSrc("link");
     }
 
     title(): string {

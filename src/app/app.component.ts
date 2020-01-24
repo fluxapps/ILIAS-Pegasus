@@ -22,8 +22,9 @@ import {User} from "./models/user";
 import {TranslateService} from "@ngx-translate/core";
 import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
 import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "./providers/authentication.provider";
 import {ObjectListPage} from "./pages/object-list/object-list";
+import {ThemeProvider} from "./providers/theme/theme.provider";
 /** misc */
 import getMessage = Logging.getMessage;
 
@@ -62,6 +63,7 @@ export class AppComponent {
         private readonly auth: AuthenticationProvider,
         private readonly appVersionPlugin: AppVersion,
         private readonly ngZone: NgZone,
+        private readonly themeProvider: ThemeProvider,
         @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
         sqlite: SQLite
     ) {
@@ -97,6 +99,7 @@ export class AppComponent {
 
         if(AuthenticationProvider.isLoggedIn()) {
             await this.sync.resetOfflineSynchronization(true);
+            await this.themeProvider.loadResources();
             await this.navCtrl.navigateRoot("tabs");
         } else {
             await this.presentOnboardingModal();

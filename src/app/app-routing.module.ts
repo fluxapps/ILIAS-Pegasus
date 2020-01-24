@@ -1,7 +1,7 @@
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {isDevMode} from "./devmode";
-import {AuthenticationProvider} from "./providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "./providers/authentication.provider";
 
 const routes: Routes = [
     {path: "", redirectTo: "tabs", pathMatch: "full"},

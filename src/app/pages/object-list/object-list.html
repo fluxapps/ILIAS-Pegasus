@@ -37,7 +37,7 @@
 
   <!-- status : display object-list, synchronization complete -->
     <ng-container >
-            <ion-list  *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
+            <ion-list *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
                     <div class="" *ngIf="parent !== undefined">
                         <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element">
                             <ion-card-content>
@@ -53,12 +53,12 @@
                             </ion-card-content>
                         </ion-card>
                     </div>
-                        <ion-card class="ion-margin-horizontal"  button="true" *ngFor="let entry of content" (click)="onClick(entry.object)">
+                        <ion-card   class="ion-margin-horizontal"  button="true" *ngFor="let entry of content" (click)="onClick(entry.object)">
                             <ion-row align-items-center>
                                 <ion-col size="2">
                                     <img class="object-presenter-icon" [src]="entry.presenter.icon()">
                                     <ion-badge *ngIf="entry.object.isLinked()" color="nobg-w" class="badge-link">
-                                        <img src="assets/icon/obj_link.svg" class="badge-logo">
+                                        <img src="{{this.getBadgeSrc()}}" class="badge-logo">
                                     </ion-badge>
                                 </ion-col>
                                 <ion-col size="7">
@@ -121,9 +121,9 @@
     <!-- Sekeletion -->
         <ng-container *ngIf="(checkPageState({loading: true}) && (checkPageState({favorites: true}) || checkPageState({favorites: false, online: true})))">
             <!-- status : synchronization in progress, refresher not pulled -->
-            <ion-card class=loading-card color=secondary>
+            <ion-card>
                 <ion-row>
-                        <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
+                    <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
                 </ion-row>
             </ion-card>
 

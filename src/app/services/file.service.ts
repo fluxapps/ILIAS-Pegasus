@@ -21,7 +21,7 @@ import {Logger} from "./logging/logging.api";
 import {Logging} from "./logging/logging.service";
 /** misc */
 import {isNullOrUndefined} from "../util/util.function";
-import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../providers/authentication.provider";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 
 export interface DownloadProgress {

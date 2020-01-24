@@ -5,14 +5,10 @@ import {CanActivate} from "@angular/router";
 import {NavController, ToastController} from "@ionic/angular";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
-import {User} from "../../models/user";
-import {Log} from "../../services/log.service";
-import {ILIASInstallation} from "../../config/ilias-config";
+import {User} from "../models/user";
+import {Log} from "../services/log.service";
+import {ILIASInstallation} from "../config/ilias-config";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
-import {catchError} from "rxjs/operators";
-import {Exception} from "../../exceptions/Exception";
-import {FileService} from "../../services/file.service";
-import {ILIASObject} from "../../models/ilias-object";
 
 interface UserLoginData {
     iliasUserId: number,
@@ -111,14 +107,11 @@ export class AuthenticationProvider implements CanActivate {
         const url: string = `${installation.url}/login.php?target=ilias_app_oauth2&client_id=${installation.clientId}`;
         const options: InAppBrowserOptions = {location: "no", clearsessioncache: "yes", clearcache: "yes"};
         const browser: InAppBrowserObject = this.browser.create(url, "_blank", options);
-        Log.describe(this, "inappBrowser", browser);
 
         browser.on("loadstop").subscribe(() => {
             // Fetch data from inAppBrowser
-            Log.write(this, "Loadstop registered");
             browser.executeScript({code: 'document.getElementById("data").value'}).then( (dataOut) => {
                 if (dataOut.length) {
-                    Log.write(this, "Broser-login successful");
                     dataOut = dataOut[0].split("|||");
                     const loginData: UserLoginData = {
                         iliasUserId: dataOut[0],
@@ -127,11 +120,10 @@ export class AuthenticationProvider implements CanActivate {
                         accessToken: dataOut[2],
                         refreshToken: dataOut[3]
                     };
-                    this.login(loginData).then(() => {
-                        Log.write(this, "User saved");
+                    this.login(loginData, false).then(() => {
                         browser.close();
                     }, (err) => {
-                        Log.error(this, err);
+                        console.error(this, err);
                         browser.close();
                     });
                 }

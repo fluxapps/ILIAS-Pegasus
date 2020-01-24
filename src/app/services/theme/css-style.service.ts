@@ -1,11 +1,13 @@
 import {Injectable} from "@angular/core";
-import {AuthenticationProvider} from "../providers/authentification/authentication.provider";
-import {Settings} from "../models/settings";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {Settings} from "../../models/settings";
+import {IconProvider} from "../../providers/theme/icon.provider";
+import {Icon} from "ionicons/dist/types/icon/icon";
 
 @Injectable({
     providedIn: "root"
 })
-export class ThemeService {
+export class CssStyleService {
     static customIsSet: boolean;
     static customColorHex: string;
     static customColorContrast: boolean;
@@ -55,34 +57,40 @@ export class ThemeService {
     };
 
     /**
+     * checks whether the theme should be managed dynamically
+     */
+    static dynamicThemeEnabled(): boolean {
+        return CssStyleService.getCSSValueAsBoolean("--theme-color-from-plugin");
+    }
+
+    /**
      * checks whether custom coloring is activated, reads the custom color
      * from settings and changes the css- and csv-colors accordingly
      */
     static async setCustomColor(): Promise<void> {
-        if(!ThemeService.getCSSValueAsBoolean("--theme-color-from-plugin")) return;
-        const themeCols: object = await ThemeService.getThemeColors();
+        const themeCols: object = await CssStyleService.getThemeColors();
 
-        ThemeService.colorNames.forEach(colorName =>
-            ThemeService.propertyNames[colorName].forEach(propertyName =>
-                ThemeService.setCSSValue(propertyName, themeCols[colorName])
+        CssStyleService.colorNames.forEach(colorName =>
+            CssStyleService.propertyNames[colorName].forEach(propertyName =>
+                CssStyleService.setCSSValue(propertyName, themeCols[colorName])
             )
         );
 
-        ThemeService.setCSVColors("tile-image", themeCols["primary_tint"]);
-        ThemeService.customIsSet = true;
+        CssStyleService.setCSVColors("tile-image", themeCols["primary_tint"]);
+        CssStyleService.customIsSet = true;
     }
 
     /**
      * sets the coloring according to the default settings in the scss-stylesheets
      */
     static setDefaultColor(): void {
-        ThemeService.colorNames.forEach(name =>
-            ThemeService.propertyNames[name].forEach(property =>
+        CssStyleService.colorNames.forEach(name =>
+            CssStyleService.propertyNames[name].forEach(property =>
                 document.documentElement.style.removeProperty(property)
             )
         );
 
-        ThemeService.customIsSet = false;
+        CssStyleService.customIsSet = false;
     }
 
     /**
@@ -94,10 +102,10 @@ export class ThemeService {
 
     /**
      * converts a css-value from the root-element to a boolean: if the value-string
-     * contains true, return true, otherwise the default is false
+     * contains true, return true, and false otherwise
      */
     private static getCSSValueAsBoolean(name: string): boolean {
-        return ThemeService.getCSSValue(name).includes("true");
+        return CssStyleService.getCSSValue(name).includes("true");
     }
 
     /**
@@ -116,8 +124,12 @@ export class ThemeService {
         for (let i: number = 0; i < svgs.length; i++) {
             const e: any = svgs[i];
             const svgDoc: any = e.getSVGDocument();
-            const style: any = svgDoc.styleSheets[0];
-            style.rules[0].style.fill = hex;
+            if(svgDoc != undefined) {
+                const style: any = svgDoc.styleSheets[0];
+                if(style != undefined) {
+                    style.rules[0].style.fill = hex;
+                }
+            }
         }
     }
 
@@ -127,7 +139,7 @@ export class ThemeService {
      */
     private static getCustomColor(settings: Settings): string {
         const colSettings: string = settings.themeColorHex;
-        const colCSS: string = ThemeService.getCSSValue("--ion-color-primary");
+        const colCSS: string = CssStyleService.getCSSValue("--ion-color-primary");
         return colSettings ? colSettings : colCSS;
     }
 
@@ -136,28 +148,30 @@ export class ThemeService {
      */
     private static async getThemeColors(): Promise<object> {
         const settings: Settings = await AuthenticationProvider.getUser().settings;
-        ThemeService.customColorHex =  ThemeService.getCustomColor(settings);
-        ThemeService.customColorContrast = settings.themeContrastColor;
+        CssStyleService.customColorHex =  CssStyleService.getCustomColor(settings);
+        CssStyleService.customColorContrast = settings.themeContrastColor;
 
         function toRgbRange(v: number): number {
             return Math.max(0, Math.min(255, v));
         }
 
-        const normal: Array<number> = ThemeService.hexToRgb(ThemeService.customColorHex);
+        const normal: Array<number> = CssStyleService.hexToRgb(CssStyleService.customColorHex);
         const shade: Array<number> = normal.map(v => toRgbRange(v - 12));
         const tint: Array<number> = normal.map(v => toRgbRange(v + 12), 255);
 
-        const contrast: Array<number> =  ThemeService.customColorContrast ? [255, 255, 255] : [10, 10, 10];
-        const cShade: Array<number> = ThemeService.customColorContrast ? contrast.map(v => toRgbRange(v - 40)) : contrast.map(v => toRgbRange(v + 40));
+        const contrast: Array<number> =  CssStyleService.customColorContrast ? [255, 255, 255] : [10, 10, 10];
+        const cShade: Array<number> = CssStyleService.customColorContrast ?
+            contrast.map(v => toRgbRange(v - 40)) :
+            contrast.map(v => toRgbRange(v + 40));
 
         return {
-            "primary_shade" : ThemeService.rgbToHex(shade),
+            "primary_shade" : CssStyleService.rgbToHex(shade),
             "primary_shade_rgb" : `${shade[0]},${shade[1]},${shade[2]}`,
-            "primary_normal": ThemeService.rgbToHex(normal),
-            "primary_tint": ThemeService.rgbToHex(tint),
-            "contrast_normal": ThemeService.rgbToHex(contrast),
+            "primary_normal": CssStyleService.rgbToHex(normal),
+            "primary_tint": CssStyleService.rgbToHex(tint),
+            "contrast_normal": CssStyleService.rgbToHex(contrast),
             "contrast_normal_rgb": `${contrast[0]},${contrast[1]},${contrast[2]}`,
-            "contrast_shade": ThemeService.rgbToHex(cShade)
+            "contrast_shade": CssStyleService.rgbToHex(cShade)
         };
     }
 

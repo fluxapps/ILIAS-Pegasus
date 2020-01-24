@@ -7,7 +7,7 @@ import {USER_REPOSITORY, UserRepository} from "../../providers/repository/reposi
 import {NewsEntity} from "../../entity/news.entity";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
-import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 
 /**
  * The news synchronisation service synchronizes the news from ILIAS with the local stored news.
