@@ -7,7 +7,6 @@ import {ILIASRestProvider, ThemeData} from "../../providers/ilias-rest.provider"
 import {Settings} from "../../models/settings";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {File} from "@ionic-native/file/ngx";
-import {Filesystem, FILESYSTEM_TOKEN} from "../filesystem";
 
 @Injectable({
     providedIn: "root"
