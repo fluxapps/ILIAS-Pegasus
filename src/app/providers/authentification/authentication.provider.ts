@@ -9,10 +9,6 @@ import {User} from "../../models/user";
 import {Log} from "../../services/log.service";
 import {ILIASInstallation} from "../../config/ilias-config";
 import {InAppBrowser, InAppBrowserObject, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
-import {catchError} from "rxjs/operators";
-import {Exception} from "../../exceptions/Exception";
-import {FileService} from "../../services/file.service";
-import {ILIASObject} from "../../models/ilias-object";
 
 interface UserLoginData {
     iliasUserId: number,
