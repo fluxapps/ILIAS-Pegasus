@@ -64,7 +64,7 @@ export class ILIASRestProvider {
         const response: HttpResponse = await this.iliasRest.get(`/v3/ilias-app/files/${refId}`, DEFAULT_OPTIONS);
 
         return response.handle(it =>
-            it.json<FileData>(fileShema)
+            it.json<FileData>(fileSchema)
         );
     }
 
@@ -115,7 +115,7 @@ export class ILIASRestProvider {
         const response: HttpResponse = await this.iliasRest.get("/v3/ilias-app/theme", DEFAULT_OPTIONS);
 
         return response.handle(it =>
-            it.json<ThemeData>(themeShema)
+            it.json<ThemeData>(themeSchema)
         );
     }
 }
@@ -187,7 +187,7 @@ export interface FileData {
     fileLearningProgress: boolean
 }
 
-const fileShema: object = {
+const fileSchema: object = {
     "title": "file-data",
     "type": "object",
     "properties": {
@@ -207,7 +207,7 @@ export interface ThemeData {
     themeContrastColor: boolean
 }
 
-const themeShema: object = {
+const themeSchema: object = {
     "title": "theme-data",
     "type": "object",
     "properties": {

@@ -37,11 +37,7 @@ import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
-import {
-    OPEN_LEARNING_MODULE_ACTION_FACTORY,
-    OpenLearningModuleAction,
-    OpenLearningModuleActionFunction
-} from "../../learningmodule/actions/open-learning-module-action";
+import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {

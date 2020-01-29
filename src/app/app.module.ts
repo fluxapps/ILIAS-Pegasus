@@ -128,6 +128,7 @@ import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
+import {UserStorageService} from "./services/filesystem/user-storage.service";
 
 @NgModule({
     declarations: [
@@ -443,6 +444,7 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
         DataProvider,
         ThemeService,
         FileService,
+        UserStorageService,
         SynchronizationService,
         DataProviderFileObjectHandler,
         StatusBar,
