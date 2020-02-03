@@ -3,6 +3,7 @@ import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LoadingPage} from "../../fallback/loading/loading.component";
 import {LearningModuleLoader} from "../services/loader";
+import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
 
 export class OpenLearningModuleAction extends ILIASObjectAction {
 
@@ -11,7 +12,8 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         private readonly nav: NavController,
         private readonly learningModuleObjectId: number,
         private readonly learningModuleName: string,
-        private readonly modal: ModalController
+        private readonly modal: ModalController,
+        private readonly browser: InAppBrowser,
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -21,9 +23,9 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         });
         await loadingPage.present();
         try {
-            await this.loader.load(this.learningModuleObjectId);
+            const startFile: string = await this.loader.load(this.learningModuleObjectId);
             //TODO dev open the module
-            setTimeout(() => loadingPage.dismiss(), 2000);
+            this.openHTMLModule(startFile);
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {
@@ -32,11 +34,19 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         }
     }
 
+    openHTMLModule(startFile: string): void { // TODO dev
+        console.log("opening HTML-module");
+        const browserOptions: InAppBrowserOptions = {
+            location: "no", clearsessioncache: "yes", clearcache: "yes", footer:"yes", closebuttoncaption: "TODO dev"
+        };
+        this.browser.create(startFile, "_blank", browserOptions);
+    }
+
     alert(): ILIASObjectActionAlert | undefined {
         return undefined;
     }
 }
 
 export interface OpenLearningModuleActionFunction {
-    (nav: NavController, learningModuleObjectId: number, learningModuleName: string, modalController: ModalController): OpenLearningModuleAction }
+    (nav: NavController, learningModuleObjectId: number, learningModuleName: string, modalController: ModalController, browser: InAppBrowser): OpenLearningModuleAction }
 export const OPEN_LEARNING_MODULE_ACTION_FACTORY: InjectionToken<OpenLearningModuleAction> = new InjectionToken("token for open learning module action factory");

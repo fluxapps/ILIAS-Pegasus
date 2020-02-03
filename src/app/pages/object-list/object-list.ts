@@ -38,6 +38,7 @@ import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -84,6 +85,7 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly ngZone: NgZone,
+                private readonly browser: InAppBrowser,
                 readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -338,7 +340,7 @@ export class ObjectListPage {
         }
 
         if(iliasObject.type == "htlm") {
-            return this.openLearningModuleActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
+            return this.openLearningModuleActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal, this.browser);
         }
 
         if(iliasObject.type == "file") { // TODO dev

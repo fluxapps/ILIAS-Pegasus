@@ -25,7 +25,7 @@ export class LearningModuleProvider {
     }
     */
 
-    openHTMLModule(browser: InAppBrowser, source: string): void {
+    openHTMLModule(browser: InAppBrowser, source: string): void { // TODO dev
         console.log("opening HTML-module");
         const browserOptions: InAppBrowserOptions = {
             location: "no", clearsessioncache: "yes", clearcache: "yes", footer:"yes", closebuttoncaption: "TODO dev"

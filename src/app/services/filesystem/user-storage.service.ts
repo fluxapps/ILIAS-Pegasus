@@ -9,15 +9,14 @@ import {User} from "../../models/user";
 })
 export class UserStorageService {
     constructor(
-        private readonly file: File,
-        private readonly platform: Platform,
+        readonly file: File,
+        readonly platform: Platform,
     ) {}
 
     /**
      * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation
      *
      * @param name name of the directory
-     * @param includeStorageLocation if set to true, will include the base path for the storage of the application
      * @param createRecursive when set to true, will create the target directory if it does not exist yet
      */
     async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {

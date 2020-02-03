@@ -18,6 +18,7 @@ import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import {SQLite} from "@ionic-native/sqlite/ngx";
 import {StatusBar} from "@ionic-native/status-bar/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
+import {Zip} from "@ionic-native/zip/ngx";
 import {MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
@@ -416,8 +417,21 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
         <FactoryProvider> {
             provide: OPEN_LEARNING_MODULE_ACTION_FACTORY,
             useFactory: (loader: LearningModuleLoader): OpenLearningModuleActionFunction =>
-                (nav: NavController, learningModuleObjectId: number, learningModuleName: string, modalController: ModalController):
-                    OpenLearningModuleAction => new OpenLearningModuleAction(loader, nav, learningModuleObjectId, learningModuleName, modalController)
+                (
+                    nav: NavController,
+                    learningModuleObjectId: number,
+                    learningModuleName: string,
+                    modalController: ModalController,
+                    browser: InAppBrowser
+                ):
+                    OpenLearningModuleAction => new OpenLearningModuleAction(
+                    loader,
+                    nav,
+                    learningModuleObjectId,
+                    learningModuleName,
+                    modalController,
+                    browser
+                )
             ,
             deps: [LEARNING_MODULE_LOADER]
         },
@@ -468,6 +482,7 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
         AuthenticationProvider,
         ExecuteSyncProvider,
         AppVersion,
+        Zip,
         UniqueDeviceID
     ],
     exports: [
