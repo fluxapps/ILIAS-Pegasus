@@ -39,6 +39,7 @@ import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -86,6 +87,7 @@ export class ObjectListPage {
                 private readonly translate: TranslateService,
                 private readonly ngZone: NgZone,
                 private readonly browser: InAppBrowser,
+                private readonly userStorage: UserStorageService,
                 readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -340,10 +342,17 @@ export class ObjectListPage {
         }
 
         if(iliasObject.type == "htlm") {
-            return this.openLearningModuleActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal, this.browser);
+            return this.openLearningModuleActionFactory(
+                this.navCtrl,
+                iliasObject.objId,
+                iliasObject.title,
+                this.modal,
+                this.browser,
+                this.userStorage
+            );
         }
 
-        if(iliasObject.type == "file") { // TODO dev
+        if(iliasObject.type == "file") {
             return new DownloadAndOpenFileExternalAction(
                 this.translate.instant("actions.download_and_open_in_external_app"),
                 iliasObject,

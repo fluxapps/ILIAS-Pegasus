@@ -422,7 +422,8 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
                     learningModuleObjectId: number,
                     learningModuleName: string,
                     modalController: ModalController,
-                    browser: InAppBrowser
+                    browser: InAppBrowser,
+                    userStorage: UserStorageService
                 ):
                     OpenLearningModuleAction => new OpenLearningModuleAction(
                     loader,
@@ -430,7 +431,8 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
                     learningModuleObjectId,
                     learningModuleName,
                     modalController,
-                    browser
+                    browser,
+                    userStorage
                 )
             ,
             deps: [LEARNING_MODULE_LOADER]

@@ -4,6 +4,10 @@ import {InjectionToken} from "@angular/core";
 import {LoadingPage} from "../../fallback/loading/loading.component";
 import {LearningModuleLoader} from "../services/loader";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+import {User} from "../../models/user";
+import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
+import {LearningModule} from "../../models/learning-module";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 
 export class OpenLearningModuleAction extends ILIASObjectAction {
 
@@ -14,6 +18,7 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         private readonly learningModuleName: string,
         private readonly modal: ModalController,
         private readonly browser: InAppBrowser,
+        private readonly userStorage: UserStorageService,
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -23,9 +28,8 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         });
         await loadingPage.present();
         try {
-            const startFile: string = await this.loader.load(this.learningModuleObjectId);
-            //TODO dev open the module
-            this.openHTMLModule(startFile);
+            await this.loader.load(this.learningModuleObjectId);
+            this.openHTMLModule();
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {
@@ -34,12 +38,20 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         }
     }
 
-    openHTMLModule(startFile: string): void { // TODO dev
+    async openHTMLModule(): Promise<void> {
         console.log("opening HTML-module");
+        const user: User = AuthenticationProvider.getUser();
+        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
+
+        const url: string = await lm.getLocalStartFileUrl(this.userStorage);
         const browserOptions: InAppBrowserOptions = {
-            location: "no", clearsessioncache: "yes", clearcache: "yes", footer:"yes", closebuttoncaption: "TODO dev"
+            location: "no",
+            clearsessioncache: "yes",
+            clearcache: "yes",
+            footer:"yes",
+            closebuttoncaption: "TODO dev"
         };
-        this.browser.create(startFile, "_blank", browserOptions);
+        this.browser.create(url, "_blank", browserOptions);
     }
 
     alert(): ILIASObjectActionAlert | undefined {
@@ -48,5 +60,14 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
 }
 
 export interface OpenLearningModuleActionFunction {
-    (nav: NavController, learningModuleObjectId: number, learningModuleName: string, modalController: ModalController, browser: InAppBrowser): OpenLearningModuleAction }
+    (
+        nav: NavController,
+        learningModuleObjectId: number,
+        learningModuleName: string,
+        modalController: ModalController,
+        browser: InAppBrowser,
+        userStorage: UserStorageService
+    ): OpenLearningModuleAction
+}
+
 export const OPEN_LEARNING_MODULE_ACTION_FACTORY: InjectionToken<OpenLearningModuleAction> = new InjectionToken("token for open learning module action factory");

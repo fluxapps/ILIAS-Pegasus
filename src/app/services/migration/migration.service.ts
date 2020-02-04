@@ -23,6 +23,7 @@ import {Logging} from "../logging/logging.service";
 /** misc */
 import {Connection, getConnection, QueryRunner} from "typeorm/browser";
 import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
+import {CreateLearningModulesSchema} from "../../migrations/V__9-create-learning-modules-schema";
 
 /**
  * DB Migration with TypeORM.
@@ -142,7 +143,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
       new UpdateUserSettingsSyncSchema(),
       new MigrateOfflineAndFavorites(),
       new FilesLearningProgress(),
-      new SettingsThemeColor()
+      new SettingsThemeColor(),
+      new CreateLearningModulesSchema()
     ];
   }
 }

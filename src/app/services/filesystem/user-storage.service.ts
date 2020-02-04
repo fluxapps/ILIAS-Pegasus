@@ -3,14 +3,15 @@ import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {User} from "../../models/user";
+import {LearningModule} from "../../models/learning-module";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserStorageService {
     constructor(
-        readonly file: File,
-        readonly platform: Platform,
+        private readonly file: File,
+        private readonly platform: Platform,
     ) {}
 
     /**
@@ -67,7 +68,24 @@ export class UserStorageService {
     }
 
     /**
+     * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
+     */
+    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<boolean> {
+        try {
+            try {
+                await this.file.removeRecursively(newPath, newDirName);
+            } finally {
+                await this.file.moveDir(path, dirName, newPath, newDirName);
+            }
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
      * removes a file
+     *
      * @param path is the path to the file with format 'dir' or 'dir/'
      * @param fileName is the name of the file
      */
