@@ -2,12 +2,14 @@ import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, I
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LoadingPage} from "../../fallback/loading/loading.component";
-import {LearningModuleLoader} from "../services/loader";
+import {LearningModuleLoader} from "../services/learning-module-loader";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {LearningModule} from "../../models/learning-module";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {ILIASObject} from "../../models/ilias-object";
+import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
+import {TranslateService} from "@ngx-translate/core";
 
 export class OpenLearningModuleAction extends ILIASObjectAction {
 
@@ -18,7 +20,8 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         private readonly learningModuleName: string,
         private readonly modal: ModalController,
         private readonly browser: InAppBrowser,
-        private readonly userStorage: UserStorageService,
+        private readonly pathBuilder: LearningModulePathBuilder,
+        private readonly translate: TranslateService,
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -28,7 +31,9 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
         });
         await loadingPage.present();
         try {
-            await this.loader.load(this.learningModuleObjectId);
+            const user: User = AuthenticationProvider.getUser();
+            const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
+            if(!obj.isFavorite) await this.loader.load(this.learningModuleObjectId);
             this.openHTMLModule();
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
@@ -39,17 +44,16 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
     }
 
     async openHTMLModule(): Promise<void> {
-        console.log("opening HTML-module");
+        console.log("opening learning module");
         const user: User = AuthenticationProvider.getUser();
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
-
-        const url: string = await lm.getLocalStartFileUrl(this.userStorage);
+        const url: string = await lm.getLocalStartFileUrl(this.pathBuilder);
         const browserOptions: InAppBrowserOptions = {
             location: "no",
             clearsessioncache: "yes",
             clearcache: "yes",
             footer:"yes",
-            closebuttoncaption: "TODO dev"
+            closebuttoncaption: this.translate.instant("close")
         };
         this.browser.create(url, "_blank", browserOptions);
     }
@@ -66,7 +70,8 @@ export interface OpenLearningModuleActionFunction {
         learningModuleName: string,
         modalController: ModalController,
         browser: InAppBrowser,
-        userStorage: UserStorageService
+        pathBuilder: LearningModulePathBuilder,
+        translate: TranslateService,
     ): OpenLearningModuleAction
 }
 

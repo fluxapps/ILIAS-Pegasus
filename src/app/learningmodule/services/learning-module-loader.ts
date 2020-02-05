@@ -9,6 +9,7 @@ import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.servic
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {Zip} from "@ionic-native/zip/ngx";
 import {LearningModule} from "../../models/learning-module";
+import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 
 export interface LearningModuleLoader {
     /**
@@ -31,6 +32,7 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
         @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
+        @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) {}
 
     async load(objId: number): Promise<void> {
@@ -40,10 +42,8 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         const request: LearningModuleData = await this.getLearningModuleData(obj.refId);
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
 
-        // user-dependant path to all learning modules
-        const localAllLmsDir: string = await this.userStorage.dirForUser(LearningModule.getAllLmsDirName(), true);
         // path to the tmp directory for downloading
-        const localTmpZipDir: string = await this.userStorage.dirForUser(`${LearningModule.getAllLmsDirName()}/tmp`, true);
+        const localTmpZipDir: string = await this.pathBuilder.inLocalLmDir("tmp", true);
         // name of the zip file containing the learning module
         const tmpZipFile: string = `tmp_${objId}.zip`;
         // url to get the zip file containing the learning module
@@ -53,8 +53,6 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         const lmLoaded: boolean = await LearningModule.existsByObjIdAndUserId(objId, user.id);
         const lmUpToDate: boolean = lm.timestamp >= request.timestamp;
         if(lmLoaded && lmUpToDate) return;
-        // TODO dev (how to) check if lm has been loaded
-        // TODO dev this method requires that db entry is removed when loaded data is deleted
 
         // download the zip file
         const downloadOptions: DownloadRequestOptions = <DownloadRequestOptions> {
@@ -66,10 +64,12 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
             timeout: 0
         };
 
+        // user-dependant path to all learning modules
+        const localAllLmsDir: string = await this.pathBuilder.inLocalLmDir("", true);
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
-        await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, LearningModule.getLmDirName(objId));
+        await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
         await this.userStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
 
         // save the lm in the local database

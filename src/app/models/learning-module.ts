@@ -1,6 +1,6 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
-import {UserStorageService} from "../services/filesystem/user-storage.service";
+import {LearningModulePathBuilder} from "../learningmodule/services/learning-module-path-builder";
 
 export class LearningModule extends ActiveRecord {
     /**
@@ -33,20 +33,6 @@ export class LearningModule extends ActiveRecord {
     }
 
     /**
-     * returns the name of the directory where all learning modules are located (without ending /)
-     */
-    static getAllLmsDirName(): string {
-        return "learning_modules";
-    }
-
-    /**
-     * constructs the name of the root directory for a given learning module (without ending /)
-     */
-    static getLmDirName(objId: number): string {
-        return `lm_${objId}`;
-    }
-
-    /**
      * find LearningModule object by given object id and user id, if it does not exist yet, creates a new instance with default values
      */
     static async findByObjIdAndUserId(objId: number, userId: number): Promise<LearningModule> {
@@ -75,8 +61,8 @@ export class LearningModule extends ActiveRecord {
     /**
      * creates the absolute url to the start file of the learning module
      */
-    async getLocalStartFileUrl(userStorage: UserStorageService): Promise<string> {
-        const localLmDir: string = await userStorage.dirForUser(`${LearningModule.getAllLmsDirName()}/${LearningModule.getLmDirName(this.objId)}`);
+    async getLocalStartFileUrl(pathBuilder: LearningModulePathBuilder): Promise<string> {
+        const localLmDir: string = await pathBuilder.getLmDirByObjId(this.objId);
         return `${localLmDir}${this.relativeStartFile}`;
     }
 }

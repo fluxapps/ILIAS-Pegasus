@@ -4,7 +4,7 @@ import {QueryRunner, Table, TableColumn} from "typeorm/browser";
 /**
  * migration for learning modules
  *
- * @version 4.*.*
+ * @version 1.0.0
  */
 export class CreateLearningModulesSchema implements Migration {
     readonly version: MigrationVersion = new MigrationVersion("V__9");

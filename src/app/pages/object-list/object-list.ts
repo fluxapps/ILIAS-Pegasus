@@ -40,6 +40,7 @@ import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../learningmodule/services/learning-module-path-builder";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -99,7 +100,7 @@ export class ObjectListPage {
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
                 @Inject(OPEN_LEARNING_MODULE_ACTION_FACTORY)
                 private readonly openLearningModuleActionFactory: OpenLearningModuleActionFunction,
-                // TODO dev implement @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
+                @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) { }
 
     /* = = = = = = = *
@@ -341,14 +342,15 @@ export class ObjectListPage {
             return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
         }
 
-        if(iliasObject.type == "htlm") {
+        if(iliasObject.type === "htlm") {
             return this.openLearningModuleActionFactory(
                 this.navCtrl,
                 iliasObject.objId,
                 iliasObject.title,
                 this.modal,
                 this.browser,
-                this.userStorage
+                this.pathBuilder,
+                this.translate
             );
         }
 

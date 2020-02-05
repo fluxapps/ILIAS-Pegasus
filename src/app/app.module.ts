@@ -123,13 +123,19 @@ import {
     OpenLearningModuleAction,
     OpenLearningModuleActionFunction
 } from "./learningmodule/actions/open-learning-module-action";
-import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/loader";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/learning-module-loader";
+import {LEARNING_MODULE_MANAGER, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
 import {UserStorageService} from "./services/filesystem/user-storage.service";
+import {
+    LEARNING_MODULE_PATH_BUILDER,
+    LearningModulePathBuilder,
+    LearningModulePathBuilderImpl
+} from "./learningmodule/services/learning-module-path-builder";
 
 @NgModule({
     declarations: [
@@ -423,7 +429,8 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
                     learningModuleName: string,
                     modalController: ModalController,
                     browser: InAppBrowser,
-                    userStorage: UserStorageService
+                    pathBuilder: LearningModulePathBuilder,
+                    translate: TranslateService,
                 ):
                     OpenLearningModuleAction => new OpenLearningModuleAction(
                     loader,
@@ -432,10 +439,19 @@ import {UserStorageService} from "./services/filesystem/user-storage.service";
                     learningModuleName,
                     modalController,
                     browser,
-                    userStorage
+                    pathBuilder,
+                    translate,
                 )
             ,
             deps: [LEARNING_MODULE_LOADER]
+        },
+        {
+            provide: LEARNING_MODULE_PATH_BUILDER,
+            useClass: LearningModulePathBuilderImpl
+        },
+        {
+            provide: LEARNING_MODULE_MANAGER,
+            useClass: LearningModuleManagerImpl
         },
         <FactoryProvider> {
             provide: REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,

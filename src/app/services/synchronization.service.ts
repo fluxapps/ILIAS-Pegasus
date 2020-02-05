@@ -8,7 +8,7 @@ import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "../learningmodule/services/loader";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "../learningmodule/services/learning-module-loader";
 /** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";

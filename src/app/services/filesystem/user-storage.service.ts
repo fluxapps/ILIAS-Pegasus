@@ -3,7 +3,6 @@ import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentification/authentication.provider";
 import {User} from "../../models/user";
-import {LearningModule} from "../../models/learning-module";
 
 @Injectable({
     providedIn: "root"
@@ -77,6 +76,18 @@ export class UserStorageService {
             } finally {
                 await this.file.moveDir(path, dirName, newPath, newDirName);
             }
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
+     * removes a directory
+     */
+    async removeDir(path: string, dirName: string): Promise<boolean> {
+        try {
+            await this.file.removeRecursively(path, dirName);
             return true;
         } catch(e) {
             return false;
