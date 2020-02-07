@@ -9,7 +9,6 @@ import {Log} from "../services/log.service";
 /** misc */
 import {
     ILIASObjectActionNoMessage,
-    ILIASObjectActionSuccess,
     ILIASObjectActionResult,
     ILIASObjectAction,
     ILIASObjectActionAlert
@@ -78,7 +77,7 @@ export class DownloadFileAction extends ILIASObjectAction {
 
     download(resolve, reject): void {
         this.file.download(this.fileObject, true).then(() => {
-            resolve(new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful")));
+            resolve(new ILIASObjectActionNoMessage());
         }, (error) => {
             Log.describe(this, "Could not download file: ", error);
             reject(new Error(this.translate.instant("actions.offline_and_no_local_file")));

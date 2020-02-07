@@ -52,6 +52,7 @@ interface PageState {
     loadingOffline: boolean,
     refreshing: boolean,
     desktop: boolean,
+    actionExecutionLock: boolean,
 }
 
 @Component({
@@ -66,7 +67,8 @@ export class ObjectListPage {
         loadingLive: false,
         loadingOffline: false,
         refreshing: false,
-        desktop: undefined
+        desktop: undefined,
+        actionExecutionLock: false,
     };
 
     pageTitle: string;
@@ -377,6 +379,12 @@ export class ObjectListPage {
     }
 
     executeAction(action: ILIASObjectAction): void {
+        if(this.state.actionExecutionLock) {
+            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=another action is already being executed`);
+            return;
+        }
+        this.state.actionExecutionLock = true;
+
         //const hash: number = action.instanceId();
         //this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
@@ -387,7 +395,7 @@ export class ObjectListPage {
             this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
             //this.footerToolbar.removeJob(hash);
             throw error;
-        }).then(() => this.refreshContent());
+        }).then(() => this.state.actionExecutionLock = false);
     }
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {

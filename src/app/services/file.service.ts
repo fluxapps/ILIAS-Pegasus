@@ -248,25 +248,25 @@ export class FileService {
 
     private async openExistingAndroid(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
       this.log.debug(() => `Opening file on Android: ${fileEntry.fullPath}`);
-      cordova.plugins["fileOpener2"].open(
-        fileEntry.toURL(),
-        fileObject.data.fileType,
-        {
-          error: (e): void => {
-            if (e.status == 9) {
-              this.log.error(() => "Unable to open existing file on Android because the file type is not supported.");
-              throw new CantOpenFileTypeException("Unable to open existing file on Android because the file type is not supported.");
+        cordova.plugins["fileOpener2"].open(
+            fileEntry.toURL(),
+            fileObject.data.fileType,
+            {
+                error: (e): void => {
+                    if (e.status == 9) {
+                        this.log.error(() => "Unable to open existing file on Android because the file type is not supported.");
+                        throw new CantOpenFileTypeException("Unable to open existing file on Android because the file type is not supported.");
+                    }
+                    else {
+                        this.log.error(() => "Unable to open existing file on Android with a general error.");
+                        throw e;
+                    }
+                },
+                success: (): void => {
+                    this.log.trace(() => "Existing file successfully opened on Android.");
+                }
             }
-          else {
-              this.log.error(() => "Unable to open existing file on Android with a general error.");
-              throw e;
-            }
-          },
-          success: (): void => {
-            this.log.trace(() => "Existing file successfully opened on Android.");
-          }
-        }
-      );
+        )
     }
 
     private async openExistingIOS(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {

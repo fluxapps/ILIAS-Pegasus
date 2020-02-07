@@ -60,7 +60,7 @@ export class CssStyleService {
      * checks whether the theme should be managed dynamically
      */
     static dynamicThemeEnabled(): boolean {
-        return CssStyleService.getCSSValueAsBoolean("--theme-color-from-plugin");
+        return CssStyleService.getCSSValueAsBoolean("--theme-from-plugin");
     }
 
     /**

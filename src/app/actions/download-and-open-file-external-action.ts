@@ -7,7 +7,6 @@ import {
     ILIASObjectAction,
     ILIASObjectActionAlert,
     ILIASObjectActionResult,
-    ILIASObjectActionSuccess,
     ILIASObjectActionNoMessage
 } from "./object-action";
 /** logging */
@@ -36,7 +35,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
         // Download is only executed if a newer version is available in ILIAS
         Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
         if (this.fileObject.needsDownload && this.file.isOffline())
-            return Promise.reject(new OfflineException("File requireds download and is offline at the same time."));
+            return Promise.reject(new OfflineException("File requires download and is offline at the same time."));
 
         else if (this.fileObject.needsDownload) {
             const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
@@ -152,7 +151,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
     async downloadAndOpen(): Promise<ILIASObjectActionResult> {
       await this.file.download(this.fileObject, true);
       await this.file.open(this.fileObject);
-      return new ILIASObjectActionSuccess(this.translate.instant("actions.download_successful"));
+      return new ILIASObjectActionNoMessage();
     };
 
     alert(): ILIASObjectActionAlert {
