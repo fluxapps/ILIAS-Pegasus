@@ -394,6 +394,13 @@ body
   background-color:$lightsOnBg;
   animation:change-background 3s infinite linear;
 }
+
+ion-progress-bar
+{
+  --progress-background: var(--ion-color-primary-contrast);
+  --buffer-background: var(--ion-color-primary-contrast);
+}
+
 .wrapper
 {
    position:absolute;

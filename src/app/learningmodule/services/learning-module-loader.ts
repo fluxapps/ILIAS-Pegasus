@@ -10,6 +10,7 @@ import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../pro
 import {Zip} from "@ionic-native/zip/ngx";
 import {LearningModule} from "../../models/learning-module";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
+import {LoadingPage} from "../../fallback/loading/loading.component";
 
 export interface LearningModuleLoader {
     /**
@@ -36,10 +37,12 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
     ) {}
 
     async load(objId: number): Promise<void> {
+        LoadingPage.progress.next(0);
         // get data for the learning module
         const user: User = AuthenticationProvider.getUser();
         const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objId, user.id);
         const request: LearningModuleData = await this.getLearningModuleData(obj.refId);
+        LoadingPage.progress.next(.2);
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
 
         // path to the tmp directory for downloading
@@ -68,9 +71,12 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         const localAllLmsDir: string = await this.pathBuilder.inLocalLmDir("", true);
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
+        LoadingPage.progress.next(.6);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
+        LoadingPage.progress.next(.9);
         await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
         await this.userStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
+        LoadingPage.progress.next(1);
 
         // save the lm in the local database
         lm.relativeStartFile = request.startFile;

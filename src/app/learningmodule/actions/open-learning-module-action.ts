@@ -1,7 +1,7 @@
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
-import {LoadingPage} from "../../fallback/loading/loading.component";
+import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {LearningModuleLoader} from "../services/learning-module-loader";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
 import {User} from "../../models/user";
@@ -29,11 +29,13 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
             component: LoadingPage,
             cssClass: "modal-fullscreen"
         });
+        LoadingPage.type = LoadingPageType.learningmodule;
         await loadingPage.present();
         try {
             const user: User = AuthenticationProvider.getUser();
             const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
-            if(!obj.isFavorite) await this.loader.load(this.learningModuleObjectId);
+            const alreadyLoaded: boolean = await obj.objectIsUnderFavorite();
+            if(!alreadyLoaded) await this.loader.load(this.learningModuleObjectId);
             this.openHTMLModule();
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();

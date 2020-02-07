@@ -44,13 +44,13 @@
         background-size: 100vw ;
         background-repeat: no-repeat;
         // background-color: map_get($colors, primary);
-    
+
 
     ion-grid {
         // margin-top: 10vh;
         width: 100%;
       }
-    
+
 
     ion-card-header {
         font-weight: 800 !important;
@@ -88,8 +88,8 @@
 
 
     .tile-fav{
-        // background-image: linear-gradient(to top left, #ff8e2c, #e66e1e); 
-        border-bottom: 1px solid white; 
+        // background-image: linear-gradient(to top left, #ff8e2c, #e66e1e);
+        border-bottom: 1px solid white;
 
     }
 
@@ -216,7 +216,7 @@ ion-content.page_settings {
     }
     .login-top-image{
         // display: none;
-        
+
     }
 
     // a, img {
@@ -501,6 +501,12 @@ ion-content.page_settings {
 
     .loading-subtitle {
         color: white;
+    }
+
+    ion-progress-bar
+    {
+        --progress-background: var(--ion-color-primary-contrast);
+        --buffer-background: var(--ion-color-primary-contrast);
     }
 
 }

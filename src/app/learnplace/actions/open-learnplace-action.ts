@@ -1,4 +1,4 @@
-import {LoadingPage} from "../../fallback/loading/loading.component";
+import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
 import {LearnplaceLoader} from "../services/loader/learnplace";
 import {ModalController, NavController} from "@ionic/angular";
@@ -26,6 +26,7 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
             component: LoadingPage,
             cssClass: "modal-fullscreen"
         });
+        LoadingPage.type = LoadingPageType.learnplace;
         await loadingPage.present();
         try {
             await this.loader.load(this.learnplaceObjectId);
