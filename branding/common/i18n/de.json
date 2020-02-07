@@ -255,6 +255,18 @@
         "location": {
             "activate": "Standort aktivieren",
             "back": "Nope, ich will zurück"
+        },
+        "generic": {
+            "loading": "Ladevorgang",
+            "loading_subtitle": "Hab etwas Geduld. Das Laden des Inhaltes nimmt etwas Zeit in Anspruch."
+        },
+        "learnplace": {
+            "loading": "Lernort",
+            "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl große Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern."
+        },
+        "learningmodule": {
+            "loading": "Lernmodul",
+            "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl große Dateien in diesem Lernmodul. Daher kann dies mehrere Minuten dauern."
         }
       },
       "onboarding": {

@@ -18,6 +18,7 @@ import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-
 import {FilesLearningProgress} from "../../migrations/V__7-files_learning_progress";
 import {SettingsThemeColor} from "../../migrations/V__8-settings_theme_color";
 import {AddThemeTimestamp} from "../../migrations/V__9-add_theme_timestamp";
+import {CreateLearningModulesSchema} from "../../migrations/V__10-create-learning-modules-schema";
 /** logging */
 import {Logger} from "../logging/logging.api";
 import {Logging} from "../logging/logging.service";
@@ -144,7 +145,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
       new MigrateOfflineAndFavorites(),
       new FilesLearningProgress(),
       new SettingsThemeColor(),
-      new AddThemeTimestamp()
+      new AddThemeTimestamp(),
+      new CreateLearningModulesSchema(),
     ];
   }
 }

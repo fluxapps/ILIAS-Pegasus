@@ -1,5 +1,5 @@
 /** angular */
-import {Injectable, Inject} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {Events, Platform} from "@ionic/angular";
 /** ionic-native */
 import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file/ngx";
@@ -23,6 +23,7 @@ import {Logging} from "./logging/logging.service";
 import {isNullOrUndefined} from "../util/util.function";
 import {AuthenticationProvider} from "../providers/authentication.provider";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
+import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../learningmodule/services/learning-module-manager";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -45,9 +46,9 @@ export class FileService {
         protected translate: TranslateService,
         private readonly file: File,
         private readonly network: Network,
-        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager
+        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
+        @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleManager
     ) {}
-
 
     /**
      * Return the storage location to store files for the given user and object, depending on platform (iOS or Android)
@@ -155,7 +156,7 @@ export class FileService {
      * Deletes the local object on the device
      */
     async removeObject(iliasObject: ILIASObject): Promise<void> {
-        if(iliasObject.type === "file" || iliasObject.isLearnplace()) {
+        if(iliasObject.type === "file" || iliasObject.isLearnplace() || iliasObject.type === "html") {
             await this.removeFile(iliasObject);
             return;
         }
@@ -178,6 +179,10 @@ export class FileService {
         const user: User = await User.find(fileObject.userId);
         if(fileObject.isLearnplace()) {
             await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
+            return;
+        }
+        if(fileObject.type == "html") {
+            await this.learningModuleManager.remove(fileObject.objId, fileObject.userId);
             return;
         }
         if (fileObject.data.hasOwnProperty("fileName")) {

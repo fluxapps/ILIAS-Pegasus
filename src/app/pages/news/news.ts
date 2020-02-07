@@ -124,7 +124,7 @@ export class NewsPage
 
     private async fetchPresenterByRefId(refId: number): Promise<ILIASObjectPresenter> {
         const userId: number = AuthenticationProvider.getUser().id;
-        const ilObj: ILIASObject = await ILIASObject.findByRefId(refId, userId);
+        const ilObj: ILIASObject = await ILIASObject.findByRefIdAndUserId(refId, userId);
         return ILIASObjectPresenterFactory.instance(ilObj);
     }
 

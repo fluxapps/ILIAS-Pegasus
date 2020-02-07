@@ -49,7 +49,7 @@ export class LinkBlock implements OnInit, OnDestroy {
 
         // because the ref id is immutable, we only want to read the objects title once
         User.findActiveUser().then(user => {
-            return ILIASObject.findByRefId(this.link.refId, user.id);
+            return ILIASObject.findByRefIdAndUserId(this.link.refId, user.id);
         }).then(obj => {
             this.linkLabel = obj.title;
         }).catch(_ => {

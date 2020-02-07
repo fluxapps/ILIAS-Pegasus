@@ -511,6 +511,12 @@ ion-content.page_settings {
         color: white;
     }
 
+    ion-progress-bar
+    {
+        --progress-background: var(--ion-color-primary-contrast);
+        --buffer-background: var(--ion-color-primary-contrast);
+    }
+
 }
 
 // app/fallback/synchronization/synchronization.scss

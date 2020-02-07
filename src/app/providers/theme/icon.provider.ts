@@ -18,6 +18,7 @@ export class IconProvider {
         {key: "grp", loadedName: "group.svg", asset: "assets/icon/obj_group.svg"},
         {key: "file", loadedName: "file.svg", asset: "assets/icon/obj_file.svg"},
         {key: "xsrl", loadedName: "learningplace.svg", asset: "assets/icon/obj_location.svg"},
+        {key: "htlm", loadedName: "learningmodule.svg", asset: "assets/icon/obj_learningmodule.svg"},
         {key: "link", loadedName: "link.svg", asset: "assets/icon/obj_link.svg"},
     ];
 

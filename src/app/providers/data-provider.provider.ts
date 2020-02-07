@@ -62,7 +62,7 @@ export class DataProvider {
 
         let the_iliasObject: ILIASObject = undefined;
 
-        return ILIASObject.findByRefId(parseInt(object.refId, 10), user.id)
+        return ILIASObject.findByRefIdAndUserId(parseInt(object.refId, 10), user.id)
             .then(iliasObject => {
                 iliasObject.readFromObject(object);
                 the_iliasObject = iliasObject;

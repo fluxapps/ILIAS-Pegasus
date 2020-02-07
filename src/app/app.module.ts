@@ -1,10 +1,10 @@
-import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
+import {OnboardingPageModule} from "./pages/onboarding/onboarding.module";
 import {AppComponent} from "./app.component";
 /** angular */
-import {IonicModule, IonicRouteStrategy, Platform, ModalController, NavController} from "@ionic/angular";
-import {RouteReuseStrategy, Router} from "@angular/router";
+import {IonicModule, IonicRouteStrategy, ModalController, NavController, Platform} from "@ionic/angular";
+import {RouteReuseStrategy} from "@angular/router";
 import {FormsModule} from "@angular/forms";
-import {HttpClientModule, HttpClient, XhrFactory} from "@angular/common/http";
+import {HttpClient, HttpClientModule, XhrFactory} from "@angular/common/http";
 import {ClassProvider, ErrorHandler, FactoryProvider, NgModule} from "@angular/core";
 import {BrowserModule} from "@angular/platform-browser";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -19,16 +19,17 @@ import {SQLite} from "@ionic-native/sqlite/ngx";
 import {StatusBar} from "@ionic-native/status-bar/ngx";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
+import {Zip} from "@ionic-native/zip/ngx";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 /** pages and screens */
+// import {OnboardingPage} from "./pages/onboarding/onboarding";
 import {LeaveAppDialog} from "./fallback/open-browser/leave-app.dialog";
-import {LoadingPage} from "./learnplace/fallback/loading/loading.component";
+// below: unused pages
+import {LoadingPage} from "./fallback/loading/loading.component";
 import {HardwareFeaturePage} from "./pages/test-hardware-feature/test-hardware-feature";
-import {SetupClientPage} from "./fallback/setup-client/setup-client.component";
 import {RoamingFallbackScreen} from "./fallback/roaming/roaming-fallback.component";
 import {WifiFallbackScreen} from "./fallback/wifi/wifi-fallback.component";
 import {LocationFallbackScreen} from "./fallback/location/location-fallback.component";
-//import {OnboardingPage} from "./pages/onboarding/onboarding";
 //import {SyncFinishedModal} from "./pages/sync-finished-modal/sync-finished-modal";
 //import {TestPage} from "./pages/test/test";
 /** services */
@@ -116,12 +117,24 @@ import {
     RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
 } from "./learnplace/actions/remove-local-learnplace-action";
+/** learning modules */
+import {
+    OPEN_LEARNING_MODULE_ACTION_FACTORY,
+    OpenLearningModuleAction,
+    OpenLearningModuleActionFunction
+} from "./learningmodule/actions/open-learning-module-action";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/learning-module-loader";
+import {LEARNING_MODULE_MANAGER, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
+import {
+    LEARNING_MODULE_PATH_BUILDER,
+    LearningModulePathBuilder,
+    LearningModulePathBuilderImpl
+} from "./learningmodule/services/learning-module-path-builder";
 /** misc */
 import {PegasusErrorHandler} from "./error-handler";
 import {AppRoutingModule} from "./app-routing.module";
 import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "./actions/open-object-in-ilias-action";
-// import {OnboardingPageModule} from "./pages/onboarding/onboarding.module"
-import { WebView } from "@ionic-native/ionic-webview/ngx";
+import {WebView} from "@ionic-native/ionic-webview/ngx";
 
 @NgModule({
     declarations: [
@@ -132,7 +145,6 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 
         //TestPage,
         LoadingPage,
-        SetupClientPage,
         //SyncFinishedModal,
         // fallback screens
         WifiFallbackScreen,
@@ -147,7 +159,6 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 
         //SyncFinishedModal,
         LoadingPage,
-        SetupClientPage,
         //HardwareFeaturePage,
         // fallback screens
         //WifiFallbackScreen,
@@ -283,6 +294,11 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
             useClass: SynchronizedVisitJournalWatch
         },
 
+        {
+            provide: LEARNING_MODULE_LOADER,
+            useClass: RestLearningModuleLoader
+        },
+
         // Link service
         {
             provide: INSTALLATION_LINK_PROVIDER,
@@ -403,6 +419,39 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
             deps: [LEARNPLACE_LOADER]
         },
         <FactoryProvider> {
+            provide: OPEN_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (loader: LearningModuleLoader): OpenLearningModuleActionFunction =>
+                (
+                    nav: NavController,
+                    learningModuleObjectId: number,
+                    learningModuleName: string,
+                    modalController: ModalController,
+                    browser: InAppBrowser,
+                    pathBuilder: LearningModulePathBuilder,
+                    translate: TranslateService,
+                ):
+                    OpenLearningModuleAction => new OpenLearningModuleAction(
+                    loader,
+                    nav,
+                    learningModuleObjectId,
+                    learningModuleName,
+                    modalController,
+                    browser,
+                    pathBuilder,
+                    translate,
+                )
+            ,
+            deps: [LEARNING_MODULE_LOADER]
+        },
+        {
+            provide: LEARNING_MODULE_PATH_BUILDER,
+            useClass: LearningModulePathBuilderImpl
+        },
+        {
+            provide: LEARNING_MODULE_MANAGER,
+            useClass: LearningModuleManagerImpl
+        },
+        <FactoryProvider> {
             provide: REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
             useFactory: (learnplaceManager: LearnplaceManager, translate: TranslateService): RemoveLocalLearnplaceActionFunction =>
                 (title: string, objectId: number, userId: number): RemoveLocalLearnplaceAction =>
@@ -426,7 +475,6 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         CssStyleService,
         FileService,
         SynchronizationService,
-        UserStorageService,
         DataProviderFileObjectHandler,
         StatusBar,
         InAppBrowser,
@@ -437,6 +485,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         SplashScreen,
         HTTP,
         WebView,
+        UserStorageService,
 
         // from src/services/device/hardware-features
         Diagnostic,
@@ -449,6 +498,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
         AuthenticationProvider,
         IconProvider,
         AppVersion,
+        Zip,
         UniqueDeviceID
     ],
     exports: [

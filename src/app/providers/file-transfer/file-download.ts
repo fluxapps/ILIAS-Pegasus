@@ -68,7 +68,7 @@ export class FileDownloaderImpl implements FileDownloader{
      * @throws {HttpRequestError} Thrown if the download of the resource failed.
      */
     async download(options: DownloadRequestOptions): Promise<HttpResponse> {
-
+        console.log(`LOADING ${options.url}`);
         try {
             const requestId: number = this.generateRequestId();
             this.log.trace(() => `Download-${requestId}: Clear cookies for request.`);

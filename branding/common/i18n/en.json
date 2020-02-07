@@ -247,9 +247,20 @@
         "browser": "You are leaving the ILIAS App ",
         "browser_ok": "OK, let's go!",
         "browser_no": "No. return!",
-        "loading": "Learnplace",
-        "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download.",
-        "synchronization": "Please wait a few seconds while we synchronize with ILIAS ..."
+        "synchronization": "Welcome!",
+        "synchronization_subtitle": "Please wait a few seconds while we synchronize your ILIAS-account.",
+        "generic": {
+            "loading": "Loading",
+            "loading_subtitle": "Hang on a minute. It may take some time to download the content."
+        },
+        "learnplace": {
+            "loading": "Learnplace",
+            "loading_subtitle": "Hang on a minute. If the learnplace contains a lot of content, it may take some time to download."
+        },
+        "learningmodule": {
+            "loading": "Learning Module",
+            "loading_subtitle": "Hang on a minute. If the learning module contains a lot of content, it may take some time to download."
+        }
     },
     "onboarding": {
       "title1": "With the help of this app you can:",

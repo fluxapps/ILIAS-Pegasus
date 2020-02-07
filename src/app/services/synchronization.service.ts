@@ -1,21 +1,27 @@
+/** angular */
 import {Inject, Injectable} from "@angular/core";
 import {AlertController} from "@ionic/angular";
+/** services */
 import {SQLiteDatabaseService} from "./database.service";
 import {FileService} from "./file.service";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "../learningmodule/services/learning-module-loader";
+/** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
 import {ILIASObject} from "../models/ilias-object";
+/** logging */
+import {Log} from "./log.service";
+/** misc */
 import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentication.provider";
-import {from, merge, Observable} from "rxjs";
-import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {ThemeSynchronizationService} from "./theme/theme-synchronization.service";
-import {Log} from "./log.service";
+import {Observable, from, merge} from "rxjs";
+import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
+import {Settings} from "../models/settings";
 import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export interface SynchronizationState {
@@ -51,18 +57,16 @@ export class SynchronizationService {
     lastSync: Date;
     lastSyncString: string;
 
-    constructor(
-        private readonly dataProvider: DataProvider,
-        private readonly fileService: FileService,
-        private readonly footerToolbar: FooterToolbarService,
-        private readonly translate: TranslateService,
-        private readonly alertCtr: AlertController,
-        private readonly rest: ILIASRestProvider,
-        private readonly themeSync: ThemeSynchronizationService,
-        @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
-        @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
-        @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-        private readonly themeProvider: ThemeProvider,
+    constructor(private readonly dataProvider: DataProvider,
+                private readonly fileService: FileService,
+                private readonly footerToolbar: FooterToolbarService,
+                private readonly translate: TranslateService,
+                @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
+                @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
+                @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
+                @Inject(LEARNING_MODULE_LOADER) private readonly learningModuleLoader: LearningModuleLoader,
+                private readonly alertCtr: AlertController,
+                private readonly themeProvider: ThemeProvider,
     ) {}
 
     /**
@@ -264,6 +268,7 @@ export class SynchronizationService {
             () => console.warn(`Encountered some problem in method 'downloadContainerContent' with container ${container.title}`)
         );
         await this.downloadLearnplaces(iliasObjects).toPromise();
+        await this.downloadLearningModules(iliasObjects);
         return syncResults;
     }
 
@@ -275,6 +280,17 @@ export class SynchronizationService {
                     () => it.needsDownload = false
                 )))
         );
+    }
+
+    private async downloadLearningModules(iliasObjects: Array<ILIASObject>): Promise<void> {
+        for(let i: number = 0; i < iliasObjects.length; i++) {
+            const io: ILIASObject = iliasObjects[i];
+            if(io.type == "htlm") {
+                await this.learningModuleLoader.load(io.objId);
+                io.needsDownload = false;
+                await io.save();
+            }
+        }
     }
 
     /**

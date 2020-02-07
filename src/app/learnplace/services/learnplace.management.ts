@@ -1,12 +1,11 @@
-import {InjectionToken, Inject, Injectable} from "@angular/core";
+import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {IOError} from "../../error/errors";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {PictureBlockEntity} from "../entity/pictureBlock.entity";
 import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
-import {DirectoryEntry, File, Flags, IWriteOptions, FileWriter, FileEntry, FileError, RemoveResult} from "@ionic-native/file/ngx";
+import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
 
 /**

@@ -1,7 +1,6 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {User} from "./user";
-import {ILIASObject} from "./ilias-object";
 
 /**
  * Holds additional meta data for ILIAS file objects

@@ -17,7 +17,6 @@ export class UserStorageService {
      * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation
      *
      * @param name name of the directory
-     * @param includeStorageLocation if set to true, will include the base path for the storage of the application
      * @param createRecursive when set to true, will create the target directory if it does not exist yet
      */
     async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {
@@ -68,7 +67,36 @@ export class UserStorageService {
     }
 
     /**
+     * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
+     */
+    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<boolean> {
+        try {
+            try {
+                await this.file.removeRecursively(newPath, newDirName);
+            } finally {
+                await this.file.moveDir(path, dirName, newPath, newDirName);
+            }
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
+     * removes a directory
+     */
+    async removeDir(path: string, dirName: string): Promise<boolean> {
+        try {
+            await this.file.removeRecursively(path, dirName);
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
      * removes a file
+     *
      * @param path is the path to the file with format 'dir' or 'dir/'
      * @param fileName is the name of the file
      */

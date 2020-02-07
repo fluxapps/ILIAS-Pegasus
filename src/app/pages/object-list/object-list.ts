@@ -1,6 +1,12 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import {
+    ActionSheetController,
+    AlertController,
+    ModalController,
+    NavController,
+    ToastController
+} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -32,6 +38,10 @@ import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {ThemeProvider} from "../../providers/theme/theme.provider";
+import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
+import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../learningmodule/services/learning-module-path-builder";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -78,6 +88,8 @@ export class ObjectListPage {
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
                 private readonly ngZone: NgZone,
+                private readonly browser: InAppBrowser,
+                private readonly userStorage: UserStorageService,
                 readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -87,7 +99,10 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-    ) {}
+                @Inject(OPEN_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openLearningModuleActionFactory: OpenLearningModuleActionFunction,
+                @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
+    ) { }
 
     /* = = = = = = = *
      *  NAVIGATION   *
@@ -333,6 +348,18 @@ export class ObjectListPage {
 
         if(iliasObject.isLearnplace()) {
             return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
+        }
+
+        if(iliasObject.type === "htlm") {
+            return this.openLearningModuleActionFactory(
+                this.navCtrl,
+                iliasObject.objId,
+                iliasObject.title,
+                this.modal,
+                this.browser,
+                this.pathBuilder,
+                this.translate
+            );
         }
 
         if(iliasObject.type == "file") {

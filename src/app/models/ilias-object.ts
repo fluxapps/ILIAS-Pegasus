@@ -263,7 +263,7 @@ export class ILIASObject extends ActiveRecord {
      */
     get parent(): Promise<ILIASObject> {
         return new Promise((resolve, reject) => {
-            ILIASObject.findByRefId(this.parentRefId, this.userId).then(parentObject => {
+            ILIASObject.findByRefIdAndUserId(this.parentRefId, this.userId).then(parentObject => {
                 if (parentObject.id) {
                     resolve(parentObject);
                 } else {
@@ -382,7 +382,7 @@ export class ILIASObject extends ActiveRecord {
      * @param userId
      * @returns {Promise<ILIASObject>}
      */
-    static async findByRefId(refId: number, userId: number): Promise<ILIASObject> {
+    static async findByRefIdAndUserId(refId: number, userId: number): Promise<ILIASObject> {
         const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
         const response: any = await db.query("SELECT * FROM objects WHERE refId = ? AND userId = ?", [refId, userId]);
         if (response.rows.length == 0) {
@@ -403,6 +403,39 @@ export class ILIASObject extends ActiveRecord {
 
           // After finding and deletion we return the found object.
           return object;
+        }
+
+        return new ILIASObject();
+    }
+
+    /**
+     * Find ILIAS-Object by obj-ID for the given user-ID. If no Object is existing, returns a new instance
+     *
+     * @param refId
+     * @param userId
+     * @returns {Promise<ILIASObject>}
+     */
+    static async findByObjIdAndUserId(refId: number, userId: number): Promise<ILIASObject> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        const response: any = await db.query("SELECT * FROM objects WHERE objId = ? AND userId = ?", [refId, userId]);
+        if (response.rows.length == 0) {
+            const object: ILIASObject = new ILIASObject();
+            object.userId = userId;
+            return Promise.resolve(object);
+        } else if(response.rows.length == 1) {
+            return ILIASObject.find(response.rows.item(0).id);
+        } else if(response.rows.length > 1) {
+
+            // We find and save the object
+            const object: ILIASObject = await ILIASObject.find(response.rows.item(0).id);
+
+            // We destroy all overdue instances.
+            for (let i: number = 1; i < response.rows.length; i++) {
+                (await ILIASObject.find(response.rows.item(i).id)).destroy();
+            }
+
+            // After finding and deletion we return the found object.
+            return object;
         }
 
         return new ILIASObject();

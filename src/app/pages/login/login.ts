@@ -8,8 +8,8 @@ import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {TranslateService} from "@ngx-translate/core";
-import {SetupClientPage} from "../../fallback/setup-client/setup-client.component";
 import {ThemeProvider} from "../../providers/theme/theme.provider";
+import {LoadingPage} from "../../fallback/loading/loading.component";
 
 @Component({
     templateUrl: "login.html"
@@ -54,7 +54,7 @@ export class LoginPage {
         const installation: ILIASInstallation = this.getSelectedInstallation();
         const browser: InAppBrowserObject = this.auth.browserLogin(installation);
         const loadingPage: Promise<HTMLIonModalElement> = this.modal.create({
-            component: SetupClientPage,
+            component: LoadingPage,
             cssClass: "modal-fullscreen"
         });
 
