@@ -394,6 +394,7 @@ export class ObjectListPage {
 
             this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
             //this.footerToolbar.removeJob(hash);
+            this.state.actionExecutionLock = false;
             throw error;
         }).then(() => this.state.actionExecutionLock = false);
     }
