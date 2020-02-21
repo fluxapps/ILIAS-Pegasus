@@ -1,12 +1,6 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {
-    ActionSheetController,
-    AlertController,
-    ModalController,
-    NavController,
-    ToastController
-} from "@ionic/angular";
+import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -42,6 +36,7 @@ import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} f
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../learningmodule/services/learning-module-path-builder";
+import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -52,7 +47,6 @@ interface PageState {
     loadingOffline: boolean,
     refreshing: boolean,
     desktop: boolean,
-    actionExecutionLock: boolean,
 }
 
 @Component({
@@ -68,7 +62,6 @@ export class ObjectListPage {
         loadingOffline: false,
         refreshing: false,
         desktop: undefined,
-        actionExecutionLock: false,
     };
 
     pageTitle: string;
@@ -239,6 +232,7 @@ export class ObjectListPage {
         if(ObjectListNavParams.favorites) {
             // wait for offline sync
             await this.waitForOfflineSync();
+            this.updatePageState(false);
             if(this.state.online && event) await this.sync.loadAllOfflineContent();
             // collect all offline available objects
             await this.setLoadedFavorites();
@@ -371,7 +365,8 @@ export class ObjectListPage {
                 this.file,
                 this.translate,
                 this.alert,
-                this.sync
+                this.sync,
+                this.modal
             );
         }
 
@@ -379,24 +374,17 @@ export class ObjectListPage {
     }
 
     executeAction(action: ILIASObjectAction): void {
-        if(this.state.actionExecutionLock) {
-            this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=another action is already being executed`);
-            return;
-        }
-        this.state.actionExecutionLock = true;
-
         //const hash: number = action.instanceId();
         //this.footerToolbar.addJob(hash, "");
         action.execute().then((result) => {
             this.handleActionResult(result);
             //this.footerToolbar.removeJob(hash);
         }).catch((error) => {
-
             this.log.warn(() => `Could not execute action: action=${action.constructor.name}, error=${JSON.stringify(error)}`);
             //this.footerToolbar.removeJob(hash);
-            this.state.actionExecutionLock = false;
             throw error;
-        }).then(() => this.state.actionExecutionLock = false);
+        });
+        this.updatePageState();
     }
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {

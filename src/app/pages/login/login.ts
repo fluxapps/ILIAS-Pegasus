@@ -64,7 +64,7 @@ export class LoginPage {
                     modal.present()
                         .then(() => this.loginSequence())
                         .then(() => this.ngZone.run(() => this.navCtrl.navigateRoot("tabs")))
-                        .then(() => modal.dismiss());
+                        .finally(() => modal.dismiss());
                 })
             }
         });

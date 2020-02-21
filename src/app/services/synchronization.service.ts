@@ -23,6 +23,7 @@ import {Observable, from, merge} from "rxjs";
 import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
 import {Settings} from "../models/settings";
 import {ThemeProvider} from "../providers/theme/theme.provider";
+import {OfflineException} from "../exceptions/OfflineException";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -179,7 +180,12 @@ export class SynchronizationService {
      * Download all ILIASObjects and their contents in the syncOfflineQueue
      */
     async processOfflineSyncQueue(): Promise<void> {
-        if (this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
+        if(!window.navigator.onLine) {
+            this.resetOfflineSynchronization();
+            throw new OfflineException("Tried to sync files when device was offline.");
+        }
+
+        if(this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
             this.syncOfflineQueue = [];
             this.syncOfflineQueueCnt = 0;
             SynchronizationService.state.loadingOfflineContent = false;
@@ -194,8 +200,12 @@ export class SynchronizationService {
         // the user may has unmarked the object in the mean time
         if(ilObj.isFavorite) {
             await ilObj.setIsFavorite(2);
-            await this.loadOfflineObjectRecursive(ilObj);
-            await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
+            try {
+                await this.loadOfflineObjectRecursive(ilObj);
+                await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
+            } catch (e) {
+                console.warn(`sync resulted in an error ${e.message}`);
+            }
             // the user may has unmarked the object in the mean time
             if(ilObj.isFavorite) await ilObj.setIsFavorite(1);
             else ilObj.removeFromFavorites(this.fileService);
@@ -253,10 +263,6 @@ export class SynchronizationService {
                     });
                 }
                 return Promise.resolve(syncResult);
-            })
-            .catch( (error) => {
-                if(!window.navigator.onLine) this.resetOfflineSynchronization();
-                return Promise.reject(error);
             });
     }
 
@@ -265,7 +271,7 @@ export class SynchronizationService {
         iliasObjects.push(container);
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
         await Promise.all(syncResults.fileDownloads).catch(
-            () => console.warn(`Encountered some problem in method 'downloadContainerContent' with container ${container.title}`)
+            () => console.warn(`Encountered some problem in method 'downloadContainerContent' with element ${container.title}`)
         );
         await this.downloadLearnplaces(iliasObjects).toPromise();
         await this.downloadLearningModules(iliasObjects);

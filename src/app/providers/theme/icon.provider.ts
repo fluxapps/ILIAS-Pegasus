@@ -5,6 +5,7 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
 import {Settings} from "../../models/settings";
 import {AuthenticationProvider} from "../authentication.provider";
 import {CssStyleService} from "../../services/theme/css-style.service";
+import {ThemeSynchronizationService} from "../../services/theme/theme-synchronization.service";
 
 @Injectable({
     providedIn: "root"
@@ -40,14 +41,22 @@ export class IconProvider {
     }
 
     async loadResources(): Promise<void> {
-        if(CssStyleService.dynamicThemeEnabled()) {
+        if(CssStyleService.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
             const path: string = await this.userStorage.dirForUser("icons");
             for(let i: number = 0; i < this.icons.length; i++) {
                 const icon: {key: string, loadedName: string, asset: string} = this.icons[i];
                 const settings: Settings = await AuthenticationProvider.getUser().settings;
                 const fileName: string = `${settings.themeTimestamp}_${icon.loadedName}`;
-                const src: string = (await this.filesystem.resolveLocalFilesystemUrl(`${path}${fileName}`)).toURL();
-                IconProvider.src[icon.key] = this.webview.convertFileSrc(src);
+                let src: string;
+                try {
+                    src = (await this.filesystem.resolveLocalFilesystemUrl(`${path}${fileName}`)).toURL();
+                    src = this.webview.convertFileSrc(src);
+                } catch (e) {
+                    // if the custom icon is not available, use the default one
+                    src = this.icons[i].asset;
+                    console.warn(`unable to load custom icon ${fileName} in ${path}, resulted in error ${e.message}`);
+                }
+                IconProvider.src[icon.key] = src;
             }
         } else {
             for(let i: number = 0; i < this.icons.length; i++) {

@@ -123,7 +123,7 @@
             <!-- status : synchronization in progress, refresher not pulled -->
             <ion-card>
                 <ion-row>
-                    <ion-label>{{checkPageState({favorites: false, loading: true}) ? footerToolbar.loadingText : sync.footerToolbarOfflineContent.loadingText}}</ion-label>
+                    <ion-label class="loading-text" *ngIf="(checkPageState({loadingOffline: true}) && (checkPageState({favorites: true})))">{{sync.footerToolbarOfflineContent.loadingText}}</ion-label>
                 </ion-row>
             </ion-card>
 

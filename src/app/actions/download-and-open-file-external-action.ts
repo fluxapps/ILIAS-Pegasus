@@ -1,5 +1,5 @@
 /** angular */
-import {AlertController} from "@ionic/angular";
+import {AlertController, ModalController} from "@ionic/angular";
 /** models */
 import {Settings} from "../models/settings";
 import {ILIASObject} from "../models/ilias-object";
@@ -16,6 +16,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {OfflineException} from "../exceptions/OfflineException";
 import {FileService} from "../services/file.service";
 import {SynchronizationService} from "../services/synchronization.service";
+import {LoadingPage, LoadingPageType} from "../fallback/loading/loading.component";
+import {catchError} from "rxjs/operators";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 
@@ -25,28 +27,41 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
         public file: FileService,
         public translate: TranslateService,
         public alerter: AlertController,
-        public sync: SynchronizationService
+        public sync: SynchronizationService,
+        public modal: ModalController
     ) {
         super();
         this.title = title;
     }
 
     async execute(): Promise<ILIASObjectActionResult> {
-        // Download is only executed if a newer version is available in ILIAS
-        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
-        if (this.fileObject.needsDownload && this.file.isOffline())
-            return Promise.reject(new OfflineException("File requires download and is offline at the same time."));
-
-        else if (this.fileObject.needsDownload) {
-            const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
-            const result: Promise<ILIASObjectActionResult> = this.checkWLANAndDownload(settings);
-            await result.then(() => this.sync.synchronizeFileLearningProgresses());
-            return result;
-        }
-        else {
-            await this.file.open(this.fileObject);
-            await this.sync.synchronizeFileLearningProgresses();
-            return new ILIASObjectActionNoMessage();
+        const loadingPage: HTMLIonModalElement = await this.modal.create({
+            component: LoadingPage,
+            cssClass: "modal-fullscreen"
+        });
+        LoadingPage.type = LoadingPageType.generic;
+        await loadingPage.present();
+        try {
+            // Download is only executed if a newer version is available in ILIAS
+            Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
+            if (this.fileObject.needsDownload && this.file.isOffline()) {
+                await loadingPage.dismiss();
+                return Promise.reject(new OfflineException("File requires download and is offline at the same time."));
+            } else if (this.fileObject.needsDownload) {
+                const settings: Settings = await Settings.findByUserId(this.fileObject.userId);
+                const result: Promise<ILIASObjectActionResult> = this.checkWLANAndDownload(settings);
+                await result.then(() => this.sync.synchronizeFileLearningProgresses());
+                await loadingPage.dismiss();
+                return result;
+            } else {
+                await this.file.open(this.fileObject);
+                await this.sync.synchronizeFileLearningProgresses();
+                await loadingPage.dismiss();
+                return new ILIASObjectActionNoMessage();
+            }
+        } catch (e) {
+            await loadingPage.dismiss();
+            throw e;
         }
     }
 

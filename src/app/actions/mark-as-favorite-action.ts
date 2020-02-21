@@ -23,7 +23,7 @@ export class MarkAsFavoriteAction extends ILIASObjectAction {
         this.object.needsDownload = true;
         await this.object.save();
 
-        await this.syncService.addObjectsToSyncQueue(this.object);
+        this.syncService.addObjectsToSyncQueue(this.object);
         return Promise.resolve(new ILIASObjectActionNoMessage());
     }
 

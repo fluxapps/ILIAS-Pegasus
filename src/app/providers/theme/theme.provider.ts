@@ -22,7 +22,7 @@ export class ThemeProvider {
     }
 
     static async setCustomColor(): Promise<void> {
-        if(CssStyleService.dynamicThemeEnabled()) {
+        if(CssStyleService.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
             await CssStyleService.setCustomColor();
         }
     }
@@ -36,6 +36,8 @@ export class ThemeProvider {
     }
 
     async synchronizeAndSetCustomTheme(): Promise<void> {
+        if(!window.navigator.onLine) return;
+
         if(CssStyleService.dynamicThemeEnabled()) {
             await this.themeSynch.synchronize();
             await ThemeProvider.setCustomColor();

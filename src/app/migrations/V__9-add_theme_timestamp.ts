@@ -14,7 +14,7 @@ export class AddThemeTimestamp implements Migration {
     async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             "ALTER TABLE settings " +
-            "ADD themeTimestamp INTEGER"
+            "ADD themeTimestamp INTEGER DEFAULT 0"
         );
     }
 
