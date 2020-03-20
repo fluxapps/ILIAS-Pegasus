@@ -48,7 +48,7 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
         await lm.destroy();
         // remove from file system
-        const localLmDir: string = await this.pathBuilder.inLocalLmDir("", false);
+        const localLmDir: string = await this.pathBuilder.dirInLocalLmDir("", false);
         const lmDirName: string = this.pathBuilder.lmDirName(objId);
         await this.userStorage.removeDir(localLmDir, lmDirName);
     }

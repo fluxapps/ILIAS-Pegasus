@@ -11,7 +11,7 @@ import {ILIASObject} from "../../models/ilias-object";
 import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 import {TranslateService} from "@ngx-translate/core";
 
-export class OpenLearningModuleAction extends ILIASObjectAction {
+export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
 
     constructor(
         private readonly loader: LearningModuleLoader,
@@ -65,7 +65,7 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
     }
 }
 
-export interface OpenLearningModuleActionFunction {
+export interface OpenHtmlLearningModuleActionFunction {
     (
         nav: NavController,
         learningModuleObjectId: number,
@@ -74,7 +74,7 @@ export interface OpenLearningModuleActionFunction {
         browser: InAppBrowser,
         pathBuilder: LearningModulePathBuilder,
         translate: TranslateService,
-    ): OpenLearningModuleAction
+    ): OpenHtmlLearningModuleAction
 }
 
-export const OPEN_LEARNING_MODULE_ACTION_FACTORY: InjectionToken<OpenLearningModuleAction> = new InjectionToken("token for open learning module action factory");
+export const OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY: InjectionToken<OpenHtmlLearningModuleAction> = new InjectionToken("token for opening html learning module action factory");

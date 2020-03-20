@@ -119,10 +119,10 @@ import {
 } from "./learnplace/actions/remove-local-learnplace-action";
 /** learning modules */
 import {
-    OPEN_LEARNING_MODULE_ACTION_FACTORY,
-    OpenLearningModuleAction,
-    OpenLearningModuleActionFunction
-} from "./learningmodule/actions/open-learning-module-action";
+    OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,
+    OpenHtmlLearningModuleAction,
+    OpenHtmlLearningModuleActionFunction
+} from "./learningmodule/actions/open-html-learning-module-action";
 import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/learning-module-loader";
 import {LEARNING_MODULE_MANAGER, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
 import {
@@ -419,8 +419,8 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
             deps: [LEARNPLACE_LOADER]
         },
         <FactoryProvider> {
-            provide: OPEN_LEARNING_MODULE_ACTION_FACTORY,
-            useFactory: (loader: LearningModuleLoader): OpenLearningModuleActionFunction =>
+            provide: OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (loader: LearningModuleLoader): OpenHtmlLearningModuleActionFunction =>
                 (
                     nav: NavController,
                     learningModuleObjectId: number,
@@ -430,7 +430,7 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
                     pathBuilder: LearningModulePathBuilder,
                     translate: TranslateService,
                 ):
-                    OpenLearningModuleAction => new OpenLearningModuleAction(
+                    OpenHtmlLearningModuleAction => new OpenHtmlLearningModuleAction(
                     loader,
                     nav,
                     learningModuleObjectId,

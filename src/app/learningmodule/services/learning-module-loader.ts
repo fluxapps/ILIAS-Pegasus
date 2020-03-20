@@ -46,7 +46,7 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
 
         // path to the tmp directory for downloading
-        const localTmpZipDir: string = await this.pathBuilder.inLocalLmDir("tmp", true);
+        const localTmpZipDir: string = await this.pathBuilder.dirInLocalLmDir("tmp", true);
         // name of the zip file containing the learning module
         const tmpZipFile: string = `tmp_${objId}.zip`;
         // url to get the zip file containing the learning module
@@ -68,7 +68,7 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         };
 
         // user-dependant path to all learning modules
-        const localAllLmsDir: string = await this.pathBuilder.inLocalLmDir("", true);
+        const localAllLmsDir: string = await this.pathBuilder.dirInLocalLmDir("", true);
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
         LoadingPage.progress.next(.6);
