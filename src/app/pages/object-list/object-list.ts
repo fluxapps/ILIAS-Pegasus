@@ -355,9 +355,6 @@ export class ObjectListPage {
             return this.openHtmlLearningModuleActionFactory(
                 this.navCtrl,
                 iliasObject.objId,
-                iliasObject.title,
-                this.modal,
-                this.browser,
                 this.pathBuilder,
                 this.translate
             );
@@ -366,10 +363,6 @@ export class ObjectListPage {
         if(iliasObject.type === "sahs") {
             return this.openScormLearningModuleActionFactory(
                 iliasObject.objId,
-                iliasObject.title,
-                this.modal,
-                this.pathBuilder,
-                this.translate,
                 this.navCtrl,
             );
         }

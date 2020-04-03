@@ -2,26 +2,24 @@ import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, I
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
-import {LearningModuleLoader} from "../services/learning-module-loader";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {LearningModule} from "../models/learning-module";
-import {ILIASObject} from "../../models/ilias-object";
 import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 import {TranslateService} from "@ngx-translate/core";
+import {LearningModuleManager} from "../services/learning-module-manager";
 
 export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
 
     constructor(
-        private readonly loader: LearningModuleLoader,
         private readonly nav: NavController,
         private readonly learningModuleObjectId: number,
-        private readonly learningModuleName: string,
         private readonly modal: ModalController,
         private readonly browser: InAppBrowser,
-        private readonly pathBuilder: LearningModulePathBuilder,
         private readonly translate: TranslateService,
+        private readonly pathBuilder: LearningModulePathBuilder,
+        private readonly learningModuleManager: LearningModuleManager,
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -33,9 +31,7 @@ export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
         await loadingPage.present();
         try {
             const user: User = AuthenticationProvider.getUser();
-            const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
-            const alreadyLoaded: boolean = await obj.objectIsUnderFavorite();
-            if(!alreadyLoaded) await this.loader.load(this.learningModuleObjectId);
+            await this.learningModuleManager.checkAndDownload(this.learningModuleObjectId, user.id);
             this.openHTMLModule();
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
@@ -69,9 +65,6 @@ export interface OpenHtmlLearningModuleActionFunction {
     (
         nav: NavController,
         learningModuleObjectId: number,
-        learningModuleName: string,
-        modalController: ModalController,
-        browser: InAppBrowser,
         pathBuilder: LearningModulePathBuilder,
         translate: TranslateService,
     ): OpenHtmlLearningModuleAction

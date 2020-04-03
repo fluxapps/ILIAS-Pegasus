@@ -4,6 +4,7 @@ import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../ser
 import {AuthenticationProvider} from "../../../providers/authentication.provider";
 import {LearningModule} from "../../models/learning-module";
 import {User} from "../../../models/user";
+import {ILIASObject} from "../../../models/ilias-object";
 
 @Component({
     selector: "page-scorm",
@@ -13,6 +14,8 @@ import {User} from "../../../models/user";
     providedIn: "root"
 })
 export class ScormPage {
+
+    title: string = "";
 
     private sourceRoot: string = "assets/scormplayer/";
 
@@ -29,7 +32,7 @@ export class ScormPage {
         "scormpool/Lib/LocalStorage.js",
         "scormpool/Lib/Player.js",
         "style.css",
-        "init.js"
+        "setup_player.js"
     ];
 
     constructor(
@@ -38,8 +41,16 @@ export class ScormPage {
     ) {}
 
     async ionViewDidEnter(): Promise<void> {
-        let cnt: number = 0;
+        // get data for the lm
+        const params: ParamMap = this.route.snapshot.paramMap;
+        const lmId: number = parseInt(params.get("id"), 10);
+        const user: User = AuthenticationProvider.getUser();
+        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(lmId, user.id);
+        const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(lm.objId, user.id);
+        this.title = obj.title;
 
+        // load the scripts
+        let cnt: number = 0;
         const scriptsLoaded: boolean = window.hasOwnProperty(this.loadingTag);
         if(!scriptsLoaded) {
             // inject scripts
@@ -74,10 +85,6 @@ export class ScormPage {
         }
 
         // get manifest
-        const params: ParamMap = this.route.snapshot.paramMap;
-        const lmId: number = parseInt(params.get("id"), 10);
-        const user: User = AuthenticationProvider.getUser();
-        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(lmId, user.id);
         let manifest: string = await lm.getLocalStartFileUrl(this.pathBuilder);
         manifest = manifest.replace("file://", "_app_file_");
         console.log(`got manifest file at ${manifest}`);
