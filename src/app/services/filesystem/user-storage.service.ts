@@ -38,6 +38,7 @@ export class UserStorageService {
      * @returns {Promise<string>} the storage location considering the platform
      */
     async getStorageLocation(): Promise<string> {
+        await this.platform.ready();
         if(this.platform.is("android")) {
             return this.fileSystem.externalApplicationStorageDirectory;
         } else if (this.platform.is("ios")) {
@@ -45,14 +46,6 @@ export class UserStorageService {
         }
 
         throw new Error("Unsupported platform. Can not return a storage location.");
-    }
-
-    /**
-     * @returns string the location of the assets directory
-     */
-    getAssetsLocation(): string {
-        this.fileSystem.checkDir(`${this.fileSystem.applicationDirectory}www`, "assets").then((ex) => console.log(ex ? "assets found" : "assets not found"));
-        return `${this.fileSystem.applicationDirectory}www/assets`;
     }
 
     /**
@@ -77,15 +70,19 @@ export class UserStorageService {
     /**
      * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
      */
-    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<boolean> {
+    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string, copy: boolean = false): Promise<boolean> {
         try {
             try {
                 await this.fileSystem.removeRecursively(newPath, newDirName);
+            } catch(e) {
+                console.warn(`Unable to remove ${newPath}|${newDirName} resulted in error ${e.message} continue...`);
             } finally {
-                await this.fileSystem.moveDir(path, dirName, newPath, newDirName);
+                if(copy) await this.fileSystem.copyDir(path, dirName, newPath, newDirName);
+                else await this.fileSystem.moveDir(path, dirName, newPath, newDirName);
             }
             return true;
         } catch(e) {
+            console.warn(`Unable to move and replace ${path}|${dirName} => ${newPath}|${newDirName} resulted in error ${e.message}`);
             return false;
         }
     }

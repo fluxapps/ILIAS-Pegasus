@@ -6,7 +6,7 @@ import {LearningModuleLoader} from "../services/learning-module-loader";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {LearningModule} from "../../models/learning-module";
+import {LearningModule} from "../models/learning-module";
 import {ILIASObject} from "../../models/ilias-object";
 import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 import {TranslateService} from "@ngx-translate/core";
@@ -46,7 +46,7 @@ export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
     }
 
     async openHTMLModule(): Promise<void> {
-        console.log("opening learning module");
+        console.log("opening HTML learning module");
         const user: User = AuthenticationProvider.getUser();
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
         const url: string = await lm.getLocalStartFileUrl(this.pathBuilder);

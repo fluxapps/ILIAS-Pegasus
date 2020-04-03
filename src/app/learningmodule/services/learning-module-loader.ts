@@ -8,7 +8,7 @@ import {UserStorageService} from "../../services/filesystem/user-storage.service
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {Zip} from "@ionic-native/zip/ngx";
-import {LearningModule} from "../../models/learning-module";
+import {LearningModule} from "../models/learning-module";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 import {LoadingPage} from "../../fallback/loading/loading.component";
 
@@ -72,6 +72,7 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
         LoadingPage.progress.next(.6);
+        console.log(`UNZIPPING in ${localTmpZipDir} file ${tmpZipFile} => dir ${request.zipDirName}`);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
         LoadingPage.progress.next(.9);
         await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));

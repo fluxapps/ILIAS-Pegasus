@@ -1,56 +1,96 @@
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, Injectable} from "@angular/core";
+import {ActivatedRoute, ParamMap} from "@angular/router";
+import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../services/learning-module-path-builder";
+import {AuthenticationProvider} from "../../../providers/authentication.provider";
+import {LearningModule} from "../../models/learning-module";
+import {User} from "../../../models/user";
 
 @Component({
     selector: "page-scorm",
     templateUrl: "scorm.html",
 })
+@Injectable({
+    providedIn: "root"
+})
 export class ScormPage {
 
-    private sourceRoot: string = "assets/scorm/player/";
+    private sourceRoot: string = "assets/scormplayer/";
 
-    constructor() {}
+    private loadingTag: string = "SCORM_PLAYER_SCRIPTS";
+
+    private scripts: Array<string> = [
+        "scormpool/Lib/sscompat.js",
+        "scormpool/Lib/sscorlib.js",
+        "scormpool/Lib/ssfx.Core.js",
+        "scormpool/Lib/API_BASE.js",
+        "scormpool/Lib/API.js",
+        "scormpool/Lib/API_1484_11.js",
+        "scormpool/Lib/Controls.js",
+        "scormpool/Lib/LocalStorage.js",
+        "scormpool/Lib/Player.js",
+        "style.css",
+        "init.js"
+    ];
+
+    constructor(
+        private readonly route: ActivatedRoute,
+        @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
+    ) {}
 
     async ionViewDidEnter(): Promise<void> {
-        const scripts: Array<string> = [
-            "scormpool/Lib/sscompat.js",
-            "scormpool/Lib/sscorlib.js",
-            "scormpool/Lib/ssfx.Core.js",
-            "scormpool/Lib/API_BASE.js",
-            "scormpool/Lib/API.js",
-            "scormpool/Lib/API_1484_11.js",
-            "scormpool/Lib/Controls.js",
-            "scormpool/Lib/LocalStorage.js",
-            "scormpool/Lib/Player.js",
-            "style.css",
-            "init.js"
-        ];
-
         let cnt: number = 0;
-        scripts.forEach(src => {
-            cnt++;
-            setTimeout(() => {
-                console.log(`loading file '${src}'`);
 
-                src = `${this.sourceRoot}${src}`;
-                let element: HTMLScriptElement | HTMLLinkElement;
-                const extension: string = src.split(".").pop();
-                switch (extension) {
-                    case "js":
-                        element = document.createElement("script");
-                        element.src = src;
-                        break;
-                    case("css"):
-                        element = document.createElement("link");
-                        element.type = "text/css";
-                        element.href = src;
-                        break;
-                    default:
-                        console.warn(`extension '${extension}' not supported of file '${src}'`);
-                        return;
-                }
-                document.head.appendChild(element);
-            }, 100 * cnt);
-        });
+        const scriptsLoaded: boolean = window.hasOwnProperty(this.loadingTag);
+        if(!scriptsLoaded) {
+            // inject scripts
+            this.scripts.forEach(src => {
+                cnt++;
+                setTimeout(() => {
+                    console.log(`loading file '${src}'`);
+
+                    src = `${this.sourceRoot}${src}`;
+                    let element: HTMLScriptElement | HTMLLinkElement;
+                    const extension: string = src.split(".").pop();
+                    switch (extension) {
+                        case "js":
+                            element = document.createElement("script");
+                            element.src = src;
+                            break;
+                        case("css"):
+                            element = document.createElement("link");
+                            element.type = "text/css";
+                            element.href = src;
+                            break;
+                        default:
+                            console.warn(`extension '${extension}' not supported of file '${src}'`);
+                            return;
+                    }
+                    document.head.appendChild(element);
+                }, 100 * cnt);
+            });
+
+            // set the loaded variable
+            window[this.loadingTag] = true;
+        }
+
+        // get manifest
+        const params: ParamMap = this.route.snapshot.paramMap;
+        const lmId: number = parseInt(params.get("id"), 10);
+        const user: User = AuthenticationProvider.getUser();
+        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(lmId, user.id);
+        let manifest: string = await lm.getLocalStartFileUrl(this.pathBuilder);
+        manifest = manifest.replace("file://", "_app_file_");
+        console.log(`got manifest file at ${manifest}`);
+
+        // load manifest file in player
+        cnt++;
+        setTimeout(() => {
+            console.log("loading manifest in player");
+
+            const element: HTMLScriptElement = document.createElement("script");
+            element.innerHTML = `Run.ManifestByURL("${manifest}", true);`;
+            document.head.appendChild(element);
+        }, 100 * cnt);
     }
 
 }

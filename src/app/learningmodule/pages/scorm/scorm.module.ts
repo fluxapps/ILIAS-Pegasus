@@ -10,7 +10,7 @@ import { TranslateModule } from "@ngx-translate/core";
 
 
 const routes: Routes = [
-    {path: "", component: ScormPage}
+    {path: "", component: ScormPage, pathMatch: "full"}
 ];
 
 @NgModule({

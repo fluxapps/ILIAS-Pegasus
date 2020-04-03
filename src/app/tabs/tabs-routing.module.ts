@@ -31,7 +31,6 @@ const routes: Routes = [
             },
             {path: "menu",
                 children: [
-                    {path: "", loadChildren: "../learningmodule/pages/scorm/scorm.module#ScormPageModule"}, // TODO dev
                     {path: "", loadChildren: "../pages/menu/menu.module#MenuPageModule"},
                     {path: "settings", loadChildren: "../pages/settings/settings.module#SettingsPageModule"},
                     {path: "info", loadChildren: "../pages/info/info.module#InfoPageModule"},

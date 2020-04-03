@@ -123,6 +123,11 @@ import {
     OpenHtmlLearningModuleAction,
     OpenHtmlLearningModuleActionFunction
 } from "./learningmodule/actions/open-html-learning-module-action";
+import {
+    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+    OpenScormLearningModuleAction,
+    OpenScormLearningModuleActionFunction
+} from "./learningmodule/actions/open-scorm-learning-module-action";
 import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/learning-module-loader";
 import {LEARNING_MODULE_MANAGER, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
 import {
@@ -439,6 +444,29 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
                     browser,
                     pathBuilder,
                     translate,
+                )
+            ,
+            deps: [LEARNING_MODULE_LOADER]
+        },
+        <FactoryProvider> {
+            provide: OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (loader: LearningModuleLoader): OpenScormLearningModuleActionFunction =>
+                (
+                    learningModuleObjectId: number,
+                    learningModuleName: string,
+                    modalController: ModalController,
+                    pathBuilder: LearningModulePathBuilder,
+                    translate: TranslateService,
+                    navCtrl: NavController,
+                ):
+                    OpenScormLearningModuleAction => new OpenScormLearningModuleAction(
+                    loader,
+                    learningModuleObjectId,
+                    learningModuleName,
+                    modalController,
+                    pathBuilder,
+                    translate,
+                    navCtrl,
                 )
             ,
             deps: [LEARNING_MODULE_LOADER]

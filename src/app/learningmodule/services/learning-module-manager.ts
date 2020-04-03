@@ -7,9 +7,7 @@
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
-import {LearningModule} from "../../models/learning-module";
-import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {LearningModule} from "../models/learning-module";
 import {File, DirectoryEntry} from "@ionic-native/file/ngx";
 
 export interface LearningModuleManager {
@@ -44,8 +42,7 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
 
     async remove(objId: number, userId: number): Promise<void> {
         // remove from database
-        const user: User = AuthenticationProvider.getUser();
-        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
+        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();
         // remove from file system
         const localLmDir: string = await this.pathBuilder.dirInLocalLmDir("", false);
