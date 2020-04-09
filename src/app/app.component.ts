@@ -146,7 +146,7 @@ export class AppComponent {
     async presentOnboardingModal(): Promise<void> {
         await this.modal.create({
             component: OnboardingPage,
-            cssClass: "modal-fullscreen"
+            cssClass: "modal-fullscreen",
         }).then((it: HTMLIonModalElement) => it.present());
     }
 

@@ -40,7 +40,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         this.modal.create({
             component: LeaveAppDialog,
             componentProps: <LeaveAppDialogNavParams>{leaveApp: leaveAction},
-            cssClass: "modal-fullscreen"
+            cssClass: "modal-fullscreen",
         }).then((it: HTMLIonModalElement) => it.present());
     }
 

@@ -27,7 +27,8 @@ export class OpenLearningModuleAction extends ILIASObjectAction {
     async execute(): Promise<ILIASObjectActionResult> {
         const loadingPage: HTMLIonModalElement = await this.modal.create({
             component: LoadingPage,
-            cssClass: "modal-fullscreen"
+            cssClass: "modal-fullscreen",
+            backdropDismiss: false,
         });
         LoadingPage.type = LoadingPageType.learningmodule;
         await loadingPage.present();
