@@ -55,7 +55,8 @@ export class LoginPage {
         const browser: InAppBrowserObject = this.auth.browserLogin(installation);
         const loadingPage: Promise<HTMLIonModalElement> = this.modal.create({
             component: LoadingPage,
-            cssClass: "modal-fullscreen"
+            cssClass: "modal-fullscreen",
+            backdropDismiss: false,
         });
 
         browser.on("exit").subscribe(() => {
