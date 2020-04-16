@@ -346,17 +346,19 @@ export class ObjectListPage {
             return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
         }
 
-        if(iliasObject.type === "htlm") {
-            return this.openLearningModuleActionFactory(
-                this.navCtrl,
-                iliasObject.objId,
-                iliasObject.title,
-                this.modal,
-                this.browser,
-                this.pathBuilder,
-                this.translate
-            );
-        }
+        //MARK: COMMENTED HTML LEARNING MODULE OUT
+
+        // if(iliasObject.type === "htlm") {
+        //     return this.openLearningModuleActionFactory(
+        //         this.navCtrl,
+        //         iliasObject.objId,
+        //         iliasObject.title,
+        //         this.modal,
+        //         this.browser,
+        //         this.pathBuilder,
+        //         this.translate
+        //     );
+        // }
 
         if(iliasObject.type == "file") {
             return new DownloadAndOpenFileExternalAction(
