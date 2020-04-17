@@ -14,7 +14,8 @@ export class ILIASObjectPresenterFactory {
         if (object.type == "crs") return new CourseObjectPresenter(object);
         if (object.type == "fold") return new FolderObjectPresenter(object);
         if (object.type == "grp") return new GroupObjectPresenter(object);
-        if (object.type == "htlm") return new HtmlLearningModuleObjectPresenter(object);
+        //MARK: COMMENTED HTML LEARNING MODULE OUT
+        // if (object.type == "htlm") return new HtmlLearningModuleObjectPresenter(object);
         if (object.type == "file") return new FileObjectPresenter(object);
         if (object.isLearnplace()) return new LearnplaceObjectPresenter(object);
 

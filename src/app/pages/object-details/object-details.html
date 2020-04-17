@@ -1,16 +1,10 @@
 <ion-header>
     <ion-toolbar color="header-element">
-        <ion-row>
+        <ion-buttons slot="start">
+            <ion-back-button text="" icon="arrow-back"></ion-back-button>
+        </ion-buttons>
 
-            <ion-buttons>
-                <ion-back-button text="" icon="arrow-back"></ion-back-button>
-            </ion-buttons>
-
-            <ion-title>
-                {{ object.title }}
-            </ion-title>
-
-        </ion-row>
+        <ion-title>{{ object.title }}</ion-title>
     </ion-toolbar>
 </ion-header>
 
