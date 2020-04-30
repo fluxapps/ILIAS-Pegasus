@@ -15,15 +15,12 @@
             <span *ngIf="! last"> » </span>
         </span>
     </div>
-    <div padding *ngIf="object.description">
-        {{ object.description }}
-    </div>
     <p text-wrap class="padding" *ngFor="let action of actions">
-        <ion-button block (click)="executeAction(action)">{{ action.title }}</ion-button>
+        <ion-button expand="block" (click)="executeAction(action)">{{ action.title }}</ion-button>
     </p>
     <ion-list>
         <ion-item text-wrap *ngFor="let detail of details">
-            {{ detail.label | translate:{value: null} }}:
+            {{ detail.label | translate:{value: null} }}&nbsp;:&nbsp;
             <span> {{ detail.value | translate:{value: null} }} </span>
         </ion-item>
     </ion-list>
