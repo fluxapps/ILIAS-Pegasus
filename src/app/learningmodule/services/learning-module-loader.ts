@@ -8,7 +8,7 @@ import {UserStorageService} from "../../services/filesystem/user-storage.service
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {Zip} from "@ionic-native/zip/ngx";
-import {LearningModule} from "../../models/learning-module";
+import {LearningModule} from "../models/learning-module";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 import {LoadingPage} from "../../fallback/loading/loading.component";
 
@@ -46,7 +46,7 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
 
         // path to the tmp directory for downloading
-        const localTmpZipDir: string = await this.pathBuilder.inLocalLmDir("tmp", true);
+        const localTmpZipDir: string = await this.pathBuilder.dirInLocalLmDir("tmp", true);
         // name of the zip file containing the learning module
         const tmpZipFile: string = `tmp_${objId}.zip`;
         // url to get the zip file containing the learning module
@@ -68,10 +68,11 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         };
 
         // user-dependant path to all learning modules
-        const localAllLmsDir: string = await this.pathBuilder.inLocalLmDir("", true);
+        const localAllLmsDir: string = await this.pathBuilder.dirInLocalLmDir("", true);
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
         LoadingPage.progress.next(.6);
+        console.log(`UNZIPPING in ${localTmpZipDir} file ${tmpZipFile} => dir ${request.zipDirName}`);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
         LoadingPage.progress.next(.9);
         await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));

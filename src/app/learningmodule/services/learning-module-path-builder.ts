@@ -23,7 +23,7 @@ export interface LearningModulePathBuilder {
     /**
      * constructs the absolute path for a location relative to the root directory (with ending /)
      */
-    inLocalLmDir(location: string, createRecursive: boolean): Promise<string>;
+    dirInLocalLmDir(location: string, createRecursive: boolean): Promise<string>;
 
     /**
      * constructs the absolute path to the directory containing the contents of the learning module (with ending /)
@@ -47,13 +47,14 @@ export class LearningModulePathBuilderImpl implements LearningModulePathBuilder 
         return `lm_${objId}/`;
     }
 
-    async inLocalLmDir(path: string, createRecursive: boolean): Promise<string> {
+    async dirInLocalLmDir(path: string, createRecursive: boolean): Promise<string> {
         path = this.withoutEndingSlash(path);
-        return this.userStorage.dirForUser(`${this.lmsBaseDirName}${path}`, createRecursive);
+        const baseDir: string = path.length ? this.lmsBaseDirName : this.withoutEndingSlash(this.lmsBaseDirName);
+        return this.userStorage.dirForUser(`${baseDir}${path}`, createRecursive);
     }
 
     async getLmDirByObjId(objId: number): Promise<string> {
-        return this.inLocalLmDir(this.lmDirName(objId), false);
+        return this.dirInLocalLmDir(this.lmDirName(objId), false);
     }
 
     /**

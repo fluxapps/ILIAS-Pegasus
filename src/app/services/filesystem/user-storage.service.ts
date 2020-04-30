@@ -9,7 +9,7 @@ import {User} from "../../models/user";
 })
 export class UserStorageService {
     constructor(
-        private readonly file: File,
+        private readonly fileSystem: File,
         private readonly platform: Platform,
     ) {}
 
@@ -38,10 +38,11 @@ export class UserStorageService {
      * @returns {Promise<string>} the storage location considering the platform
      */
     async getStorageLocation(): Promise<string> {
+        await this.platform.ready();
         if(this.platform.is("android")) {
-            return this.file.externalApplicationStorageDirectory;
+            return this.fileSystem.externalApplicationStorageDirectory;
         } else if (this.platform.is("ios")) {
-            return this.file.dataDirectory;
+            return this.fileSystem.dataDirectory;
         }
 
         throw new Error("Unsupported platform. Can not return a storage location.");
@@ -57,10 +58,10 @@ export class UserStorageService {
      * @returns {Promise<string>} the created directory path excluding {@code first}
      */
     async createRecursive(first: string, ...more: Array<string>): Promise<string> {
-        let previousDir: DirectoryEntry = await this.file.resolveDirectoryUrl(first);
+        let previousDir: DirectoryEntry = await this.fileSystem.resolveDirectoryUrl(first);
         for(const currentDirs of more) {
             for(const currentDir of currentDirs.split("/"))
-                previousDir = await this.file.getDirectory(previousDir, currentDir, <Flags>{create: true});
+                previousDir = await this.fileSystem.getDirectory(previousDir, currentDir, <Flags>{create: true});
         }
 
         return `${more.join("/")}/`;
@@ -69,15 +70,19 @@ export class UserStorageService {
     /**
      * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
      */
-    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<boolean> {
+    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string, copy: boolean = false): Promise<boolean> {
         try {
             try {
-                await this.file.removeRecursively(newPath, newDirName);
+                await this.fileSystem.removeRecursively(newPath, newDirName);
+            } catch(e) {
+                console.warn(`Unable to remove ${newPath}|${newDirName} resulted in error ${e.message} continue...`);
             } finally {
-                await this.file.moveDir(path, dirName, newPath, newDirName);
+                if(copy) await this.fileSystem.copyDir(path, dirName, newPath, newDirName);
+                else await this.fileSystem.moveDir(path, dirName, newPath, newDirName);
             }
             return true;
         } catch(e) {
+            console.warn(`Unable to move and replace ${path}|${dirName} => ${newPath}|${newDirName} resulted in error ${e.message}`);
             return false;
         }
     }
@@ -87,7 +92,7 @@ export class UserStorageService {
      */
     async removeDir(path: string, dirName: string): Promise<boolean> {
         try {
-            await this.file.removeRecursively(path, dirName);
+            await this.fileSystem.removeRecursively(path, dirName);
             return true;
         } catch(e) {
             return false;
@@ -102,7 +107,7 @@ export class UserStorageService {
      */
     async removeFileIfExists(path: string, fileName: string): Promise<boolean> {
         try {
-            await this.file.removeFile(path, fileName);
+            await this.fileSystem.removeFile(path, fileName);
             return true;
         } catch(e) {
             return false;

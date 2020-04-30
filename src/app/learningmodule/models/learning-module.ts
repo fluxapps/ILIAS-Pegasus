@@ -1,6 +1,6 @@
-import {ActiveRecord, SQLiteConnector} from "./active-record";
-import {SQLiteDatabaseService} from "../services/database.service";
-import {LearningModulePathBuilder} from "../learningmodule/services/learning-module-path-builder";
+import {ActiveRecord, SQLiteConnector} from "../../models/active-record";
+import {SQLiteDatabaseService} from "../../services/database.service";
+import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 
 export class LearningModule extends ActiveRecord {
     /**
@@ -39,7 +39,7 @@ export class LearningModule extends ActiveRecord {
         const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
         const response: any = await db.query("SELECT * FROM learning_modules WHERE objId = ? AND userId = ?", [objId, userId]);
         const lm: LearningModule = new LearningModule();
-        if (response.rows.length == 0) {
+        if (response.rows.length === 0) {
             lm.objId = objId;
             lm.userId = userId;
             return lm;

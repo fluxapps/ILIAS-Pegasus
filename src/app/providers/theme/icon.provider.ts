@@ -20,6 +20,7 @@ export class IconProvider {
         {key: "file", loadedName: "file.svg", asset: "assets/icon/obj_file.svg"},
         {key: "xsrl", loadedName: "learningplace.svg", asset: "assets/icon/obj_location.svg"},
         {key: "htlm", loadedName: "learningmodule.svg", asset: "assets/icon/obj_learningmodule.svg"},
+        {key: "sahs", loadedName: "learningmodule.svg", asset: "assets/icon/obj_learningmodule.svg"},
         {key: "link", loadedName: "link.svg", asset: "assets/icon/obj_link.svg"},
     ];
 
