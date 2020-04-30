@@ -7,12 +7,18 @@
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
-import {LearningModule} from "../../models/learning-module";
-import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {LearningModule} from "../models/learning-module";
 import {File, DirectoryEntry} from "@ionic-native/file/ngx";
+import {ILIASObject} from "../../models/ilias-object";
+import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "./learning-module-loader";
 
 export interface LearningModuleManager {
+
+    /**
+     * Checks whether the learning module available on the mobile device
+     * and downloads it if this is not the case
+     */
+    checkAndDownload(objectId: number, userId: number): Promise<void>;
 
     /**
      * Removes the learning module with the given id.
@@ -39,16 +45,22 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
     constructor(
         protected readonly fileSystem: File,
         protected readonly userStorage: UserStorageService,
+        @Inject(LEARNING_MODULE_LOADER) private readonly loader: LearningModuleLoader,
         @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) {}
 
+    async checkAndDownload(objectId: number, userId: number): Promise<void> {
+        const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
+        const alreadyLoaded: boolean = await obj.objectIsUnderFavorite();
+        if(!alreadyLoaded) await this.loader.load(objectId);
+    }
+
     async remove(objId: number, userId: number): Promise<void> {
         // remove from database
-        const user: User = AuthenticationProvider.getUser();
-        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
+        const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();
         // remove from file system
-        const localLmDir: string = await this.pathBuilder.inLocalLmDir("", false);
+        const localLmDir: string = await this.pathBuilder.dirInLocalLmDir("", false);
         const lmDirName: string = this.pathBuilder.lmDirName(objId);
         await this.userStorage.removeDir(localLmDir, lmDirName);
     }

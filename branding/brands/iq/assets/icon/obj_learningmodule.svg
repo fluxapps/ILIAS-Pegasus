@@ -1,49 +1,40 @@
-<?xml version="1.0" encoding="windows-1252"?>
-<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<g>
-	<g>
-		<path d="M172.524,166.952c-36.823,0-66.781,29.958-66.781,66.781c0,36.823,29.958,66.781,66.781,66.781    c36.823,0,66.781-29.958,66.781-66.781C239.305,196.91,209.347,166.952,172.524,166.952z M204.432,243.577    c-2.617-5.8-8.437-9.844-15.213-9.844c-9.22,0-16.695,7.475-16.695,16.695c0,6.776,4.044,12.596,9.844,15.213    c-3.113,0.963-6.419,1.483-9.844,1.483c-18.411,0-33.39-14.979-33.39-33.39s14.979-33.39,33.39-33.39s33.39,14.979,33.39,33.39    C205.914,237.158,205.395,240.463,204.432,243.577z"/>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="32px" height="32px"
+	 viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<switch>
+	<g i:extraneous="self">
+		<rect x="0" y="-0.008" fill="none" width="31.999" height="32"/>
+		<g>
+			<g>
+				<defs>
+					<path id="SVGID_1_" d="M7.5,5.242v1.025v1.258v18.217l1.999,1h14.5c0,0,0.501,0,0.501-0.501v-19c0,0,0-0.499-0.501-0.499H22.5
+						H9.499L8,5.742h14.5c0,0,0-0.5-0.467-0.5L7.5,5.242L7.5,5.242z"/>
+				</defs>
+				<clipPath id="SVGID_2_">
+					<use xlink:href="#SVGID_1_"  overflow="visible"/>
+				</clipPath>
+				
+					<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="-395.9653" y1="-295.9367" x2="-394.9653" y2="-295.9367" gradientTransform="matrix(17 0 0 17 6738.9097 5046.9165)">
+					<stop  offset="0" style="stop-color:#538132"/>
+					<stop  offset="0.0198" style="stop-color:#538132"/>
+					<stop  offset="1" style="stop-color:#74A029"/>
+				</linearGradient>
+				<rect x="7.5" y="5.242" clip-path="url(#SVGID_2_)" fill="url(#SVGID_3_)" width="17" height="21.5"/>
+			</g>
+		</g>
+		<rect x="12.833" y="10.909" fill="#FFFFFF" width="8.333" height="5"/>
 	</g>
-</g>
-<g>
-	<g>
-		<path d="M339.476,166.952c-36.823,0-66.781,29.958-66.781,66.781c0,36.823,29.958,66.781,66.781,66.781    c36.823,0,66.781-29.958,66.781-66.781C406.257,196.91,376.299,166.952,339.476,166.952z M371.384,243.577    c-2.617-5.8-8.437-9.844-15.213-9.844c-9.22,0-16.695,7.475-16.695,16.695c0,6.776,4.044,12.596,9.844,15.213    c-3.113,0.963-6.419,1.483-9.844,1.483c-18.411,0-33.39-14.979-33.39-33.39s14.979-33.39,33.39-33.39s33.39,14.979,33.39,33.39    C372.866,237.158,372.347,240.463,371.384,243.577z"/>
-	</g>
-</g>
-<g>
-	<g>
-		<path d="M256,0C136.325,0,38.962,97.363,38.962,217.038v278.254c0,15.982,20.441,22.83,30.051,10.017l36.729-48.973l36.729,48.973    c6.679,8.905,20.047,8.887,26.712,0l36.729-48.973l36.729,48.973c6.679,8.905,20.046,8.887,26.712,0l36.729-48.973l36.729,48.973    c6.679,8.905,20.046,8.887,26.712,0l36.729-48.973l36.729,48.973c9.591,12.79,30.051,6.031,30.051-10.017V217.038    C473.038,97.363,375.675,0,256,0z M439.647,445.206l-20.034-26.712c-6.679-8.905-20.046-8.887-26.712,0l-36.729,48.973    l-36.729-48.973c-6.679-8.905-20.047-8.887-26.712,0L256,467.466l-36.729-48.973c-6.679-8.905-20.047-8.887-26.712,0    l-36.729,48.973l-36.729-48.973c-6.679-8.905-20.047-8.887-26.712,0l-20.034,26.712V217.038    C72.353,115.775,154.737,33.39,256,33.39s183.647,82.384,183.647,183.647V445.206z"/>
-	</g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
+</switch>
 </svg>

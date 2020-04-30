@@ -1,6 +1,7 @@
 /* DESCRIPTION: This script sets the branding of the app, it
  * -> replaces the folder ./resources with the icon and splash screen with the one corresponding to the chosen brand
  * -> replaces the folder ./src/assets with the one corresponding to the chosen brand
+ * -> creates the folder ./src/assets/scormplayer with the content of "branding/common/scormplayer"
  * -> replaces the file ./build.json used for IOS release builds
  * -> generates "src/assets/config.json" with the required ILIAS installations from "branding/common/config/server.config.json"
  * -> sets values in "config.xml" to the ones specified in "branding/brands/[brand]/config.json"
@@ -23,6 +24,7 @@ function execute() {
         let config = loadJSON(`branding/brands/${brand}/config.json`);
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
+        setDirectoryContent("src/assets/scormplayer", "branding/common/scormplayer");
         setFile("build.json", `branding/brands/${brand}/build.json`);
         generateServerConfigFile(brand, config);
         setValuesInProjectConfig(config);
@@ -270,6 +272,7 @@ function writeLog(brand) {
 BRAND ........... ${brand}
 RESOURCES ....... branding/brands/${brand}/resources => resources
 ASSETS .......... branding/brands/${brand}/assets => src/assets
+SCORMPLAYER ..... branding/common/scormplayer => src/assets/scormplayer
 SERVERCONFIG .... branding/common/config/server.config.json + branding/brands/${brand}/config.json => src/assets/config.json
 PROJECTCONFIG ... config.xml + branding/brands/${brand}/config.json => config.xml
 LANGUAGE ........ branding/common/i18n/* + branding/brands/${brand}/assets/i18n/* => src/assets/i18n/*

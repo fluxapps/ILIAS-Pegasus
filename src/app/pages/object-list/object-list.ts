@@ -32,11 +32,14 @@ import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {ThemeProvider} from "../../providers/theme/theme.provider";
-import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
+import {OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY, OpenHtmlLearningModuleActionFunction} from "../../learningmodule/actions/open-html-learning-module-action";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../learningmodule/services/learning-module-path-builder";
-import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
+import {
+    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+    OpenScormLearningModuleActionFunction
+} from "../../learningmodule/actions/open-scorm-learning-module-action";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -94,8 +97,10 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(OPEN_LEARNING_MODULE_ACTION_FACTORY)
-                private readonly openLearningModuleActionFactory: OpenLearningModuleActionFunction,
+                @Inject(OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openHtmlLearningModuleActionFactory: OpenHtmlLearningModuleActionFunction,
+                @Inject(OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) { }
 
@@ -347,14 +352,18 @@ export class ObjectListPage {
         }
 
         if(iliasObject.type === "htlm") {
-            return this.openLearningModuleActionFactory(
+            return this.openHtmlLearningModuleActionFactory(
                 this.navCtrl,
                 iliasObject.objId,
-                iliasObject.title,
-                this.modal,
-                this.browser,
                 this.pathBuilder,
                 this.translate
+            );
+        }
+
+        if(iliasObject.type === "sahs") {
+            return this.openScormLearningModuleActionFactory(
+                iliasObject.objId,
+                this.navCtrl,
             );
         }
 

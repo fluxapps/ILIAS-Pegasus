@@ -8,12 +8,12 @@ const routes: Routes = [
     {path: "tabs", loadChildren: "./tabs/tabs.module#TabsPageModule", canActivate: [AuthenticationProvider]},
     {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
     {path: "learnplace/:id", loadChildren: "./learnplace/learnplace.module#LearnplaceModule", canActivate: [AuthenticationProvider]},
-    {path: "**", redirectTo: "login"}
+    {path: "learningmodule/:id", loadChildren: "./learningmodule/learning-module.module#LearningModuleModule", canActivate: [AuthenticationProvider]},
+    {path: "**", redirectTo: "login"},
 ];
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, {
-        enableTracing: isDevMode(),
         relativeLinkResolution: "corrected"
     }),
     ], //, {enableTracing: true}

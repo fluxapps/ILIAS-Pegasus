@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>SCORM 1.2, 2004 4-th editon Tests and course examples</title>
+
+   <script type="text/javascript">
+     var _isLocalStorageSupported = false;    
+     var _localStorage;
+
+     function InitPage() {
+       _localStorage = window['localStorage'];
+       if(_localStorage)
+         _isLocalStorageSupported = true;
+
+         var _spLS = document.getElementById("spLS");
+         if(_spLS) 
+           _spLS.innerHTML = _isLocalStorageSupported ? '<font color="green">available</font>' : '<font color="red">not available</font>';
+
+         if(_isLocalStorageSupported)
+           ShowLocalStorage();
+     }
+
+     function ShowLocalStorage() {
+       var _dvLS = document.getElementById("dvLS");
+       var _dvLSHead = document.getElementById("dvLSHead");
+
+       var sp = _localStorage["scormpool"];
+
+       _dvLS.innerHTML = 'window.localStorage: '+
+                         '<input type="button" value="Refresh" onclick="RefreshPage()"/>&nbsp;'+
+                         (sp ? '<input type="button" value="Clear" onclick="ClearLocalStorage()"/><br/>'+
+                         '<b>scormpool</b> =><br/>' : '');
+
+       if(!sp)
+         return;  
+
+       var spo = JSON_Deserialize(sp);
+
+       dump(spo, undefined, undefined, undefined, _dvLS);
+     }
+
+     function ClearLocalStorage() {
+       _localStorage.clear();
+       RefreshPage();
+     }
+
+     function RefreshPage() {
+       if(window.location.reload)
+         window.location.reload()
+       else
+         window.location.href=window.location.href;
+     }
+
+
+     function decisionLS(url) {
+       var sp = _localStorage["scormpool"];
+       if(!sp) {
+         window.open(url,'_blank');
+         return;
+       }
+
+       if(confirm('These tests will clear local storage. Would you like to continue?'))
+        window.open(url,'_blank');
+     }
+
+     function JSON_Deserialize(s) {
+       var _dateRegex = new RegExp('(\'|\")\\\\@(-?[0-9]+)@(\'|\")', 'gm');
+       s = s.replace(_dateRegex, 'new Date($2)');
+       return eval('(' + s + ')');
+     }
+
+     var level = '';
+     function readProperties(val) {
+       var result = "";
+       if (Object.prototype.toString.call(val) === '[object Object]') {
+         for (var propertyName in val) {
+           if (val.hasOwnProperty(propertyName)) {
+             result += level + propertyName + ':';
+             level += '  ';
+             result += readProperties(val[propertyName]);
+           }
+         } 
+       } else {
+         result += level + val;
+         level = level.substring(0, level.length - 2);
+       }
+       return result;
+    }
+
+    function dump(o,limit,e,clicked,container) {
+      var outer = false;
+      if (e===undefined) {
+        dump.o=[];
+        dump.n = function(o) { // get display name for object
+          if (o===undefined) return '<i>undefined</i>';
+          if (o===null) return '<i>null</i>';
+          var c = o.constructor;
+          return '<span style="color:#666"> <i>' + typeof o + '</i> '
+                 +(c ? String(c).split('{')[0].substr(8) :'') + '</span> '
+                 +'<pre style="display:inline">' + dump.esc(o) + '</pre>' 
+        }
+        dump.hp = function(o) { // determine if object has props
+          for (undefined in o) return true; return false; 
+        }
+        dump.t = function(e,rhs) { // toggle property list viz
+          var n = rhs ? e.previousSibling : e.nextSibling;
+          var s = n.style;
+          if ((!n.hasData) && s.display == 'none')
+            return dump.load(n);
+          n.hasData = true;
+          s.display = s.display == 'none' ? 'block' : 'none';
+          return false;
+        }
+        dump.load = function(e) { // show non-dumped item
+          e.hasData = true;
+          e.style.display = 'block';
+          dump(dump.o[e.getAttribute('obj')],1,e,true);
+          return false;
+        }
+        dump.esc = function(s) { // html escape
+          return String(s).replace(/&/g,'&amp;')
+                 .replace(/</g,'&lt;').replace(/\>/g,'&gt;') 
+        }
+        outer = true;
+        e = document.createElement('div');
+        e.style.font = '11px sans-serif'; 
+      }
+
+      if (outer || clicked) {
+        e.val = "";
+        e.write = function(s) {e.val += s}
+        e.flush = function() {e.innerHTML += e.val; e.val = ''}
+      }
+
+      if (limit===undefined) limit = 3;
+
+      var tab = '<br/\><a href="#" onclick="return dump.t(this)">'
+               +'<b>{</b></a><div style="margin-left:1em'
+               +(limit ? '' : ';display:none') +'"'
+               +(limit ? '' : 'obj="'+dump.o.length+'" ') +'>';
+      var end = '</div><a href="#" onclick="return dump.t(this,1)">'
+               +'<b>}</b></a><br/\>';
+
+      if (!limit) {
+        if (!dump.hp(o))
+          return e.write(dump.n(o)+'<br/\>');
+        if(typeof o == "string")
+          return e.write(dump.n(o)+'<br/\>'); 
+        else {
+          dump.o.push(o);
+          return e.write(dump.n(o)+tab+end); 
+        }
+      }
+
+      if (!clicked) e.write(dump.n(o));
+
+      var c = 0;
+      
+      for (var p in o) {
+        if ((!clicked) && !c++) e.write(tab); 
+        e.write("<b>"+p+"</b> => ");
+        dump(o[p], limit-1, e);
+      }
+
+      e.write(clicked ? "" : c ? end : "<br/\>");
+      if (outer || clicked) e.flush();  
+      if (outer) {
+        if(container)
+          container.appendChild(e);
+        else
+          document.body.appendChild(e);
+      }
+    }
+  </script>
+</head>
+<body onload="InitPage()">
+	<a href="http://scormpool.com" target="_blank"><img src="Img/scormpool_m.jpg" width="223" height="78" border="0" alt="SCORMPOOL"/></a>
+  <table border="0">
+    <tr>
+      <td valign="top">
+	<h2>Browser compatibility:</h2>
+	<ul>
+		<li>HTML5 local storage: <span id="spLS"></span></li>
+	</ul>
+
+	<h2>Testing</h2>
+	
+	<h4>SCORM API</h4>
+	<ul>
+		<li><a href="TestAPI/Test.html" target="_blank">SCORM 1.2 API test</a></li>
+		<li><a href="TestAPI_1484_11/Test.html" target="_blank">SCORM 2004 4-th edition API test</a></li>
+		<li><a href="TestAPI_1484_11_Sequencing/Test.html" target="_blank">SCORM 2004 4-th edition Sequencing test</a></li>
+	</ul>
+
+	<h4>Player version 1.07</h4>
+	<ul>
+		<li><a href="#" onclick="javascript:decisionLS('TestLocalStorage/Test.html')">HTML5 Local Storage</a></li>
+		<li><a href="TestControls/Test.html" target="_blank">UI Controls</a></li>
+		<li><a href="TestPlayer/Test.html" target="_blank">SCORM Player (core)</a></li>
+		<li><a href="#" onclick="javascript:decisionLS('TestPlayer_LocalStorage/Test.html')">SCORM Player (local storage)</a></li>
+	</ul>
+
+	<h4>Course example</h4>
+	<ul>
+	  <li><a href="player.html" target="_blank">Single SCO SCORM 1.2</a>
+	</ul>
+      </td>
+      <td valign="top">
+	<h2>Local Storage manager:</h2>
+        <div id="dvLSHead"></div>
+        <div id="dvLS"></div>
+      </td>	
+    <tr>
+  </table>
+
+  <center>
+    <div id="footer">
+    &copy;
+    <script type="text/javascript">
+      var theDate=new Date()
+      document.write(theDate.getFullYear())
+    </script>
+    SCORMpool&nbsp;&nbsp;<a href="http://twitter.com/#!/Mokrushyn/scormpool-com" target="_blank"><img src="Img/twitter.png" border="0" width="80" height="15" alt="Tweet this"/></a>
+    </div>
+  </center>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<html>
+<head>
+  <script type="text/javascript">
+    var API = null;
+
+    function findAPI(win){
+      while (!win.API && win.parent && win.parent != win)
+        win = win.parent;
+      if(win.API)
+	return win.API;
+    }
+
+    function onloadFn(){
+      var win = window;
+     
+      if(win.parent && win.parent != win)
+        API = findAPI(win.parent); 
+     
+      if(!API && win.top.opener)
+        API = findAPI(win.top.opener); 
+
+      if(API)
+        API.LMSInitialize("");
+    }
+
+    function onunloadFn(){
+      if(API)
+        API.LMSFinish("");
+    }
+  </script>
+</head>
+<body onload="onloadFn()" onunload="onunloadFn()">
+  <h4>Test SCO</h4>
+  <input type="button" value="Lesson Status Complete" onclick="if(API)API.LMSSetValue('cmi.core.lesson_status', 'completed')"/>
+</body>
+</html>

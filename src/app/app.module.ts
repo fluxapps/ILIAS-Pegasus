@@ -119,12 +119,17 @@ import {
 } from "./learnplace/actions/remove-local-learnplace-action";
 /** learning modules */
 import {
-    OPEN_LEARNING_MODULE_ACTION_FACTORY,
-    OpenLearningModuleAction,
-    OpenLearningModuleActionFunction
-} from "./learningmodule/actions/open-learning-module-action";
+    OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,
+    OpenHtmlLearningModuleAction,
+    OpenHtmlLearningModuleActionFunction
+} from "./learningmodule/actions/open-html-learning-module-action";
+import {
+    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+    OpenScormLearningModuleAction,
+    OpenScormLearningModuleActionFunction
+} from "./learningmodule/actions/open-scorm-learning-module-action";
 import {LEARNING_MODULE_LOADER, LearningModuleLoader, RestLearningModuleLoader} from "./learningmodule/services/learning-module-loader";
-import {LEARNING_MODULE_MANAGER, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
+import {LEARNING_MODULE_MANAGER, LearningModuleManager, LearningModuleManagerImpl} from "./learningmodule/services/learning-module-manager";
 import {
     LEARNING_MODULE_PATH_BUILDER,
     LearningModulePathBuilder,
@@ -419,29 +424,45 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
             deps: [LEARNPLACE_LOADER]
         },
         <FactoryProvider> {
-            provide: OPEN_LEARNING_MODULE_ACTION_FACTORY,
-            useFactory: (loader: LearningModuleLoader): OpenLearningModuleActionFunction =>
+            provide: OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (
+                browser: InAppBrowser,
+                modalController: ModalController,
+                manager: LearningModuleManager
+            ): OpenHtmlLearningModuleActionFunction =>
                 (
                     nav: NavController,
                     learningModuleObjectId: number,
-                    learningModuleName: string,
-                    modalController: ModalController,
-                    browser: InAppBrowser,
                     pathBuilder: LearningModulePathBuilder,
                     translate: TranslateService,
                 ):
-                    OpenLearningModuleAction => new OpenLearningModuleAction(
-                    loader,
+                    OpenHtmlLearningModuleAction => new OpenHtmlLearningModuleAction(
                     nav,
                     learningModuleObjectId,
-                    learningModuleName,
                     modalController,
                     browser,
-                    pathBuilder,
                     translate,
+                    pathBuilder,
+                    manager
                 )
             ,
-            deps: [LEARNING_MODULE_LOADER]
+            deps: [InAppBrowser, ModalController, LEARNING_MODULE_MANAGER]
+        },
+        <FactoryProvider> {
+            provide: OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+            useFactory: (manager: LearningModuleManager, modalController: ModalController): OpenScormLearningModuleActionFunction =>
+                (
+                    learningModuleObjectId: number,
+                    navCtrl: NavController,
+                ):
+                    OpenScormLearningModuleAction => new OpenScormLearningModuleAction(
+                    learningModuleObjectId,
+                    modalController,
+                    navCtrl,
+                    manager,
+                )
+            ,
+            deps: [LEARNING_MODULE_MANAGER, ModalController]
         },
         {
             provide: LEARNING_MODULE_PATH_BUILDER,
