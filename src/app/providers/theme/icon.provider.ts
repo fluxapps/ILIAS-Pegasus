@@ -1,3 +1,4 @@
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {Injectable} from "@angular/core";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {File} from "@ionic-native/file/ngx";
@@ -11,7 +12,7 @@ import {ThemeSynchronizationService} from "../../services/theme/theme-synchroniz
     providedIn: "root"
 })
 export class IconProvider {
-    private static src: Array<string> = [];
+    private static src: Array<string | SafeResourceUrl> = [];
     private static defaultIconKey: string = "link";
     private icons: Array<{key: string, loadedName: string, asset: string}> = [
         {key: "crs", loadedName: "course.svg", asset: "assets/icon/obj_course.svg"},
@@ -20,6 +21,7 @@ export class IconProvider {
         {key: "file", loadedName: "file.svg", asset: "assets/icon/obj_file.svg"},
         {key: "xsrl", loadedName: "learningplace.svg", asset: "assets/icon/obj_location.svg"},
         {key: "htlm", loadedName: "learningmodule.svg", asset: "assets/icon/obj_learningmodule.svg"},
+        {key: "sahs", loadedName: "learningmodule.svg", asset: "assets/icon/obj_learningmodule.svg"},
         {key: "link", loadedName: "link.svg", asset: "assets/icon/obj_link.svg"},
     ];
 
@@ -27,6 +29,7 @@ export class IconProvider {
         private readonly userStorage: UserStorageService,
         private readonly filesystem: File,
         private readonly webview: WebView,
+        private readonly sanitizer: DomSanitizer
     ) {}
 
     static getIconSrc(key: string): string {
@@ -48,15 +51,20 @@ export class IconProvider {
                 const settings: Settings = await AuthenticationProvider.getUser().settings;
                 const fileName: string = `${settings.themeTimestamp}_${icon.loadedName}`;
                 let src: string;
+                let safeURL: SafeResourceUrl
                 try {
                     src = (await this.filesystem.resolveLocalFilesystemUrl(`${path}${fileName}`)).toURL();
+                    console.log(`safe url is: ${safeURL}`)
+                    console.log("normal url is" , src)
                     src = this.webview.convertFileSrc(src);
+                    safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(src)
+
                 } catch (e) {
                     // if the custom icon is not available, use the default one
                     src = this.icons[i].asset;
                     console.warn(`unable to load custom icon ${fileName} in ${path}, resulted in error ${e.message}`);
                 }
-                IconProvider.src[icon.key] = src;
+                IconProvider.src[icon.key] = safeURL;
             }
         } else {
             for(let i: number = 0; i < this.icons.length; i++) {
