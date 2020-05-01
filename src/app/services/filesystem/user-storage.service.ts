@@ -1,8 +1,17 @@
-import {DirectoryEntry, File, Flags} from "@ionic-native/file/ngx";
+import {DirectoryEntry, File, Flags, Entry} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
+
+export interface StorageUtilization {
+    /**
+     * computes the dist space used by a certain object
+     * @param objectId id of the target object
+     * @param userId user id for the owner of the target object
+     */
+    getUsedStorage(objectId: number, userId: number): Promise<number>;
+}
 
 @Injectable({
     providedIn: "root"
@@ -12,6 +21,83 @@ export class UserStorageService {
         private readonly fileSystem: File,
         private readonly platform: Platform,
     ) {}
+
+    /**
+     * total used storage for a given user
+     * @param userId
+     */
+    static getUsedStorage(userId: number): number {
+        const user: User = new User(userId);
+        return user.totalUsedStorage;
+    }
+
+    /**
+     * evaluates the storage used by an objects and adds this to the users used storage
+     * @param userId
+     * @param objectId
+     * @param storage
+     */
+    static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        const user: User = new User(userId);
+        user.totalUsedStorage += await storage.getUsedStorage(objectId, userId);
+        await user.save();
+    }
+
+    /**
+     * evaluates the storage used by an objects and removes this from the users used storage
+     * @param userId
+     * @param objectId
+     * @param storage
+     */
+    static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        const user: User = new User(userId);
+        user.totalUsedStorage -= await storage.getUsedStorage(objectId, userId);
+        await user.save();
+    }
+
+    /**
+     * takes a url with at least one subdirectory and returns an array with the
+     * first entry as the path to the last directory and the second entry as the
+     * name of the last directory
+     * @param dir string
+     */
+    private static decomposeDirUrl(dir: string): Array<string> {
+        let ind: number = dir.lastIndexOf("/");
+        dir = dir.substring(0, ind);
+        ind = dir.lastIndexOf("/");
+        return [dir.substring(0, ind), dir.substring(ind+1, dir.length)];
+    }
+
+    /**
+     * computes the used disk space for the contents of a directory
+     * @param dir string
+     * @param fileSystem
+     */
+    static async getDirSizeRecursive(dir: string, fileSystem: File): Promise<number> {
+        let list: Array<Entry>;
+        try {
+            const dirArr: Array<string> = UserStorageService.decomposeDirUrl(dir);
+            list = await fileSystem.listDir(dirArr[0], dirArr[1]);
+        } catch (e) {
+            console.log(`error: ${e.message} for directory ${dir}`);
+        }
+
+        let diskSpace: number = 0;
+
+        let newList: Array<Entry>;
+        while(list.length) {
+            const entry: Entry = list.pop();
+            if(entry.isFile) {
+                entry.getMetadata(md => diskSpace += md.size);
+            } else {
+                const dirArr: Array<string> = UserStorageService.decomposeDirUrl(entry.nativeURL);
+                newList = await fileSystem.listDir(dirArr[0], dirArr[1]);
+                newList.forEach(e => list.push(e));
+            }
+        }
+
+        return diskSpace;
+    }
 
     /**
      * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation

@@ -7,8 +7,7 @@ import {FileService} from "./file.service";
 import {FooterToolbarService, Job} from "./footer-toolbar.service";
 import {TranslateService} from "@ngx-translate/core";
 import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
-import {LEARNPLACE_LOADER, LearnplaceLoader} from "../learnplace/services/loader/learnplace";
-import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "../learningmodule/services/learning-module-loader";
+import {LearningModuleLoader} from "../learningmodule/services/learning-module-loader";
 /** models */
 import {FileData} from "../models/file-data";
 import {User} from "../models/user";
@@ -20,10 +19,10 @@ import {DataProvider} from "../providers/data-provider.provider";
 import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
 import {AuthenticationProvider} from "../providers/authentication.provider";
 import {Observable, from, merge} from "rxjs";
-import {ILIASRestProvider, ThemeData} from "../providers/ilias-rest.provider";
-import {Settings} from "../models/settings";
 import {ThemeProvider} from "../providers/theme/theme.provider";
 import {OfflineException} from "../exceptions/OfflineException";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
+import {LEARNING_MODULE_MANAGER} from "../learningmodule/services/learning-module-manager";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -64,8 +63,8 @@ export class SynchronizationService {
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
                 @Inject(VISIT_JOURNAL_SYNCHRONIZATION) private readonly visitJournalSynchronization: VisitJournalSynchronization,
-                @Inject(LEARNPLACE_LOADER) private readonly learnplaceLoader: LearnplaceLoader,
-                @Inject(LEARNING_MODULE_LOADER) private readonly learningModuleLoader: LearningModuleLoader,
+                @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
+                @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleLoader,
                 private readonly alertCtr: AlertController,
                 private readonly themeProvider: ThemeProvider,
     ) {}
@@ -282,7 +281,7 @@ export class SynchronizationService {
         return merge(...tree
             .filter(it => it.isLearnplace())
             .map(it => from(
-                this.learnplaceLoader.load(it.objId).then(
+                this.learnplaceManager.load(it.objId).then(
                     () => it.needsDownload = false
                 )))
         );
@@ -292,7 +291,7 @@ export class SynchronizationService {
         for(let i: number = 0; i < iliasObjects.length; i++) {
             const io: ILIASObject = iliasObjects[i];
             if(io.type == "htlm") {
-                await this.learningModuleLoader.load(io.objId);
+                await this.learningModuleManager.load(io.objId);
                 io.needsDownload = false;
                 await io.save();
             }

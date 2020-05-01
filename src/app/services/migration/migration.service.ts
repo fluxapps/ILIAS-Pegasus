@@ -25,6 +25,7 @@ import {Logging} from "../logging/logging.service";
 /** misc */
 import {Connection, getConnection, QueryRunner} from "typeorm/browser";
 import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
+import {TotalUserStorage} from "../../migrations/V__11-total-user-storage";
 
 /**
  * DB Migration with TypeORM.
@@ -37,85 +38,85 @@ import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
 })
 export class TypeOrmDbMigration implements DBMigration {
 
-  private readonly log: Logger = Logging.getLogger(TypeOrmDbMigration.name);
+    private readonly log: Logger = Logging.getLogger(TypeOrmDbMigration.name);
 
-  constructor(
-    @Inject(MIGRATION_SUPPLIER) private readonly migrationSupplier: MigrationSupplier
-  ) {}
+    constructor(
+        @Inject(MIGRATION_SUPPLIER) private readonly migrationSupplier: MigrationSupplier
+    ) {}
 
-  /**
-   * Migrates the database with all migrations found by the {@link MigrationSupplier}.
-   *
-   * @throws {MigrationError} if the migration fails
-   */
-  async migrate(): Promise<void> {
+    /**
+     * Migrates the database with all migrations found by the {@link MigrationSupplier}.
+     *
+     * @throws {MigrationError} if the migration fails
+     */
+    async migrate(): Promise<void> {
 
-    try {
+        try {
 
-      const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
+            const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
 
-      const queryRunner: QueryRunner = connection.createQueryRunner();
+            const queryRunner: QueryRunner = connection.createQueryRunner();
 
-      const migrationTable: CreateMigrationTable = new CreateMigrationTable();
-      await migrationTable.up(queryRunner);
+            const migrationTable: CreateMigrationTable = new CreateMigrationTable();
+            await migrationTable.up(queryRunner);
 
-      const migrations: Array<Migration> = await this.migrationSupplier.get();
-      migrations.sort((first, second) => first.version.getVersion() - second.version.getVersion());
+            const migrations: Array<Migration> = await this.migrationSupplier.get();
+            migrations.sort((first, second) => first.version.getVersion() - second.version.getVersion());
 
-      for(const it of migrations) {
+            for(const it of migrations) {
 
-        const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
-        this.log.debug(() => `Migrations Table result: ${JSON.stringify(result)}`);
-        if (result.length < 1) {
+                const result: Array<{}> = await queryRunner.query("SELECT * FROM migrations WHERE id = ?", [it.version.getVersion()]);
+                this.log.debug(() => `Migrations Table result: ${JSON.stringify(result)}`);
+                if (result.length < 1) {
 
-          this.log.info(() => `Run database migration: version=${it.version.getVersion()}`);
-          await it.up(queryRunner);
+                    this.log.info(() => `Run database migration: version=${it.version.getVersion()}`);
+                    await it.up(queryRunner);
 
-          await queryRunner.query("INSERT INTO migrations (id) VALUES (?)", [it.version.getVersion()])
+                    await queryRunner.query("INSERT INTO migrations (id) VALUES (?)", [it.version.getVersion()])
+                }
+            }
+
+            this.log.info(() => "Successfully migrate database");
+
+        } catch (error) {
+            this.log.debug(() => `Database Migration Error: ${JSON.stringify(error)}`);
+            throw new MigrationError("Could not finish database migration");
         }
-      }
-
-      this.log.info(() => "Successfully migrate database");
-
-    } catch (error) {
-      this.log.debug(() => `Database Migration Error: ${JSON.stringify(error)}`);
-      throw new MigrationError("Could not finish database migration");
     }
-  }
 
-  /**
-   * Reverts the last n steps with typeORM connection.
-   *
-   * @param {number} steps - step count to revert
-   *
-   * @throws {MigrationError} if a revert step fails
-   */
-  async revert(steps: number): Promise<void> {
+    /**
+     * Reverts the last n steps with typeORM connection.
+     *
+     * @param {number} steps - step count to revert
+     *
+     * @throws {MigrationError} if a revert step fails
+     */
+    async revert(steps: number): Promise<void> {
 
-    let currentStep: number = 0;
+        let currentStep: number = 0;
 
-    try {
+        try {
 
-      const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
+            const connection: Connection = getConnection(PEGASUS_CONNECTION_NAME);
 
-      const queryRunner: QueryRunner = connection.createQueryRunner();
+            const queryRunner: QueryRunner = connection.createQueryRunner();
 
-      const migrations: Array<Migration> = await this.migrationSupplier.get();
+            const migrations: Array<Migration> = await this.migrationSupplier.get();
 
-      for(;currentStep < steps; currentStep++) {
+            for(;currentStep < steps; currentStep++) {
 
-        const migration: Migration = migrations.pop();
+                const migration: Migration = migrations.pop();
 
-        await migration.down(queryRunner);
-        await queryRunner.query("DELETE FROM migrations WHERE id = ?", [migration.version.getVersion()])
-      }
+                await migration.down(queryRunner);
+                await queryRunner.query("DELETE FROM migrations WHERE id = ?", [migration.version.getVersion()])
+            }
 
-      this.log.info(() => `Successfully revert ${steps} database migrations`);
+            this.log.info(() => `Successfully revert ${steps} database migrations`);
 
-    } catch (error) {
-      throw new MigrationError(`Could not revert step ${currentStep}`);
+        } catch (error) {
+            throw new MigrationError(`Could not revert step ${currentStep}`);
+        }
     }
-  }
 }
 
 /**
@@ -130,25 +131,26 @@ export class TypeOrmDbMigration implements DBMigration {
 })
 export class SimpleMigrationSupplier implements MigrationSupplier {
 
-  /**
-   * Returns all migration that are being executed by the {@link DBMigration}.
-   *
-   * @returns {Promise<Array<Migration>>} the migrations to run
-   */
-  async get(): Promise<Array<Migration>> {
-    return [
-      new InitDatabase(),
-      new AddObjectAttributes(),
-      new CreateLearnplace(),
-      new CreateNews(),
-      new UpdateUserSettingsSyncSchema(),
-      new MigrateOfflineAndFavorites(),
-      new FilesLearningProgress(),
-      new SettingsThemeColor(),
-      new AddThemeTimestamp(),
-      new CreateLearningModulesSchema(),
-    ];
-  }
+    /**
+     * Returns all migration that are being executed by the {@link DBMigration}.
+     *
+     * @returns {Promise<Array<Migration>>} the migrations to run
+     */
+    async get(): Promise<Array<Migration>> {
+        return [
+            new InitDatabase(),
+            new AddObjectAttributes(),
+            new CreateLearnplace(),
+            new CreateNews(),
+            new UpdateUserSettingsSyncSchema(),
+            new MigrateOfflineAndFavorites(),
+            new FilesLearningProgress(),
+            new SettingsThemeColor(),
+            new AddThemeTimestamp(),
+            new CreateLearningModulesSchema(),
+            new TotalUserStorage()
+        ];
+    }
 }
 
 /**
@@ -160,23 +162,23 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
  */
 class CreateMigrationTable implements Migration {
 
-  readonly version: MigrationVersion = new MigrationVersion("V__0");
+    readonly version: MigrationVersion = new MigrationVersion("V__0");
 
-  /**
-   * Creates the migration table, in which all migrations will be write in.
-   *
-   * @param {QueryRunner} queryRunner - to execute sql queries
-   */
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("CREATE TABLE IF NOT EXISTS migrations (id INTEGER, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
-  }
+    /**
+     * Creates the migration table, in which all migrations will be write in.
+     *
+     * @param {QueryRunner} queryRunner - to execute sql queries
+     */
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query("CREATE TABLE IF NOT EXISTS migrations (id INTEGER, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
+    }
 
-  /**
-   * Deletes the migration table.
-   *
-   * @param {QueryRunner} queryRunner - to execute sql queries
-   */
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DELETE TABLE migrations");
-  }
+    /**
+     * Deletes the migration table.
+     *
+     * @param {QueryRunner} queryRunner - to execute sql queries
+     */
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query("DELETE TABLE migrations");
+    }
 }

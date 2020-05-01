@@ -5,14 +5,24 @@
  * @version 1.0.0
  */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {StorageUtilization, UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 import {LearningModule} from "../models/learning-module";
 import {File, DirectoryEntry} from "@ionic-native/file/ngx";
 import {ILIASObject} from "../../models/ilias-object";
 import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "./learning-module-loader";
+import {User} from "../../models/user";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
 
 export interface LearningModuleManager {
+
+    /**
+     * Loads all relevant data of the learning module
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learning module
+     */
+    load(objectId: number): Promise<void>;
 
     /**
      * Checks whether the learning module available on the mobile device
@@ -29,7 +39,7 @@ export interface LearningModuleManager {
     /**
      * Calculates the used storage of the learning module. The used storage within the sqlite database is not included.
      */
-    storageSpaceUsage(objectId: number, userId: number): Promise<number>;
+    getUsedStorage(objectId: number, userId: number): Promise<number>;
 }
 
 export const LEARNING_MODULE_MANAGER: InjectionToken<LearningModuleManager> = new InjectionToken("token for learning module manager.");
@@ -41,7 +51,7 @@ export const LEARNING_MODULE_MANAGER: InjectionToken<LearningModuleManager> = ne
  * @version 1.0.0
  */
 @Injectable()
-export class LearningModuleManagerImpl implements LearningModuleManager {
+export class LearningModuleManagerImpl implements LearningModuleManager, StorageUtilization {
     constructor(
         protected readonly fileSystem: File,
         protected readonly userStorage: UserStorageService,
@@ -52,10 +62,17 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
     async checkAndDownload(objectId: number, userId: number): Promise<void> {
         const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
         const alreadyLoaded: boolean = await obj.objectIsUnderFavorite();
-        if(!alreadyLoaded) await this.loader.load(objectId);
+        if(!alreadyLoaded) await this.load(objectId);
+    }
+
+    async load(objectId: number): Promise<void> {
+        await this.loader.load(objectId);
+        const user: User = AuthenticationProvider.getUser();
+        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(objectId, user.id)}`);
     }
 
     async remove(objId: number, userId: number): Promise<void> {
+        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(objId, userId)}`);
         // remove from database
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();
@@ -65,11 +82,9 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
         await this.userStorage.removeDir(localLmDir, lmDirName);
     }
 
-    async storageSpaceUsage(objId: number, userId: number): Promise<number> {
-        const lmDirPath: string = await this.pathBuilder.getLmDirByObjId(objId);
+    async getUsedStorage(objectId: number, userId: number): Promise<number> {
+        const lmDirPath: string = await this.pathBuilder.getLmDirByObjId(objectId);
         const dir: DirectoryEntry = await this.fileSystem.resolveDirectoryUrl(lmDirPath);
-        let size: number = -1;
-        dir.getMetadata(it => size = it.size);
-        return size;
+        return UserStorageService.getDirSizeRecursive(dir.nativeURL, this.fileSystem);
     }
 }

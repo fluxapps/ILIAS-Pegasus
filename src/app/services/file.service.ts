@@ -24,6 +24,7 @@ import {isNullOrUndefined} from "../util/util.function";
 import {AuthenticationProvider} from "../providers/authentication.provider";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../learningmodule/services/learning-module-manager";
+import {StorageUtilization, UserStorageService} from "./filesystem/user-storage.service";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -35,7 +36,7 @@ export interface DownloadProgress {
 @Injectable({
     providedIn: "root"
 })
-export class FileService {
+export class FileService implements StorageUtilization {
 
     private log: Logger = Logging.getLogger(FileService.name);
 
@@ -116,6 +117,7 @@ export class FileService {
         const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
         Log.describe(this, "Download Complete: ", fileEntry);
         await this.storeFileVersionLocal(fileObject);
+        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(fileObject.id, fileObject.userId)}`);
         return fileEntry;
     }
 
@@ -172,6 +174,8 @@ export class FileService {
      * @param fileObject
      */
     async removeFile(fileObject: ILIASObject): Promise<void> {
+        console.log(`DEV REMOVE STORAGE ${await this.getUsedStorage(fileObject.id, fileObject.userId)}`);
+
         await fileObject.setIsFavorite(0);
         fileObject.isOfflineAvailable = false;
         await fileObject.save();
@@ -181,7 +185,7 @@ export class FileService {
             await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
             return;
         }
-        if(fileObject.type == "html") {
+        if(fileObject.type === "htlm" || fileObject.type === "sahs") {
             await this.learningModuleManager.remove(fileObject.objId, fileObject.userId);
             return;
         }
@@ -315,6 +319,11 @@ export class FileService {
                 resolve(0);
             });
         });
+    }
+
+    async getUsedStorage(objectId: number, userId: number): Promise<number> {
+        const io: ILIASObject = await ILIASObject.find(objectId);
+        return io.data.fileSize;
     }
 
     /**
