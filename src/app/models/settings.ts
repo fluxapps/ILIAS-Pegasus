@@ -18,7 +18,7 @@ export class Settings extends ActiveRecord {
     /**
      * Language for app
      */
-    language: string = "de";
+    language: string = "fr";
 
     /**
      * Max. allowed size for automatic downloads (mega bytes)

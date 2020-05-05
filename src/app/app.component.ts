@@ -132,9 +132,9 @@ export class AppComponent {
             this.translate.use(setting.language);
         } else {
             // get the language of the navigator an check if it is supported. default is de
-            let lng: string = "de";
+            let lng: string = "fr";
             const navLng: string = navigator.language.split("-")[0];
-            ["de", "en", "it"].forEach(s => {if(navLng.match(`/${s}/i`)) lng = s;});
+            ["de", "en", "it", "fr"].forEach(s => {if(navLng.match(`/${s}/i`)) lng = s;});
             this.translate.use(lng);
         }
         this.translate.setDefaultLang("de");

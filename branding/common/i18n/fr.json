@@ -1,0 +1,271 @@
+{
+    "test": "le test",
+    "back": "Retour",
+    "Synchronize": "Synchroniser",
+    "synchronize": "Synchroniser",
+    "save": "sauvegarder",
+    "Save": "Sauvegarder",
+    "User": "Utilisateur",
+    "user": "utilisateur",
+    "cancel": "Annuler",
+    "general": "G\u00e9n\u00e9ral",
+    "new": "Nouveau",
+    "updated": "Mis \u00e0 jour",
+    "synchronisation_in_progress": "Synchronisation en cours",
+    "deleting_files": "Suppression des fichiers",
+    "something_went_wrong": "Une erreur s'est produite, r\u00e9essayez plus tard.",
+    "menu": "Menu",
+    "remove": "Supprimer",
+    "no_items": "Aucune entr\u00e9e pour le moment.",
+    "yes": "Oui",
+    "no": "Non",
+    "no_title": "Aucun titre",
+    "close": "Fermer",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "repository": "Catalogue",
+    "datasecurity": {
+        "title": "Politique de confidentialit\u00e9"
+    },
+    "object-list": {
+        "title": "Mes cours et groupes",
+        "content": "Contenu",
+        "offline": "Votre appareil est hors ligne. Vous pouvez faire glisser la page vers le bas pour rafra\u00eechir, ou aller dans vos favoris.",
+        "downloading": "Chargement",
+        "no_items": "Les favoris apparaissent ici et sont t\u00e9l\u00e9charg\u00e9s. Les favoris sont disponibles hors ligne, m\u00eame en l'absence de connexion Internet"
+    },
+    "page-layout": {
+        "group": "Des informations suppl\u00e9mentaires sont disponibles pour ce groupe.",
+        "course": "Des informations suppl\u00e9mentaires sont disponibles pour ce cours.",
+        "folder": "Des informations suppl\u00e9mentaires sont disponibles pour ce dossier.",
+        "default": "Des informations suppl\u00e9mentaires sont disponibles pour cet objet."
+    },
+    "timeline": {
+        "course": "Calendrier disponible pour ce cours.",
+        "group": "Calendrier disponible pour ce groupe.",
+        "default": "Calendrier disponible pour cet objet."
+    },
+    "favorites": {
+        "title": "Favoris"
+    },
+    "news": {
+        "title": "Actualit\u00e9s"
+    },
+    "new-objects": {
+        "title": "Nouveau contenu",
+        "no_new_items": "Il n'y a pas de nouveau contenu.",
+        "mark_as_seen": "Marquer comme vu"
+    },
+    "settings": {
+        "title": "Param\u00e8tres",
+        "language": "Langue",
+        "downloadSize": "Taille max. des fichiers en t\u00e9l\u00e9chargement (Mo)",
+        "downloadWLAN": "T\u00e9l\u00e9chargement uniquement en r\u00e9seau local sans fil",
+        "quotaSize": "Espace allou\u00e9 max. (Mo)",
+        "settings_saved": "Param\u00e8tres enregistr\u00e9s",
+        "files_deleted": "Fichiers supprim\u00e9s avec succ\u00e8s",
+        "delete_user_local_data_title": "Supprimer les fichiers locaux pour l'utilisateur {{username}}",
+        "delete_user_local_data_text": "Voulez-vous vraiment supprimer tous les fichiers locaux pr\u00e9sents sur l'appareil pour cet utilisateur ?",
+        "delete_all_files": "Supprimer tous les fichiers locaux sur l'appareil",
+        "delete_all_files_text": "Voulez-vous vraiment supprimer tous les fichiers locaux de tous les utilisateurs sur cet appareil ?",
+        "summary": "R\u00e9sum\u00e9",
+        "total": "Total",
+        "users": "Utilisateur",
+        "deleting_files": "Suppression des fichiers",
+        "downloadOnStart": "T\u00e9l\u00e9charger les favoris au d\u00e9marrage"
+    },
+    "info": {
+        "title": "Info",
+        "guide": "Guide",
+        "instructions1": "Lorsque vous \u00eates sur la page d'accueil \u00ab Mes cours et groupes \u00bb, vous pouvez marquer les cours et les groupes comme \u00e9tant \u00ab disponibles hors ligne \u00bb. Ils sont alors signal\u00e9s par un nuage gris. Une fois les fichiers synchronis\u00e9s, le nuage devient bleu.",
+        "instructions2": "La synchronisation d\u00e9marre automatiquement \u00e0 chaque fois que l'application est lanc\u00e9e ou qu'un cours est marqu\u00e9 comme disponible hors ligne. Vous pouvez \u00e9galement lancer la synchronisation manuelle en faisant glisser vers le bas (glisser pour rafra\u00eechir) la page \u00ab Mes cours et groupes \u00bb."
+    },
+    "logout": {
+        "title": "D\u00e9connexion",
+        "logged_out": "D\u00e9connexion r\u00e9ussie"
+    },
+    "common": {
+        "synchronize": "synchroniser"
+    },
+    "download": {
+        "title": "T\u00e9l\u00e9charger",
+        "something_went_wrong": "Une erreur s'est produite ! R\u00e9essayez dans quelques instants."
+    },
+    "actions": {
+        "view_in_ilias": "Voir dans ILIAS",
+        "mark_as_favorite": "Marquer comme favori",
+        "download": "T\u00e9l\u00e9charger \/ Transf\u00e9rer",
+        "mark_as_offline_available": "Marquer comme disponible hors ligne",
+        "unmark_as_offline_available": "Marquer comme non disponible hors ligne",
+        "synchronize": "Synchroniser",
+        "remove_local_files": "Supprimer les fichiers locaux",
+        "removed_local_files": "Fichiers locaux supprim\u00e9s",
+        "remove_local_file": "Supprimer le fichier local",
+        "removed_local_file": "Fichier local supprim\u00e9",
+        "remove_local_learnplace": "Supprimer le lieu d'apprentissage local",
+        "remove_local_learnplace_failed": "La suppression du lieu d'apprentissage a \u00e9chou\u00e9.",
+        "removed_local_learnplace": "Lieu d'apprentissage local supprim\u00e9",
+        "download_and_open_in_external_app": "T\u00e9l\u00e9charger et ouvrir avec une application externe",
+        "unmark_as_favorite": "Supprimer des favoris",
+        "open_in_external_app": "Ouvrir avec une application externe",
+        "show_details": "Afficher les d\u00e9tails",
+        "sync_incomplete": "Une erreur s'est produite : la synchronisation est incompl\u00e8te.",
+        "offline_and_no_local_file": "Vous \u00eates hors ligne et aucun fichier local n'est disponible.",
+        "download_without_wlan": "T\u00e9l\u00e9charger sans r\u00e9seau local sans fil",
+        "download_without_wlan_continue": "Vous n'\u00eates pas actuellement connect\u00e9 \u00e0 un r\u00e9seau local sans fil. Voulez-vous t\u00e9l\u00e9charger quand m\u00eame ?",
+        "download_without_disk_quota": "Pas d'espace disque",
+        "download_without_disk_quota_text": "Si vous t\u00e9l\u00e9chargez ce fichier, vous d\u00e9passerez l'espace disque sp\u00e9cifi\u00e9 dans les param\u00e8tres. Voulez-vous quand m\u00eame le t\u00e9l\u00e9charger ?",
+        "remove_local_files_in": "Supprimer les fichiers dans {{title}}",
+        "remove_local_files_in_text": "Voulez-vous vraiment supprimer tous les fichiers t\u00e9l\u00e9charg\u00e9s ?",
+        "download_successful": "T\u00e9l\u00e9chargement r\u00e9ussi",
+        "cant_open_file": "Aucune application ne peut ouvrir ce type de fichier.",
+        "file_error": "Le traitement du fichier a rencontr\u00e9 un probl\u00e8me.",
+        "server_not_reachable": "Nous ne sommes pas en mesure de joindre le serveur, veuillez r\u00e9essayer plus tard ou tenter de vous reconnecter.",
+        "server_response_validation_error": "Probl\u00e8me de communication avec le serveur : assurez-vous que vous utilisez la version la plus r\u00e9cente de l'application et r\u00e9essayez. Essayez de vous d\u00e9connecter et de vous reconnecter."
+    },
+    "details": {
+        "last_update": "Derni\u00e8re mise \u00e0 jour",
+        "availability": "Disponibilit\u00e9",
+        "size": "Taille",
+        "version": "Version",
+        "local_version_date": "Date du fichier sur l'appareil",
+        "remote_version_date": "Date du dossier dans ILIAS",
+        "used_disk_space": "Espace disque utilis\u00e9",
+        "potentially_used_disk_space": "Estimation de l'espace disque occup\u00e9 apr\u00e8s la synchronisation",
+        "offline_available": "Disponible hors ligne",
+        "availabilities": {
+            "needs_download": "T\u00e9l\u00e9chargement n\u00e9cessaire",
+            "up-to-date": "\u00c0 jour",
+            "needs_update": "Mise \u00e0 jour n\u00e9cessaire"
+        }
+    },
+    "sync": {
+        "sync_already_running": "Une synchronisation est d\u00e9j\u00e0 en cours.",
+        "last_sync": "Derni\u00e8re synchronisation",
+        "fetching_metadata": "R\u00e9cup\u00e9ration des m\u00e9tadonn\u00e9es",
+        "fetching_news": "R\u00e9cup\u00e9ration des actualit\u00e9s",
+        "title": "Synchronisation",
+        "sync_incomplete": "Une erreur s'est produite : la synchronisation est peut-\u00eatre incompl\u00e8te.",
+        "stopped_no_wlan": "Les fichiers nouveaux ou mis \u00e0 jour ne peuvent pas \u00eatre synchronis\u00e9s. Veuillez vous connecter \u00e0 un r\u00e9seau local sans fil",
+        "files_too_big": "Les fichiers nouveaux ou mis \u00e0 jour ne peuvent pas \u00eatre synchronis\u00e9s, car ils exc\u00e8dent l'espace allou\u00e9 max. Veuillez augmenter l'espace allou\u00e9 dans les param\u00e8tres ou supprimer certains fichiers.",
+        "object_synced": "{{titre}} a \u00e9t\u00e9 synchronis\u00e9 avec succ\u00e8s.",
+        "success": "Synchronisation termin\u00e9e.",
+        "download": "T\u00e9l\u00e9charger",
+        "sync_finished_text": "La synchronisation s'est termin\u00e9e. Il y a {{totalItems}} fichiers marqu\u00e9s au total. La version la plus r\u00e9cente des fichiers {{updated}} a \u00e9t\u00e9 t\u00e9l\u00e9charg\u00e9e. Les fichiers {{uptodate}} sont toujours \u00e0 jour et n'ont pas besoin d'\u00eatre t\u00e9l\u00e9charg\u00e9s.",
+        "some_files_were_too_big": "Certains fichiers \u00e9taient trop gros. Augmentez la taille maximale des fichiers dans les param\u00e8tres ou t\u00e9l\u00e9chargez les fichiers manuellement.",
+        "no_more_space": "Le t\u00e9l\u00e9chargement exc\u00e9dait l'espace disque et certains fichiers n'ont pas pu \u00eatre t\u00e9l\u00e9charg\u00e9s. Supprimez certains fichiers ou augmentez l'espace disque disponible pour la synchronisation dans les param\u00e8tres.",
+        "pull_to_sync": "Faites glisser vers le bas pour rafra\u00eechir",
+        "remove_from_favorites": "Supprimer des favoris",
+        "load_now": "T\u00e9l\u00e9charger maintenant",
+        "ok": "Ok",
+        "open_downloads_title": "Ouvrir les t\u00e9l\u00e9chargements",
+        "open_downloads_text_sng": "Le t\u00e9l\u00e9chargement de ce favori a \u00e9chou\u00e9 parce que l'application \u00e9tait ferm\u00e9e :",
+        "open_downloads_text_plr": "Le t\u00e9l\u00e9chargement de ces NUM favoris a \u00e9chou\u00e9 parce que l'application a \u00e9t\u00e9 ferm\u00e9e :"
+    },
+    "login": {
+        "title": "Connexion",
+        "hello": "Bienvenue sur ILIAS Pegasus !",
+        "instructions": "Choisissez votre institution",
+        "instructions2": "Choisissez votre institution",
+        "login": "Connexion",
+        "offline_title": "Pas de connexion Internet",
+        "offline_content": "Votre appareil doit \u00eatre connect\u00e9 \u00e0 Internet pour que vous puissiez vous connecter."
+    },
+    "object_type": {
+        "crs": "Cours",
+        "crsr": "R\u00e9f\u00e9rence du cours",
+        "grp": "Groupe",
+        "grpr": "R\u00e9f\u00e9rence du groupe",
+        "frm": "Forum",
+        "fold": "Dossier",
+        "sess": "Session",
+        "catr": "R\u00e9f\u00e9rence de la cat\u00e9gorie",
+        "cat": "Cat\u00e9gorie",
+        "book": "Groupe de r\u00e9servation",
+        "chatr": "Salle de Chat",
+        "file": "Fichier",
+        "webr": "Lien Web",
+        "feed": "Flux web",
+        "wiki": "Wiki",
+        "blog": "Blog",
+        "lm": "Module d'apprentissage",
+        "htlm": "Module d'apprentissage",
+        "sahs": "Module d'apprentissage",
+        "iass": "\u00c9valuation individuelle",
+        "glo": "Glossaire",
+        "dcl": "Collecte des donn\u00e9es",
+        "bibl": "Bibliographie",
+        "mcst": "Mediacast",
+        "mep": "Mediapool",
+        "exc": "Exercice",
+        "tst": "Test",
+        "qpl": "Banque de Questions (Test)",
+        "mass": "\u00c9valuation individuelle",
+        "poll": "Sondage",
+        "svy": "Enqu\u00eate",
+        "spl": "Banque de Questions (Enqu\u00eate)",
+        "prtt": "Mod\u00e8le de Portfolio",
+        "xlel": "Lieu de formation",
+        "xlvo": "Vote en direct",
+        "xoct": "OpenCast",
+        "xtst": "Tester l'article du catalogue",
+        "xvid": "Vid\u00e9o interactive",
+        "xpdl": "Etherpad",
+        "xavc": "R\u00e9union Adobe Connect",
+        "xflc": "Flash Cards",
+        "chtr": "Salle de chat",
+        "xxco": "Contenu distant",
+        "xsrl": "Lieu d'apprentissage"
+    },
+    "message": {
+        "back_to_exit": "Appuyez encore sur la touche retour pour quitter."
+    },
+    "learnplace": {
+        "map": {
+            "no_map": "Ce lieu d'apprentissage n'a pas de plan",
+            "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour voir le plan"
+        },
+        "block": {
+            "no_content": "Ce lieu d'apprentissage n'a pas de contenu",
+            "text": {
+                "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour lire ce texte"
+            },
+            "picture": {
+                "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour voir cette photo"
+            },
+            "link": {
+                "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour cliquer sur ce lien",
+                "no_access": "Vous n'avez pas les droits d'acc\u00e8s pour ce lien"
+            },
+            "video": {
+                "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour lire cette vid\u00e9o"
+            },
+            "accordion": {
+                "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour voir cet accord\u00e9on"
+            }
+        }
+    },
+    "fallback": {
+        "browser": "Vous quittez l'application ILIAS ",
+        "browser_ok": "Ok, c'est parti !",
+        "browser_no": "Non, revenir !",
+        "loading": "Lieu d'apprentissage",
+        "loading_subtitle": "Attendez une minute. Si le lieu d'apprentissage contient beaucoup de contenu, le t\u00e9l\u00e9chargement peut prendre un certain temps.",
+        "synchronization": "Veuillez patienter quelques secondes pendant que nous synchronisons avec ILIAS\u2026"
+    },
+    "onboarding": {
+        "title1": "Avec l'aide de cette application, vous pouvez :",
+        "function1": "acc\u00e9der \u00e0 vos cours ILIAS sur votre smartphone.",
+        "function2": "rendre vos cours et fichiers disponibles hors ligne.",
+        "function3": "vous connecter une bonne fois pour toute.",
+        "title2": "Une application d\u00e9centralis\u00e9e",
+        "concept1": "L'application Pegasus vous connecte au syst\u00e8me ILIAS de votre \u00e9tablissement, universit\u00e9 ou \u00e9cole.",
+        "concept2": "Si votre \u00e9tablissement n'a pas encore adh\u00e9r\u00e9, contactez-nous",
+        "title3": "Vos donn\u00e9es sont en s\u00e9curit\u00e9 !",
+        "datasecurity1": "Vos donn\u00e9es sont uniquement enregistr\u00e9es sur votre appareil. L'application ne collecte aucune information personnelle. Si vous voulez en savoir plus, vous trouverez ici la",
+        "datasecurity2": "politique de confidentialit\u00e9",
+        "datasecurity3": "ILIAS Pegasus est un projet open source. Si vous voulez voir par vous-m\u00eame comme fonctionne l'application, vous trouverez le code ici :",
+        "next": "suivant",
+        "start": "C'est parti"
+    }
+}
