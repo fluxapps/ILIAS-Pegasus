@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget android-versionCode="2020040301" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20200403.1" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>ILIAS Pegasus</name>
+<widget android-versionCode="2020050501" id="ch.studerraimann.ilias.adt" ios-CFBundleVersion="20200505.1" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>MyEform</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
     <content src="index.html"/>
@@ -114,6 +114,7 @@
     <preference name="SplashScreen" value="screen"/>
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine"/>
     <preference name="SplashShowOnlyFirstTime" value="false"/>
+    <preference name="WKWebViewOnly" value="true"/>
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar"/>
     </feature>
