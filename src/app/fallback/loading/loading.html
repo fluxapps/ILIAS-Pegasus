@@ -1,31 +1,64 @@
-<ion-header>
-    <ion-navbar color="nobg-w"></ion-navbar>
-</ion-header>
-<ion-content class=page_loading color="nobg-w">
+<ion-content class=page_loading color="primary" >
+
+    <div class="wrapper loading animation">
+        <div class="candles">
+          <div class="light__wave"></div>
+          <div class="candle1">
+            <div class="candle1__body">
+              <div class="candle1__eyes">
+                <span class="candle1__eyes-one"></span>
+                <span class="candle1__eyes-two"></span>
+              </div>
+              <div class="candle1__mouth"></div>
+            </div>
+            <div class="candle1__stick"></div>
+          </div>
+
+          <div class="candle2">
+            <div class="candle2__body">
+              <div class="candle2__eyes">
+                <div class="candle2__eyes-one"></div>
+                <div class="candle2__eyes-two"></div>
+              </div>
+            </div>
+            <div class="candle2__stick"></div>
+          </div>
+          <div class="candle2__fire"></div>
+          <div class="sparkles-one"></div>
+          <div class="sparkles-two"></div>
+          <div class="candle__smoke-one">
+
+          </div>
+          <div class="candle__smoke-two">
+
+          </div>
+
+        </div>
+        <div class="floor">
+        </div>
+
+
+      </div>
 
     <!-- <img src="assets/img/walking_pony.png"  class="walking-pony"> -->
     <ion-grid>
-
-      <ion-row>
-        <ion-col>
-          <ion-spinner color="white" class="centered"></ion-spinner>
-        </ion-col>
-      </ion-row>
-
-      <ion-row justify-content-center padding>
+        <ion-row justify-content-center padding>
         <!-- <h1 text-center color="white">
           <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading" class=big-spinner></ion-spinner>
         </h1> -->
       </ion-row>
       <ion-row justify-content-center padding>
         <h1 text-center color="white">
-          {{'fallback.loading' | translate:{value: null} }}
+          {{ translateKeyForType("loading") | translate:{value: null} }}
         </h1>
           <span text-center class=loading-subtitle>
-
-          {{'fallback.loading_subtitle' | translate:{value: null} }}
+          {{ translateKeyForType("loading_subtitle") | translate:{value: null} }}
         </span>
       </ion-row>
+      <ion-row justify-content-center padding><ion-progress-bar [value]="progress" [buffer]="progress"></ion-progress-bar></ion-row>
+      <ion-row justify-content-center padding>
+          <p class=very-small-font>A new loading Animation with every Version:<br> Candles Animation by Akhil Sai Ram (2018)</p>
+        </ion-row>
     </ion-grid>
 
 </ion-content>

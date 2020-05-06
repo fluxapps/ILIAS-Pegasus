@@ -1,30 +1,22 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
     "declaration": false,
-    "alwaysStrict": true,             //emit use 'strict' in output js files
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "noEmitOnError": false,
-    "noImplicitReturns": true,
-    "typeRoots": ["node_modules/@types"],
-//    "strictNullChecks": true, -> can not be used yet, too much code will be invalid
-    "lib": [
-      "dom",
-      "es2015"
-    ],
     "module": "es2015",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "target": "es5"
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es5",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
   "compileOnSave": false,
   "atom": {
     "rewriteTsconfig": false

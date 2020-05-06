@@ -1,0 +1,28 @@
+{
+    "actions": {
+        "view_in_ilias": "In StudOn anzeigen"
+    },
+    "details" : {
+        "remote_version_date": "Datum Datei in StudOn"
+    },
+    "login": {
+        "title": "Login",
+        "hello":"Willkommen bei StudOn",
+        "instructions":"Wähle Deine Plattform"
+    },
+    "object_type": {
+        "catr": "Bereichs-Referenz",
+        "cat" : "Bereich"
+    },
+    "fallback": {
+        "browser": "Du verlässt nun die StudOn App",
+        "synchronization_subtitle": "Bitte warte einen Moment während wir dein StudOn-Profil vorbereiten. Wenn Du in vielen Kursen eingeschrieben bist, kann das einige Minuten dauern."
+    },
+    "onboarding": {
+        "title1": "Mit dieser App kannst Du:",
+        "function1": "Deine StudOn-Kursunterlagen auf Deinem Smartphone nutzen.",
+        "title2": "Eine App für StudOn",
+        "concept1": "Diese App ist eine angepasste Version der ILIAS Pegasus App.",
+        "concept2": "Sie verbindet sich mit der StudOn-Lernplattform der Friedrich-Alexander-Universität Erlangen-Nürnberg."
+    }
+}

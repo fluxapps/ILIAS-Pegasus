@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons left>
+        </ion-buttons>
+        <ion-title>
+            {{ 'news.title' | translate}}
+            <!-- News -->
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="page_news">
+
+    <ion-refresher
+        (ionRefresh)="startNewsSync($event)"
+        [closeDuration]="400"
+        [pullMin]="150">
+        <ion-refresher-content id="refresher-content"
+                               pullingIcon="arrow-down"
+                               pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
+                               refreshingText="{{ footerToolbar.loadingText }}">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list color="list-element">
+        <ion-card *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
+                <ion-card-header>
+                        <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
+                        <ion-card-title> 
+                            <ion-avatar item-start>
+                                <img src="{{newsPresenter[1].icon()}}">
+                            </ion-avatar>
+                            {{newsPresenter[0].title}}
+                        </ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                            <p class="info-text">{{newsPresenter[0].subtitle}}</p>
+                            <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
+                    </ion-card-content>
+
+        </ion-card>
+    </ion-list>
+
+</ion-content>

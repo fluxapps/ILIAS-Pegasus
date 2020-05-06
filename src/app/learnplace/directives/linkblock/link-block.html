@@ -1,0 +1,13 @@
+<ion-card (click)="open()" *ngIf="link.visible">
+  <ion-card-content>
+      <ion-icon name="link">
+      </ion-icon>
+      {{linkLabel}}
+  </ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="!link.visible" color=primary>
+  <ion-card-content>
+    {{"learnplace.block.link.too_far_away" | translate}}
+  </ion-card-content>
+</ion-card>
