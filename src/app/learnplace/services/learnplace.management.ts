@@ -77,7 +77,7 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        //await UserStorageService.addObjectToUserStorage(user.id, objectId, this); // TODO dev
+        await UserStorageService.addObjectToUserStorage(user.id, objectId, this); // TODO dev
     }
 
     async remove(objectId: number, userId: number): Promise<void> {

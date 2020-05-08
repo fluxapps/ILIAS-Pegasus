@@ -27,6 +27,8 @@ import {ObjectListPage} from "./pages/object-list/object-list";
 import {ThemeProvider} from "./providers/theme/theme.provider";
 /** misc */
 import getMessage = Logging.getMessage;
+import {UserStorageService} from "./services/filesystem/user-storage.service";
+import {File} from "@ionic-native/file/ngx";
 
 @Component({
     selector: "app-root",
@@ -64,6 +66,8 @@ export class AppComponent {
         private readonly appVersionPlugin: AppVersion,
         private readonly ngZone: NgZone,
         private readonly themeProvider: ThemeProvider,
+        private readonly userStorage: UserStorageService,
+        private readonly fileSystem: File,
         @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
         sqlite: SQLite
     ) {
@@ -101,6 +105,7 @@ export class AppComponent {
             await this.sync.resetOfflineSynchronization(true);
             await this.themeProvider.loadResources();
             await this.navCtrl.navigateRoot("tabs");
+
         } else {
             await this.presentOnboardingModal();
         }
@@ -108,6 +113,10 @@ export class AppComponent {
         // style and navigation
         this.statusBar.styleLightContent();
         this.initializeBackButton();
+
+        // update the storage used by each user in background
+        const users: Array<User> = await User.findAllUsers();
+        users.forEach(u => this.userStorage.computeUsedStorage(u.id, this.fileSystem));
 
         if(AuthenticationProvider.isLoggedIn()) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();

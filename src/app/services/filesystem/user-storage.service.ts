@@ -33,16 +33,28 @@ export class UserStorageService {
     }
 
     /**
-     * computes the storage used by a given user and sets the
-     * corresponding property in the database
+     * computes the total storage with a time consuming method in the background
+     * for a given user and sets the corresponding property in the database
      * @param userId
      * @param fileSystem
      */
-    static async computeUsedStorage(userId: number, fileSystem: File): Promise<number> {
+    async computeUsedStorage(userId: number, fileSystem: File): Promise<number> {
         const user: User = await User.find(userId);
-        //this.getUsedStorage()
-        //this.getDirSizeRecursive("", fileSystem); // TODO dev
-        return user.totalUsedStorage;
+        const dir: string = await this.getStorageLocation();
+        let size: number = 0;
+        try {
+            size += await UserStorageService.getDirSizeRecursive(`${dir}${userId}`, fileSystem); // TODO dev
+        } catch (e) {
+            console.error(`ERR when getting size of ${dir}${userId} : ${e.message}`)
+        }
+        try {
+            size += await UserStorageService.getDirSizeRecursive(`${dir}user${userId}`, fileSystem); // TODO dev
+        } catch (e) {
+            console.error(`ERR when getting size of ${dir}user${userId} : ${e.message}`)
+        }
+        user.totalUsedStorage = size;
+        await user.save();
+        return size;
     }
 
     /**
@@ -53,8 +65,8 @@ export class UserStorageService {
      */
     static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
         console.log(`DEV ADD STORAGE ${await storage.getUsedStorage(objectId, userId)}`); // TODO dev
-        const user: User = new User(userId);
-        user.totalUsedStorage += await storage.getUsedStorage(objectId, userId);
+        const user: User = await User.find(userId);
+        user.totalUsedStorage = Number(user.totalUsedStorage) + Number(await storage.getUsedStorage(objectId, userId));
         await user.save();
         console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
     }
@@ -67,8 +79,8 @@ export class UserStorageService {
      */
     static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
         console.log(`DEV REMOVE STORAGE ${await storage.getUsedStorage(objectId, userId)}`);
-        const user: User = new User(userId);
-        user.totalUsedStorage -= await storage.getUsedStorage(objectId, userId);
+        const user: User = await User.find(userId);
+        user.totalUsedStorage = Number(user.totalUsedStorage) - Number(await storage.getUsedStorage(objectId, userId));
         await user.save();
         console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
     }

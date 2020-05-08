@@ -16,7 +16,6 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "../../config/ilias-config";
-import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
@@ -50,7 +49,6 @@ export class SettingsPage {
                 public translate: TranslateService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
                 public alertCtr: AlertController,
-                public dataProvider: DataProvider,
                 public fileService: FileService,
                 private readonly config: Config,
                 private readonly ngZone: NgZone) {
