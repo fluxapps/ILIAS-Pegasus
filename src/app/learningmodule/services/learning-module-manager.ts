@@ -68,11 +68,11 @@ export class LearningModuleManagerImpl implements LearningModuleManager, Storage
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(objectId, user.id)}`);
+        await UserStorageService.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async remove(objId: number, userId: number): Promise<void> {
-        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(objId, userId)}`);
+        await UserStorageService.removeObjectFromUserStorage(userId, objId, this);
         // remove from database
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();

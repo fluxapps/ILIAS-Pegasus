@@ -117,7 +117,7 @@ export class FileService implements StorageUtilization {
         const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
         Log.describe(this, "Download Complete: ", fileEntry);
         await this.storeFileVersionLocal(fileObject);
-        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(fileObject.id, fileObject.userId)}`);
+        await UserStorageService.addObjectToUserStorage(fileObject.userId, fileObject.id, this);
         return fileEntry;
     }
 

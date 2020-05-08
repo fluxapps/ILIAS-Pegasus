@@ -23,11 +23,25 @@ export class UserStorageService {
     ) {}
 
     /**
-     * total used storage for a given user
+     * total used storage for a given user, as registered in the database
      * @param userId
      */
-    static getUsedStorage(userId: number): number {
-        const user: User = new User(userId);
+    static async getUsedStorage(userId: number): Promise<number> {
+        const user: User = await User.find(userId);
+        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
+        return user.totalUsedStorage;
+    }
+
+    /**
+     * computes the storage used by a given user and sets the
+     * corresponding property in the database
+     * @param userId
+     * @param fileSystem
+     */
+    static async computeUsedStorage(userId: number, fileSystem: File): Promise<number> {
+        const user: User = await User.find(userId);
+        //this.getUsedStorage()
+        //this.getDirSizeRecursive("", fileSystem); // TODO dev
         return user.totalUsedStorage;
     }
 
@@ -38,9 +52,11 @@ export class UserStorageService {
      * @param storage
      */
     static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        console.log(`DEV ADD STORAGE ${await storage.getUsedStorage(objectId, userId)}`); // TODO dev
         const user: User = new User(userId);
         user.totalUsedStorage += await storage.getUsedStorage(objectId, userId);
         await user.save();
+        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
     }
 
     /**
@@ -50,9 +66,11 @@ export class UserStorageService {
      * @param storage
      */
     static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        console.log(`DEV REMOVE STORAGE ${await storage.getUsedStorage(objectId, userId)}`);
         const user: User = new User(userId);
         user.totalUsedStorage -= await storage.getUsedStorage(objectId, userId);
         await user.save();
+        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
     }
 
     /**

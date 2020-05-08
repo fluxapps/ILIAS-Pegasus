@@ -417,11 +417,11 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
 
         <FactoryProvider> {
             provide: OPEN_LEARNPLACE_ACTION_FACTORY,
-            useFactory: (loader: LearnplaceLoader): OpenLearnplaceActionFunction =>
+            useFactory: (manager: LearnplaceManager): OpenLearnplaceActionFunction =>
                 (nav: NavController, learnplaceObjectId: number, learnplaceName: string, modalController: ModalController): OpenLearnplaceAction =>
-                    new OpenLearnplaceAction(loader, nav, learnplaceObjectId, learnplaceName, modalController)
+                    new OpenLearnplaceAction(manager, nav, learnplaceObjectId, learnplaceName, modalController)
             ,
-            deps: [LEARNPLACE_LOADER]
+            deps: [LEARNPLACE_MANAGER]
         },
         <FactoryProvider> {
             provide: OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,

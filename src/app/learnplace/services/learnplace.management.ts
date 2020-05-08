@@ -7,7 +7,7 @@ import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
-import {StorageUtilization} from "../../services/filesystem/user-storage.service";
+import {StorageUtilization, UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
@@ -77,12 +77,11 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        console.log(`DEV ADD STORAGE ${await this.getUsedStorage(objectId, user.id)}`);
+        //await UserStorageService.addObjectToUserStorage(user.id, objectId, this); // TODO dev
     }
 
-
     async remove(objectId: number, userId: number): Promise<void> {
-        console.log(`DEV REMOVE STORAGE ${await this.getUsedStorage(objectId, userId)}`);
+        await UserStorageService.removeObjectFromUserStorage(userId, objectId, this);
 
         return (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 
@@ -128,8 +127,8 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
     }
 
     async getUsedStorage(objectId: number, userId: number): Promise<number> {
-         let size: number = 0;
-         await (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
+        let size: number = 0;
+        await (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 
             const paths: Array<string> = [];
             const basePath: string = await this.pathBuilder.getStorageLocation();
@@ -147,6 +146,6 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
             }
         });
 
-         return size;
+        return size;
     }
 }

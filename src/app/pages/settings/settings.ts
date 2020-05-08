@@ -19,6 +19,7 @@ import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from ".
 import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 
 @Component({
     selector: "page-settings",
@@ -81,7 +82,7 @@ export class SettingsPage {
             if (!this.usersPerInstallation[user.installationId]) {
                 this.usersPerInstallation[user.installationId] = [];
             }
-            const diskSpace: number = await FileData.getTotalDiskSpaceForUser(user);
+            const diskSpace: number = await UserStorageService.getUsedStorage(user.id);
             this.usersPerInstallation[user.installationId].push({
                 user: user,
                 diskSpace: diskSpace

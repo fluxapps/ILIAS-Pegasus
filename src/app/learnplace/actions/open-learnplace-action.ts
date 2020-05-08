@@ -1,9 +1,10 @@
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
-import {LearnplaceLoader} from "../services/loader/learnplace";
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
+import {LearnplaceManager} from "../services/learnplace.management";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -14,7 +15,7 @@ import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-param
 export class OpenLearnplaceAction extends ILIASObjectAction {
 
     constructor(
-        private readonly loader: LearnplaceLoader,
+        private readonly manager: LearnplaceManager,
         private readonly nav: NavController,
         private readonly learnplaceObjectId: number,
         private readonly learnplaceName: string,
@@ -30,7 +31,7 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         LoadingPage.type = LoadingPageType.learnplace;
         await loadingPage.present();
         try {
-            await this.loader.load(this.learnplaceObjectId);
+            await this.manager.load(this.learnplaceObjectId);
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
             LearnplaceNavParams.learnplaceName = this.learnplaceName;
             await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);
