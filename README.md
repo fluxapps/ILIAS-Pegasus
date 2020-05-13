@@ -10,6 +10,10 @@ It's main focus is to make files offline available to read them while offline. C
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
+In order to use the App your ILIAS needs to be configured first. You need 2 Plugins (also Open Source) to make your ILIAS ready for the Pegasus App:
+
+Follow the instructions here: https://github.com/studer-raimann/PegasusHelper
+
 The following tools are needed to build and deploy the app. 
 
 Ionic CLI:
@@ -183,8 +187,15 @@ Create a key, sign your application and upload it following the ionic guide: htt
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [releases on this repository](https://github.com/studer-raimann/ILIAS-Pegasus/releases). 
 
 ## Authors
-
+This is an OpenSource project by studer + raimann ag, (https://studer-raimann.ch)
 See the list of [contributors](https://github.com/studer-raimann/ILIAS-Pegasus/graphs/contributors) who participated in this project.
+
+### Contact
+[info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
+<https://studer-raimann.ch> 
+
+[support@ilias-pegasus.de](mailto://support@ilias-pegasus.de)  
+<https://ilias-pegasus.de> 
 
 ## License
 
@@ -196,15 +207,6 @@ Please check the [package.json](package.json) or run the command bellow to see a
 ```bash
 npm la --depth 0
 ```
-
-## Authors
-
-This is an OpenSource project by studer + raimann ag, (https://studer-raimann.ch)
-
-### Contact
-[info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
-<https://studer-raimann.ch> 
-
 
 
 ## ILIAS Plugin SLA 
