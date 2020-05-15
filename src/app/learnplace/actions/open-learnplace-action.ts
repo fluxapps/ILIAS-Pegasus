@@ -4,7 +4,7 @@ import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 import {LearnplaceManager} from "../services/learnplace.management";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {ILIASObject} from "../../models/ilias-object";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -31,7 +31,12 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         LoadingPage.type = LoadingPageType.learnplace;
         await loadingPage.present();
         try {
-            await this.manager.load(this.learnplaceObjectId);
+            // load the learnplace if not contained in favorites
+            // TODO how to handle changes of ILIAS object?
+            const ilObj: ILIASObject = await ILIASObject.find(this.learnplaceObjectId);
+            if(!ilObj.isFavorite && !await ilObj.objectIsUnderFavorite())
+                await this.manager.load(this.learnplaceObjectId);
+            // open page for learnplace
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
             LearnplaceNavParams.learnplaceName = this.learnplaceName;
             await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);

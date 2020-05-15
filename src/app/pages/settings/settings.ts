@@ -8,7 +8,6 @@ import {FileService} from "../../services/file.service";
 import {ILIASObject} from "../../models/ilias-object";
 import {Settings} from "../../models/settings";
 import {User} from "../../models/user";
-import {FileData} from "../../models/file-data";
 import {DesktopItem} from "../../models/desktop-item";
 /** logging */
 import {Log} from "../../services/log.service";
@@ -19,6 +18,7 @@ import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from ".
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {File} from "@ionic-native/file/ngx";
 
 @Component({
     selector: "page-settings",
@@ -50,8 +50,10 @@ export class SettingsPage {
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
                 public alertCtr: AlertController,
                 public fileService: FileService,
+                private readonly userStorage: UserStorageService,
                 private readonly config: Config,
-                private readonly ngZone: NgZone) {
+                private readonly ngZone: NgZone,
+                private readonly file: File) {
     }
 
     ionViewDidEnter(): void {
@@ -144,6 +146,7 @@ export class SettingsPage {
     private deleteLocalUserData(user: User): Promise<void> {
         this.footerToolbar.addJob(Job.DeleteFilesSettings,this.translate.instant("settings.deleting_files"));
         return this.deleteFiles(user)
+            .then(() => this.userStorage.computeUsedStorage(user.id, this.file))
             .then(() => this.loadUsersAndDiskspace())
             .then(() => {
                 this.showFilesDeletedToast();

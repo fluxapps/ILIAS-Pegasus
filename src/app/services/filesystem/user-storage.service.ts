@@ -3,6 +3,7 @@ import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
+import {ILIASObject} from "../../models/ilias-object";
 
 export interface StorageUtilization {
     /**
@@ -17,6 +18,9 @@ export interface StorageUtilization {
     providedIn: "root"
 })
 export class UserStorageService {
+    private static storageDifferences: Array<{userId: number, difference: number}> = [];
+    private static storageUpdateLock: boolean = false;
+
     constructor(
         private readonly fileSystem: File,
         private readonly platform: Platform,
@@ -28,7 +32,6 @@ export class UserStorageService {
      */
     static async getUsedStorage(userId: number): Promise<number> {
         const user: User = await User.find(userId);
-        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
         return user.totalUsedStorage;
     }
 
@@ -42,15 +45,15 @@ export class UserStorageService {
         const user: User = await User.find(userId);
         const dir: string = await this.getStorageLocation();
         let size: number = 0;
-        try {
-            size += await UserStorageService.getDirSizeRecursive(`${dir}${userId}`, fileSystem); // TODO dev
-        } catch (e) {
-            console.error(`ERR when getting size of ${dir}${userId} : ${e.message}`)
-        }
-        try {
-            size += await UserStorageService.getDirSizeRecursive(`${dir}user${userId}`, fileSystem); // TODO dev
-        } catch (e) {
-            console.error(`ERR when getting size of ${dir}user${userId} : ${e.message}`)
+
+        const dirs: Array<string> = [`${dir}${userId}`, `${dir}user${userId}`];
+
+        for(let i: number = 0; i<dirs.length; i++) {
+            try {
+                size += await UserStorageService.getDirSizeRecursive(dirs[i], fileSystem);
+            } catch (e) {
+                console.error(`Unable to get size of ${dirs[i]} : ${e.message}`)
+            }
         }
         user.totalUsedStorage = size;
         await user.save();
@@ -64,11 +67,14 @@ export class UserStorageService {
      * @param storage
      */
     static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        console.log(`DEV ADD STORAGE ${await storage.getUsedStorage(objectId, userId)}`); // TODO dev
-        const user: User = await User.find(userId);
-        user.totalUsedStorage = Number(user.totalUsedStorage) + Number(await storage.getUsedStorage(objectId, userId));
-        await user.save();
-        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
+        const io: ILIASObject = await ILIASObject.find(objectId);
+        if(io.isOfflineAvailable) return;
+
+        const difference: number = await storage.getUsedStorage(objectId, userId);
+        await UserStorageService.addDifferenceToUserStorage(userId, difference);
+
+        io.isOfflineAvailable = true;
+        await io.save();
     }
 
     /**
@@ -78,11 +84,41 @@ export class UserStorageService {
      * @param storage
      */
     static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        console.log(`DEV REMOVE STORAGE ${await storage.getUsedStorage(objectId, userId)}`);
-        const user: User = await User.find(userId);
-        user.totalUsedStorage = Number(user.totalUsedStorage) - Number(await storage.getUsedStorage(objectId, userId));
-        await user.save();
-        console.log(`DEV TOTAL STORAGE ${user.totalUsedStorage}`); // TODO dev
+        const io: ILIASObject = await ILIASObject.find(objectId);
+        if(!io.isOfflineAvailable) return;
+
+        const difference: number = await storage.getUsedStorage(objectId, userId);
+        await UserStorageService.addDifferenceToUserStorage(userId, -difference);
+
+        io.isOfflineAvailable = false;
+        await io.save();
+    }
+
+    /**
+     * applies a difference in storage to the total used storage of the specified user
+     * @param userId
+     * @param difference
+     */
+    static async addDifferenceToUserStorage(userId: number, difference: number) {
+        UserStorageService.storageDifferences.push({userId: userId, difference: difference});
+        if (!UserStorageService.storageUpdateLock)
+            this.applyDifferenceToUserStorage();
+    }
+
+    /**
+     * used to serialize writes of the total used storage
+     */
+    static async applyDifferenceToUserStorage() {
+        UserStorageService.storageUpdateLock = true;
+        while(UserStorageService.storageDifferences.length) {
+            const entry: {userId: number, difference: number} = UserStorageService.storageDifferences.pop();
+            console.log(`storage: difference ${entry.difference}`);
+            const user: User = await User.find(entry.userId);
+            user.totalUsedStorage = Number(user.totalUsedStorage) + Number(entry.difference);
+            await user.save();
+            console.log(`storage: used ${user.totalUsedStorage} by ${user.id}`);
+        }
+        UserStorageService.storageUpdateLock = false;
     }
 
     /**

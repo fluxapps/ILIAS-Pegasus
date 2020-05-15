@@ -68,7 +68,6 @@ export class FileService implements StorageUtilization {
     }
 
     private async createDirectoryPath(path: string): Promise<void> {
-
         let basePath: string = "";
         if (this.platform.is("android")) {
           basePath = this.file.externalApplicationStorageDirectory;
@@ -94,7 +93,6 @@ export class FileService implements StorageUtilization {
      * @returns {Promise<any>}
      */
     async download(fileObject: ILIASObject, forceDownload: boolean = false): Promise<FileEntry> {
-
         const user: User = await User.find(fileObject.userId);
         const settings: Settings = await Settings.findByUserId(user.id);
 
@@ -158,13 +156,17 @@ export class FileService implements StorageUtilization {
      * Deletes the local object on the device
      */
     async removeObject(iliasObject: ILIASObject): Promise<void> {
-        if(iliasObject.type === "file" || iliasObject.isLearnplace() || iliasObject.type === "html") {
+        if(
+            iliasObject.type === "file" ||
+            iliasObject.isLearnplace() ||
+            iliasObject.type === "htlm" ||
+            iliasObject.type === "sahs"
+        ) {
             await this.removeFile(iliasObject);
             return;
         }
 
         await iliasObject.setIsFavorite(0);
-        iliasObject.isOfflineAvailable = false;
         await iliasObject.save();
     }
 
@@ -174,34 +176,30 @@ export class FileService implements StorageUtilization {
      * @param fileObject
      */
     async removeFile(fileObject: ILIASObject): Promise<void> {
-        console.log(`DEV REMOVE STORAGE ${await this.getUsedStorage(fileObject.id, fileObject.userId)}`);
-
         await fileObject.setIsFavorite(0);
-        fileObject.isOfflineAvailable = false;
         await fileObject.save();
 
         const user: User = await User.find(fileObject.userId);
         if(fileObject.isLearnplace()) {
             await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
             return;
-        }
-        if(fileObject.type === "htlm" || fileObject.type === "sahs") {
+        } else if(fileObject.type === "htlm" || fileObject.type === "sahs") {
             await this.learningModuleManager.remove(fileObject.objId, fileObject.userId);
             return;
-        }
-        if (fileObject.data.hasOwnProperty("fileName")) {
-          const storageLocation: string = this.getStorageLocation(user, fileObject);
+        } else if (fileObject.data.hasOwnProperty("fileName")) {
+            await UserStorageService.removeObjectFromUserStorage(fileObject.userId, fileObject.id, this);
+            const storageLocation: string = this.getStorageLocation(user, fileObject);
 
-          // There's no local file to delete.
-          if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
-            return;
+            // There's no local file to delete.
+            if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
+                return;
 
-          // We delete the file and save the metadata.
-          await this.file.removeFile(storageLocation, fileObject.data.fileName);
-          await this.resetFileVersionLocal(fileObject);
+            // We delete the file and save the metadata.
+            await this.file.removeFile(storageLocation, fileObject.data.fileName);
+            await this.resetFileVersionLocal(fileObject);
 
         } else {
-          throw new Error("Metadata of file object is not (fully) present");
+            throw new Error("Metadata of file object is not (fully) present");
         }
     }
 

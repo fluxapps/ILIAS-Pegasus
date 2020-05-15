@@ -25,7 +25,7 @@ export interface LearningModuleManager {
     load(objectId: number): Promise<void>;
 
     /**
-     * Checks whether the learning module available on the mobile device
+     * Checks whether the learning module is available on the mobile device
      * and downloads it if this is not the case
      */
     checkAndDownload(objectId: number, userId: number): Promise<void>;

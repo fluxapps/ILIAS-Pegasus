@@ -201,7 +201,6 @@ export class SynchronizationService {
             await ilObj.setIsFavorite(2);
             try {
                 await this.loadOfflineObjectRecursive(ilObj);
-                await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
             } catch (e) {
                 console.warn(`sync resulted in an error ${e.message}`);
             }
