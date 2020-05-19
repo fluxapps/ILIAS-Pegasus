@@ -16,22 +16,26 @@ Follow the instructions here: https://github.com/studer-raimann/PegasusHelper
 
 The following tools are needed to build and deploy the app. 
 
-Ionic CLI:
+#### Ionic CLI:
 ```bash
 npm install -g ionic
 ```
 
-Cordova CLI:
+#### Cordova CLI:
 ```bash
 npm install -g cordova
 ```
 
-Xcode:
+#### Xcode:
 Install xcode over the apple app store.
 
-Android Studio:
+#### Android Studio:
 Install Android Studio from google.
 <https://developer.android.com/studio/index.html>
+
+#### A MapBox (OpenStreetMap) API-Key
+Check here:
+https://docs.mapbox.com/help/how-mapbox-works/access-tokens/
 
 
 #### iOS Development
@@ -84,6 +88,10 @@ installation.
 Save you configurationfile as server.config.json in branding/common/config. 
 
 Add you Installation id to the config.json file in your brand (eg. branding/brands/vanilla/config.json).
+
+### Add you mapbox key to environement
+
+Copy and edit the template of .env.exmaple and add your Mapbox key. Add your key and save your environementfile as ".env" in the root directory.
 
 ### Install Brand
 ```bash
