@@ -92,6 +92,10 @@ Add you Installation id to the config.json file in your brand (eg. branding/bran
 ### Add you mapbox key to environement
 
 Copy and edit the template of .env.exmaple and add your Mapbox key. Add your key and save your environementfile as ".env" in the root directory.
+````
+MAPBOX_API_KEY="AddYourKeyHere"
+PRODUCTION="true"
+````
 
 ### Install Brand
 ```bash
