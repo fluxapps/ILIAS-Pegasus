@@ -3,7 +3,7 @@
   "author": "studer-raimann ag",
   "homepage": "https://studer-raimann.ch/",
   "private": true,
-  "version": "4.0.1",
+  "version": "4.0.2",
   "scripts": {
     "start": "ionic cordova emulate",
     "build:release:ios": "NODE_OPTIONS=--max_old_space_size=4096 ionic cordova build ios --release --prod --device",
