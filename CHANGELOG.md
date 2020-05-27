@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.2] 2020-05-26
+
+
+### Fixed 🦀
+- Linked Objects (globe not adjusted)
+- Favorite star not adjusted
+- News: Message if no news
+- Privacy Ppolicy link not readable.
+
+### Removed 👎
+- Temporarily removed Darkmode from vanilla brand (-> conflict with dynamic theming)
+
 ## [4.0.1] 2020-05-13
 
 ### Changed 🚀

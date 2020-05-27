@@ -223,6 +223,16 @@ ion-content.page_settings {
     .loading-text {
         padding: 10px 0 10px 10px;
     }
+
+    .badge-link {
+      position: absolute;
+      top: 5%;
+      left:40%;
+    }
+
+    .offline-image{
+      width: 20%;
+    }
 }
 
 // learnplace_map
