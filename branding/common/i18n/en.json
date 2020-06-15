@@ -167,7 +167,9 @@
         "instructions2":"Choose your institution",
         "login": "Login",
         "offline_title": "No Internet connection",
-        "offline_content": "In order to login, your device needs to be connected to the Internet."
+        "offline_content": "In order to login, your device needs to be connected to the Internet.",
+        "ok": "Select",
+        "dismiss": "Cancel"
     },
     "object_type": {
         "crs" : "Course",
