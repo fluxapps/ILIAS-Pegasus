@@ -114,10 +114,6 @@ export class AppComponent {
         this.statusBar.styleLightContent();
         this.initializeBackButton();
 
-        // update the storage used by each user in background
-        const users: Array<User> = await User.findAllUsers();
-        users.forEach(u => this.userStorage.computeUsedStorage(u.id, this.fileSystem));
-
         if(AuthenticationProvider.isLoggedIn()) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
             if(this.user.lastVersionLogin !== currentAppVersion) {

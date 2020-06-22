@@ -19,6 +19,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {File} from "@ionic-native/file/ngx";
+import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 
 @Component({
     selector: "page-settings",
@@ -82,7 +83,7 @@ export class SettingsPage {
             if (!this.usersPerInstallation[user.installationId]) {
                 this.usersPerInstallation[user.installationId] = [];
             }
-            const diskSpace: number = await UserStorageService.getUsedStorage(user.id);
+            const diskSpace: number = await UserStorageMamager.getUsedStorage(user.id);
             this.usersPerInstallation[user.installationId].push({
                 user: user,
                 diskSpace: diskSpace
@@ -146,7 +147,6 @@ export class SettingsPage {
     private deleteLocalUserData(user: User): Promise<void> {
         this.footerToolbar.addJob(Job.DeleteFilesSettings,this.translate.instant("settings.deleting_files"));
         return this.deleteFiles(user)
-            .then(() => this.userStorage.computeUsedStorage(user.id, this.file))
             .then(() => this.loadUsersAndDiskspace())
             .then(() => {
                 this.showFilesDeletedToast();
@@ -212,10 +212,14 @@ export class SettingsPage {
         }).then((it: HTMLIonAlertElement) => it.present());
     }
 
+    private async deleteCache(user: User): Promise<void> {
+        await this.userStorage.deleteAllCache(user.id);
+    }
+
     private async deleteFiles(user: User): Promise<void> {
         const iliasObjects: Array<ILIASObject> = await DesktopItem.findByUserId(user.id);
         for(const iliasObject of iliasObjects)
-            await this.fileService.removeRecursive(iliasObject);
+            await this.userStorage.removeRecursive(iliasObject);
     }
 
     private async showUnknownErrorOccurredAlert(): Promise<void> {

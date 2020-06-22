@@ -5,7 +5,8 @@
  * @version 1.0.0
  */
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {StorageUtilization, UserStorageService} from "../../services/filesystem/user-storage.service";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {StorageUtilization} from "../../services/filesystem/user-storage.mamager";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 import {LearningModule} from "../models/learning-module";
 import {File, DirectoryEntry} from "@ionic-native/file/ngx";
@@ -13,6 +14,8 @@ import {ILIASObject} from "../../models/ilias-object";
 import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "./learning-module-loader";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
+import {FileStorageService} from "../../services/filesystem/file-storage.service";
 
 export interface LearningModuleManager {
 
@@ -54,7 +57,7 @@ export const LEARNING_MODULE_MANAGER: InjectionToken<LearningModuleManager> = ne
 export class LearningModuleManagerImpl implements LearningModuleManager, StorageUtilization {
     constructor(
         protected readonly fileSystem: File,
-        protected readonly userStorage: UserStorageService,
+        protected readonly fileStorage: FileStorageService,
         @Inject(LEARNING_MODULE_LOADER) private readonly loader: LearningModuleLoader,
         @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) {}
@@ -68,18 +71,18 @@ export class LearningModuleManagerImpl implements LearningModuleManager, Storage
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        await UserStorageService.addObjectToUserStorage(user.id, objectId, this);
+        await UserStorageMamager.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async remove(objId: number, userId: number): Promise<void> {
-        await UserStorageService.removeObjectFromUserStorage(userId, objId, this);
+        await UserStorageMamager.removeObjectFromUserStorage(userId, objId, this);
         // remove from database
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();
         // remove from file system
         const localLmDir: string = await this.pathBuilder.dirInLocalLmDir("", false);
         const lmDirName: string = this.pathBuilder.lmDirName(objId);
-        await this.userStorage.removeDir(localLmDir, lmDirName);
+        await this.fileStorage.removeDir(localLmDir, lmDirName);
     }
 
     async getUsedStorage(objectId: number, userId: number): Promise<number> {

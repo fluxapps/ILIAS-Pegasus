@@ -1,124 +1,73 @@
-import {DirectoryEntry, File, Flags, Entry} from "@ionic-native/file/ngx";
+import {File, Entry} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {Injectable} from "@angular/core";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {User} from "../../models/user";
+import {Injectable, Inject} from "@angular/core";
 import {ILIASObject} from "../../models/ilias-object";
-
-export interface StorageUtilization {
-    /**
-     * computes the dist space used by a certain object
-     * @param objectId id of the target object
-     * @param userId user id for the owner of the target object
-     */
-    getUsedStorage(objectId: number, userId: number): Promise<number>;
-}
+import {Settings} from "../../models/settings";
+import {FileService} from "../file.service";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../../learnplace/services/learnplace.management";
+import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../../learningmodule/services/learning-module-manager";
+import {UserStorageMamager} from "./user-storage.mamager";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserStorageService {
-    private static storageDifferences: Array<{userId: number, difference: number}> = [];
-    private static storageUpdateLock: boolean = false;
-
     constructor(
         private readonly fileSystem: File,
         private readonly platform: Platform,
+        private readonly fileService: FileService,
+        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
+        @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleManager
     ) {}
 
     /**
-     * total used storage for a given user, as registered in the database
-     * @param userId
+     * Deletes the local object on the device
      */
-    static async getUsedStorage(userId: number): Promise<number> {
-        const user: User = await User.find(userId);
-        return user.totalUsedStorage;
+    async removeObject(iliasObject: ILIASObject): Promise<void> {
+        if(iliasObject.type === "file")
+            return this.fileService.removeFile(iliasObject);
+
+        if(iliasObject.isLearnplace())
+            return this.learnplaceManager.remove(iliasObject.objId, iliasObject.userId);
+
+        if(iliasObject.type === "htlm" || iliasObject.type === "sahs")
+            return this.learningModuleManager.remove(iliasObject.objId, iliasObject.userId);
+
+        await iliasObject.setIsFavorite(0);
+        await iliasObject.save();
     }
 
     /**
-     * computes the total storage with a time consuming method in the background
-     * for a given user and sets the corresponding property in the database
-     * @param userId
-     * @param fileSystem
+     * Remove all local files recursively under the given container ILIAS object
+     * @param containerObject
      */
-    async computeUsedStorage(userId: number, fileSystem: File): Promise<number> {
-        const user: User = await User.find(userId);
-        const dir: string = await this.getStorageLocation();
-        let size: number = 0;
+    async removeRecursive(containerObject: ILIASObject): Promise<void> {
+        try {
+            console.trace("Start recursive removal of files");
+            const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
+            iliasObjects.push(containerObject);
 
-        const dirs: Array<string> = [`${dir}${userId}`, `${dir}user${userId}`];
-
-        for(let i: number = 0; i<dirs.length; i++) {
-            try {
-                size += await UserStorageService.getDirSizeRecursive(dirs[i], fileSystem);
-            } catch (e) {
-                console.error(`Unable to get size of ${dirs[i]} : ${e.message}`)
-            }
+            for(const fileObject of iliasObjects)
+                await this.removeObject(fileObject);
+            console.log("Deleting Files complete");
         }
-        user.totalUsedStorage = size;
-        await user.save();
-        return size;
-    }
-
-    /**
-     * evaluates the storage used by an objects and adds this to the users used storage
-     * @param userId
-     * @param objectId
-     * @param storage
-     */
-    static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        const io: ILIASObject = await ILIASObject.find(objectId);
-        if(io.isOfflineAvailable) return;
-
-        const difference: number = await storage.getUsedStorage(objectId, userId);
-        await UserStorageService.addDifferenceToUserStorage(userId, difference);
-
-        io.isOfflineAvailable = true;
-        await io.save();
-    }
-
-    /**
-     * evaluates the storage used by an objects and removes this from the users used storage
-     * @param userId
-     * @param objectId
-     * @param storage
-     */
-    static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        const io: ILIASObject = await ILIASObject.find(objectId);
-        if(!io.isOfflineAvailable) return;
-
-        const difference: number = await storage.getUsedStorage(objectId, userId);
-        await UserStorageService.addDifferenceToUserStorage(userId, -difference);
-
-        io.isOfflineAvailable = false;
-        await io.save();
-    }
-
-    /**
-     * applies a difference in storage to the total used storage of the specified user
-     * @param userId
-     * @param difference
-     */
-    static async addDifferenceToUserStorage(userId: number, difference: number) {
-        UserStorageService.storageDifferences.push({userId: userId, difference: difference});
-        if (!UserStorageService.storageUpdateLock)
-            this.applyDifferenceToUserStorage();
-    }
-
-    /**
-     * used to serialize writes of the total used storage
-     */
-    static async applyDifferenceToUserStorage() {
-        UserStorageService.storageUpdateLock = true;
-        while(UserStorageService.storageDifferences.length) {
-            const entry: {userId: number, difference: number} = UserStorageService.storageDifferences.pop();
-            console.log(`storage: difference ${entry.difference}`);
-            const user: User = await User.find(entry.userId);
-            user.totalUsedStorage = Number(user.totalUsedStorage) + Number(entry.difference);
-            await user.save();
-            console.log(`storage: used ${user.totalUsedStorage} by ${user.id}`);
+        catch (error) {
+            console.error(`An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
+            throw error;
         }
-        UserStorageService.storageUpdateLock = false;
+    }
+
+    /**
+     * deletes all locally stored objects that are not offline available
+     * @param userId
+     */
+    async deleteAllCache(userId: number): Promise<void> {
+        let used: number = await UserStorageMamager.getUsedStorage(userId);
+        const settings: Settings = await Settings.findByUserId(userId);
+        const ilObjList: Array<ILIASObject> = await ILIASObject.findByUserId(userId);
+        for(let i: number = 0; i < ilObjList.length; i++) {
+            await this.removeObject(ilObjList[i]);
+        }
     }
 
     /**
@@ -163,106 +112,5 @@ export class UserStorageService {
         }
 
         return diskSpace;
-    }
-
-    /**
-     * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation
-     *
-     * @param name name of the directory
-     * @param createRecursive when set to true, will create the target directory if it does not exist yet
-     */
-    async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {
-        const storageLocation: string = await this.getStorageLocation();
-        const userRoot: string = await this.rootForUser();
-        if(createRecursive) this.createRecursive(storageLocation, userRoot, name);
-        return `${storageLocation}${userRoot}/${name}/`;
-    }
-
-    /**
-     * Constructs an unique path for each combination of user and ILIAS-installation
-     */
-    async rootForUser(): Promise<string> {
-        const user: User = AuthenticationProvider.getUser();
-        return `ilias-app/user${user.id.toString()}`;
-    }
-
-    /**
-     * @returns {Promise<string>} the storage location considering the platform
-     */
-    async getStorageLocation(): Promise<string> {
-        await this.platform.ready();
-        if(this.platform.is("android")) {
-            return this.fileSystem.externalApplicationStorageDirectory;
-        } else if (this.platform.is("ios")) {
-            return this.fileSystem.dataDirectory;
-        }
-
-        throw new Error("Unsupported platform. Can not return a storage location.");
-    }
-
-    /**
-     * Creates the given directory structure.
-     * If a directory exists already it will not be replaced.
-     *
-     * @param {string} first - initial directory, which must exist already
-     * @param {string} more - sub-directories with format "subdir1/subdir2/..." which will be created if not existing
-     *
-     * @returns {Promise<string>} the created directory path excluding {@code first}
-     */
-    async createRecursive(first: string, ...more: Array<string>): Promise<string> {
-        let previousDir: DirectoryEntry = await this.fileSystem.resolveDirectoryUrl(first);
-        for(const currentDirs of more) {
-            for(const currentDir of currentDirs.split("/"))
-                previousDir = await this.fileSystem.getDirectory(previousDir, currentDir, <Flags>{create: true});
-        }
-
-        return `${more.join("/")}/`;
-    }
-
-    /**
-     * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
-     */
-    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string, copy: boolean = false): Promise<boolean> {
-        try {
-            try {
-                await this.fileSystem.removeRecursively(newPath, newDirName);
-            } catch(e) {
-                console.warn(`Unable to remove ${newPath}|${newDirName} resulted in error ${e.message} continue...`);
-            } finally {
-                if(copy) await this.fileSystem.copyDir(path, dirName, newPath, newDirName);
-                else await this.fileSystem.moveDir(path, dirName, newPath, newDirName);
-            }
-            return true;
-        } catch(e) {
-            console.warn(`Unable to move and replace ${path}|${dirName} => ${newPath}|${newDirName} resulted in error ${e.message}`);
-            return false;
-        }
-    }
-
-    /**
-     * removes a directory
-     */
-    async removeDir(path: string, dirName: string): Promise<boolean> {
-        try {
-            await this.fileSystem.removeRecursively(path, dirName);
-            return true;
-        } catch(e) {
-            return false;
-        }
-    }
-
-    /**
-     * removes a file
-     *
-     * @param path is the path to the file with format 'dir' or 'dir/'
-     * @param fileName is the name of the file
-     */
-    async removeFileIfExists(path: string, fileName: string): Promise<boolean> {
-        try {
-            await this.fileSystem.removeFile(path, fileName);
-            return true;
-        } catch(e) {
-            return false;
-        }
     }
 }

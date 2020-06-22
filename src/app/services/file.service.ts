@@ -1,5 +1,5 @@
 /** angular */
-import {Inject, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {Events, Platform} from "@ionic/angular";
 /** ionic-native */
 import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file/ngx";
@@ -22,9 +22,7 @@ import {Logging} from "./logging/logging.service";
 /** misc */
 import {isNullOrUndefined} from "../util/util.function";
 import {AuthenticationProvider} from "../providers/authentication.provider";
-import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
-import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../learningmodule/services/learning-module-manager";
-import {StorageUtilization, UserStorageService} from "./filesystem/user-storage.service";
+import {UserStorageMamager, StorageUtilization} from "./filesystem/user-storage.mamager";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -47,8 +45,6 @@ export class FileService implements StorageUtilization {
         protected translate: TranslateService,
         private readonly file: File,
         private readonly network: Network,
-        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
-        @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleManager
     ) {}
 
     /**
@@ -115,7 +111,7 @@ export class FileService implements StorageUtilization {
         const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
         Log.describe(this, "Download Complete: ", fileEntry);
         await this.storeFileVersionLocal(fileObject);
-        await UserStorageService.addObjectToUserStorage(fileObject.userId, fileObject.id, this);
+        await UserStorageMamager.addObjectToUserStorage(fileObject.userId, fileObject.id, this);
         return fileEntry;
     }
 
@@ -180,14 +176,8 @@ export class FileService implements StorageUtilization {
         await fileObject.save();
 
         const user: User = await User.find(fileObject.userId);
-        if(fileObject.isLearnplace()) {
-            await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
-            return;
-        } else if(fileObject.type === "htlm" || fileObject.type === "sahs") {
-            await this.learningModuleManager.remove(fileObject.objId, fileObject.userId);
-            return;
-        } else if (fileObject.data.hasOwnProperty("fileName")) {
-            await UserStorageService.removeObjectFromUserStorage(fileObject.userId, fileObject.id, this);
+        if (fileObject.data.hasOwnProperty("fileName")) {
+            await UserStorageMamager.removeObjectFromUserStorage(fileObject.userId, fileObject.id, this);
             const storageLocation: string = this.getStorageLocation(user, fileObject);
 
             // There's no local file to delete.
@@ -200,27 +190,6 @@ export class FileService implements StorageUtilization {
 
         } else {
             throw new Error("Metadata of file object is not (fully) present");
-        }
-    }
-
-    /**
-     * Remove all local files recursively under the given container ILIAS object
-     * @param containerObject
-     */
-    async removeRecursive(containerObject: ILIASObject): Promise<void> {
-
-        try {
-          this.log.trace(() => "Start recursive removal of files");
-          const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
-          iliasObjects.push(containerObject);
-
-          for(const fileObject of iliasObjects)
-              await this.removeObject(fileObject);
-          this.log.info(() => "Deleting Files complete");
-        }
-        catch (error) {
-          this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
-          throw error;
         }
     }
 

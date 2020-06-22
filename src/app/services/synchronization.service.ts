@@ -23,6 +23,7 @@ import {ThemeProvider} from "../providers/theme/theme.provider";
 import {OfflineException} from "../exceptions/OfflineException";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
 import {LEARNING_MODULE_MANAGER} from "../learningmodule/services/learning-module-manager";
+import {UserStorageService} from "./filesystem/user-storage.service";
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -59,6 +60,7 @@ export class SynchronizationService {
 
     constructor(private readonly dataProvider: DataProvider,
                 private readonly fileService: FileService,
+                private readonly userStorage: UserStorageService,
                 private readonly footerToolbar: FooterToolbarService,
                 private readonly translate: TranslateService,
                 @Inject(NEWS_SYNCHRONIZATION) private readonly newsSynchronization: NewsSynchronization,
@@ -118,11 +120,11 @@ export class SynchronizationService {
                 });
                 alert.present();
                 alert.onDidDismiss().then(() => {
-                    if (dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
+                    if (dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
                     else this.addObjectsToSyncQueue(objects);
                 });
             } else {
-                objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.fileService, true));
+                objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
             }
     }
 
@@ -206,7 +208,7 @@ export class SynchronizationService {
             }
             // the user may has unmarked the object in the mean time
             if(ilObj.isFavorite) await ilObj.setIsFavorite(1);
-            else ilObj.removeFromFavorites(this.fileService);
+            else ilObj.removeFromFavorites(this.userStorage);
         }
 
         this.syncOfflineQueueCnt++;

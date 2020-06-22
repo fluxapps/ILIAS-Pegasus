@@ -1,7 +1,7 @@
 import {Injectable, InjectionToken} from "@angular/core";
 import {File} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {FileStorageService} from "../../services/filesystem/file-storage.service";
 
 /**
  * Builds directory paths for learning module.
@@ -40,7 +40,7 @@ export class LearningModulePathBuilderImpl implements LearningModulePathBuilder 
     constructor(
         private readonly file: File,
         private readonly platform: Platform,
-        private readonly userStorage: UserStorageService,
+        private readonly fileStorage: FileStorageService,
     ) {}
 
     lmDirName(objId: number): string {
@@ -50,7 +50,7 @@ export class LearningModulePathBuilderImpl implements LearningModulePathBuilder 
     async dirInLocalLmDir(path: string, createRecursive: boolean): Promise<string> {
         path = this.withoutEndingSlash(path);
         const baseDir: string = path.length ? this.lmsBaseDirName : this.withoutEndingSlash(this.lmsBaseDirName);
-        return this.userStorage.dirForUser(`${baseDir}${path}`, createRecursive);
+        return this.fileStorage.dirForUser(`${baseDir}${path}`, createRecursive);
     }
 
     async getLmDirByObjId(objId: number): Promise<string> {

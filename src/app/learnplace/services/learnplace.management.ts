@@ -7,10 +7,11 @@ import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
-import {StorageUtilization, UserStorageService} from "../../services/filesystem/user-storage.service";
+import {StorageUtilization} from "../../services/filesystem/user-storage.mamager";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
+import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 
 /**
  * Describes a service to manage learnplaces.
@@ -77,11 +78,11 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        await UserStorageService.addObjectToUserStorage(user.id, objectId, this);
+        await UserStorageMamager.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async remove(objectId: number, userId: number): Promise<void> {
-        await UserStorageService.removeObjectFromUserStorage(userId, objectId, this);
+        await UserStorageMamager.removeObjectFromUserStorage(userId, objectId, this);
 
         return (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 

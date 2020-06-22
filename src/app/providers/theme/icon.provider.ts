@@ -1,11 +1,11 @@
 import {Injectable} from "@angular/core";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {File} from "@ionic-native/file/ngx";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
 import {Settings} from "../../models/settings";
 import {AuthenticationProvider} from "../authentication.provider";
 import {CssStyleService} from "../../services/theme/css-style.service";
 import {ThemeSynchronizationService} from "../../services/theme/theme-synchronization.service";
+import {FileStorageService} from "../../services/filesystem/file-storage.service";
 
 @Injectable({
     providedIn: "root"
@@ -25,7 +25,7 @@ export class IconProvider {
     ];
 
     constructor(
-        private readonly userStorage: UserStorageService,
+        private readonly fileStorage: FileStorageService,
         private readonly filesystem: File,
         private readonly webview: WebView,
     ) {}
@@ -43,7 +43,7 @@ export class IconProvider {
 
     async loadResources(): Promise<void> {
         if(CssStyleService.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
-            const path: string = await this.userStorage.dirForUser("icons");
+            const path: string = await this.fileStorage.dirForUser("icons");
             for(let i: number = 0; i < this.icons.length; i++) {
                 const icon: {key: string, loadedName: string, asset: string} = this.icons[i];
                 const settings: Settings = await AuthenticationProvider.getUser().settings;
