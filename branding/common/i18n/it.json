@@ -153,7 +153,11 @@
         "hello":"Benvenuto/a in ILIAS Pegasus!",
         "instructions":"Scegli la tua organizzazione",
         "instructions2":"Scegli la tua organizzazione",
-        "login": "Login"
+        "login": "Login",
+        "offline_title": "Nessuna connessione a Internet",
+        "offline_content": "Per poter effettuare il login, il dispositivo deve essere collegato a Internet.",
+        "ok": "Selezionare",
+        "dismiss": "Annulla"
     },
     "object_type": {
         "crs" : "Corso",
