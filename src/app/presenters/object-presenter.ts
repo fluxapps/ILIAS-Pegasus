@@ -92,16 +92,6 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
                     })
             );
 
-            // And the potentially used diskspace
-            detailPromises.push(
-                FileService.calculateDiskSpace(this.iliasObject, false)
-                    .then(diskSpace => {
-                        Log.describe(this, "Potentially used disk space: ", ILIASAppUtils.formatSize(diskSpace));
-                        const detail = {label: "details.potentially_used_disk_space", value: ILIASAppUtils.formatSize(diskSpace)};
-                        details.push(detail);
-                        return Promise.resolve(detail);
-                    })
-            );
             detailPromises.push(
                 Promise.resolve({label: "details.offline_available", value: this.iliasObject.isOfflineAvailable ? "yes" : "no", translate: true})
             );

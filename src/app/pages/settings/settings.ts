@@ -118,7 +118,6 @@ export class SettingsPage {
             ]
         }).then((it: HTMLIonAlertElement) => it.present());
     }
-
     async saveSettings(): Promise<void> {
         this.settings.downloadSize = Math.min(this.settings.downloadSize, 10000);
         this.settings.quotaSize = Math.min(this.settings.quotaSize, 100000);

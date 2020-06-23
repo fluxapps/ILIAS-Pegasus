@@ -17,7 +17,7 @@ export class LoadingPage {
     // the type of object that is being loaded
     static type: LoadingPageType = LoadingPageType.generic;
 
-    private progress: number = 0;
+    progress: number = 0;
     constructor(
         readonly footerToolbar: FooterToolbarService,
     ) {
@@ -25,7 +25,7 @@ export class LoadingPage {
         LoadingPage.progress.subscribe((progress: number) => this.progress = progress);
     }
 
-    private translateKeyForType(key: string): string {
+    translateKeyForType(key: string): string {
         switch (LoadingPage.type) {
             case LoadingPageType.generic:
                 return `fallback.generic.${key}`;

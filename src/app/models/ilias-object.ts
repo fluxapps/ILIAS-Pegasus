@@ -516,6 +516,20 @@ export class ILIASObject extends ActiveRecord {
     }
 
     /**
+     * Set property 'isOfflineAvailable' of the 'iliasObject' and its content to 'value'
+     */
+    static async setOfflineAvailableRecursive(iliasObject: ILIASObject, user: User, value: boolean): Promise<void> {
+        ILIASObject.findByParentRefIdRecursive(iliasObject.refId, user.id).then(objects => {
+            objects.push(iliasObject);
+            objects.forEach(o => {
+                o.isOfflineAvailable = value;
+                if(value) o.offlineAvailableOwner = undefined; // TODO sync how to set this value
+                o.save();
+            });
+        })
+    }
+
+    /**
      * updates the needsDownload state depending on the object type recursivly. This object and every parent recursively.
      * @returns {Promise<T>} returns a list of the changed objects
      */

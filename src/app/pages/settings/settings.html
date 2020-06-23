@@ -75,6 +75,17 @@
                         </ion-button>
                     </ion-item>
                 </ion-item-group>
+                <ion-item-group>
+                    <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
+                    <ion-item color="list-element">
+                        <ion-label>{{ 'settings.total' | translate:[] }}:
+                            {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
+                        </ion-label>
+                        <ion-button class="ilias-list-action-button" round color="light" slot="end" (click)="deleteAllFilesPrompt()">
+                            <ion-icon name="trash" color="primary"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </ion-item-group>
                 <ion-col>
                     <ion-button expand="block" (click)="saveSettings()" >{{ 'Save' | translate:[] }}
                     </ion-button>
