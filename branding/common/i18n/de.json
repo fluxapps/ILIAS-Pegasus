@@ -168,7 +168,9 @@
         "instructions":"Wähle deine Installation.",
         "login": "Anmelden",
         "offline_title": "Keine Internetverbindung",
-        "offline_content": "Die Anmeldung kann nur mit einer Internetverbindung durchgeführt werden."
+        "offline_content": "Die Anmeldung kann nur mit einer Internetverbindung durchgeführt werden.",
+        "ok": "Auswählen",
+        "dismiss": "Abbrechen"
     },
     "object_type": {
         "crs" : "Kurs",

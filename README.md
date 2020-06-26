@@ -2,30 +2,45 @@
 
 ILIAS Pegasus is an app which is running on Android or iOS and integrate functions
 of the ILIAS learn management system. For example viewing courses or personal news.
-Furthermore it is possible to make files offline available to read them while offline.
+It's main focus is to make files offline available to read them while offline. Check https://ilias-pegasus.de for more information.
 
 [![Build status](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_apis/build/status/ILIAS-Pegasus-CI)](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_build/latest?definitionId=1)
 
 ## Getting Started
-These instructions will get the ILIAS Pegasus app up and running.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-The following tools are needed to build and deploy the app.
+In order to use the App your ILIAS needs to be configured first. You need 2 Plugins (also Open Source) to make your ILIAS ready for the Pegasus App:
 
-Ionic CLI:
+Follow the instructions here: https://github.com/studer-raimann/PegasusHelper
+
+The following tools are needed to build and deploy the app. 
+
+#### Ionic CLI:
 ```bash
 npm install -g ionic
 ```
 
-Cordova CLI:
+#### Cordova CLI:
 ```bash
 npm install -g cordova
 ```
 
+#### Xcode:
+Install xcode over the apple app store.
+
+#### Android Studio:
+Install Android Studio from google.
+<https://developer.android.com/studio/index.html>
+
+#### A MapBox (OpenStreetMap) API-Key
+Check here:
+https://docs.mapbox.com/help/how-mapbox-works/access-tokens/
+
+
 #### iOS Development
 A few additional tools are needed to run the app on an iOS device or emulator.
 
-Install xcode over the apple app store.
 
 Install the development cli tools with 
 ```bash
@@ -50,12 +65,16 @@ Install Android Studio from google.
 Install the latest Android SDK with the Android Studio Android SDK manager.
 Add the root of your Android SDK to the environment variable $ANDROID_HOME.
 
-Install the Java 8 SDK from oracle. Java 9 and 10 are not supported at the moment.
-<http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
-Add the path to your java runtime to the $JAVA_HOME environment variable.
+Install the Java SDK from oracle. 
 
-### Install Dependencies
+### Clone the project
 Clone the project to your workspace.
+
+```bash
+git clone https://github.com/studer-raimann/ILIAS-Pegasus.git
+cd ILIAS-Pegasus
+```
+### Install Dependencies
 Change into the cloned project and install all dependencies.
 This could take several minutes.
 ```bash
@@ -64,19 +83,33 @@ npm install
 
 ### Configure your ILIAS Installation
 
-Copy and edit the template of s[server.config.json.template](../blob/master/branding/common/config/server.config.json.template)  and add the development ILIAS
+Copy and edit the template of [server.config.json.template](../blob/master/branding/common/config/server.config.json.template)  and add the parameters for your  ILIAS
 installation. 
 Save you configurationfile as server.config.json in branding/common/config. 
-Add you Installation id to the config.json file in your brand (eg. branding/brands/vanilla/config.json)
+
+Add you Installation id to the config.json file in your brand (eg. branding/brands/vanilla/config.json).
+
+### Add you mapbox key to environement
+
+Copy and edit the template of .env.exmaple and add your Mapbox key. Add your key and save your environementfile as ".env" in the root directory.
+````
+MAPBOX_API_KEY="AddYourKeyHere"
+PRODUCTION="true"
+````
 
 ### Install Brand
+```bash
+npm run setbrand -- --brand="vanilla"
+```
+or
+
 [Choose your brand, following the README.md in the branding folder.](../blob/master/branding/README.md)
 
 ### Install Platforms
 
 Install the both platforms.
 ```bash
-ionic cordova prepare
+npx ionic cordova prepare
 ```
 
 
@@ -84,12 +117,24 @@ ionic cordova prepare
 
 The iOS app can be build with the following command.
 ```bash
-ionic cordova build ios
+npx ionic cordova build ios
 ```
 
 The Android can be build with the same command.
 ```bash
-ionic cordova build android
+npx ionic cordova build android
+```
+
+### Run in Simulator/Emulator (with livereload and console output)
+
+The iOS app can be build with the following command.
+```bash
+npx ionic cordova emulate ios -lcs
+```
+
+The Android can be build with the same command.
+```bash
+npx ionic cordova emulate android -lcs
 ```
 
 ## Run the Tests
@@ -115,60 +160,33 @@ npm run karma
 
 ## Deployment
 
-### Configuration
-Add only the productive ILIAS installations which are ready for production use.
-
-Move the template file if not already done.
-```bash
-mv src/assets/config.json.template src/assets/config.json
-```
-
-**Caution!** Never reuse a installation id, use a new one instead.
 
 ### iOS
 
 The iOS app can be build with the following command.
 ```bash
-ionic cordova build ios --release --prod
+npx ionic cordova build ios  --prod
 ```
+Open your Xcode Workspace (the YourAppName.xcworkspace in ILIAS-Pegasus/Platforms/ios) and set Certifacates, your Team ID and Release it to the AppStore.
+
+Check here for information about Certificates: https://developer.apple.com/support/certificates/
+
+And Check the ionic docs: https://ionicframework.com/docs/deployment/app-store
+
+As soon as you have all your profiles create an Archive in Xcode -> Product -> Archive and upload it to the Appstore.
+
+
 
 ### Android
 
-There is a separate build script `./tools/build-android.sh` which can be
-used to build the Android release version. Execute the script in the root of the app
-project. Only Linux and macOS are currently supported by the build script.
 ```bash
-./tools/build-android.sh
+npx ionic cordova build android --prod --release
 ```
 
-There is a range of environment variables which can be used to run the Android build scripts.
-- **ANDROID_BUILD_TOOLS_VERSION** - Set the Android tools version which should be used for example "27.0.3"
-- **KEYSTORE_PASSWORD** - The password of the keystore which is used to sign the app, the script will ask for a password if empty.
-- **KEY_STORE** - The path to the keystore which should be used to sign the app.
-- **OUTPUT_DIR** - The directory which will contain the signed build of the Android app.
-- **PROJECT_ROOT** - The project root of the project which should be built, defaults to current working directory.
+Create a key, sign your application and upload it following the ionic guide: https://ionicframework.com/docs/deployment/play-store
 
-Example with options.
-```bash
-ANDROID_BUILD_TOOLS_VERSION="27.0.3" \  
-KEY_STORE="mystore.jks" \ 
-OUTPUT_DIR="./bin" \ 
-./tools/build-android.sh
-```
+<!-- ### Troubleshoting -->
 
-### Troubleshoting
-#### Cordova Plugin GoogleMaps
-In order to use Learnplaces (Lernorte) you need the google map plugin. Use Version 2.4.6.
-If allready installed another version remove the plugin:
-```bash
-ionic cordova plugin remove cordova-plugin-googlemaps
-```
-Add it using your API Key:
-```bash
-ionic cordova plugin add cordova-plugin-googlemaps@2.4.6 \
-    --variable API_KEY_FOR_ANDROID="YOUR API KEY ANDROID GOES HERE" \
-    --variable API_KEY_FOR_IOS= "YOUR API KEY IOS GOES HERE"
-```
 
 
 ### Build With
@@ -181,12 +199,34 @@ ionic cordova plugin add cordova-plugin-googlemaps@2.4.6 \
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [releases on this repository](https://github.com/studer-raimann/ILIAS-Pegasus/releases). 
 
 ## Authors
-
+This is an OpenSource project by studer + raimann ag, (https://studer-raimann.ch)
 See the list of [contributors](https://github.com/studer-raimann/ILIAS-Pegasus/graphs/contributors) who participated in this project.
+
+### Contact
+[info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
+<https://studer-raimann.ch> 
+
+[support@ilias-pegasus.de](mailto://support@ilias-pegasus.de)  
+<https://ilias-pegasus.de> 
 
 ## License
 
-This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details.
+
+
+**_TL;DR_*** Here's what the license entails:
+
+```markdown
+1. Anyone can copy, modify and distribute this software.
+2. You have to include the license and copyright notice with each and every distribution.
+3. You can use this software privately.
+4. You can use this software for commercial purposes.
+5. If you dare build your business solely from this code, you risk open-sourcing the whole code base.
+6. If you modify it, you have to indicate changes made to the code.
+7. Any modifications of this code base MUST be distributed with the same license, GPLv3.
+8. This software is provided without warranty.
+9. The software author or license can not be held liable for any damages inflicted by the software.
+```
 
 ## Acknowledgments
 We would also like to thank all the authors of the plugins and libraries we used!
@@ -195,6 +235,11 @@ Please check the [package.json](package.json) or run the command bellow to see a
 npm la --depth 0
 ```
 
-### Contact
-[info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
-<https://studer-raimann.ch> 
+
+## ILIAS Plugin SLA 
+
+We love and live the philosophy of Open Source Software! Most of our developments, which we develop on behalf of customers or on our own account, are publicly available free of charge to all interested parties at https://github.com/studer-raimann.
+
+Do you use one of our plugins professionally? Secure the timely availability of this plugin for the upcoming ILIAS versions via SLA. Please inform yourself under https://studer-raimann.ch/produkte/ilias-plugins/plugin-sla.
+
+Please note that we only guarantee support and release maintenance for institutions that sign a SLA.

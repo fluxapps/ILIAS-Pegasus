@@ -18,6 +18,7 @@ server.config20*
 .vscode/
 npm-debug.log*
 server.config.json
+server.config20*
 
 .idea/
 .sourcemaps/

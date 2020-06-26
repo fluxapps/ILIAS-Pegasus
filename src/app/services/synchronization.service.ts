@@ -202,10 +202,10 @@ export class SynchronizationService {
             await ilObj.setIsFavorite(2);
             try {
                 await this.loadOfflineObjectRecursive(ilObj);
-                await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
             } catch (e) {
                 console.warn(`sync resulted in an error ${e.message}`);
             }
+            await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
             // the user may has unmarked the object in the mean time
             if(ilObj.isFavorite) await ilObj.setIsFavorite(1);
             else ilObj.removeFromFavorites(this.fileService);

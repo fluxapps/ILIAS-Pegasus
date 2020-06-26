@@ -6,6 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.2] 2020-05-26
+
+
+### Fixed 🦀
+- Linked Objects (globe not adjusted)
+- Favorite star not adjusted
+- News: Message if no news
+- Privacy Ppolicy link not readable.
+
+### Removed 👎
+- Temporarily removed Darkmode from vanilla brand (-> conflict with dynamic theming)
+
+## [4.0.1] 2020-05-13
+
+### Changed 🚀
+- Removed old WebView using WK WebView only (see config.xml)
+- Update InAppBrowser and it's dependecies.
+
+### Fixed 🦀
+- Some minor Visuale issues in obeject list
+
 ## [4.0.0] - 2019-11-05
 ### Added 👍
 - MapBox support for "Learnplaces"
@@ -20,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump up to Ionic 4
 
 ### Fixed 🦀
--Crash on 
+-Crash on Learnplace Open.
 
 ### Removed 👎
 - GoogleMaps Support

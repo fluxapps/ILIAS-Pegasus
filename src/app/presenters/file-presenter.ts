@@ -20,13 +20,8 @@ export class FileObjectPresenter extends GenericILIASObjectPresenter {
     details(): Promise<Array<{label: string; value: string}>> {
         return super.details().then(details => {
             const metaData = this.iliasObject.data;
-            details.push({label: "details.availability", value: this.getLanguageVariableForLocalFile(), translate: true});
             details.push({label: "details.size", value: this.getFormattedSize()});
-            details.push({label: "details.version", value: metaData.fileVersion});
             details.push({label: "details.remote_version_date", value: metaData.fileVersionDate});
-            if (metaData.hasOwnProperty("fileVersionDateLocal") && metaData.fileVersionDateLocal) {
-                details.push({label: "details.local_version_date", value: metaData.fileVersionDateLocal});
-            }
             return Promise.resolve(details);
         });
     }

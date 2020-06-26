@@ -4,9 +4,8 @@
 //
 // NOTE: @import "coloring"; is called before this file is imported
 
-@import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
 @import "icons";
-@import url("https://fonts.googleapis.com/css?family=Roboto&display=swa");
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,600,800');
 
 ion-icon {
     &[class*="custom-"] {
@@ -17,86 +16,32 @@ ion-icon {
       width: 1em;
       height: 1em;
     }
-  
-    &[class*="custom-info"] {
-      mask-image: url(../assets/icon/info.svg);
-    }
-    &[class*="custom-qrcode"] {
-      mask-image: url(../assets/qrcode.svg);
-    }
-    &[class*="custom-spades"] {
-      mask-image: url(../assets/spades.svg);
-    }
-  
   }
 
-.content, .ion-header, ion-navbar {
-    font-family: 'Roboto', sans-serif !important;
+.content, .ion-header, ion-toolbar {
+    font-family: 'Raleway', sans-serif !important;
 }
 
-.ilias-object-list {
-    ion-item {
-        min-height: 7rem;
-    }
-    &.list-md > .item-block:first-child {
-        border: none;
-    }
-    &.list-md > .item-block:last-child {
-        border: none;
-    }
-    &.list-ios > .item-block:first-child {
-        border: none;
-    }
-    &.list-ios > .item-block:last-child {
-        border: none;
-    }
+.top-header{
+  border-width: 0px !important;
+  --padding-top: 0px !important;
+    --padding-start: 0px !important;
+    --padding-right: 0px !important;
+    --padding-end: 0px !important;
 }
 
-.object-flags {
-    padding-top: 5px;
+
+// Typogrtaphie
+
+h1{
+  font-weight: 800;
 }
 
-.ilias-list-action-button {
-    min-width: 35px;
-    min-height: 35px;
-    ion-icon {
-        font-size: 2.4rem;
-    }
+ion-tab-bar{
+  --color-selected: #000 !important;
 }
 
-ion-spinner.centered {
-    display: block;
-    margin: auto;
-}
-.card-md div.centered {
-    text-align: center;
-}
+// Animations
 
-.small-date {
-    font-size: small;
-    padding-left: 5px;
-}
 
-.modal-fullscreen {
-    .modal-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
-}
 
-.ios .modal-fullscreen {
-    .modal-wrapper {
-        // top: 26px;
-    }
-}
-
-#menu-logo {
-    right: -28%;
-    top: 75%;
-    width: 80%;
-    position: absolute;
-}

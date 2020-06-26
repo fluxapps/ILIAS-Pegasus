@@ -50,7 +50,8 @@
 				<ion-slide class="step-three">
 					<img src="assets/icon/menu_lock.svg">
 					<h1>{{ 'onboarding.title3' | translate:[]}}</h1>
-					<p class="central-text ion-padding">
+					<ion-text>
+						<p class="central-text ion-padding">
 							{{ 'onboarding.datasecurity1' | translate:[]}}
 							<a class="link" href="https://www.ilias-pegasus.de/datenschutz/">{{ 'onboarding.datasecurity2' | translate:[]}}</a>
 						</p>
@@ -60,39 +61,9 @@
 						<a class="link" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
 						<p class=central-text>
 						</p>
+					</ion-text>
+					
 					<ion-button color="light" shape="round" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</ion-button>
 				</ion-slide>
 			</ion-slides>
 </ion-content>
-
-
-
-<!-- 
-<ion-content padding color=nobg-w class=page_onboarding>
-	<ion-slides #slides class=white-text>
-		
-
-		<ion-slide class="bordeaux-gradient" padding>
-			<ion-header color="nobg-w" no-shadow no-border>
-				<ion-buttons end>
-					<ion-button clear color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</ion-button>
-				</ion-buttons>
-			</ion-header>
-			<img src="assets/icon/menu_lock.svg" class="lock">
-			<h1 class=huge-header text-center></h1>
-			<p class=central-text text-center>
-				{{ 'onboarding.datasecurity1' | translate:[]}}
-				<a href="https://www.ilias-pegasus.de/datenschutz/">{{ 'onboarding.datasecurity2' | translate:[]}}</a>
-			</p>
-			<p class=central-text text-center>
-				{{ 'onboarding.datasecurity3' | translate:[]}}
-			</p>
-			<a color="white" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
-			<p class=central-text>
-			</p>
-			<ion-button round  color="white" (click)="dismiss()">{{ 'onboarding.start' | translate:[]}}</ion-button>
-		</ion-slide>
-
-
-	</ion-slides>
-</ion-content> -->

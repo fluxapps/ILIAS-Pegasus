@@ -7,8 +7,8 @@
       "packageType": "development"
     },
     "release": {
-      "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "3a547757-0a57-4b9a-9327-c255bcda2afb",
+      "codeSignIdentity": "Apple Distribution",
+      "provisioningProfile": "ed4887a0-77cc-41cf-b9e4-1c78e36155b9",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "app-store"
     }
