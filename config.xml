@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget android-versionCode="2020040301" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20200403.1" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="2020052601" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20200526.1" version="4.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
@@ -114,6 +114,7 @@
     <preference name="SplashScreen" value="screen"/>
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine"/>
     <preference name="SplashShowOnlyFirstTime" value="false"/>
+    <preference name="WKWebViewOnly" value="true"/>
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar"/>
     </feature>
@@ -135,8 +136,4 @@
     <plugin name="cordova-plugin-file-opener2" spec="2.2.0">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="28.+"/>
     </plugin>
-    <allow-navigation href="http://192.168.99.79:8100" sessionid="11c2f33c"/>
-    <allow-navigation href="*"/>
-    <allow-intent href="http://*/*"/>
-    <allow-intent href="https://*/*"/>
 </widget>

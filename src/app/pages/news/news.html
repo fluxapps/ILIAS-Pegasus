@@ -38,6 +38,11 @@
                     </ion-card-content>
 
         </ion-card>
+        <ion-card *ngIf="newsPresenters === undefined">
+            <ion-card-content>
+                <p class="info-text">{{ 'new-objects.no_new_items' | translate:[] }}</p>
+        </ion-card-content>
+        </ion-card>
     </ion-list>
 
 </ion-content>
