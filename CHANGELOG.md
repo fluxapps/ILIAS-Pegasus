@@ -6,8 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [4.0.2] 2020-05-26
+## [4.0.4] 
+### Added
+- Support for ILIAS Universität zu Köln
+- Mergerd PR #1, thanks to @mhilbert! 
+- Mergerd PR #2, thanks to @fneumann!  
 
+## [4.0.3] 
+### Added
+- Support for ILIAS Dresden
+
+## [4.0.2] 2020-05-26
+### Added
+- Support for ILIAS BIWE
+- Support for ILIAS BBS III
 
 ### Fixed 🦀
 - Linked Objects (globe not adjusted)

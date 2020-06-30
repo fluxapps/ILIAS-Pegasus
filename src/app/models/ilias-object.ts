@@ -388,6 +388,7 @@ export class ILIASObject extends ActiveRecord {
         if (response.rows.length == 0) {
           const object: ILIASObject = new ILIASObject();
           object.userId = userId;
+          object.refId = refId;
           return Promise.resolve(object);
         } else if(response.rows.length == 1) {
           return ILIASObject.find(response.rows.item(0).id);
