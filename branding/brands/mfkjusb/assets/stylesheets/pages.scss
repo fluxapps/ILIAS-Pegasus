@@ -44,13 +44,13 @@
         background-size: 100vw ;
         background-repeat: no-repeat;
         // background-color: map_get($colors, primary);
-    
+
 
     ion-grid {
         // margin-top: 10vh;
         width: 100%;
       }
-    
+
 
     ion-card-header {
         font-weight: 800 !important;
@@ -68,7 +68,7 @@
 
         margin: auto;
         display: block;
-
+        pointer-events: none;
     }
 
     .tile{
@@ -88,8 +88,8 @@
 
 
     .tile-fav{
-        // background-image: linear-gradient(to top left, #ff8e2c, #e66e1e); 
-        border-bottom: 1px solid white; 
+        // background-image: linear-gradient(to top left, #ff8e2c, #e66e1e);
+        border-bottom: 1px solid white;
 
     }
 
@@ -109,6 +109,11 @@
     background-size: 100vmin ;
     background-repeat: no-repeat;
     // background-color: map_get($colors, primary);
+
+    ion-list{
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
     .privacy-iq{
         display: none
@@ -209,6 +214,7 @@ ion-content.page_settings {
     .login-bottom-image{
         // display: none;
         width: 30vmin;
+        display: none;
     }
 
     .styled-bottom-row{
@@ -219,7 +225,7 @@ ion-content.page_settings {
     }
     .login-top-image{
         // display: none;
-        
+
     }
 
     // a, img {
@@ -280,6 +286,10 @@ ion-content.page_settings {
 
     .offline-image{
         height: 70px;
+    }
+
+    .loading-text {
+        padding: 10px 0 10px 10px;
     }
 
 }
@@ -503,6 +513,12 @@ ion-content.page_settings {
 
     .loading-subtitle {
         color: white;
+    }
+
+    ion-progress-bar
+    {
+        --progress-background: var(--ion-color-primary-contrast);
+        --buffer-background: var(--ion-color-primary-contrast);
     }
 
 }

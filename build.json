@@ -4,19 +4,21 @@
       "codeSignIdentity": "iPhone Developer",
       "provisioningProfile": "201809_Pegasus",
       "developmentTeam": "ZQ66BZ3DPL",
-      "buildFlag": [
-        "-UseModernBuildSystem=0"
-      ],
       "packageType": "development"
     },
     "release": {
-      "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "ILIAS offline Distribution",
+      "codeSignIdentity": "Apple Distribution",
+      "provisioningProfile": "ed4887a0-77cc-41cf-b9e4-1c78e36155b9",
       "developmentTeam": "ZQ66BZ3DPL",
-      "buildFlag": [
-        "-UseModernBuildSystem=0"
-      ],
       "packageType": "app-store"
     }
-  }
+  },
+    "android": {
+        "debug": {
+            "packageType": "apk"
+        },
+        "release": {
+            "packageType": "bundle"
+        }
+    }
 }

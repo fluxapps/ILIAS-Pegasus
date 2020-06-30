@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1010 1800" style="enable-background:new 0 0 1010 1800;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;}
+	.st1{fill:#004990;}
+	.st2{fill:#118ACB;}
+	.st3{fill:url(#Neues_Musterfeld_2);}
+	.st4{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st5{fill:#FFFFFF;}
+</style>
+<pattern  width="1006.1" height="1006.4" patternUnits="userSpaceOnUse" id="Neues_Musterfeld_2" viewBox="0 -1006.4 1006.1 1006.4" style="overflow:visible;">
+	<g>
+		<rect y="-1006.4" class="st0" width="1006.1" height="1006.4"/>
+		<rect x="0.3" y="-1006.4" class="st1" width="503.2" height="503.2"/>
+		<rect x="502.9" y="-1006.4" class="st2" width="503.2" height="503.2"/>
+		
+			<rect x="502.7" y="-503.2" transform="matrix(-1 -1.224647e-16 1.224647e-16 -1 1508.51 -503.1889)" class="st1" width="503.2" height="503.2"/>
+		
+			<rect y="-503.2" transform="matrix(-1 -1.224647e-16 1.224647e-16 -1 503.1889 -503.1889)" class="st2" width="503.2" height="503.2"/>
+	</g>
+</pattern>
+<g>
+	<rect x="0.5" y="0.5" class="st3" width="1009" height="1799"/>
+	<path d="M1009,1v1798H1V1H1009 M1010,0H0v1800h1010V0L1010,0z"/>
+</g>
+<g>
+	<rect x="502.9" y="352" class="st4" width="4.5" height="37.7"/>
+	<rect x="502.9" y="615.6" class="st4" width="4.5" height="37.7"/>
+	<g>
+		<rect x="618.1" y="500.4" class="st5" width="37.7" height="4.5"/>
+	</g>
+	<rect x="354.6" y="500.4" class="st4" width="37.7" height="4.5"/>
+</g>
+<g>
+	<path class="st5" d="M521.2,426.8c30,6.3,53.5,30,59.8,60l3.7,1.2c-6-32.9-31.9-58.8-64.7-64.9L521.2,426.8z"/>
+	<path class="st5" d="M519.8,582.2c32.8-6,58.7-31.9,64.8-64.8l-3.7,1.2c-6.3,30-29.9,53.6-59.9,59.8L519.8,582.2z"/>
+	<polygon class="st5" points="600.8,504.6 525.1,521 505.2,502.6 607.9,502.6 530,478.4 507.2,406.8 523.5,482.7 505.2,502.6 
+		505.2,399.7 481,477.7 409.5,500.6 485.3,484.3 505.2,502.6 402.4,502.6 480.3,526.8 503.2,598.4 486.8,522.5 505.2,502.6 
+		505.2,605.5 529.3,527.5 	"/>
+	<path class="st5" d="M489.2,578.4c-30-6.3-53.5-30-59.8-60l-3.7-1.2c6,32.9,31.9,58.8,64.7,64.9L489.2,578.4z"/>
+	<path class="st5" d="M429.5,486.6c6.3-30,29.9-53.6,59.9-59.8l1.2-3.7c-32.8,6-58.7,31.9-64.8,64.8L429.5,486.6z"/>
+</g>
+</svg>

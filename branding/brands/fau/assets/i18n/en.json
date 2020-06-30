@@ -1,0 +1,28 @@
+{
+    "actions": {
+        "view_in_ilias": "View in StudOn"
+    },
+    "details" : {
+        "remote_version_date": "Date of file in StudOn"
+    },
+    "login": {
+        "title": "Login",
+        "hello":"Welcome to StudOn!",
+        "instructions":"Choose your installation"
+    },
+    "object_type": {
+        "catr": "Category Reference",
+        "cat": "Category"
+    },
+    "fallback": {
+        "browser": "You are leaving the StudOn App ",
+         "synchronization_subtitle": "Please wait a few seconds while we synchronize your StudOn-account."
+    },
+    "onboarding": {
+      "title1": "With the help of this app you can:",
+        "function1": "access your StudOn courses on your smartphone.",
+        "title2": "An App for StudOn",
+        "concept1": "This app is a customized version if the ILIAS Pegasus App.",
+        "concept2": "It connects to the StudOn E-Larning Platform of the Friedrich-Alexander-Universität Erlangen-Nürnberg."
+    }
+}

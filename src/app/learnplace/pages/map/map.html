@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #content padding class="page_learnplace_map">
+
+  <div  *ngIf="map?.visible" #map id="map">
+  </div>
+
+  <div *ngIf="!map?.visible" padding>
+
+    <h1 text-center>{{map?.getDescriptionLangVar() | translate}}</h1>
+
+  </div>
+
+</ion-content>

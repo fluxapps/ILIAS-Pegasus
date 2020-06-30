@@ -1,0 +1,8 @@
+{
+  "ilias_installation_ids": [7],
+  "projectConfig": {
+    "id": "ch.studerraimann.ilias.natojadl",
+    "name": "NATO JADL",
+    "description": "Download, sync and store ILIAS-files on your device"
+  }
+}
