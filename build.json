@@ -8,7 +8,7 @@
     },
     "release": {
       "codeSignIdentity": "Apple Distribution",
-      "provisioningProfile": "ed4887a0-77cc-41cf-b9e4-1c78e36155b9",
+      "provisioningProfile": "dc085546-e0ba-4090-b51c-3ae68a7f1d70",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "app-store"
     }
