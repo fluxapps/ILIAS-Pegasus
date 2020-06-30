@@ -17,6 +17,7 @@ log.txt
 .vscode/
 npm-debug.log*
 server.config.json
+server.config20*
 
 .idea/
 .sourcemaps/
@@ -26,16 +27,19 @@ server.config.json
 coverage/
 dist/
 node_modules/
+out-tsc/
+e2e/
 tmp/
 temp/
-hooks/
+./hooks/
 platforms/
 plugins/
 plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
 src/assets/*
-resources
+resources/
+!branding/brands/*/resources/
 
 
 bin/android-*-unsigned.apk
@@ -51,6 +55,10 @@ branding/common/config/server.config.json
 src/assets/testinstallation_config.json
 build*.sh
 iq_config.xml
-
+.env
+src/environments/environment.ts
 bin
 simulation
+.ionic/
+./test/
+./coverage/

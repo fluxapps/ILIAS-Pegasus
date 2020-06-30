@@ -23,6 +23,8 @@
     "close": "Schließen",
     "today": "Heute",
     "yesterday": "Gestern",
+    "repository": "Magazin",
+    "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
         "content" : "Inhalt",
@@ -92,7 +94,7 @@
         "mark_as_favorite": "Als Favoriten markieren",
         "download": "Download / Aktualisieren",
         "mark_as_offline_available": "Als offline verfügbar markieren",
-        "unmark_as_offline_available": "Nicht mehr synchron halten",
+        "unmark_as_offline_available": "Nicht mehr Synchron halten",
         "synchronize": "Synchronisieren",
         "remove_local_files": "Lokale Dateien entfernen",
         "removed_local_files": "Lokale Dateien entfernt",
@@ -145,20 +147,30 @@
         "title": "Synchronisation",
         "sync_incomplete": "Etwas ist schiefgelaufen, die Synchronisation ist unter Umständen unvollständig.",
         "stopped_no_wlan": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da Sie zur Zeit nicht mit dem WLAN verbunden sind.",
-        "files_too_big": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da der eingestellte max. Speicherplatz überschritten wird. Erhöhen Sie die Quota oder löschen Sie einige Dateien.",
+        "files_too_big": "Neue oder aktualisierte Dateien können nicht heruntergeladen werden, da der eingestellte max. Speicherplatz überschritten wird. Erhöhen Sie die Quota oder Löschen Sie einige Dateien.",
         "object_synced": "{{title}} wurde erfolgreich synchronisiert.",
         "success": "Synchronisation erfolgreich abgeschlossen.",
         "download": "Download",
         "sync_finished_text": "Die Synchronisation ist abgeschlossen. Von insgesamt {{totalItems}} Dateien wurden {{updated}} aktualisiert oder neu heruntergeladen und {{uptodate}} Dateien sind noch aktuell und müssen nicht erneut heruntergeladen werden.",
         "some_files_were_too_big": "Einige Dateien waren zu groß und wurden nicht heruntergeladen. Erhöhen Sie die max. Dateigröße in den Einstellungen oder laden Sie die Datei manuell herunter.",
         "no_more_space": "Für einige Dateien ist nicht mehr genügend Platz reserviert, erhöhen Sie den verfügbaren Platz in den Einstellungen oder löschen Sie einige Dateien.",
-        "pull_to_sync": "zum Aktualisieren herunterziehen"
+        "pull_to_sync": "zum Aktualisieren herunterziehen",
+        "remove_from_favorites": "Von Favoriten entfernen",
+        "load_now": "Jetzt laden",
+        "ok": "Ok",
+        "open_downloads_title": "Offene Downloads",
+        "open_downloads_text_sng": "Das Laden des folgenden Objekts konnte nicht abgeschlossen werden:",
+        "open_downloads_text_plr": "Das Laden der folgenden NUM Objekte konnte nicht abgeschlossen werden:"
     },
     "login": {
         "title": "Login",
         "hello":"Willkommen zu ILIAS Pegasus!",
         "instructions":"Wähle deine Installation.",
-        "login": "Anmelden"
+        "login": "Anmelden",
+        "offline_title": "Keine Internetverbindung",
+        "offline_content": "Die Anmeldung kann nur mit einer Internetverbindung durchgeführt werden.",
+        "ok": "Auswählen",
+        "dismiss": "Abbrechen"
     },
     "object_type": {
         "crs" : "Kurs",
@@ -240,12 +252,24 @@
         "browser_ok": "OK, auf zum Browser!",
         "browser_no": "Nein. Zurück!",
         "loading": "Lernort wird geladen",
-        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl große Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern.",
-        "synchronization": "Hallo!",
         "synchronization_subtitle": "Bitte warte einen Moment, während wir dein ILIAS-Profil vorbereiten. Wenn Du in vielen Kursen eingeschrieben bist, kann das einige Minuten dauern.",
+        "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl grosse Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern.",
+        "synchronization": "Bitte warte einien Moment während wir mit ILIAS synchronisieren ...",
         "location": {
             "activate": "Standort aktivieren",
             "back": "Nope, ich will zurück"
+        },
+        "generic": {
+            "loading": "Ladevorgang",
+            "loading_subtitle": "Hab etwas Geduld. Das Laden des Inhaltes nimmt etwas Zeit in Anspruch."
+        },
+        "learnplace": {
+            "loading": "Lernort",
+            "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl große Dateien in diesem Lernort. Daher kann dies mehrere Minuten dauern."
+        },
+        "learningmodule": {
+            "loading": "Lernmodul",
+            "loading_subtitle": "Hab etwas Geduld. Es befinden sich wohl große Dateien in diesem Lernmodul. Daher kann dies mehrere Minuten dauern."
         }
       },
       "onboarding": {

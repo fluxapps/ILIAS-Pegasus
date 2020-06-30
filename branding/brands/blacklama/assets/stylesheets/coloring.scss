@@ -1,0 +1,144 @@
+// CSS coloring for the theme
+// --------------------------------------------------
+
+//Import Font
+
+
+
+
+:root {
+    // whether the color-values are synchronized with the setting in the pegasus-helper-plugin
+    // set to "true" or "false"
+    --theme-from-plugin: "false";
+
+    // font
+    --ion-font-family:  "Raleway", sans-serif;
+
+    // Custom Tab Colorr
+
+    ion-tab-button.tab-selected {
+        ion-icon, ion-label {
+          color: var(--ion-color-secondary) !important;
+          --ion-color-base: var(--ion-color-secondary) !important;
+        }
+      }
+
+      ion-tab-button {
+        ion-icon, ion-label {
+          color: var(--ion-color-medium) !important;
+          --ion-color-base: var(--ion-color-medium) !important;
+        }
+      }
+
+
+    // colors
+    --ion-item-border-color: transparent;
+
+    --ion-color-primary: #000000;
+    --ion-color-primary-rgb: 232,150,11;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 0,0,0;
+    --ion-color-primary-shade: #000000;
+    --ion-color-primary-tint: #eaa123;
+
+    --ion-color-secondary: #e8960b;
+    --ion-color-secondary-rgb: 2,2,2;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255,255,255;
+    --ion-color-secondary-shade: #020202;
+    --ion-color-secondary-tint: #1b1b1b;
+
+    --ion-color-tertiary: #ffffff;
+    --ion-color-tertiary-rgb: 255,255,255;
+    --ion-color-tertiary-contrast: #000000;
+    --ion-color-tertiary-contrast-rgb: 0,0,0;
+    --ion-color-tertiary-shade: #e0e0e0;
+    --ion-color-tertiary-tint: #ffffff;
+
+    --ion-color-success: #10dc60;
+    --ion-color-success-rgb: 16,220,96;
+    --ion-color-success-contrast: #ffffff;
+    --ion-color-success-contrast-rgb: 255,255,255;
+    --ion-color-success-shade: #0ec254;
+    --ion-color-success-tint: #28e070;
+
+    --ion-color-warning: #ffce00;
+    --ion-color-warning-rgb: 255,206,0;
+    --ion-color-warning-contrast: #ffffff;
+    --ion-color-warning-contrast-rgb: 255,255,255;
+    --ion-color-warning-shade: #e0b500;
+    --ion-color-warning-tint: #ffd31a;
+
+    --ion-color-danger: #f04141;
+    --ion-color-danger-rgb: 245,61,61;
+    --ion-color-danger-contrast: #ffffff;
+    --ion-color-danger-contrast-rgb: 255,255,255;
+    --ion-color-danger-shade: #d33939;
+    --ion-color-danger-tint: #f25454;
+
+    --ion-color-dark: #000000;
+    --ion-color-dark-rgb: 34,34,34;
+    --ion-color-dark-contrast: #ffffff;
+    --ion-color-dark-contrast-rgb: 255,255,255;
+    --ion-color-dark-shade: #1e2023;
+    --ion-color-dark-tint: #383a3e;
+
+    --ion-color-medium: #989aa2;
+    --ion-color-medium-rgb: 152,154,162;
+    --ion-color-medium-contrast: #ffffff;
+    --ion-color-medium-contrast-rgb: 255,255,255;
+    --ion-color-medium-shade: #86888f;
+    --ion-color-medium-tint: #a2a4ab;
+
+    --ion-color-light: #f4f5f8;
+    --ion-color-light-rgb: 244,244,244;
+    --ion-color-light-contrast: #000000;
+    --ion-color-light-contrast-rgb: 0,0,0;
+    --ion-color-light-shade: #d7d8da;
+    --ion-color-light-tint: #f5f6f9;
+
+
+    //tabbar colors
+
+    ion-tabs{
+        --color: #1c1c21;                     // already exists
+        --ion-tabbar-color: rgba(var(--ion-text-color-rgb), 0.4);    // suggested
+        --ion-tabbar-color-selected: var(--ion-text-color);          // suggested
+     }
+
+
+  }
+
+// gradients
+
+$gradient-col1:  #003c66;
+$gradient-col2: #003c66;
+
+.primary-gradient {
+    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
+    color:white !important;
+    // filter: blur(5px);
+    // opacity: 0.5;
+}
+
+.primary-gradient-inverted {
+    background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
+    color:white;
+}
+
+// MARK: Define Color Variables
+
+.ion-color-transparent {
+  --ion-color-base: var(--ion-color-transparent);
+  --ion-color-base-rgb: var(--ion-color-transparent-rgb);
+  --ion-color-contrast: var(--ion-color-transparent-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-transparent-contrast-rgb);
+  --ion-color-shade: var(--ion-color-transparent-shade);
+  --ion-color-tint: var(--ion-color-transparent-tint);
+}
+
+// // misc
+
+// .white-text {
+//     color: white;
+// }

@@ -153,7 +153,11 @@
         "hello":"Benvenuto/a in ILIAS Pegasus!",
         "instructions":"Scegli la tua organizzazione",
         "instructions2":"Scegli la tua organizzazione",
-        "login": "Login"
+        "login": "Login",
+        "offline_title": "Nessuna connessione a Internet",
+        "offline_content": "Per poter effettuare il login, il dispositivo deve essere collegato a Internet.",
+        "ok": "Selezionare",
+        "dismiss": "Annulla"
     },
     "object_type": {
         "crs" : "Corso",
@@ -227,10 +231,20 @@
         "browser": "Stai uscendo dall'app ILIAS Pegasus",
         "browser_ok": "Ok andiamo!",
         "browser_no": "Senza ritorno!",
-        "loading": "luogo di apprendimento",
-        "loading_subtitle": "Aspetta un attimo. Se il punto di apprendimento contiene molti contenuti, potrebbe essere necessario del tempo per il download.",
         "synchronization": "<it>Welcome!</it>",
-        "synchronization_subtitle": "<it>Please wait a few seconds while we synchronize your ILIAS-account.</it>"
+        "synchronization_subtitle": "<it>Please wait a few seconds while we synchronize your ILIAS-account.</it>",
+        "generic": {
+            "loading": "Loading",
+            "loading_subtitle": "Hang on a minute. It may take some time to download the content."
+        },
+        "learnplace": {
+            "loading": "luogo di apprendimento",
+            "loading_subtitle": "Aspetta un attimo. Se il punto di apprendimento contiene molti contenuti, potrebbe essere necessario del tempo per il download."
+        },
+        "learningmodule": {
+            "loading": "Learning Module",
+            "loading_subtitle": "Hang on a minute. If the learning module contains a lot of content, it may take some time to download."
+        }
     },
     "onboarding": {
         "title1": "Whith the help of ILIAS Pegasus you can:",

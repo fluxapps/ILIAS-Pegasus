@@ -1,8 +1,8 @@
 {
-  "name": "ILIAS-App",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "ionic-angular",
-  "id": "ch.studerraimann.ilias.offline"
+    "name": "ilias-pegasus",
+    "integrations": {
+        "cordova": {}
+    },
+    "type": "angular",
+    "telemetry": false
 }

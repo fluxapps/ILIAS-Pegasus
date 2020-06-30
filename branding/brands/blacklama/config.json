@@ -1,0 +1,8 @@
+{
+  "ilias_installation_ids": [24,7],
+  "projectConfig": {
+    "id": "ch.studerraimann.ilias.fhoevnrw",
+    "name": "Black Lama",
+    "description": "Download, sync and store ILIAS-files on your device"
+  }
+}

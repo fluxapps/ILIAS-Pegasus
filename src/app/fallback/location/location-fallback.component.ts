@@ -1,6 +1,6 @@
 import {Component} from "@angular/core";
-import {Diagnostic} from "@ionic-native/diagnostic";
-import {ViewController} from "ionic-angular";
+import {Diagnostic} from "@ionic-native/diagnostic/ngx";
+import {ModalController} from "@ionic/angular";
 
 @Component({
   templateUrl: "location-fallbackscreen.html"
@@ -9,7 +9,7 @@ export class LocationFallbackScreen {
 
   constructor(
     private readonly diagnostic: Diagnostic,
-    private readonly viewCtrl: ViewController
+    private readonly modalCtrl: ModalController
   ) {}
 
   async switchToLocation(): Promise<void> {
@@ -18,6 +18,6 @@ export class LocationFallbackScreen {
   }
 
   async close(): Promise<void> {
-    await this.viewCtrl.dismiss();
+    await this.modalCtrl.dismiss();
   }
 }
