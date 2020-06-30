@@ -24,6 +24,7 @@
     "today": "Heute",
     "yesterday": "Gestern",
     "repository": "Magazin",
+    "courses": "Kurse",
     "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
@@ -48,6 +49,9 @@
     },
     "news": {
         "title": "Nachrichten"
+    },
+    "home": {
+        "title": "Übersicht"
     },
     "new-objects": {
         "title": "Neue Inhalte",

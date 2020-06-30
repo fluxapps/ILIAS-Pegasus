@@ -21,6 +21,7 @@
     "no": "No",
     "no_title": "Nessun titolo",
     "close": "Chiudi",
+    "courses": "Corsi",
     "object-list": {
         "title" : "I miei corsi e i miei gruppi",
         "content" : "Contenuto",
@@ -43,6 +44,9 @@
     },
     "news": {
         "title": "Notizie"
+    },
+    "home": {
+        "title": "Pagina iniziale"
     },
     "new-objects": {
         "title": "Nuovo",
