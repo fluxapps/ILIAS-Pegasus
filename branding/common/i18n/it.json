@@ -232,7 +232,7 @@
         }
     },
     "fallback": {
-        "browser": "Stai uscendo dall'app ILIAS Pegasus",
+        "browser": "Stai uscendo dall'app {{app_name}}",
         "browser_ok": "Ok andiamo!",
         "browser_no": "Senza ritorno!",
         "synchronization": "<it>Welcome!</it>",

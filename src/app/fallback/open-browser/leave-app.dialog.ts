@@ -1,5 +1,6 @@
 /** angular */
 import {Component} from "@angular/core";
+import { AppVersion } from "@ionic-native/app-version/ngx";
 import {ModalController, NavParams} from "@ionic/angular";
 /** ionic-native */
 import {InAppBrowserOptions} from "@ionic-native/in-app-browser";
@@ -18,14 +19,16 @@ export class LeaveAppDialog {
 
     private readonly log: Logger = Logging.getLogger(LeaveAppDialog.name);
     private readonly params: LeaveAppDialogNavParams;
+    readonly appName: Promise<string>;
     themeIonicContrastColor: string;
 
     constructor(
         private readonly nav: NavParams,
         private readonly modalCtrl: ModalController,
-        private readonly translate: TranslateService
+        private readonly appVersion: AppVersion,
     ) {
         this.params = <LeaveAppDialogNavParams>nav.data;
+        this.appName = this.appVersion.getAppName();
     }
 
     ionViewWillEnter(): void {

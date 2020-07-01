@@ -252,7 +252,7 @@
         }
     },
     "fallback": {
-        "browser": "Du verlässt nun die ILIAS Pegasus App",
+        "browser": "Du verlässt nun die {{app_name}} App",
         "browser_ok": "OK, auf zum Browser!",
         "browser_no": "Nein. Zurück!",
         "loading": "Lernort wird geladen",
