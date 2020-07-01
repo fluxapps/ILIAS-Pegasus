@@ -7,33 +7,33 @@
           </ion-buttons>
 
           <ion-title>
-              {{'info.title' | translate:{value: null} }}
+              {{'info.title' | translate}}
           </ion-title>
 
       </ion-row>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding class="page_info">
+<ion-content class="ion-padding" class="page_info">
   <div [ngSwitch]="tab">
     <div *ngSwitchCase="'info'">
       <!--KARTE BUGS-->
-      <ion-card padding class="version-card">
+      <ion-card class="ion-padding" class="version-card">
         <ion-card-header>
-            <ion-card-title>ILIAS Pegasus</ion-card-title>
-            <ion-card-subtitle>Version 4.0.2</ion-card-subtitle>
+            <ion-card-title>{{this.appName | async}}</ion-card-title>
+            <ion-card-subtitle>Version {{this.version | async}}&nbsp;({{this.versionCode | async}})</ion-card-subtitle>
         </ion-card-header>
 
         <!-- s -->
       </ion-card>
-      <ion-card padding class="version-card-iq">
+      <ion-card class="ion-padding" class="version-card-iq">
         <ion-card-header>Lernwelt</ion-card-header>
         <ion-card-content>
           <p>Basierend auf ILIAS-Pegasus</p>
-          <p>Version 2.0.2</p>
+          <p>Version {{this.version | async}}</p>
         </ion-card-content>
       </ion-card>
-      <ion-card padding class="reporting-card">
+      <ion-card class="ion-padding" class="reporting-card">
         <ion-card-header>
           <ion-card-title>Anregungen und Hinweise zu Fehlern</ion-card-title>
         </ion-card-header>
@@ -42,7 +42,7 @@
             <a (click)="browse('mailto:support@ilias-pegasus.de')">support@ilias-pegasus.de</a>
         </ion-card-content>
       </ion-card>
-      <ion-card padding class="reporting-card-iq">
+      <ion-card class="ion-padding" class="reporting-card-iq">
           <ion-item text-wrap>
               <h2>Zentralstelle für die Weiterbildung im Handwerk e. V.</h2>
               <p>Bereitstellung und Design </p>
@@ -59,7 +59,7 @@
         </ion-button>
       </ion-card>
       <!--KARTE INHALT-->
-      <ion-card padding>
+      <ion-card class="ion-padding">
         <ion-card-header>
           <ion-card-title>Inhaltshinweis</ion-card-title>
         </ion-card-header>
@@ -68,7 +68,7 @@
         </ion-card-content>
       </ion-card>
       <!--KARTE STURA-->
-      <ion-card padding class="stura-card">
+      <ion-card class="ion-padding" class="stura-card">
           <img src="assets/img/stura.jpg">
           <ion-card-header>
               <ion-card-title>Studierendenrat der Universität Freiburg</ion-card-title>
@@ -84,7 +84,7 @@
         </div>
       </ion-card>
       <!-- KARTE UNIFR -->
-      <ion-card padding class="freiburg-card">
+      <ion-card class="ion-padding" class="freiburg-card">
         <img src="assets/img/unifrei.jpg">
         <ion-card-header>
             <ion-card-title>Rechenzentrum Albert-Ludwigs-Universität Freiburg</ion-card-title>
@@ -100,7 +100,7 @@
         </div>
       </ion-card>
       <!-- KARTE UNIMAR -->
-      <ion-card padding class="marburg-card">
+      <ion-card class="ion-padding" class="marburg-card">
         <img src="assets/img/unimar.png">
         <ion-card-header>
             <ion-card-title>Hochschulrechenzentrum Philipps-Universität Marburg</ion-card-title>
@@ -116,7 +116,7 @@
         </div>
       </ion-card>
       <!-- KARTE SIG MOBILE -->
-      <ion-card padding class="sig-card">
+      <ion-card class="ion-padding" class="sig-card">
           <ion-card-header>
               <ion-card-title>ILIAS SIG Mobile</ion-card-title>
               <ion-card-subtitle>Community und Koordination Weiterentwicklung</ion-card-subtitle>
@@ -131,7 +131,7 @@
         </div>
       </ion-card>
       <!--KARTE studer raimann ag-->
-      <ion-card padding>
+      <ion-card class="ion-padding">
           <img src="assets/img/sturai.png">
           <ion-card-header>
               <ion-card-title>studer + raimann ag</ion-card-title>
