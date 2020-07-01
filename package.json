@@ -41,7 +41,7 @@
     "@ionic-native/unique-device-id": "^5.18.0",
     "@ionic-native/zip": "^5.20.0",
     "@ionic/angular": "^4.11.10",
-    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/core": "^12.1.2",
     "@ngx-translate/http-loader": "^4.0.0",
     "cordova-android": "^8.1.0",
     "cordova-android-support-gradle-release": "^3.0.1",
