@@ -6,17 +6,13 @@ import {ModalController, IonSlides} from "@ionic/angular";
     templateUrl: "onboarding.html"
 })
 export class OnboardingPage {
-    //@ts-ignore
-    @ViewChild("slides")  slides: IonSlides;
+
+    @ViewChild(IonSlides, {"static": false})
+    slides: IonSlides;
 
     constructor(public modalCtrl: ModalController) { }
 
-    ionViewDidLoad(): void{
-    }
-
     nextSlide(): void {
-        
-        console.log("FIRRED")
         this.slides.getActiveIndex().then(index => {
             console.log(index);
             if (index == 2){
@@ -33,8 +29,7 @@ export class OnboardingPage {
         });
     }
 
-    slideChanged(): void { 
-        console.log("FIRRED")
+    slideChanged(): void {
         this.slides.getActiveIndex().then(index => {
            console.log(index);
         });
