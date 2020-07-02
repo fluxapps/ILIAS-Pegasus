@@ -1,30 +1,21 @@
 /** angular */
-import {Component, Inject, NgZone} from "@angular/core";
-import {Config, Events, ModalController, NavController, Platform, ToastController} from "@ionic/angular";
-import {Router} from "@angular/router";
+import { Component } from "@angular/core";
+import { Router } from "@angular/router";
+import { AppVersion } from "@ionic-native/app-version/ngx";
 /** ionic-native */
-import {Network} from "@ionic-native/network/ngx";
-import {SplashScreen} from "@ionic-native/splash-screen/ngx";
-import {SQLite} from "@ionic-native/sqlite/ngx";
-import {StatusBar} from "@ionic-native/status-bar/ngx";
-import {AppVersion} from "@ionic-native/app-version/ngx";
-/** services */
-import {SQLiteDatabaseService} from "./services/database.service";
-import {Database} from "./services/database/database";
-import {FooterToolbarService} from "./services/footer-toolbar.service";
-import {Logger} from "./services/logging/logging.api";
-import {Logging} from "./services/logging/logging.service";
-import {DB_MIGRATION, DBMigration} from "./services/migration/migration.api";
-import {SynchronizationService} from "./services/synchronization.service";
+import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+import { Config, ModalController, NavController, Platform, ToastController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 /** models */
-import {Settings} from "./models/settings";
-import {User} from "./models/user";
-import {TranslateService} from "@ngx-translate/core";
-import {PEGASUS_CONNECTION_NAME} from "./config/typeORM-config";
-import {OnboardingPage} from "./pages/onboarding/onboarding";
-import {AuthenticationProvider} from "./providers/authentication.provider";
-import {ObjectListPage} from "./pages/object-list/object-list";
-import {ThemeProvider} from "./providers/theme/theme.provider";
+import { Settings } from "./models/settings";
+import { User } from "./models/user";
+import { ObjectListPage } from "./pages/object-list/object-list";
+import { OnboardingPage } from "./pages/onboarding/onboarding";
+import { AuthenticationProvider } from "./providers/authentication.provider";
+import { ThemeProvider } from "./providers/theme/theme.provider";
+import { Logger } from "./services/logging/logging.api";
+import { Logging } from "./services/logging/logging.service";
+import { SynchronizationService } from "./services/synchronization.service";
 /** misc */
 import getMessage = Logging.getMessage;
 
@@ -46,34 +37,22 @@ export class AppComponent {
      * the current app architecture. This will be changed on release 2.0.0.
      */
     constructor(
-        readonly footerToolbar: FooterToolbarService,
-        private readonly navCtrl: NavController,
         private readonly router: Router,
-        private readonly events: Events,
-        private readonly platform: Platform,
-        private readonly translate: TranslateService,
-        private readonly toast: ToastController,
         private readonly sync: SynchronizationService,
-        private readonly statusBar: StatusBar,
-        private readonly network: Network,
         private readonly splashScreen: SplashScreen,
-        private readonly database: Database,
         private readonly modal: ModalController,
-        private readonly config: Config,
         private readonly auth: AuthenticationProvider,
         private readonly appVersionPlugin: AppVersion,
-        private readonly ngZone: NgZone,
         private readonly themeProvider: ThemeProvider,
-        @Inject(DB_MIGRATION) private readonly dbMigration: DBMigration,
-        sqlite: SQLite
+        private readonly platform: Platform,
+        private readonly navCtrl: NavController,
+        private readonly toastCtrl: ToastController,
+        private readonly config: Config,
+        private readonly translate: TranslateService,
     ) {
-        // Set members on classes which are not injectable
-        Settings.NETWORK = this.network;
-        SQLiteDatabaseService.SQLITE = sqlite;
 
         // init after platform is ready and native stuff is available
-        this.platform.ready().then(() => {
-            this.initializeApp();
+        this.initializeApp().then(() => {
             this.log.info(() => "Platform is ready");
         }).catch((error) => {
             const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
@@ -87,27 +66,18 @@ export class AppComponent {
      */
     private async initializeApp(): Promise<void> {
         this.log.info(() => "Initialize app");
-        // database
-        await this.database.ready(PEGASUS_CONNECTION_NAME);
-        await this.dbMigration.migrate();
 
-        // user and login-dependent features
-        await AuthenticationProvider.loadUserFromDatabase();
         this.user = AuthenticationProvider.getUser();
 
-        await this.configureTranslation();
+        await this.initBackButton();
 
         if(AuthenticationProvider.isLoggedIn()) {
             await this.sync.resetOfflineSynchronization(true);
             await this.themeProvider.loadResources();
-            await this.navCtrl.navigateRoot("tabs");
         } else {
+            // Dont await modal
             await this.presentOnboardingModal();
         }
-
-        // style and navigation
-        this.statusBar.styleLightContent();
-        this.initializeBackButton();
 
         if(AuthenticationProvider.isLoggedIn()) {
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
@@ -124,36 +94,18 @@ export class AppComponent {
     }
 
     /**
-     * Configures the {@link TranslateService} depending on the given
-     */
-    private async configureTranslation(): Promise<void> {
-        if(AuthenticationProvider.isLoggedIn()) {
-            const setting: Settings = await Settings.findByUserId(this.user.id);
-            this.translate.use(setting.language);
-        } else {
-            // get the language of the navigator an check if it is supported. default is de
-            let lng: string = "de";
-            const navLng: string = navigator.language.split("-")[0];
-            ["de", "en", "it"].forEach(s => {if(navLng.match(`/${s}/i`)) lng = s;});
-            this.translate.use(lng);
-        }
-        this.translate.setDefaultLang("de");
-    }
-
-    /**
      * displays the introduction-slides
      */
     async presentOnboardingModal(): Promise<void> {
-        await this.modal.create({
+        const modal: HTMLIonModalElement = await this.modal.create({
             component: OnboardingPage,
             cssClass: "modal-fullscreen",
-        }).then((it: HTMLIonModalElement) => it.present());
+        });
+
+        await modal.present();
     }
 
-    /**
-     * Registers actions for the back button.
-     */
-    private initializeBackButton(): void {
+    private async initBackButton(): Promise<void> {
         let backButtonTapped: boolean = false;
 
         this.platform.backButton.subscribeWithPriority(0, () => {
@@ -206,10 +158,10 @@ export class AppComponent {
                     setTimeout(() => {
                         backButtonTapped = false;
                     }, 3000);
-                    this.toast.create({
+                    this.toastCtrl.create({
                         message: this.translate.instant("message.back_to_exit"),
                         duration: 3000
-                    }).then(function(it) { return it.present(); });
+                    }).then((it: HTMLIonToastElement) => it.present());
                     break;
 
                 case "close":
