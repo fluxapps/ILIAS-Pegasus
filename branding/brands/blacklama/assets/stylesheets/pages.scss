@@ -235,22 +235,15 @@ ion-content.page_settings {
 // --------------------------------------------------
 .page_learnplace_map {
 
-    ion-app._gmaps_cdv_ .nav-decor {
-        background-color: transparent !important;
+    #map {
+        height: 100%;
+        width: 100%;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 0;
     }
-
-    map {
-        #map {
-            height: 101%;
-            width: 100%;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            z-index: 0;
-        }
-    }
-
 }
 
 // learnplace_content
