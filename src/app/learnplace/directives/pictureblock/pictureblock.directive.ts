@@ -15,7 +15,7 @@ import {WebView} from "@ionic-native/ionic-webview/ngx";
 export class PictureBlock implements OnInit {
 
     @Input("value")
-    readonly pictureBlock: PictureBlockModel;
+    pictureBlock: PictureBlockModel;
 
     embeddedSrc?: SafeUrl;
 
