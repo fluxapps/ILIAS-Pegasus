@@ -1,6 +1,6 @@
 /** angular */
 import {Component, ViewChild} from "@angular/core";
-import {ModalController, IonSlides} from "@ionic/angular";
+import { ModalController, IonSlides, NavController } from "@ionic/angular";
 
 @Component({
     templateUrl: "onboarding.html"
@@ -10,7 +10,10 @@ export class OnboardingPage {
     @ViewChild(IonSlides, {"static": false})
     slides: IonSlides;
 
-    constructor(public modalCtrl: ModalController) { }
+    constructor(
+        public modalCtrl: ModalController,
+        private readonly navCtrl: NavController,
+    ) { }
 
     nextSlide(): void {
         this.slides.getActiveIndex().then(index => {
@@ -24,9 +27,7 @@ export class OnboardingPage {
     }
 
     dismiss(): void {
-        this.modalCtrl.dismiss({
-            "dismissed": true
-        });
+        this.navCtrl.navigateRoot(["/login"]);
     }
 
     slideChanged(): void {

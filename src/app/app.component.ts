@@ -97,12 +97,16 @@ export class AppComponent {
      * displays the introduction-slides
      */
     async presentOnboardingModal(): Promise<void> {
+        await this.navCtrl.navigateRoot(["/onboarding"]);
+        /*
         const modal: HTMLIonModalElement = await this.modal.create({
             component: OnboardingPage,
             cssClass: "modal-fullscreen",
         });
 
         await modal.present();
+
+         */
     }
 
     private async initBackButton(): Promise<void> {

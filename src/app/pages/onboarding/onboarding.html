@@ -1,4 +1,4 @@
-<ion-header>
+<!-- ion-header>
 	<ion-toolbar class="onboarding-toolbar" color=primary>
 		<ion-buttons slot="primary">
 		  <ion-button (click)="nextSlide()">
@@ -6,13 +6,40 @@
 		  </ion-button>
 		</ion-buttons>
 	  </ion-toolbar>
-</ion-header>
+</ion-header -->
 <ion-content class="page_onboarding" fullscreen=true>
-		<ion-slides pager="true" (ionSlideDrag)="slideChanged()">
+		<ion-slides pager="false" (ionSlideDrag)="slideChanged()">
 				<ion-slide class="step-one">
-					<img src="assets/img/onboarding_welcome.png">
+					<img src="assets/img/onboarding_welcome.png" class="logo">
 					<h1>{{ 'onboarding.title1' | translate}}</h1>
-					<ion-grid>
+                    <ion-list color="primary" detail="false" lines="none">
+                        <ion-item>
+                            <ion-avatar slot="start">
+                                <img src="assets/icon/obj_file.svg" alt="file object icon"/>
+                            </ion-avatar>
+                            <ion-text>
+                                {{ 'onboarding.function1' | translate}}
+                            </ion-text>
+                        </ion-item>
+                        <ion-item>
+                            <ion-avatar slot="start">
+                                <img src="assets/icon/more.svg" alt="more icon">
+                            </ion-avatar>
+                            <ion-text>
+                                {{ 'onboarding.function2' | translate}}
+                            </ion-text>
+                        </ion-item>
+                        <ion-item>
+                            <ion-avatar slot="start">
+                                <img src="assets/img/onboarding_key.svg" alt="key icon">
+                            </ion-avatar>
+                            <ion-text>
+                                {{ 'onboarding.function3' | translate}}
+                            </ion-text>
+                        </ion-item>
+                    </ion-list>
+                    <ion-button color="light" shape="round" (click)="nextSlide()">{{ 'onboarding.next' | translate}}</ion-button>
+					<!--ion-grid>
 						<ion-row>
 							<ion-col size="2" align-self-center >
 									<ion-img  src="assets/icon/obj_file.svg"> </ion-img>
@@ -36,7 +63,7 @@
 									<ion-button color="light" shape="round" (click)="nextSlide()">{{ 'onboarding.next' | translate}}</ion-button>
 							</ion-col>
 						</ion-row>
-					</ion-grid>
+					</ion-grid -->
 				</ion-slide>
 				<ion-slide class="step-two">
 						<img src="assets/img/onboarding_decentralized.png" class="decentral">
@@ -48,18 +75,16 @@
 						<ion-button color="light" shape="round"  (click)="nextSlide()">{{ 'onboarding.next' | translate}}</ion-button>
 				</ion-slide>
 				<ion-slide class="step-three">
-					<img src="assets/icon/menu_lock.svg">
+					<img src="assets/icon/menu_lock.svg" class="lock">
 					<h1>{{ 'onboarding.title3' | translate}}</h1>
-					<ion-text>
-						<p class="central-text ion-padding">
+					<ion-text class="ion-margin-horizontal">
+						<p class="ion-text-center">
 							{{ 'onboarding.datasecurity1' | translate}}
 							<a class="link" href="https://www.ilias-pegasus.de/datenschutz/">{{ 'onboarding.datasecurity2' | translate}}</a>
 						</p>
-						<p class="central-text ion-padding">
+						<p class="ion-text-center">
 							{{ 'onboarding.datasecurity3' | translate}}
-						</p>
-						<a class="link" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
-						<p class=central-text>
+                            <a class="link" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
 						</p>
 					</ion-text>
 
