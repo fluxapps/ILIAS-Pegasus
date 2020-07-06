@@ -25,6 +25,8 @@
     "yesterday": "Gestern",
     "repository": "Magazin",
     "courses": "Kurse",
+    "map": "Karte",
+    "content": "Inhalt",
     "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",

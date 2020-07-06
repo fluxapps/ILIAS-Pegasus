@@ -25,6 +25,8 @@
     "yesterday": "Yesterday",
     "repository": "Repository",
     "courses": "Courses",
+    "map": "Map",
+    "content": "Content",
     "datasecurity": {"title": "Privacy policy"},
     "object-list": {
         "title" : "My Courses & Groups",
