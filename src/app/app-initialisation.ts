@@ -14,7 +14,7 @@ import { DB_MIGRATION, DBMigration } from "./services/migration/migration.api";
 
 
 const FALLBACK_LANGUAGE: string = "de";
-const SUPPORTED_LANGUAGES: Set<string> = new Set(["de", "en", "it"]);
+const SUPPORTED_LANGUAGES: Set<string> = new Set(["de", "fr", "en", "it"]);
 
 export const INIT_APP: FactoryProvider = {
     provide: APP_INITIALIZER,
