@@ -7,6 +7,7 @@ const routes: Routes = [
     {path: "", redirectTo: "tabs", pathMatch: "full"},
     {path: "tabs", loadChildren: "./tabs/tabs.module#TabsPageModule", canActivate: [AuthenticationProvider]},
     {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
+    {path: "onboarding", loadChildren: "./pages/onboarding/onboarding.module#OnboardingPageModule"},
     {path: "learnplace/:id", loadChildren: "./learnplace/learnplace.module#LearnplaceModule", canActivate: [AuthenticationProvider]},
     {path: "learningmodule/:id", loadChildren: "./learningmodule/learning-module.module#LearningModuleModule", canActivate: [AuthenticationProvider]},
     {path: "**", redirectTo: "login"},

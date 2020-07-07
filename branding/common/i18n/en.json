@@ -24,6 +24,9 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "repository": "Repository",
+    "courses": "Courses",
+    "map": "Map",
+    "content": "Content",
     "datasecurity": {"title": "Privacy policy"},
     "object-list": {
         "title" : "My Courses & Groups",
@@ -48,6 +51,9 @@
     },
     "news": {
         "title": "News"
+    },
+    "home": {
+        "title": "Home"
     },
     "new-objects": {
         "title": "New Content",
@@ -246,7 +252,7 @@
         }
     },
     "fallback": {
-        "browser": "You are leaving the ILIAS App ",
+        "browser": "You are leaving the {{app_name}} App",
         "browser_ok": "OK, let's go!",
         "browser_no": "No. return!",
         "synchronization": "Welcome!",

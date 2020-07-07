@@ -26,7 +26,7 @@ export class AccordionBlock implements OnInit, OnDestroy {
   @Input("value")
   readonly accordion: AccordionBlockModel;
 
-  private expanded: boolean = false;
+  expanded: boolean = false;
 
   private accordionSubscription?: Subscription;
 

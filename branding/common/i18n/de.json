@@ -24,6 +24,9 @@
     "today": "Heute",
     "yesterday": "Gestern",
     "repository": "Magazin",
+    "courses": "Kurse",
+    "map": "Karte",
+    "content": "Inhalt",
     "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
@@ -48,6 +51,9 @@
     },
     "news": {
         "title": "Nachrichten"
+    },
+    "home": {
+        "title": "Übersicht"
     },
     "new-objects": {
         "title": "Neue Inhalte",
@@ -248,7 +254,7 @@
         }
     },
     "fallback": {
-        "browser": "Du verlässt nun die ILIAS Pegasus-App.",
+        "browser": "Du verlässt nun die {{app_name}}-App",
         "browser_ok": "OK, auf zum Browser!",
         "browser_no": "Nein. Zurück!",
         "loading": "Lernort wird geladen",

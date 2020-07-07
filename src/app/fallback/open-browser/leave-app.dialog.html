@@ -1,27 +1,27 @@
 <ion-header no-border>
     <ion-toolbar color="primary">
-      <ion-buttons left>
-      <ion-button icon-only (click)="dismiss()">
-        <ion-icon name ="close"></ion-icon>
+      <ion-buttons slot="start">
+      <ion-button slot="icon-only" (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
       </ion-button>
       </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content color ="primary" class="page_leave_app_dialog">
+<ion-content color="primary" class="page_leave_app_dialog">
 
   <ion-img class=enter-left-bounce src="assets/img/pony_exit.svg"></ion-img>
     <ion-grid color="white">
-      <ion-row justify-content-center padding>
-      <h1 text-center color="white">
+      <ion-row class="ion-justify-content-center ion-padding">
+      <h1 class="ion-text-center" color="white">
         <!-- You are leaving the ILIAS Pegasus App -->
-        {{'fallback.browser' | translate:{value: null} }}
+        {{'fallback.browser' | translate:{app_name: (this.appName | async)} }}
       </h1>
       </ion-row>
-      <ion-row padding justify-content-center>
-        <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button" [color]="themeIonicContrastColor">{{'fallback.browser_ok' | translate:{value: null} }}</ion-button>
+      <ion-row class="ion-padding ion-justify-content-center">
+        <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button" [color]="themeIonicContrastColor">{{'fallback.browser_ok' | translate }}</ion-button>
       </ion-row>
-      <ion-row padding justify-content-center>
-        <a text-center id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate:{value: null} }}</a>
+      <ion-row class="ion-padding ion-justify-content-center">
+        <a class="ion-text-center" id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate }}</a>
       </ion-row>
     </ion-grid>
 

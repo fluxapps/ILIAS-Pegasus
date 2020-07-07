@@ -1,20 +1,19 @@
-
-import {Subscription, Observable, Subscriber,  from, of, forkJoin, TeardownLogic } from "rxjs";
-import {map,  filter, withLatestFrom, takeWhile, mergeMap, tap, finalize, mergeAll, shareReplay } from "rxjs/operators";
-import {VisibilityAware} from "./visibility.context";
-import {Inject, Injectable} from "@angular/core";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {LearnplaceEntity} from "../../entity/learnplace.entity";
-import {NoSuchElementError} from "../../../error/errors";
-import {Geolocation} from "../../../services/device/geolocation/geolocation.service";
-import {IliasCoordinates} from "../geodesy";
-import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
-import {isDefined} from "../../../util/util.function";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
-import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
-import {UserEntity} from "../../../entity/user.entity";
-import {Logger} from "../../../services/logging/logging.api";
-import {Logging} from "../../../services/logging/logging.service";
+import { Inject, Injectable } from "@angular/core";
+import { combineLatest, defer, forkJoin, from, Observable, of, Subject, Subscriber, Subscription, TeardownLogic } from "rxjs";
+import { filter, finalize, map, mergeAll, mergeMap, shareReplay, takeUntil, tap } from "rxjs/operators";
+import { UserEntity } from "../../../entity/user.entity";
+import { NoSuchElementError } from "../../../error/errors";
+import { USER_REPOSITORY, UserRepository } from "../../../providers/repository/repository.user";
+import { Geolocation } from "../../../services/device/geolocation/geolocation.service";
+import { Logger } from "../../../services/logging/logging.api";
+import { Logging } from "../../../services/logging/logging.service";
+import { isDefined } from "../../../util/util.function";
+import { LearnplaceEntity } from "../../entity/learnplace.entity";
+import { VisitJournalEntity } from "../../entity/visit-journal.entity";
+import { LEARNPLACE_REPOSITORY, LearnplaceRepository } from "../../providers/repository/learnplace.repository";
+import { LEARNPLACE_API, LearnplaceAPI } from "../../providers/rest/learnplace.api";
+import { IliasCoordinates } from "../geodesy";
+import { VisibilityAware } from "./visibility.context";
 
 /**
  * Enumerator for available strategies.
@@ -148,7 +147,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
 
     private membershipId: string = "";
 
-    private watch: Subscription | undefined = undefined;
+    private readonly dispose$: Subject<void> = new Subject<void>();
 
     private readonly log: Logger = Logging.getLogger(OnlyAtPlaceStrategy.name);
 
@@ -186,17 +185,19 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
 
             subscriber.next(object);
 
-            const learnplaceCoordinates: Observable<[IliasCoordinates, LearnplaceEntity]> = from(this.learnplaceRepository.find(this.membershipId))
-                .pipe(
+            console.log("Watch position for visibility 'Only at Place' membership id: ", this.membershipId);
+
+            const learnplaceCoordinates: Observable<[IliasCoordinates, LearnplaceEntity]> =
+                defer(() => this.learnplaceRepository.find(this.membershipId)).pipe(
                     map((it) => it.orElseThrow(() => new NoSuchElementError(`No learnplace found: id=${this.membershipId}`))),
                     map((it): [IliasCoordinates, LearnplaceEntity] => [new IliasCoordinates(it.location.latitude, it.location.longitude), it])
                 );
 
             this.log.trace(() => "Watch position for visibility 'Only at Place'");
-            this.watch = this.geolocation.watchPosition()
+            const watch: Subscription = combineLatest([this.geolocation.watchPosition(), learnplaceCoordinates])
                 .pipe(
-                    filter(it => isDefined(it.coords)),
-                    withLatestFrom(learnplaceCoordinates)
+                    filter(it => isDefined(it[0].coords)),
+                    takeUntil(this.dispose$)
                 )
                 .subscribe({
                     next: (location): void => {
@@ -212,7 +213,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
                     complete: (): void => subscriber.complete()
                 });
 
-            return (): void => this.watch.unsubscribe();
+            return (): void => watch.unsubscribe();
         });
     }
 
@@ -220,8 +221,7 @@ export class OnlyAtPlaceStrategy implements MembershipAwareStrategy, ShutdownVis
      * Stops watching the device's location.
      */
     shutdown(): void {
-        if (isDefined(this.watch))
-            this.watch.unsubscribe();
+        this.dispose$.next();
     }
 }
 
@@ -236,7 +236,7 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
 
     private membershipId: string = "";
 
-    private running: boolean = false;
+    private readonly dispose$: Subject<void> = new Subject<void>();
 
     constructor(
         @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
@@ -274,7 +274,6 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
      */
     on<T extends VisibilityAware>(object: T): Observable<T> {
 
-        this.running = true;
         const learnplace: Observable<LearnplaceEntity> = from(this.learnplaceRepository.find(this.membershipId))
             .pipe(
                 map(it => it.orElseThrow(() => new NoSuchElementError(`No learnplace found with id: ${this.membershipId}`))),
@@ -298,7 +297,6 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
             return of(
                 of(object),
                 this.geolocation.watchPosition().pipe(
-                    takeWhile(() => this.running),
                     filter(it => isDefined(it.coords)),
                     filter(it => {
                         const currentCoordinates: IliasCoordinates = new IliasCoordinates(it.coords.latitude, it.coords.longitude);
@@ -323,7 +321,8 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
                         object.visible = true;
                         this.shutdown();
                         return object;
-                    })
+                    }),
+                    takeUntil(this.dispose$),
                 )
             ).pipe(mergeAll());
         }), mergeAll());
@@ -333,6 +332,6 @@ export class AfterVisitPlaceStrategy implements MembershipAwareStrategy, Shutdow
      * Stops watching the device's location.
      */
     shutdown(): void {
-        this.running = false;
+        this.dispose$.next();
     }
 }

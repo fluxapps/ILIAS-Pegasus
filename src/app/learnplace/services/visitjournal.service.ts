@@ -1,5 +1,5 @@
 
-import {mergeMap, filter, takeWhile, map, tap, catchError, withLatestFrom } from "rxjs/operators";
+import { mergeMap, filter, takeWhile, map, tap, catchError, withLatestFrom, takeUntil } from "rxjs/operators";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../providers/repository/visitjournal.repository";
@@ -15,7 +15,7 @@ import {IllegalStateError} from "../../error/errors";
 import {IliasCoordinates} from "./geodesy";
 import {LearnplaceEntity} from "../entity/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
-import {Observable,  from, combineLatest, of } from "rxjs";
+import { Observable, from, combineLatest, of, Subject } from "rxjs";
 
 /**
  * Describes a synchronization that manages un-synchronized visit journal entries.
@@ -108,9 +108,8 @@ export const VISIT_JOURNAL_WATCH: InjectionToken<VisitJournalWatch> = new Inject
 @Injectable()
 export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
+    private readonly dispose$: Subject<void> = new Subject<void>();
     private learnplaceObjectId: number | undefined = undefined;
-
-    private running: boolean = false;
 
     private readonly log: Logger = Logging.getLogger(SynchronizedVisitJournalWatch.name);
 
@@ -139,19 +138,19 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
             throw new IllegalStateError(`Can not start ${SynchronizedVisitJournalWatch.name} without learnplace id`);
         }
 
-        this.running = true;
-
         const user: Observable<UserEntity> = from(this.userRepository.findAuthenticatedUser()).pipe(map(it => it.get()));
 
         const learnplace: Observable<LearnplaceEntity> = user.pipe(
             mergeMap(it => this.learnplaceRepository.findByObjectIdAndUserId(this.learnplaceObjectId, it.id)),
-            map(it => it.get()),);
+            map(it => it.get())
+        );
 
         this.log.trace(() => "Start watching the device's location");
         const position: Observable<IliasCoordinates> = this.geolocation.watchPosition().pipe(
             filter(it => isDefined(it.coords)), // filter errors
             map(it => new IliasCoordinates(it.coords.latitude, it.coords.longitude)),
-            takeWhile(_ => this.running),);
+            takeUntil(this.dispose$)
+        );
 
         combineLatest([user, learnplace, position])
             .pipe(
@@ -176,7 +175,8 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
                 withLatestFrom(learnplace, (visitJournal: VisitJournalEntity, learnplace: LearnplaceEntity): LearnplaceEntity =>
                     learnplace.applies<LearnplaceEntity>(function(): void {
                         this.visitJournal.push(visitJournal);
-                }))
+                })),
+                takeUntil(this.dispose$)
             )
             .subscribe((it: LearnplaceEntity) => {
                 this.learnplaceRepository.save(it);
@@ -187,7 +187,7 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
      * Stops watching the device's location.
      */
     stop(): void {
-        this.running = false;
+        this.dispose$.next();
     }
 
     /**
