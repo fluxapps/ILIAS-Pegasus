@@ -10,6 +10,7 @@ import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
 import {CssStyleService} from "../../services/theme/css-style.service";
+import { ViewController } from "@ionic/core";
 
 
 @Component({
@@ -38,21 +39,16 @@ export class LeaveAppDialog {
         }
     }
 
-    dismiss(): void {
+    async dismiss(): Promise<void> {
         this.log.trace(() => "User action -> dismiss");
-        this.modalCtrl.dismiss();
+        await this.modalCtrl.dismiss({}, "cancel");
     }
 
-    leaveApp(): void {
+    async leaveApp(): Promise<void> {
         this.log.trace(() => "User action -> leave app");
-        const options: InAppBrowserOptions = {
-            location: "yes",
-            clearcache: "yes",
-            clearsessioncache: "yes"
-        };
 
+        // The leave app function is responsible for closing the modal, because it somehow does not work in here
         this.params.leaveApp();
-        this.modalCtrl.dismiss();
     }
 }
 

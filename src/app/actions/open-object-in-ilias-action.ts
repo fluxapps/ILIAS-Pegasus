@@ -1,16 +1,16 @@
 /** angular */
-import {InjectionToken} from "@angular/core";
-import {ModalController, Platform} from "@ionic/angular";
+import { InjectionToken } from "@angular/core";
+import { ModalController, Platform } from "@ionic/angular";
 /** ionic-native */
-import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+import { InAppBrowser, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
 /** logging */
-import {Logger} from "../services/logging/logging.api";
-import {Logging} from "../services/logging/logging.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 /** misc */
-import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionNoMessage} from "./object-action";
-import {Builder} from "../services/builder.base";
-import {IllegalStateError} from "../error/errors";
-import {LeaveAppAction, LeaveAppDialog, LeaveAppDialogNavParams} from "../fallback/open-browser/leave-app.dialog";
+import { ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionResult, ILIASObjectActionNoMessage } from "./object-action";
+import { Builder } from "../services/builder.base";
+import { IllegalStateError } from "../error/errors";
+import { LeaveAppAction, LeaveAppDialog, LeaveAppDialogNavParams } from "../fallback/open-browser/leave-app.dialog";
 
 
 export class OpenObjectInILIASAction extends ILIASObjectAction {
@@ -23,25 +23,33 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         private readonly browser: InAppBrowser,
         private readonly platform: Platform,
         private readonly modal: ModalController
-    ) { super() }
+    ) {
+        super()
+    }
 
     async execute(): Promise<ILIASObjectActionResult> {
         const ilasLink: string = await this.target.build();
 
-        if(this.platform.is("android"))   this.openUserDialog(() => this.openBrowserAndroid(ilasLink));
-        else  if(this.platform.is("ios")) this.openUserDialog(() => this.openBrowserIos(ilasLink));
+        if (this.platform.is("android")) this.openUserDialog(() => this.openBrowserAndroid(ilasLink));
+        else if (this.platform.is("ios")) this.openUserDialog(() => this.openBrowserIos(ilasLink));
         else throw new IllegalStateError("Unsupported platform, unable to open browser for unsupported platform.");
 
         return new ILIASObjectActionNoMessage();
     }
 
-    private openUserDialog(leaveAction: LeaveAppAction): void {
+    private async openUserDialog(leaveAction: LeaveAppAction): Promise<void> {
         this.log.debug(() => "Open leave app modal.");
-        this.modal.create({
+        const modal: HTMLIonModalElement = await this.modal.create({
             component: LeaveAppDialog,
-            componentProps: <LeaveAppDialogNavParams>{leaveApp: leaveAction},
+            componentProps: <LeaveAppDialogNavParams>{
+                leaveApp: (): void => {
+                    this.modal.dismiss();
+                    leaveAction();
+                }
+            },
             cssClass: "modal-fullscreen",
-        }).then((it: HTMLIonModalElement) => it.present());
+        });
+        await modal.present();
     }
 
     private openBrowserIos(link: string): void {
@@ -70,7 +78,7 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         this.browser.create(encodeURI(link), "_system", options);
     }
 
-    alert(): ILIASObjectActionAlert|undefined {
+    alert(): ILIASObjectActionAlert | undefined {
         return undefined;
     }
 }
