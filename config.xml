@@ -51,6 +51,9 @@
         <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
             <string>To locate you</string>
         </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryAddUsageDescription">
+            <string>This permission is required to save photos or movies to your media library.</string>
+        </edit-config>
         <icon height="57" src="resources/ios/icon/icon.png" width="57"/>
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114"/>
         <icon height="40" src="resources/ios/icon/icon-40.png" width="40"/>
