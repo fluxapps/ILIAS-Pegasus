@@ -1,22 +1,21 @@
 /** angular */
 import {Component, ViewChild} from "@angular/core";
-import {ModalController, IonSlides} from "@ionic/angular";
+import { ModalController, IonSlides, NavController } from "@ionic/angular";
 
 @Component({
     templateUrl: "onboarding.html"
 })
 export class OnboardingPage {
-    //@ts-ignore
-    @ViewChild("slides")  slides: IonSlides;
 
-    constructor(public modalCtrl: ModalController) { }
+    @ViewChild(IonSlides, {"static": false})
+    slides: IonSlides;
 
-    ionViewDidLoad(): void{
-    }
+    constructor(
+        public modalCtrl: ModalController,
+        private readonly navCtrl: NavController,
+    ) { }
 
     nextSlide(): void {
-        
-        console.log("FIRRED")
         this.slides.getActiveIndex().then(index => {
             console.log(index);
             if (index == 2){
@@ -28,13 +27,10 @@ export class OnboardingPage {
     }
 
     dismiss(): void {
-        this.modalCtrl.dismiss({
-            "dismissed": true
-        });
+        this.navCtrl.navigateRoot(["/login"]);
     }
 
-    slideChanged(): void { 
-        console.log("FIRRED")
+    slideChanged(): void {
         this.slides.getActiveIndex().then(index => {
            console.log(index);
         });

@@ -26,8 +26,6 @@ import {AuthenticationProvider} from "../../providers/authentication.provider";
 })
 export class SettingsPage {
 
-    settingsMode: string = "general";
-
     settings: Settings;
 
     installationsWithUsers: Array<ILIASInstallation>;
@@ -59,14 +57,15 @@ export class SettingsPage {
         this.ngZone.run(() => this.init());
     }
 
-    private init(): void {
+    private async init(): Promise<void> {
 
         // Load settings of current user
         this.loggedInUser = AuthenticationProvider.getUser();
-        this.loggedInUser.settings.then(s => this.settings = s);
+        const settings: Settings = await this.loggedInUser.settings;
 
         // Load all users of current app showing the used disk space
-        this.loadUsersAndDiskspace();
+        await this.loadUsersAndDiskspace();
+        this.settings = settings;
     }
 
     private async loadUsersAndDiskspace(): Promise<void> {
@@ -121,7 +120,7 @@ export class SettingsPage {
         this.settings.downloadSize = Math.min(this.settings.downloadSize, 10000);
         this.settings.quotaSize = Math.min(this.settings.quotaSize, 100000);
 
-        if (this.settings.userId) {
+        if (!!this.settings.userId) {
             this.log.debug(() => "Saving settings.");
             try {
                 await this.settings.save();
@@ -135,10 +134,12 @@ export class SettingsPage {
             this.log.trace(() => "Switching language successful.");
             this.config.set("backButtonText", this.translate.instant("back"));
 
-            await this.toast.create({
+            const toast: HTMLIonToastElement = await this.toast.create({
                 message: this.translate.instant("settings.settings_saved"),
                 duration: 3000
-            }).then((it: HTMLIonToastElement) => it.present());
+            });
+
+            await toast.present();
         }
     }
 
@@ -176,8 +177,8 @@ export class SettingsPage {
             await this.deleteFiles(user);
     }
 
-    deleteAllFilesPrompt(): void {
-        this.alertCtr.create({
+    async deleteAllFilesPrompt(): Promise<void> {
+        const alert: HTMLIonAlertElement = await this.alertCtr.create({
             header: this.translate.instant("settings.delete_all_files"),
             message: this.translate.instant("settings.delete_all_files_text"),
             buttons: [
@@ -207,17 +208,19 @@ export class SettingsPage {
                     }
                 }
             ]
-        }).then((it: HTMLIonAlertElement) => it.present());
+        });
+
+        await alert.present();
     }
 
     private async deleteFiles(user: User): Promise<void> {
         const iliasObjects: Array<ILIASObject> = await DesktopItem.findByUserId(user.id);
-        for(const iliasObject of iliasObjects)
+        for (const iliasObject of iliasObjects)
             await this.fileService.removeRecursive(iliasObject);
     }
 
     private async showUnknownErrorOccurredAlert(): Promise<void> {
-        await this.alertCtr.create({
+        const alert: HTMLIonAlertElement = await this.alertCtr.create({
             header: this.translate.instant("something_went_wrong"),
             buttons: [
                 {
@@ -226,6 +229,8 @@ export class SettingsPage {
                     role: "cancel"
                 }
             ]
-        }).then((it: HTMLIonAlertElement) => it.present());
+        });
+
+        await alert.present();
     }
 }

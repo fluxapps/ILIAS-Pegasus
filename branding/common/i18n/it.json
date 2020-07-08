@@ -21,6 +21,9 @@
     "no": "No",
     "no_title": "Nessun titolo",
     "close": "Chiudi",
+    "courses": "Corsi",
+    "map": "Carta geografica",
+    "content": "Soddisfare",
     "object-list": {
         "title" : "I miei corsi e i miei gruppi",
         "content" : "Contenuto",
@@ -43,6 +46,9 @@
     },
     "news": {
         "title": "Notizie"
+    },
+    "home": {
+        "title": "Pagina iniziale"
     },
     "new-objects": {
         "title": "Nuovo",
@@ -228,7 +234,7 @@
         }
     },
     "fallback": {
-        "browser": "Stai uscendo dall'app ILIAS Pegasus",
+        "browser": "Stai uscendo dall'app {{app_name}}",
         "browser_ok": "Ok andiamo!",
         "browser_no": "Senza ritorno!",
         "synchronization": "<it>Welcome!</it>",

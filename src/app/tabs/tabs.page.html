@@ -1,24 +1,24 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom" color="tertiary" >
-    <ion-tab-button tab="home" (pointerdown)="navigateTo('home')">
+    <ion-tab-button tab="home" (click)="navigateTo('home')">
       <ion-icon src="./assets/tabbar/home.svg"></ion-icon>
-      <ion-label>Home</ion-label>
+      <ion-label>{{"home.title" | translate}}</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="content" (pointerdown)="navigateTo('content')">
+    <ion-tab-button tab="content" (click)="navigateTo('content')">
       <ion-icon src="./assets/tabbar/content.svg"></ion-icon>
-      <ion-label>Courses</ion-label>
+      <ion-label>{{"courses" | translate}}</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="news" (pointerdown)="navigateTo('news')">
+    <ion-tab-button tab="news" (click)="navigateTo('news')">
         <ion-icon src="./assets/tabbar/news.svg"></ion-icon>
-        <ion-label>News</ion-label>
+        <ion-label>{{"news.title" | translate}}</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="favorites" (pointerdown)="navigateTo('favorites')">
+    <ion-tab-button tab="favorites" (click)="navigateTo('favorites')">
         <ion-icon src="./assets/tabbar/favorites.svg"></ion-icon>
-        <ion-label>Favorites</ion-label>
+        <ion-label>{{"favorites.title" | translate}}</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="menu" (pointerdown)="navigateTo('menu')">
+    <ion-tab-button tab="menu" (click)="navigateTo('menu')">
         <ion-icon name="menu"></ion-icon>
-        <ion-label>Menu</ion-label>
+        <ion-label>{{"menu" | translate}}</ion-label>
       </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

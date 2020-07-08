@@ -1,10 +1,11 @@
 /** angular */
 import {HttpClient} from "@angular/common/http";
 import {Injectable, NgZone} from "@angular/core";
-import {CanActivate} from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
 import {NavController, ToastController} from "@ionic/angular";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
+import { Observable } from "rxjs";
 import {User} from "../models/user";
 import {Log} from "../services/log.service";
 import {ILIASInstallation} from "../config/ilias-config";
@@ -29,7 +30,8 @@ export class AuthenticationProvider implements CanActivate {
                 private readonly translate: TranslateService,
                 private readonly browser: InAppBrowser,
                 private readonly navCtrl: NavController,
-                private readonly ngZone: NgZone
+                private readonly ngZone: NgZone,
+                private readonly router: Router,
     ) {}
 
     /**
@@ -51,7 +53,7 @@ export class AuthenticationProvider implements CanActivate {
      */
     static async loadUserFromDatabase(): Promise<void> {
         try {
-            await User.currentUser().then(user => this.user = user);
+            this.user = await User.currentUser();
         } catch(e) {
             this.user = undefined;
         }
@@ -136,11 +138,14 @@ export class AuthenticationProvider implements CanActivate {
     /**
      * called by the router as a guard
      */
-    canActivate(): boolean {
-        if(AuthenticationProvider.isLoggedIn())
+    canActivate(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+        if(AuthenticationProvider.isLoggedIn()) {
             return true;
+        }
 
-        this.navCtrl.navigateRoot("login");
-        return false;
+        return this.router.createUrlTree(["/login"]);
     }
 }

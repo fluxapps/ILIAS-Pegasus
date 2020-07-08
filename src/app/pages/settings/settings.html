@@ -1,134 +1,84 @@
 <ion-header>
     <ion-toolbar color="primary">
         <ion-row>
-
             <ion-buttons>
                 <ion-back-button text="" icon="arrow-back"></ion-back-button>
             </ion-buttons>
 
             <ion-title>
-                <!-- <ion-icon name="flask"></ion-icon> -->
-                {{'settings.title' | translate:{value: null} }}
+                {{'settings.title' | translate }}
             </ion-title>
 
         </ion-row>
     </ion-toolbar>
 </ion-header>
 
-<ion-content padding class="page_settings">
-    <!-- <ion-segment [(ngModel)]="settingsMode" color="button-element">
-        <ion-segment-button value="general">
-            {{'general' | translate:[] }}
-        </ion-segment-button>
-        <ion-segment-button value="users">
-            {{'settings.users' | translate:[] }}
-        </ion-segment-button>
-    </ion-segment> -->
+<ion-content class="ion-padding" class="page_settings">
 
-    <ng-container [ngSwitch]="settingsMode">
-        <ion-list *ngSwitchCase="'general'" class="general">
-            <div *ngIf="settings">
-                <ion-item text-wrap color="list-element">
-                    <ion-label>{{'settings.language' | translate:[] }}</ion-label>
-                    <ion-select [(ngModel)]="settings.language">
-                        <ion-select-option value="de">Deutsch</ion-select-option>
-                        <ion-select-option value="en">English</ion-select-option>
-                        <ion-select-option value="it">Italiano</ion-select-option>
-                    </ion-select>
-                </ion-item>
-                <ion-item text-wrap color="list-element">
-                    <ion-label>
-                        {{'settings.downloadSize' | translate:[] }}
-                    </ion-label>
-                    <ion-input type="number" maxlength="4"
-                               [(ngModel)]="settings.downloadSize" text-right>
-                    </ion-input>
-                    <button item-righ>MB</button>
-                </ion-item>
-                <ion-item text-wrap color="list-element">
-                    <ion-label>
-                        {{'settings.downloadOnStart' | translate:[] }}
-                    </ion-label>
-                    <ion-toggle [(ngModel)]="settings.downloadOnStart"></ion-toggle>
-                </ion-item>
-                <ion-item text-wrap color="list-element">
-                    <ion-label>
-                        {{'settings.downloadWLAN' | translate:[] }}
-                    </ion-label>
-                    <ion-toggle [(ngModel)]="settings.downloadWlan"></ion-toggle>
-                </ion-item>
-                <ion-item text-wrap color="list-element">
-                    <ion-label>
-                        {{'settings.quotaSize' | translate:[] }}
-                    </ion-label>
-                    <ion-input type="number" text-right
+    <ion-list class="general">
+        <div *ngIf="settings">
+            <ion-item class="ion-text-wrap" color="list-element">
+                <ion-label>{{'settings.language' | translate }}</ion-label>
+                <ion-select [(ngModel)]="settings.language">
+                    <ion-select-option value="de">Deutsch</ion-select-option>
+                    <ion-select-option value="en">English</ion-select-option>
+                    <ion-select-option value="it">Italiano</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item  color="list-element">
+                <ion-label style="max-width: 100%;">
+                    {{'settings.downloadSize' | translate }}
+                </ion-label>
+                <div style="width: 50px;" slot="end">
+                    <ion-input class="ion-no-margin ion-text-right" type="number" inputmode="decimal"
+                               [(ngModel)]="settings.downloadSize"></ion-input>
+                </div>
+                <ion-label slot="end" class="ion-no-margin ion-margin-vertical">&nbsp;MB</ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" color="list-element">
+                <ion-label>
+                    {{'settings.downloadOnStart' | translate }}
+                </ion-label>
+                <ion-toggle slot="end" [(ngModel)]="settings.downloadOnStart"></ion-toggle>
+            </ion-item>
+            <ion-item class="ion-text-wrap" color="list-element">
+                <ion-label>
+                    {{'settings.downloadWLAN' | translate }}
+                </ion-label>
+                <ion-toggle slot="end" [(ngModel)]="settings.downloadWlan"></ion-toggle>
+            </ion-item>
+            <ion-item class="ion-text-wrap" color="list-element">
+                <ion-label style="max-width: 100%;">
+                    {{'settings.quotaSize' | translate }}
+                </ion-label>
+                <div style="width: 100px;" slot="end">
+                    <ion-input type="number" inputmode="decimal" class="ion-no-margin ion-text-right"
                                [(ngModel)]="settings.quotaSize"></ion-input>
-                </ion-item>
-                <ion-item-group>
-                    <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
-                    <ion-item color="list-element">
-                        <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' | translate:[] }}:
-                            {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
-                        </ion-label>
-                        <ion-button class="ilias-list-action-button" round color="light" slot="end" (click)="deleteAllFilesPrompt()">
-                            <ion-icon name="trash" color="primary"></ion-icon>
-                        </ion-button>
-                    </ion-item>
-                </ion-item-group>
-                <ion-col>
-                    <ion-button expand="block" (click)="saveSettings()" >{{ 'Save' | translate:[] }}
-                    </ion-button>
-                </ion-col>
-            </div>
-            <ion-grid *ngIf="!settings">
-                <ion-row>
-                    <ion-col>
-                        <ion-spinner class="centered"></ion-spinner>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-list>
-
-        <!-- <ion-list *ngSwitchCase="'users'">
-            <div padding-top *ngIf="settings">
-            <ion-item-group *ngFor="let installation of installationsWithUsers">
-                <ion-item-divider color="list-element">{{installation.title}}</ion-item-divider>
-                <ion-item *ngFor="let userDiskSpace of usersPerInstallation[installation.id]" button-right color="list-element">
-                    <ion-label [ngClass]="{'activeUser' : userDiskSpace.user.id == loggedInUser.id}">{{userDiskSpace.user.iliasLogin}} ({{userDiskSpace.diskSpace | fileSize}})</ion-label>
-                    <button class="ilias-list-action-button" ion-button round color="light" item-right
-                            (click)="deleteLocalUserDataPrompt(userDiskSpace.user)">
-                        <ion-icon name="trash" color="primary"></ion-icon>
-                    </button>
-                </ion-item>
-            </ion-item-group>
+                </div>
+            </ion-item>
             <ion-item-group>
-                <ion-item-divider color="list-element">{{ 'settings.summary' | translate:[] }}</ion-item-divider>
-                <ion-item button-right color="list-element">
-                    <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' |
-                        translate:[] }}:
+                <ion-item-divider color="list-element">{{ 'settings.summary' | translate }}</ion-item-divider>
+                <ion-item color="list-element">
+                    <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' | translate:[] }}:
                         {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
                     </ion-label>
-                    <button class="ilias-list-action-button" ion-button round color="light" item-right (click)="deleteAllFilesPrompt()">
+                    <ion-button class="ilias-list-action-button" round color="light" slot="end" (click)="deleteAllFilesPrompt()">
                         <ion-icon name="trash" color="primary"></ion-icon>
-                    </button>
+                    </ion-button>
                 </ion-item>
             </ion-item-group>
-            </div>
-            <ion-grid *ngIf="!settings">
-                <ion-row>
-                    <ion-col>
-                        <ion-spinner class="centered"></ion-spinner>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-list> -->
-    </ng-container>
+            <ion-col>
+                <ion-button expand="block" (click)="saveSettings()" >{{ 'Save' | translate }}
+                </ion-button>
+            </ion-col>
+        </div>
+        <ion-grid *ngIf="!settings">
+            <ion-row>
+                <ion-col>
+                    <ion-spinner class="centered"></ion-spinner>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-list>
 
 </ion-content>
-
-<!-- <ion-footer>
-    <ion-toolbar>
-        <ion-spinner [paused]="!footerToolbar.isLoading" *ngIf="footerToolbar.isLoading"></ion-spinner>
-        <div *ngIf="footerToolbar.isLoading">{{ footerToolbar.loadingText }}</div>
-    </ion-toolbar>
-</ion-footer> -->
