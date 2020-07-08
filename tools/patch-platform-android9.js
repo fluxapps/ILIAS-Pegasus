@@ -11,11 +11,20 @@ replaceInFile(
 );
 
 function replaceInFile(file, match, replace) {
-    fs.readFile(file, "utf8", function (err,data) {
-        if (err) return console.log(err);
-        let result = data.replace(match, replace);
-        fs.writeFile(file, result, "utf8", function (err) {
-            if (err) return console.log(err);
+    if (fs.existsSync(file)) {
+        fs.readFile(file, "utf8", (err,data) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            let result = data.replace(match, replace);
+            fs.writeFile(file, result, "utf8", (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            });
         });
-    });
+    } else {
+        console.info("Skip android permission patch, platform not installed");
+    }
 }
