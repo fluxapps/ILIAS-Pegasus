@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget android-versionCode="2020050501" id="ch.studerraimann.ilias.adt" ios-CFBundleVersion="20200505.1" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MyEform</name>
+<widget android-versionCode="2020052601" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20200526.1" version="4.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="info@studer-raimann.ch" href="https://www.studer-raimann.ch/">studer + raimann ag</author>
     <content src="index.html"/>
@@ -50,6 +50,9 @@
         <preference name="deployment-target" value="12.0.0"/>
         <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
             <string>To locate you</string>
+        </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryAddUsageDescription">
+            <string>This permission is required to save photos or movies to your media library.</string>
         </edit-config>
         <icon height="57" src="resources/ios/icon/icon.png" width="57"/>
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114"/>
@@ -136,9 +139,4 @@
     <plugin name="cordova-plugin-file-opener2" spec="2.2.0">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="28.+"/>
     </plugin>
-    <allow-navigation href="http://192.168.99.79:8100" sessionid="11c2f33c"/>
-    <allow-navigation href="*"/>
-    <allow-intent href="http://*/*"/>
-    <allow-intent href="https://*/*"/>
 </widget>
-

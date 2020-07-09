@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /* DESCRIPTION: This script sets the branding of the app, it
  * -> replaces the folder ./resources with the icon and splash screen with the one corresponding to the chosen brand
  * -> replaces the folder ./src/assets with the one corresponding to the chosen brand
@@ -21,11 +22,11 @@ function execute() {
     let platforms = "";
     try {
         [brand, platforms] = getFlagValues();
-        let config = loadJSON(`branding/brands/${brand}/config.json`);
+        const config = loadJSON(`branding/brands/${brand}/config.json`);
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
         setDirectoryContent("src/assets/scormplayer", "branding/common/scormplayer");
-        setFile("build.json", `branding/brands/${brand}/build.json`);
+        linkFile("build.json", `branding/brands/${brand}/build.json`);
         generateServerConfigFile(brand, config);
         setValuesInProjectConfig(config);
         generateLangFiles(brand);
@@ -87,19 +88,25 @@ function getFlagValueFromArgv(name) {
 
 // generate "src/assets/config.json"
 function generateServerConfigFile(brand, config) {
-    let config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
-    let config_out = { "installations": [] };
+    const config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
+    const config_out = { "installations": [] };
+    const installationMap = config_server.reduceRight((col, it) => col.set(it.id, it), new Map());
+    const brandInstallationIds = config.ilias_installation_ids;
 
-    for (let i in config.ilias_installation_ids) {
-        for (let j in config_server) {
-            if (config.ilias_installation_ids[i] === config_server[j].id)
-                config_out.installations.push(config_server[j]);
+    const missingIds = [];
+    for (let i of brandInstallationIds) {
+        if (!installationMap.has(i)) {
+            missingIds.push(i);
+            continue;
         }
+
+        config_out.installations.push(installationMap.get(i));
     }
 
-    if (config_out.installations.length !== config.ilias_installation_ids.length) {
-        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(config.ilias_installation_ids)} . `;
-        msg += `this selection of ids is set in 'src/assets/${brand}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
+    if (missingIds.length > 0) {
+        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(brandInstallationIds)}. `;
+        msg += `The following ids are missing ${JSON.stringify(missingIds)}. `;
+        msg += `This selection of ids is set in 'src/assets/${brand}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
         throw new Error(msg);
     }
 
@@ -143,8 +150,9 @@ function generateLangFiles(brand) {
         let lng_tree = loadJSON(`branding/common/i18n/${file}`);
         let path_lng_mod = `branding/brands/${brand}/assets/i18n/${file}`;
 
-        if (FS.existsSync(path_lng_mod))
-            insert(loadJSON(path_lng_mod), lng_tree);
+        if (FS.existsSync(path_lng_mod)) {
+            lng_tree = insert(loadJSON(path_lng_mod), lng_tree);
+        }
 
         const path = "src/assets/i18n";
         if (!FS.existsSync(path))
@@ -192,8 +200,16 @@ function setValueInTag(line, tag, pre, value, post) {
 }
 
 // set file at target to the one at source
-function setFile(path_to, path_from) {
-    FS.writeFileSync(path_to, FS.readFileSync(path_from));
+function linkFile(path_to, path_from) {
+    unlinkFile(path_to);
+    FS.linkSync(path_from, path_to);
+}
+
+// set file at target to the one at source
+function unlinkFile(path) {
+    if (FS.existsSync(path)) {
+        FS.unlinkSync(path);
+    }
 }
 
 // set directory at target to the one at source
@@ -208,14 +224,7 @@ function setDirectoryContent(path_to, path_from) {
 // delete directory
 function deleteDirSync(path) {
     if (FS.existsSync(path)) {
-        FS.readdirSync(path).forEach(function(file) {
-            let itemPath = path + "/" + file;
-            if (FS.lstatSync(itemPath).isDirectory())
-                deleteDirSync(itemPath);
-            else
-                FS.unlinkSync(itemPath);
-        });
-        FS.rmdirSync(path);
+        FS.rmdirSync(path, {recursive: true});
     }
 }
 
@@ -229,7 +238,7 @@ function copyDirSync(path_from, path_to) {
                 FS.mkdirSync(itemPath_to);
                 copyDirSync(itemPath_from, itemPath_to);
             } else {
-                FS.writeFileSync(itemPath_to, FS.readFileSync(itemPath_from));
+                linkFile(itemPath_to, itemPath_from);
             }
         });
     }
@@ -237,16 +246,7 @@ function copyDirSync(path_from, path_to) {
 
 // insert-operation for an object-tree of strings
 function insert(source, target) {
-    for(let key in source) {
-        if (typeof(source[key]) === "string") {
-            target[key] = source[key];
-        } else {
-            if (!target.hasOwnProperty(key)) {
-                target[key] = {};
-            }
-            insert(source[key], target[key]);
-        }
-    }
+    return Object.assign(target, source);
 }
 
 // load and parse a json-file
@@ -256,6 +256,8 @@ function loadJSON(file) {
 
 // stringify and write a json-file
 function writeJSON(file, data) {
+    // We have to unlink the file first in case the file is hard linked.
+    unlinkFile(file);
     FS.writeFileSync(file, JSON.stringify(data));
 }
 

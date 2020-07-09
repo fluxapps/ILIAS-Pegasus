@@ -33,9 +33,14 @@ function writeAngularEnvFile() {
     const isProductionBuild = env("PRODUCTION", "false").toString().toLowerCase() === "true";
 
 // `environment.ts` file structure
-    const envConfigFile = `export const environment = {
-   mapboxApiKey: "${mapboxApiKey}",
-   production: ${isProductionBuild}
+    const envConfigFile = `
+interface AppEnvironment {
+    readonly mapboxApiKey: string;
+    readonly production: boolean;
+}
+export const environment: AppEnvironment = {
+    mapboxApiKey: "${mapboxApiKey}",
+    production: ${isProductionBuild}
 };
 `;
     console.log(colors.magenta("The file `environment.ts` will be written with the following content: \n"));

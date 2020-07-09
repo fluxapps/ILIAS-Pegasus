@@ -1,9 +1,10 @@
+import { SafeUrl } from "@angular/platform-browser";
 import {GenericILIASObjectPresenter} from "./object-presenter";
 import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class CourseObjectPresenter extends GenericILIASObjectPresenter {
 
-    icon(): string {
+    icon(): string | SafeUrl {
         return ThemeProvider.getIconSrc("crs");
         //return "assets/icon/obj_course.svg";
     }

@@ -1,10 +1,11 @@
+import { SafeUrl } from "@angular/platform-browser";
 import {GenericILIASObjectPresenter} from "./object-presenter";
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class FileObjectPresenter extends GenericILIASObjectPresenter {
 
-    icon(): string {
+    icon(): string | SafeUrl {
         return ThemeProvider.getIconSrc("file");
         //return "assets/icon/obj_file.svg";
     }
