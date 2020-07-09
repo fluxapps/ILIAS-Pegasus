@@ -1,5 +1,6 @@
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import { TranslateModule } from "@ngx-translate/core";
 
 import {TabsPage} from "./tabs.page";
 import { NavController } from "@ionic/angular";
@@ -16,8 +17,11 @@ describe("TabsPage", () => {
         TestBed.configureTestingModule({
             declarations: [TabsPage],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            imports: [
+                TranslateModule.forRoot()
+            ],
             providers: [
-                { provide: NavController, useValue: spyNavController },
+                { provide: NavController, useValue: spyNavController }
             ]
         })
             .compileComponents();
