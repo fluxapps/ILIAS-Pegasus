@@ -1,4 +1,5 @@
 /** services */
+import { SafeUrl } from "@angular/platform-browser";
 import {ILIASAppUtils} from "../services/ilias-app-utils.service";
 import {FileService} from "../services/file.service";
 /** logging */
@@ -16,7 +17,7 @@ export interface ILIASObjectPresenter {
     /**
      * Returns the ionic icon name for this object
      */
-    icon(): string;
+    icon(): string | SafeUrl;
 
     /**
      * Returns the title
@@ -59,7 +60,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
         protected iliasObject: ILIASObject
     ) {}
 
-    icon(): string {
+    icon(): string | SafeUrl {
         return ThemeProvider.getIconSrc("link");
     }
 

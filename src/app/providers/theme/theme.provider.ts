@@ -1,4 +1,5 @@
 import {Injectable} from "@angular/core";
+import { SafeUrl } from "@angular/platform-browser";
 import {IconProvider} from "./icon.provider";
 import {ThemeSynchronizationService} from "../../services/theme/theme-synchronization.service";
 import {CssStyleService} from "../../services/theme/css-style.service";
@@ -17,7 +18,7 @@ export class ThemeProvider {
         private readonly themeSynch: ThemeSynchronizationService,
     ) {}
 
-    static getIconSrc(key: string): string {
+    static getIconSrc(key: string): string | SafeUrl {
         return IconProvider.getIconSrc(key);
     }
 

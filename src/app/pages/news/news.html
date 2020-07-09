@@ -13,7 +13,9 @@
     <ion-refresher
         (ionRefresh)="startNewsSync($event)"
         [closeDuration]="400"
-        [pullMin]="150">
+        [pullMin]="150"
+        slot="fixed"
+    >
         <ion-refresher-content id="refresher-content"
                                pullingIcon="arrow-down"
                                pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
@@ -22,26 +24,28 @@
     </ion-refresher>
 
     <ion-list color="list-element">
-        <ion-card *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
-                <ion-card-header>
-                        <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
-                        <ion-card-title> 
-                            <ion-avatar item-start>
-                                <img src="{{newsPresenter[1].icon()}}">
-                            </ion-avatar>
-                            {{newsPresenter[0].title}}
-                        </ion-card-title>
-                      </ion-card-header>
-                      <ion-card-content>
-                            <p class="info-text">{{newsPresenter[0].subtitle}}</p>
-                            <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
-                    </ion-card-content>
+        <ion-card *ngFor="let newsPresenter of newsPresenters"
+                  (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element"
+                  class="list-element">
+            <ion-card-header>
+                <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
+                <ion-card-title>
+                    <ion-avatar>
+                        <img [src]="newsPresenter[1].icon()">
+                    </ion-avatar>
+                    {{newsPresenter[0].title}}
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text">{{newsPresenter[0].subtitle}}</p>
+                <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
+            </ion-card-content>
 
         </ion-card>
         <ion-card *ngIf="newsPresenters === undefined">
             <ion-card-content>
                 <p class="info-text">{{ 'new-objects.no_new_items' | translate:[] }}</p>
-        </ion-card-content>
+            </ion-card-content>
         </ion-card>
     </ion-list>
 

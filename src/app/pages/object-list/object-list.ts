@@ -1,4 +1,5 @@
 import {Component, Inject, NgZone} from "@angular/core";
+import { SafeUrl } from "@angular/platform-browser";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
@@ -304,7 +305,7 @@ export class ObjectListPage {
     /**
      * method fot the template to get the source of the badge icon
      */
-    private getBadgeSrc(): string {
+    private getBadgeSrc(): string | SafeUrl {
         return ThemeProvider.getIconSrc("link");
     }
 

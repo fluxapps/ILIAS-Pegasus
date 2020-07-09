@@ -1,4 +1,4 @@
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from "@angular/platform-browser";
 import {Injectable} from "@angular/core";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {File} from "@ionic-native/file/ngx";
@@ -12,7 +12,7 @@ import {ThemeSynchronizationService} from "../../services/theme/theme-synchroniz
     providedIn: "root"
 })
 export class IconProvider {
-    private static src: Array<string | SafeResourceUrl> = [];
+    private static src: Map<string, string | SafeResourceUrl> = new Map<string, string | SafeResourceUrl>();
     private static defaultIconKey: string = "link";
     private icons: Array<{key: string, loadedName: string, asset: string}> = [
         {key: "crs", loadedName: "course.svg", asset: "assets/icon/obj_course.svg"},
@@ -32,15 +32,17 @@ export class IconProvider {
         private readonly sanitizer: DomSanitizer
     ) {}
 
-    static getIconSrc(key: string): string {
-        if(!(IconProvider.defaultIconKey in IconProvider.src)) {
+    static getIconSrc(key: string): string | SafeUrl {
+        if(!IconProvider.src.has(IconProvider.defaultIconKey)) {
             console.warn(`getIconSrc("${key}") of IconProvider called but the default key "${IconProvider.defaultIconKey}" is not set, returning undefined`);
             return undefined;
         }
 
-        if(IconProvider.src[key])
-            return IconProvider.src[key];
-        return IconProvider.src[IconProvider.defaultIconKey];
+        if(IconProvider.src.has(key)) {
+            return IconProvider.src.get(key);
+        }
+
+        return IconProvider.src.get(IconProvider.defaultIconKey);
     }
 
     async loadResources(): Promise<void> {
@@ -50,25 +52,22 @@ export class IconProvider {
                 const icon: {key: string, loadedName: string, asset: string} = this.icons[i];
                 const settings: Settings = await AuthenticationProvider.getUser().settings;
                 const fileName: string = `${settings.themeTimestamp}_${icon.loadedName}`;
-                let src: string;
-                let safeURL: SafeResourceUrl
+                let src: string | SafeResourceUrl;
                 try {
-                    src = (await this.filesystem.resolveLocalFilesystemUrl(`${path}${fileName}`)).toURL();
-                    console.log(`safe url is: ${safeURL}`)
-                    console.log("normal url is" , src)
-                    src = this.webview.convertFileSrc(src);
-                    safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(src)
+                    let fileSrc: string = (await this.filesystem.resolveLocalFilesystemUrl(`${path}${fileName}`)).toURL();
+                    fileSrc = this.webview.convertFileSrc(fileSrc);
+                    src = this.sanitizer.bypassSecurityTrustResourceUrl(fileSrc);
 
                 } catch (e) {
                     // if the custom icon is not available, use the default one
                     src = this.icons[i].asset;
                     console.warn(`unable to load custom icon ${fileName} in ${path}, resulted in error ${e.message}`);
                 }
-                IconProvider.src[icon.key] = safeURL;
+                IconProvider.src.set(icon.key, src);
             }
         } else {
             for(let i: number = 0; i < this.icons.length; i++) {
-                IconProvider.src[this.icons[i].key] = this.icons[i].asset;
+                IconProvider.src.set(this.icons[i].key, this.icons[i].asset);
             }
         }
     }
