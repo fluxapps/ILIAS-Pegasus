@@ -117,8 +117,10 @@ function generateServerConfigFile(brand, config) {
 // set values in "config.xml"
 function setValuesInProjectConfig(config) {
     // for each entry, the 'setValueInTag'-method is called until the tag was found once
+    const androidId = config.projectConfig.androidId || config.projectConfig.id;
     let toDoList = [
         {tag: "<widget ", pre: "id=\"", value: config.projectConfig.id, post: "\"", done: false},
+        {tag: "<widget ", pre: "android-packageName=\"", value: androidId, post: "\"", done: false},
         {tag: "<name>", pre: "<name>", value: config.projectConfig.name, post: "</name>", done: false},
         {tag: "<description>", pre: "<description>", value: config.projectConfig.description, post: "</description>", done: false}
     ];
