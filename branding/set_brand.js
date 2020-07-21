@@ -14,6 +14,7 @@
 
 const FS = require("fs");
 const OS = require("os");
+const deepmerge = require("deepmerge");
 let console_log = "";
 execute();
 
@@ -246,7 +247,7 @@ function copyDirSync(path_from, path_to) {
 
 // insert-operation for an object-tree of strings
 function insert(source, target) {
-    return Object.assign(target, source);
+    return deepmerge.all([target, source]);
 }
 
 // load and parse a json-file
