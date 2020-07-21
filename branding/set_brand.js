@@ -225,7 +225,7 @@ function setDirectoryContent(path_to, path_from) {
 // delete directory
 function deleteDirSync(path) {
     if (FS.existsSync(path)) {
-        FS.rmdirSync(path, {recursive: true});
+        FS.rmdirSync(path, {recursive: true, maxRetries: 3});
     }
 }
 
