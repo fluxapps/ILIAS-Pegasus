@@ -283,6 +283,10 @@ PROJECTCONFIG ... config.xml + branding/brands/${brand}/config.json => config.xm
 LANGUAGE ........ branding/common/i18n/* + branding/brands/${brand}/assets/i18n/* => src/assets/i18n/*
 BUILD ........... branding/brands/${brand}/build.json => build.json
 
+PLATFORM ........ ${process.platform}
+NODEJS .......... ${process.versions.node}
+V8 .............. ${process.versions.v8}
+
 CONSOLE OUTPUT
 ${console_log}`;
     FS.writeFileSync("branding/set_brand.log", log);
