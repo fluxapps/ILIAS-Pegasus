@@ -16,6 +16,7 @@ import { LeaveAppAction, LeaveAppDialog, LeaveAppDialogNavParams } from "../fall
 export class OpenObjectInILIASAction extends ILIASObjectAction {
 
     private readonly log: Logger = Logging.getLogger(OpenObjectInILIASAction.name);
+    private openDialog: Promise<HTMLIonModalElement> | undefined = undefined;
 
     constructor(
         readonly title: string,
@@ -38,8 +39,14 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
     }
 
     private async openUserDialog(leaveAction: LeaveAppAction): Promise<void> {
+        if (this.openDialog !== undefined) {
+            return;
+        }
+
         this.log.debug(() => "Open leave app modal.");
-        const modal: HTMLIonModalElement = await this.modal.create({
+
+        // Safe modal ref before resolving promise, which stops the user from opening it more than once
+        this.openDialog = this.modal.create({
             component: LeaveAppDialog,
             componentProps: <LeaveAppDialogNavParams>{
                 leaveApp: (): void => {
@@ -49,7 +56,10 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
             },
             cssClass: "modal-fullscreen",
         });
+        const modal: HTMLIonModalElement = await this.openDialog;
         await modal.present();
+        await modal.onDidDismiss();
+        this.openDialog = undefined;
     }
 
     private openBrowserIos(link: string): void {
