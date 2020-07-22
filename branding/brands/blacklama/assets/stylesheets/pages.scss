@@ -394,13 +394,30 @@ ion-content.page_settings {
 
 // app/fallback/open-browser/leave-app.dialog.scss
 // --------------------------------------------------
+.page_header_leave_app_dialog {
+    ion-toolbar {
+        display: none;
+    }
+}
 .page_leave_app_dialog {
 
     #webr-icon {
+        margin-top: var(--ion-safe-area-top, 0);
         height: auto !important;
-        width: 20vh !important;
-        margin: auto !important;
+        width: 60% !important;
+
+        @media screen and (orientation:landscape) {
+            height: 40% !important;
+            width: auto !important;
+        }
+
         display: block !important;
+    }
+
+    .return-to-app-row {
+        @media screen and (orientation:landscape) {
+            padding-top: 0;
+        }
     }
 
     h1 {
