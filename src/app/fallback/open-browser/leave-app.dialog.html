@@ -1,28 +1,23 @@
 <ion-header no-border>
-    <ion-toolbar color="primary">
-      <ion-buttons slot="start">
-      <ion-button slot="icon-only" (click)="dismiss()">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
+    <ion-toolbar color="primary"></ion-toolbar>
 </ion-header>
 <ion-content color="primary" class="page_leave_app_dialog">
 
-  <ion-img class=enter-left-bounce src="assets/img/pony_exit.svg"></ion-img>
+    <ion-img id="webr-icon" class="enter-left-bounce" src="assets/img/pony_exit.svg"></ion-img>
     <ion-grid color="white">
-      <ion-row class="ion-justify-content-center ion-padding">
-      <h1 class="ion-text-center" color="white">
-        <!-- You are leaving the ILIAS Pegasus App -->
-        {{'fallback.browser' | translate:{app_name: (this.appName | async)} }}
-      </h1>
-      </ion-row>
-      <ion-row class="ion-padding ion-justify-content-center">
-        <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button" [color]="themeIonicContrastColor">{{'fallback.browser_ok' | translate }}</ion-button>
-      </ion-row>
-      <ion-row class="ion-padding ion-justify-content-center">
-        <a class="ion-text-center" id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate }}</a>
-      </ion-row>
+        <ion-row class="ion-justify-content-center ion-padding">
+            <h1 class="ion-text-center" color="white">
+                <!-- You are leaving the ILIAS Pegasus App -->
+                {{'fallback.browser' | translate:{app_name: (this.appName | async)} }}
+            </h1>
+        </ion-row>
+        <ion-row class="ion-padding ion-justify-content-center go-to-external-source-row">
+            <ion-button shape="round" fill="outline" (click)="leaveApp()" id="middle-button"
+                        [color]="themeIonicContrastColor">{{'fallback.browser_ok' | translate }}</ion-button>
+        </ion-row>
+        <ion-row class="ion-padding ion-justify-content-center return-to-app-row">
+            <a class="ion-text-center" id="middle-button" (click)="dismiss()">{{'fallback.browser_no' | translate }}</a>
+        </ion-row>
     </ion-grid>
 
 </ion-content>
