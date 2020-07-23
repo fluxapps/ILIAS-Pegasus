@@ -4,13 +4,13 @@ import {HttpResponse} from "../../providers/http";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {ILIASObject} from "../../models/ilias-object";
 import {User} from "../../models/user";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {Zip} from "@ionic-native/zip/ngx";
 import {LearningModule} from "../models/learning-module";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
 import {LoadingPage} from "../../fallback/loading/loading.component";
+import {FileStorageService} from "../../services/filesystem/file-storage.service";
 
 export interface LearningModuleLoader {
     /**
@@ -29,7 +29,7 @@ export const LEARNING_MODULE_LOADER: InjectionToken<LearningModuleLoader> = new 
 export class RestLearningModuleLoader implements LearningModuleLoader {
     constructor(
         protected readonly zip: Zip,
-        protected readonly userStorage: UserStorageService,
+        protected readonly fileStorage: FileStorageService,
         @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
         @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
@@ -75,8 +75,8 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         console.log(`UNZIPPING in ${localTmpZipDir} file ${tmpZipFile} => dir ${request.zipDirName}`);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
         LoadingPage.progress.next(.9);
-        await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
-        await this.userStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
+        await this.fileStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
+        await this.fileStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
         LoadingPage.progress.next(1);
 
         // save the lm in the local database

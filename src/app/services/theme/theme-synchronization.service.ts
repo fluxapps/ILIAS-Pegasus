@@ -1,5 +1,4 @@
 import {Inject, Injectable} from "@angular/core";
-import {UserStorageService} from "../filesystem/user-storage.service";
 import {LINK_BUILDER, LinkBuilder} from "../link/link-builder.service";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
@@ -7,6 +6,7 @@ import {ILIASRestProvider, ThemeData} from "../../providers/ilias-rest.provider"
 import {Settings} from "../../models/settings";
 import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
 import {File} from "@ionic-native/file/ngx";
+import {FileStorageService} from "../filesystem/file-storage.service";
 
 @Injectable({
     providedIn: "root"
@@ -14,7 +14,7 @@ import {File} from "@ionic-native/file/ngx";
 export class ThemeSynchronizationService {
     constructor(
         private readonly rest: ILIASRestProvider,
-        private readonly userStorage: UserStorageService,
+        private readonly userStorage: FileStorageService,
         @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
         private readonly file: File

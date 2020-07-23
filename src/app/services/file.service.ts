@@ -1,5 +1,5 @@
 /** angular */
-import {Inject, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {Events, Platform} from "@ionic/angular";
 /** ionic-native */
 import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file/ngx";
@@ -22,8 +22,7 @@ import {Logging} from "./logging/logging.service";
 /** misc */
 import {isNullOrUndefined} from "../util/util.function";
 import {AuthenticationProvider} from "../providers/authentication.provider";
-import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
-import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../learningmodule/services/learning-module-manager";
+import {UserStorageMamager, StorageUtilization} from "./filesystem/user-storage.mamager";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -35,7 +34,7 @@ export interface DownloadProgress {
 @Injectable({
     providedIn: "root"
 })
-export class FileService {
+export class FileService implements StorageUtilization {
 
     private log: Logger = Logging.getLogger(FileService.name);
 
@@ -46,8 +45,6 @@ export class FileService {
         protected translate: TranslateService,
         private readonly file: File,
         private readonly network: Network,
-        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
-        @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleManager
     ) {}
 
     /**
@@ -67,7 +64,6 @@ export class FileService {
     }
 
     private async createDirectoryPath(path: string): Promise<void> {
-
         let basePath: string = "";
         if (this.platform.is("android")) {
           basePath = this.file.externalApplicationStorageDirectory;
@@ -93,7 +89,6 @@ export class FileService {
      * @returns {Promise<any>}
      */
     async download(fileObject: ILIASObject, forceDownload: boolean = false): Promise<FileEntry> {
-
         const user: User = await User.find(fileObject.userId);
         const settings: Settings = await Settings.findByUserId(user.id);
 
@@ -116,6 +111,7 @@ export class FileService {
         const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
         Log.describe(this, "Download Complete: ", fileEntry);
         await this.storeFileVersionLocal(fileObject);
+        await UserStorageMamager.addObjectToUserStorage(fileObject.userId, fileObject.id, this);
         return fileEntry;
     }
 
@@ -156,13 +152,17 @@ export class FileService {
      * Deletes the local object on the device
      */
     async removeObject(iliasObject: ILIASObject): Promise<void> {
-        if(iliasObject.type === "file" || iliasObject.isLearnplace() || iliasObject.type === "html") {
+        if(
+            iliasObject.type === "file" ||
+            iliasObject.isLearnplace() ||
+            iliasObject.type === "htlm" ||
+            iliasObject.type === "sahs"
+        ) {
             await this.removeFile(iliasObject);
             return;
         }
 
         await iliasObject.setIsFavorite(0);
-        iliasObject.isOfflineAvailable = false;
         await iliasObject.save();
     }
 
@@ -173,52 +173,23 @@ export class FileService {
      */
     async removeFile(fileObject: ILIASObject): Promise<void> {
         await fileObject.setIsFavorite(0);
-        fileObject.isOfflineAvailable = false;
         await fileObject.save();
 
         const user: User = await User.find(fileObject.userId);
-        if(fileObject.isLearnplace()) {
-            await this.learnplaceManager.remove(fileObject.objId, fileObject.userId);
-            return;
-        }
-        if(fileObject.type == "html") {
-            await this.learningModuleManager.remove(fileObject.objId, fileObject.userId);
-            return;
-        }
         if (fileObject.data.hasOwnProperty("fileName")) {
-          const storageLocation: string = this.getStorageLocation(user, fileObject);
+            await UserStorageMamager.removeObjectFromUserStorage(fileObject.userId, fileObject.id, this);
+            const storageLocation: string = this.getStorageLocation(user, fileObject);
 
-          // There's no local file to delete.
-          if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
-            return;
+            // There's no local file to delete.
+            if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
+                return;
 
-          // We delete the file and save the metadata.
-          await this.file.removeFile(storageLocation, fileObject.data.fileName);
-          await this.resetFileVersionLocal(fileObject);
+            // We delete the file and save the metadata.
+            await this.file.removeFile(storageLocation, fileObject.data.fileName);
+            await this.resetFileVersionLocal(fileObject);
 
         } else {
-          throw new Error("Metadata of file object is not (fully) present");
-        }
-    }
-
-    /**
-     * Remove all local files recursively under the given container ILIAS object
-     * @param containerObject
-     */
-    async removeRecursive(containerObject: ILIASObject): Promise<void> {
-
-        try {
-          this.log.trace(() => "Start recursive removal of files");
-          const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
-          iliasObjects.push(containerObject);
-
-          for(const fileObject of iliasObjects)
-              await this.removeObject(fileObject);
-          this.log.info(() => "Deleting Files complete");
-        }
-        catch (error) {
-          this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
-          throw error;
+            throw new Error("Metadata of file object is not (fully) present");
         }
     }
 
@@ -315,6 +286,11 @@ export class FileService {
                 resolve(0);
             });
         });
+    }
+
+    async getUsedStorage(objectId: number, userId: number): Promise<number> {
+        const io: ILIASObject = await ILIASObject.find(objectId);
+        return io.data.fileSize;
     }
 
     /**

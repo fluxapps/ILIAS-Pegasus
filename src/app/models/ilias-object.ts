@@ -1,10 +1,8 @@
 import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {FileData} from "./file-data";
 import {User} from "./user";
-/** services */
 import {SQLiteDatabaseService} from "../services/database.service";
-import {FileService} from "../services/file.service";
-/** logging */
+import {UserStorageService} from "../services/filesystem/user-storage.service";
 import {Log} from "../services/log.service";
 
 export class ILIASObject extends ActiveRecord {
@@ -274,6 +272,16 @@ export class ILIASObject extends ActiveRecord {
     }
 
     /**
+     * Checks whether the object is in cache, meaning that it is offline available
+     * and not a favorite
+     */
+    async isCache(): Promise<boolean> {
+        if(!this.isOfflineAvailable) return false;
+        const underFav: boolean = await this.objectIsUnderFavorite();
+        return underFav && !this.isFavorite;
+    }
+
+    /**
      * Checks whether the object is contained within a favorite-object
      */
     async objectIsUnderFavorite(): Promise<boolean> {
@@ -301,7 +309,7 @@ export class ILIASObject extends ActiveRecord {
     /**
      * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
      */
-    async removeFromFavorites(fileService: FileService, ignoreDeletionErrors: boolean = false): Promise<void> {
+    async removeFromFavorites(userStorage: UserStorageService, ignoreDeletionErrors: boolean = false): Promise<void> {
         await this.setIsFavorite(0);
         const underFavorite: boolean = await this.objectIsUnderFavorite();
         const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
@@ -312,9 +320,8 @@ export class ILIASObject extends ActiveRecord {
             const newObjects: Array<ILIASObject> = await ILIASObject.findByParentRefId(ilObj.refId, this.userId);
             for (let i: number = 0; i < newObjects.length; i++)
                 if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
-
             try {
-                await fileService.removeObject(ilObj);
+                await userStorage.removeObject(ilObj);
             } catch (e) {
                 if(!ignoreDeletionErrors) throw e;
             }

@@ -496,7 +496,7 @@ export class ObjectListPage {
             actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
                 iliasObject,
-                this.file
+                this.userStorage
             ));
         }
     }

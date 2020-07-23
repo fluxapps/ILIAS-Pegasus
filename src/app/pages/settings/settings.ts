@@ -8,7 +8,6 @@ import {FileService} from "../../services/file.service";
 import {ILIASObject} from "../../models/ilias-object";
 import {Settings} from "../../models/settings";
 import {User} from "../../models/user";
-import {FileData} from "../../models/file-data";
 import {DesktopItem} from "../../models/desktop-item";
 /** logging */
 import {Log} from "../../services/log.service";
@@ -16,9 +15,11 @@ import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {CONFIG_PROVIDER, ConfigProvider, ILIASConfig, ILIASInstallation} from "../../config/ilias-config";
-import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {File} from "@ionic-native/file/ngx";
+import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 
 @Component({
     selector: "page-settings",
@@ -47,10 +48,11 @@ export class SettingsPage {
                 public translate: TranslateService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ConfigProvider,
                 public alertCtr: AlertController,
-                public dataProvider: DataProvider,
                 public fileService: FileService,
+                private readonly userStorage: UserStorageService,
                 private readonly config: Config,
-                private readonly ngZone: NgZone) {
+                private readonly ngZone: NgZone,
+                private readonly file: File) {
     }
 
     ionViewDidEnter(): void {
@@ -80,7 +82,7 @@ export class SettingsPage {
             if (!this.usersPerInstallation[user.installationId]) {
                 this.usersPerInstallation[user.installationId] = [];
             }
-            const diskSpace: number = await FileData.getTotalDiskSpaceForUser(user);
+            const diskSpace: number = await UserStorageMamager.getUsedStorage(user.id);
             this.usersPerInstallation[user.installationId].push({
                 user: user,
                 diskSpace: diskSpace
@@ -213,10 +215,14 @@ export class SettingsPage {
         await alert.present();
     }
 
+    private async deleteCache(user: User): Promise<void> {
+        await this.userStorage.deleteAllCache(user.id);
+    }
+
     private async deleteFiles(user: User): Promise<void> {
         const iliasObjects: Array<ILIASObject> = await DesktopItem.findByUserId(user.id);
-        for (const iliasObject of iliasObjects)
-            await this.fileService.removeRecursive(iliasObject);
+        for(const iliasObject of iliasObjects)
+            await this.userStorage.removeRecursive(iliasObject);
     }
 
     private async showUnknownErrorOccurredAlert(): Promise<void> {

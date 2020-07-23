@@ -40,6 +40,11 @@ export class User extends ActiveRecord {
     lastVersionLogin: string;
 
     /**
+     * Total storage used by the user
+     */
+    totalUsedStorage: number = 0;
+
+    /**
      * Holds the app settings
      */
     protected _settings: Settings;
@@ -52,7 +57,8 @@ export class User extends ActiveRecord {
             "accessToken",
             "refreshToken",
             "lastTokenUpdate",
-            "lastVersionLogin"
+            "lastVersionLogin",
+            "totalUsedStorage"
         ]));
     }
 
@@ -77,7 +83,7 @@ export class User extends ActiveRecord {
     static find(id: number): Promise<User> {
         const user = new User(id);
         return user.read()
-          .then(activeRecord => activeRecord as User)
+            .then(activeRecord => activeRecord as User)
     }
 
 
@@ -172,17 +178,17 @@ export class User extends ActiveRecord {
      * Find all users of this app
      */
     static findAllUsers(): Promise<Array<User>> {
-       return SQLiteDatabaseService.instance()
-           .then(db => db.query("SELECT * FROM users"))
-           .then((response: any) => {
-               const users = [];
-               for (let i = 0; i < response.rows.length; i++) {
-                   const user = new User();
-                   user.readFromObject(response.rows.item(i));
-                   users.push(user);
-               }
+        return SQLiteDatabaseService.instance()
+            .then(db => db.query("SELECT * FROM users"))
+            .then((response: any) => {
+                const users = [];
+                for (let i = 0; i < response.rows.length; i++) {
+                    const user = new User();
+                    user.readFromObject(response.rows.item(i));
+                    users.push(user);
+                }
 
-               return Promise.resolve(users);
-           });
+                return Promise.resolve(users);
+            });
     }
 }

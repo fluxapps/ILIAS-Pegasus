@@ -28,6 +28,7 @@ import {DataProvider} from "../../providers/data-provider.provider";
 import {TranslateService} from "@ngx-translate/core";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {ObjectListNavParams} from "../object-list/object-list.nav-params";
+import {UserStorageService} from "../../services/filesystem/user-storage.service";
 
 @Component({
     selector: "page-object-details",
@@ -49,6 +50,7 @@ export class ObjectDetailsPage {
                 public dataProvider: DataProvider,
                 public sync: SynchronizationService,
                 public file: FileService,
+                public userStorage: UserStorageService,
                 public alert: AlertController,
                 public toast: ToastController,
                 public translate: TranslateService,
@@ -146,7 +148,7 @@ export class ObjectDetailsPage {
             this.actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
                 this.object,
-                this.file)
+                this.userStorage)
             );
             this.actions.push(new SynchronizeAction(
                 this.translate.instant("actions.synchronize"),

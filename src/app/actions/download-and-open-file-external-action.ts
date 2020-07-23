@@ -17,7 +17,6 @@ import {OfflineException} from "../exceptions/OfflineException";
 import {FileService} from "../services/file.service";
 import {SynchronizationService} from "../services/synchronization.service";
 import {LoadingPage, LoadingPageType} from "../fallback/loading/loading.component";
-import {catchError} from "rxjs/operators";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
 

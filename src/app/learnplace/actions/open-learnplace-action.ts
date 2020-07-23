@@ -1,9 +1,10 @@
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
-import {LearnplaceLoader} from "../services/loader/learnplace";
 import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
+import {LearnplaceManager} from "../services/learnplace.management";
+import {ILIASObject} from "../../models/ilias-object";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -14,7 +15,7 @@ import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-param
 export class OpenLearnplaceAction extends ILIASObjectAction {
 
     constructor(
-        private readonly loader: LearnplaceLoader,
+        private readonly manager: LearnplaceManager,
         private readonly nav: NavController,
         private readonly learnplaceObjectId: number,
         private readonly learnplaceName: string,
@@ -30,7 +31,12 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         LoadingPage.type = LoadingPageType.learnplace;
         await loadingPage.present();
         try {
-            await this.loader.load(this.learnplaceObjectId);
+            // load the learnplace if not contained in favorites
+            // TODO how to handle changes of ILIAS object?
+            const ilObj: ILIASObject = await ILIASObject.find(this.learnplaceObjectId);
+            if(!ilObj.isFavorite && !await ilObj.objectIsUnderFavorite())
+                await this.manager.load(this.learnplaceObjectId);
+            // open page for learnplace
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
             LearnplaceNavParams.learnplaceName = this.learnplaceName;
             await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);
