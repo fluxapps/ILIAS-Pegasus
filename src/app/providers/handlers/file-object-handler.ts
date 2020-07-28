@@ -1,33 +1,36 @@
 /** angular */
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 /** ilias */
-import {ILIASRestProvider} from "../ilias-rest.provider";
-import {DataProviderILIASObjectHandler} from "./ilias-object-handler";
+import { ILIASRestProvider } from "../ilias-rest.provider";
+import { DataProviderILIASObjectHandler } from "./ilias-object-handler";
 /** models */
-import {User} from "../../models/user";
-import {ILIASObject} from "../../models/ilias-object";
-import {FileData} from "../../models/file-data";
+import { User } from "../../models/user";
+import { ILIASObject } from "../../models/ilias-object";
+import { FileData } from "../../models/file-data";
 /** misc */
-import {FileService} from "../../services/file.service";
+import { FileService } from "../../services/file.service";
+import { FileData as FileMetaData } from "../ilias-rest.provider";
 
 @Injectable({
     providedIn: "root"
 })
 export class DataProviderFileObjectHandler implements DataProviderILIASObjectHandler {
 
-    constructor(protected rest: ILIASRestProvider,
-                       protected file: FileService) {
+    constructor(
+        private readonly rest: ILIASRestProvider,
+        private readonly file: FileService
+    ) {
     }
 
     onSave(iliasObject: ILIASObject, user: User): Promise<ILIASObject> {
         return this.getFileMetaData(iliasObject, user);
     }
 
-    onDelete(iliasObject: ILIASObject, user: User): Promise<any> {
+    async onDelete(iliasObject: ILIASObject, user: User): Promise<void> {
         // Note: Order matters! FileService::remove still needs FileData
-        return this.file.removeFile(iliasObject)
-            .then(() => FileData.find(iliasObject.id))
-            .then(fileData => fileData.destroy());
+        await this.file.removeFile(iliasObject)
+        const fileData = await FileData.find(iliasObject.id);
+        await fileData.destroy();
     }
 
     /**
@@ -36,22 +39,19 @@ export class DataProviderFileObjectHandler implements DataProviderILIASObjectHan
      * @param user
      * @returns {Promise<ILIASObject>}
      */
-    getFileMetaData(iliasObject: ILIASObject, user: User): Promise<ILIASObject> {
+    async getFileMetaData(iliasObject: ILIASObject, user: User): Promise<ILIASObject> {
 
-        let fileMetaData;
+        const fileMetaData: FileMetaData = await this.rest.getFileData(iliasObject.refId, user, 120000);
+        const localFileData: FileData = await FileData.find(iliasObject.id);
 
-        return this.rest.getFileData(iliasObject.refId, user, 120000)
-            .then(aFileMetaData => {
-                fileMetaData = aFileMetaData;
-                return FileData.find(iliasObject.id);
-            }).then((fileData: FileData) => {
-                fileData.readFromObject(fileMetaData);
-                iliasObject.needsDownload = fileData.needsDownload();
-                return fileData.save() as Promise<ILIASObject>;
-            }).then(() => {
-                iliasObject.data = Object.assign(iliasObject.data, fileMetaData);
-                return iliasObject.save() as Promise<ILIASObject>;
-            });
+        localFileData.readFromObject(fileMetaData);
+        iliasObject.needsDownload = localFileData.needsDownload();
+        await localFileData.save();
+
+        iliasObject.data = Object.assign(iliasObject.data, fileMetaData);
+        await iliasObject.save();
+
+        return iliasObject;
     }
 
 }
