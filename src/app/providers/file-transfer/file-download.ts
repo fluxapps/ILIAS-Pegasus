@@ -68,13 +68,13 @@ export class FileDownloaderImpl implements FileDownloader{
      * @throws {HttpRequestError} Thrown if the download of the resource failed.
      */
     async download(options: DownloadRequestOptions): Promise<HttpResponse> {
-        console.log(`LOADING ${options.url}`);
         try {
             const requestId: number = this.generateRequestId();
             this.log.trace(() => `Download-${requestId}: Clear cookies for request.`);
             this.http.clearCookies();
             this.log.trace(() => `Download-${requestId}: Redirects enabled: ${options.followRedirects}`);
             this.http.setFollowRedirect(options.followRedirects);
+            this.log.trace(() => `Download-${requestId}: Download url: "${options.url}", to "${options.filePath}"`);
             const response: HTTPResponseWorkaround =
                 (await this.http.downloadFile(options.url, options.body, options.headers, options.filePath)) as HTTPResponseWorkaround;
 
