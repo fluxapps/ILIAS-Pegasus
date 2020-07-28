@@ -40,11 +40,13 @@ import { LeaveAppDialog } from "./fallback/open-browser/leave-app.dialog";
 import { RoamingFallbackScreen } from "./fallback/roaming/roaming-fallback.component";
 import { WifiFallbackScreen } from "./fallback/wifi/wifi-fallback.component";
 import {
-    OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY, OpenHtmlLearningModuleAction,
+    OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,
+    OpenHtmlLearningModuleAction,
     OpenHtmlLearningModuleActionFunction
 } from "./learningmodule/actions/open-html-learning-module-action";
 import {
-    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY, OpenScormLearningModuleAction,
+    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+    OpenScormLearningModuleAction,
     OpenScormLearningModuleActionFunction
 } from "./learningmodule/actions/open-scorm-learning-module-action";
 /** learning modules */
@@ -70,7 +72,7 @@ import { ILIASLearnplaceAPI, LEARNPLACE_API } from "./learnplace/providers/rest/
 /** learnplaces */
 // services for learnplaces
 import { LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl } from "./learnplace/services/learnplace.management";
-import { LEARNPLACE_LOADER, LearnplaceLoader, RestLearnplaceLoader } from "./learnplace/services/loader/learnplace";
+import { LEARNPLACE_LOADER, RestLearnplaceLoader } from "./learnplace/services/loader/learnplace";
 import {
     AccordionMapper,
     LinkBlockMapper,
@@ -96,7 +98,6 @@ import { AuthenticationProvider } from "./providers/authentication.provider";
 import { DataProvider } from "./providers/data-provider.provider";
 import { FILE_DOWNLOADER, FileDownloaderImpl } from "./providers/file-transfer/file-download";
 import { FILE_UPLOADER, FileUploaderImpl } from "./providers/file-transfer/file-upload";
-import { DataProviderFileObjectHandler } from "./providers/handlers/file-object-handler";
 import { HttpClient as PegasusHttpClient, PegasusXhrFactory } from "./providers/http";
 import { ILIASRestProvider } from "./providers/ilias-rest.provider";
 import { ILIAS_REST, ILIASRestImpl, ILIASTokenManager, TOKEN_MANAGER } from "./providers/ilias/ilias.rest";
@@ -498,7 +499,6 @@ import { CssStyleService } from "./services/theme/css-style.service";
         CssStyleService,
         FileService,
         SynchronizationService,
-        DataProviderFileObjectHandler,
         StatusBar,
         InAppBrowser,
         File,
