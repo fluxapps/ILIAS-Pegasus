@@ -1,8 +1,9 @@
-import {SQLite, SQLiteDatabaseConfig, SQLiteObject} from "@ionic-native/sqlite/ngx";
-import {Log} from "./log.service";
+import { SQLite, SQLiteDatabaseConfig, SQLiteObject } from "@ionic-native/sqlite/ngx";
+import { Logger } from "./logging/logging.api";
+import { Logging } from "./logging/logging.service";
 
 export interface DatabaseService {
-  query(sql: string, params?: Array<{}>): Promise<{}>;
+    query(sql: string, params?: Array<object>): Promise<object>;
 }
 
 /**
@@ -10,74 +11,59 @@ export interface DatabaseService {
  */
 export class SQLiteDatabaseService implements DatabaseService {
 
-  static _instance: SQLiteDatabaseService;
-  static SQLITE: SQLite;
+    static _instance: SQLiteDatabaseService;
+    static SQLITE: SQLite;
 
-  DB_NAME = "ilias_app";
-  private database: SQLiteObject;
+    readonly DB_NAME = "ilias_app";
 
-  private constructor() {
-  }
+    private readonly log: Logger = Logging.getLogger("SQLiteDatabaseService");
 
-  /**
-   * Return singleton instance of DatabaseService
-   *
-   * @returns {DatabaseService}
-   * @deprecated Since version 1.1.0. Will be deleted in version 2.0.0. Use angular injection instead.
-   */
-  static instance(): Promise<SQLiteDatabaseService> {
-    if (SQLiteDatabaseService._instance != undefined) {
-      return Promise.resolve(SQLiteDatabaseService._instance);
+    private database: SQLiteObject;
+
+    private constructor() {
     }
 
-    SQLiteDatabaseService._instance = new SQLiteDatabaseService();
-    return SQLiteDatabaseService._instance.initDatabase().then(
-      () => Promise.resolve(SQLiteDatabaseService._instance));
-  }
+    /**
+     * Return singleton instance of DatabaseService
+     *
+     * @returns {DatabaseService}
+     * @deprecated Since version 1.1.0. Will be deleted in version 2.0.0. Use angular injection instead.
+     */
+    static async instance(): Promise<SQLiteDatabaseService> {
+        if (SQLiteDatabaseService._instance != undefined) {
+            return SQLiteDatabaseService._instance;
+        }
 
-  private openDatabase(): Promise<SQLiteObject> {
-    return new Promise((resolve, reject) => {
+        SQLiteDatabaseService._instance = new SQLiteDatabaseService();
+        await SQLiteDatabaseService._instance.initDatabase();
+        return SQLiteDatabaseService._instance;
+    }
 
-        Log.write(this, "using database cordova plugin.");
-        Log.write(this, "opening DB.");
+    private async initDatabase(): Promise<void> {
+        try {
+            this.log.debug(() => "Start database initialisation");
 
-        const config: SQLiteDatabaseConfig = {
-          name: this.DB_NAME,
-          location: "default"
-        };
+            const config: SQLiteDatabaseConfig = {
+                name: this.DB_NAME,
+                location: "default"
+            };
 
-        SQLiteDatabaseService.SQLITE.create(config)
-          .then((db) => {
-            Log.write(this, "database opened");
-            resolve(db);
-          }).catch((err) => {
-          console.error("Unable to open database: ", err);
-          reject(err);
-        });
-    });
-  }
+            const sqLite: SQLiteObject = await SQLiteDatabaseService.SQLITE.create(config)
+            this.log.info(() => `Database initialised`);
 
-  private initDatabase(): Promise<{}> {
-    Log.write(this, "Initializing database.");
-    return new Promise((resolve, reject) => {
-      this.openDatabase().then(db => {
-        Log.describe(this, "database inited with: ", db);
-        this.database = db;
-        resolve(db);
-      }).catch(err => {
-        Log.error(this, err);
-        reject(err);
-      })
-    });
-  }
+            this.database = sqLite;
+        } catch (error) {
+            this.log.fatal(() => `Database initialisation failed, reason: ${error.message}`);
+        }
+    }
 
-  /**
-   * Execute SQL statement
-   * @param sql SQL statement as string, values can be escaped with "?"
-   * @param params Array holding the values escaped in the SQL string, in the same order
-   * @returns {Promise<any>}
-   */
-  query(sql: string, params = []): Promise<any> {
-      return this.database.executeSql(sql, params);
-  }
+    /**
+     * Execute SQL statement
+     * @param sql SQL statement as string, values can be escaped with "?"
+     * @param params Array holding the values escaped in the SQL string, in the same order
+     * @returns {Promise<any>}
+     */
+    async query(sql: string, params = []): Promise<any> {
+        return this.database.executeSql(sql, params);
+    }
 }
