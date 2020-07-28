@@ -1,29 +1,44 @@
 /** angular */
-import {Inject, Injectable} from "@angular/core";
-import {AlertController} from "@ionic/angular";
-/** services */
-import {SQLiteDatabaseService} from "./database.service";
-import {FileService} from "./file.service";
-import {FooterToolbarService, Job} from "./footer-toolbar.service";
-import {TranslateService} from "@ngx-translate/core";
-import {VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization} from "../learnplace/services/visitjournal.service";
-import {LearningModuleLoader} from "../learningmodule/services/learning-module-loader";
+import { Inject, Injectable } from "@angular/core";
+import { FileEntry } from "@ionic-native/file";
+import { AlertController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { from, merge, Observable } from "rxjs";
+import { OfflineException } from "../exceptions/OfflineException";
+import { LearningModuleLoader } from "../learningmodule/services/learning-module-loader";
+import { LEARNING_MODULE_MANAGER } from "../learningmodule/services/learning-module-manager";
+import { LEARNPLACE_MANAGER, LearnplaceManager } from "../learnplace/services/learnplace.management";
+import { VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization } from "../learnplace/services/visitjournal.service";
 /** models */
-import {FileData} from "../models/file-data";
-import {User} from "../models/user";
-import {ILIASObject} from "../models/ilias-object";
-/** logging */
-import {Log} from "./log.service";
+import { FileData } from "../models/file-data";
+import { FavouriteStatus, ILIASObject } from "../models/ilias-object";
+import { Settings } from "../models/settings";
+import { User } from "../models/user";
+import { AuthenticationProvider } from "../providers/authentication.provider";
 /** misc */
-import {DataProvider} from "../providers/data-provider.provider";
-import {NEWS_SYNCHRONIZATION, NewsSynchronization} from "./news/news.synchronization";
-import {AuthenticationProvider} from "../providers/authentication.provider";
-import {Observable, from, merge} from "rxjs";
-import {ThemeProvider} from "../providers/theme/theme.provider";
-import {OfflineException} from "../exceptions/OfflineException";
-import {LEARNPLACE_MANAGER, LearnplaceManager} from "../learnplace/services/learnplace.management";
-import {LEARNING_MODULE_MANAGER} from "../learningmodule/services/learning-module-manager";
-import {UserStorageService} from "./filesystem/user-storage.service";
+import { DataProvider } from "../providers/data-provider.provider";
+import { ThemeProvider } from "../providers/theme/theme.provider";
+/** services */
+import { SQLiteDatabaseService } from "./database.service";
+import { FileService } from "./file.service";
+import { UserStorageService } from "./filesystem/user-storage.service";
+import { FooterToolbarService, Job } from "./footer-toolbar.service";
+/** logging */
+import { Log } from "./log.service";
+import { Logger } from "./logging/logging.api";
+import { Logging } from "./logging/logging.service";
+import { NEWS_SYNCHRONIZATION, NewsSynchronization } from "./news/news.synchronization";
+
+interface SettledPromise<T> {
+    status: "fulfilled" | "rejected";
+    value?: T;
+    reason?: unknown;
+}
+
+interface RejectedSettledPromise {
+    status: "fulfilled";
+    reason: Error;
+}
 
 export interface SynchronizationState {
     liveLoading: boolean,
@@ -48,6 +63,7 @@ export class SynchronizationService {
         recursiveSyncRunning: false
     };
     readonly footerToolbarOfflineContent: FooterToolbarService = new FooterToolbarService();
+    private readonly log: Logger = Logging.getLogger("SynchronizationService");
 
     private user: User;
 
@@ -135,21 +151,23 @@ export class SynchronizationService {
      * @param iliasObject
      * @returns Promise<Array<ILIASObject>>
      */
-    liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
-        SynchronizationService.state.liveLoading = true;
+    async liveLoad(iliasObject?: ILIASObject): Promise<Array<ILIASObject>> {
+        try {
+            SynchronizationService.state.liveLoading = true;
 
-        this.user = AuthenticationProvider.getUser();
-        return this.syncStarted()
-            .then( () => this.executeLiveLoad(iliasObject))
-            .catch( (error) =>
-                this.syncEnded()
-                    .then( () => Promise.reject(error))
-            )
-            .then(promise => {this.processOpenSynchronizationTasks(); return promise})
-            .then(promise  => {
-                SynchronizationService.state.liveLoading = false;
-                return promise;
-            });
+            this.user = AuthenticationProvider.getUser();
+            await this.syncStarted();
+            const iliasObjects: Array<ILIASObject> = await this.executeLiveLoad(iliasObject);
+            await this.processOpenSynchronizationTasks();
+            return iliasObjects;
+        }
+        catch (error) {
+            await this.syncEnded();
+            throw error;
+        }
+        finally {
+            SynchronizationService.state.liveLoading = false;
+        }
     }
 
     /**
@@ -182,7 +200,7 @@ export class SynchronizationService {
      */
     async processOfflineSyncQueue(): Promise<void> {
         if(!window.navigator.onLine) {
-            this.resetOfflineSynchronization();
+            await this.resetOfflineSynchronization();
             throw new OfflineException("Tried to sync files when device was offline.");
         }
 
@@ -190,7 +208,7 @@ export class SynchronizationService {
             this.syncOfflineQueue = [];
             this.syncOfflineQueueCnt = 0;
             SynchronizationService.state.loadingOfflineContent = false;
-            this.processOpenSynchronizationTasks();
+            await this.processOpenSynchronizationTasks();
             return;
         }
 
@@ -200,7 +218,7 @@ export class SynchronizationService {
         const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
         // the user may has unmarked the object in the mean time
         if(ilObj.isFavorite) {
-            await ilObj.setIsFavorite(2);
+            await ilObj.setIsFavorite(FavouriteStatus.PENDING);
             try {
                 await this.loadOfflineObjectRecursive(ilObj);
             } catch (e) {
@@ -208,8 +226,8 @@ export class SynchronizationService {
             }
             await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
             // the user may has unmarked the object in the mean time
-            if(ilObj.isFavorite) await ilObj.setIsFavorite(1);
-            else ilObj.removeFromFavorites(this.userStorage);
+            if(ilObj.isFavorite) await ilObj.setIsFavorite(FavouriteStatus.DOWNLOADED);
+            else await ilObj.removeFromFavorites(this.userStorage);
         }
 
         this.syncOfflineQueueCnt++;
@@ -236,7 +254,7 @@ export class SynchronizationService {
      * @returns Promise<SyncResults>
      */
     async loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
-        await iliasObject.setIsFavorite(2);
+        await iliasObject.setIsFavorite(FavouriteStatus.PENDING);
         if(SynchronizationService.state.recursiveSyncRunning) {
             let resolver: any;
             let rejecter: any;
@@ -271,9 +289,15 @@ export class SynchronizationService {
         const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
         iliasObjects.push(container);
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
-        await Promise.all(syncResults.fileDownloads).catch(
-            () => console.warn(`Encountered some problem in method 'downloadContainerContent' with element ${container.title}`)
-        );
+        // @ts-ignore
+        // TS 3.5 does not have the type definition included
+        const results: Array<SettledPromise<FileEntry>> = await Promise.allSettled(syncResults.fileDownloads);
+        results
+            .filter((result) => result.status === "rejected")
+            .forEach((result) => {
+                const reason = !!result.reason ? (result.reason as Error).message : "unknown";
+                this.log.warn(() => `Encountered some problem in method 'downloadContainerContent' with element ${container.title}, reason: ${reason}`);
+            });
         await this.downloadLearnplaces(iliasObjects).toPromise();
         await this.downloadLearningModules(iliasObjects);
         return syncResults;
@@ -290,9 +314,8 @@ export class SynchronizationService {
     }
 
     private async downloadLearningModules(iliasObjects: Array<ILIASObject>): Promise<void> {
-        for(let i: number = 0; i < iliasObjects.length; i++) {
-            const io: ILIASObject = iliasObjects[i];
-            if(io.type == "htlm") {
+        for(const io of iliasObjects) {
+            if(io.type === "htlm" || io.type === "sahs") {
                 await this.learningModuleManager.load(io.objId);
                 io.needsDownload = false;
                 await io.save();
@@ -359,130 +382,71 @@ export class SynchronizationService {
             });
     }
 
-
-    /**
-     * check if the user still has a running sync in the db.
-     */
-    hasUnfinishedSync(user: User): Promise<boolean> {
-        if(!user)
-            return Promise.reject("No user given.");
-
-        return SQLiteDatabaseService.instance()
-                .then(db => db.query("SELECT * FROM synchronization WHERE recursiveSyncRunning = 1 AND userId = " + user.id))
-                .then(result => Promise.resolve((<any> result).rows.length > 0));
-    }
-
-    /**
-     * Get all objects marked as offline available by the user
-     * @param user
-     * @returns {Promise<ILIASObject[]>}
-     */
-    protected getOfflineAvailableObjects(user: User): Promise<Array<ILIASObject>> {
-        const sql = "SELECT * FROM objects WHERE userId = ? AND isOfflineAvailable = 1 AND offlineAvailableOwner = ?";
-
-        return SQLiteDatabaseService.instance()
-            .then(db => db.query(sql, [user.id, ILIASObject.OFFLINE_OWNER_USER]))
-            .then((response: any) => {
-                    const iliasObjectPromises = [];
-                    for (let i = 0; i < response.rows.length; i++) {
-                        iliasObjectPromises.push(ILIASObject.find(response.rows.item(i).id));
-                    }
-
-                    return Promise.all(iliasObjectPromises);
-            });
-    }
-
     /**
      * Finds all files that should be downloaded. Also performs checks if these files can be downloaded based
      * on the user's settings
      * @param iliasObjects
      */
-    protected checkForFileDownloads(iliasObjects: Array<ILIASObject>): Promise<SyncResults> {
-        const fileDownloads: Array<Promise<void>> = [];
-        return new Promise((resolve: any, reject: any) => {
-            this.user.settings.then(settings => {
-                FileData.getTotalDiskSpace().then(space => {
+    protected async checkForFileDownloads(iliasObjects: Array<ILIASObject>): Promise<SyncResults> {
+        const settings: Settings = await this.user.settings;
+        const space: number = await FileData.getTotalDiskSpace();
+        // We split the objects in different categories.
+        const downloads: Array<ILIASObject> = [];
+        const filesTooBig: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
+        const noMoreSpace: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
+        const filesAlreadySynced: Array<ILIASObject> = [];
 
-                    // We split the objects in different categories.
-                    const downloads: Array<ILIASObject> = [];
-                    const filesTooBig: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
-                    const noMoreSpace: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
-                    const filesAlreadySynced: Array<ILIASObject> = [];
+        // Furthermore we need some infos
+        const availableSpace: number = settings.quotaSize * 1000 * 1000;
+        let currentlyUsedSpace: number = space;
 
-                    // Furthermore we need some infos
-                    const availableSpace: number = settings.quotaSize * 1000 * 1000;
-                    let currentlyUsedSpace: number = space;
-
-                    // make sure to only sync files.
-                    const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
-                        return iliasObject.type == "file";
-                    });
-
-                    // We sort all objects to know which to download and which to leave out.
-                    fileObjects.forEach(fileObject => {
-                        if (fileObject.needsDownload) {
-                            const fileSize: number = parseInt(fileObject.data.fileSize, 10);
-                            if (currentlyUsedSpace + fileSize <= availableSpace) {
-                                if (fileSize <= settings.downloadSize * 1000 * 1000) {
-                                    downloads.push(fileObject);
-                                    currentlyUsedSpace += fileSize;
-                                } else {
-                                    filesTooBig.push({object: fileObject, reason: LeftOutReason.FileTooBig});
-                                }
-                            } else {
-                                noMoreSpace.push({object: fileObject, reason: LeftOutReason.QuotaExceeded});
-                            }
-                        } else {
-                            filesAlreadySynced.push(fileObject);
-                        }
-                    });
-
-                    // We make a copy of the files to download, as the list gets decreased in the download process
-                    const allDownloads: Array<ILIASObject> = downloads.slice(0); // This is the javascript's clone function....
-
-                    // we execute the file downloads
-                    const executeDownloads: Array<Promise<any>> = this.executeFileDownloads(downloads);
-                    for(let i: number = 0; i < downloads.length; i++) {
-                        fileDownloads.push(new Promise((resolve: any, reject: any) => {
-                            executeDownloads[i].then(() => {
-                                resolve();
-                            }).catch(error => {
-                                Log.describe(this, "Execute File Download rejected", error);
-                                reject(error);
-                            });
-                        }));
-                    }
-
-                    resolve(new SyncResults(
-                        fileObjects,
-                        allDownloads,
-                        filesAlreadySynced,
-                        filesTooBig.concat(noMoreSpace),
-                        fileDownloads
-                    ));
-
-                }).catch(error => {
-                    return Promise.reject(error);
-                });
-            }).catch(error => {
-                return Promise.reject(error);
-            });
+        // make sure to only sync files.
+        const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
+            return iliasObject.type === "file";
         });
+
+        // We sort all objects to know which to download and which to leave out.
+        fileObjects.forEach(fileObject => {
+            if (fileObject.needsDownload !== false) {
+                const fileSize: number = Number.parseInt(fileObject.data.fileSize, 10);
+                if (currentlyUsedSpace + fileSize <= availableSpace) {
+                    if (fileSize <= settings.downloadSize * 1000 * 1000) {
+                        downloads.push(fileObject);
+                        currentlyUsedSpace += fileSize;
+                    } else {
+                        filesTooBig.push({object: fileObject, reason: LeftOutReason.FileTooBig});
+                    }
+                } else {
+                    noMoreSpace.push({object: fileObject, reason: LeftOutReason.QuotaExceeded});
+                }
+            } else {
+                filesAlreadySynced.push(fileObject);
+            }
+        });
+
+        // We make a copy of the files to download, as the list gets decreased in the download process
+        const allDownloads: Array<ILIASObject> = Array.from(downloads); // Create shallow copy of array
+
+        // we execute the file downloads
+        const fileDownloads: Array<Promise<FileEntry>> = this.executeFileDownloads(downloads);
+        this.log.info(() => `Pending downloads: ${fileDownloads.length}`);
+
+        return new SyncResults(
+            fileObjects,
+            allDownloads,
+            filesAlreadySynced,
+            filesTooBig.concat(noMoreSpace),
+            fileDownloads
+        );
     }
 
     /**
      * Downloads one file after another
      */
-    protected executeFileDownloads(downloads: Array<ILIASObject>): Array<Promise<any>> {
-        const results: Array<Promise<any>> = [];
+    protected executeFileDownloads(downloads: Array<ILIASObject>): Array<Promise<FileEntry>> {
+        const results: Array<Promise<FileEntry>> = [];
         for(const download of downloads) {
-            results.push(new Promise((resolve, reject) => {
-                this.fileService.download(download).then(() => {
-                    resolve();
-                }).catch(error => {
-                    reject(error);
-                })
-            }))
+            results.push(this.fileService.download(download))
         }
         return results;
     }
@@ -532,7 +496,7 @@ export class SyncResults {
                 public objectsDownloaded: Array<ILIASObject>,
                 public objectsUnchanged: Array<ILIASObject>,
                 public objectsLeftOut: Array<{object: ILIASObject, reason: LeftOutReason}>,
-                public fileDownloads: Array<Promise<void>>) {
+                public fileDownloads: Array<Promise<FileEntry>>) {
     }
 }
 
