@@ -45,6 +45,7 @@ export class FileService implements StorageUtilization {
         protected translate: TranslateService,
         private readonly file: File,
         private readonly network: Network,
+        private readonly userStorageManager: UserStorageMamager,
     ) {}
 
     /**
@@ -89,6 +90,7 @@ export class FileService implements StorageUtilization {
      * @returns {Promise<any>}
      */
     async download(fileObject: ILIASObject, forceDownload: boolean = false): Promise<FileEntry> {
+        this.log.debug(() => `Download file with object id: ${fileObject.objId}, refId: ${fileObject.refId}, for user: ${fileObject.userId}`);
         const user: User = await User.find(fileObject.userId);
         const settings: Settings = await Settings.findByUserId(user.id);
 
@@ -102,16 +104,22 @@ export class FileService implements StorageUtilization {
             throw new Error("Metadata of file object is not present");
         }
 
-        Log.write(this, "Resolving storage location");
+        this.log.debug(() => "Resolving storage location");
         const storageLocation: string = this.getStorageLocation(user, fileObject);
         await this.createDirectoryPath(storageLocation);
 
         // Provide a general listener that throws an event
-        Log.write(this, "start DL");
+        this.log.debug(() => "Start Download");
         const fileEntry: FileEntry = await this.rest.downloadFile(fileObject.refId, storageLocation, fileObject.data.fileName);
-        Log.describe(this, "Download Complete: ", fileEntry);
+        this.log.debug(() => `Download Complete: ${fileEntry.fullPath}`);
+
+        fileObject.needsDownload = false;
         await this.storeFileVersionLocal(fileObject);
-        await UserStorageMamager.addObjectToUserStorage(fileObject.userId, fileObject.id, this);
+        this.log.debug(() => `File metadata update complete, file version local: ${fileObject.data.fileVersionDateLocal}`);
+
+        await this.userStorageManager.addObjectToUserStorage(fileObject.userId, fileObject.objId, this);
+        this.log.debug(() => "User storage space calculation complete");
+
         return fileEntry;
     }
 
@@ -177,15 +185,33 @@ export class FileService implements StorageUtilization {
 
         const user: User = await User.find(fileObject.userId);
         if (fileObject.data.hasOwnProperty("fileName")) {
-            await UserStorageMamager.removeObjectFromUserStorage(fileObject.userId, fileObject.id, this);
             const storageLocation: string = this.getStorageLocation(user, fileObject);
 
             // There's no local file to delete.
-            if(isNullOrUndefined(fileObject.data.fileVersionDateLocal))
+            if(isNullOrUndefined(fileObject.data.fileVersionDateLocal)) {
+                this.log.debug(() => `Skip removal of file with objId: ${fileObject.objId}, no local file version date present`);
                 return;
+            }
+
+            await this.userStorageManager.removeObjectFromUserStorage(fileObject.userId, fileObject.objId, this);
 
             // We delete the file and save the metadata.
-            await this.file.removeFile(storageLocation, fileObject.data.fileName);
+            // await this.file.removeFile(storageLocation, fileObject.data.fileName);
+            const basePath: Array<string> = storageLocation.split("/");
+
+            // Remove trailing slash
+            if (basePath[basePath.length - 1].length === 0) {
+                basePath.pop();
+            }
+
+            // Remove parent dir
+            basePath.pop();
+
+            const targetPath: string = basePath.join("/");
+            this.log.debug(() => `Delete dir: ${fileObject}, in path: "${targetPath}"`);
+            await this.file.removeRecursively(targetPath, `${fileObject.objId}/`);
+
+            fileObject.needsDownload = true;
             await this.resetFileVersionLocal(fileObject);
 
         } else {
@@ -289,65 +315,66 @@ export class FileService implements StorageUtilization {
     }
 
     async getUsedStorage(objectId: number, userId: number): Promise<number> {
-        const io: ILIASObject = await ILIASObject.find(objectId);
-        return io.data.fileSize;
+        const io: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
+        if (typeof io.data.fileSize === "string") {
+            return Number.parseInt(io.data.fileSize, 10);
+        }
+
+        if (typeof io.data.fileSize === "number") {
+            return io.data.fileSize;
+        }
+
+        this.log.warn(() => `Unable to calculate filesize of object: ${objectId} owned by user: ${userId}`);
+        return 0;
     }
 
     /**
      * Set the fileVersionDateLocal to fileVersionDate from ILIAS
      * @param fileObject
      */
-    private storeFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
-        return new Promise((resolve, reject) => {
-            FileData.find(fileObject.id).then(fileData => {
-                // First update the local file date.
-                fileData.fileVersionDateLocal = fileData.fileVersionDate;
-                fileData.save().then(() => {
-                    //and update the metadata.
-                    const metaData = fileObject.data;
-                    metaData.fileVersionDateLocal = fileData.fileVersionDate;
-                    fileObject.data = metaData;
+    private async storeFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
+        const fileData: FileData = await FileData.find(fileObject.id);
 
-                    // recursivly update the download state and resolve
-                    fileObject.updateNeedsDownload().then(() => {
-                        resolve(fileObject);
-                    });
-                });
-            }).catch(error => {
-                reject(error);
-            });
-        });
+        // First update the local file date.
+        fileData.fileVersionDateLocal = fileData.fileVersionDate;
+        await fileData.save();
+
+        //and update the metadata.
+        const metaData = fileObject.data;
+        metaData.fileVersionDateLocal = fileData.fileVersionDate;
+        fileObject.data = metaData;
+        await fileObject.save();
+
+        // recursively update the download state and resolve
+        await fileObject.updateNeedsDownload();
+        return fileObject;
     }
 
     /**
      * Reset fileVersionDateLocal
      * @param fileObject
      */
-    private resetFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
-        return new Promise((resolve, reject) => {
-            FileData.find(fileObject.id).then(fileData => {
-                Log.write(this, "File meta found.");
-                // First update the local file date.
-                fileData.fileVersionDateLocal = undefined;
-                fileData.save().then(() => {
-                    Log.write(this, "file meta saved");
-                    //and update the metadata.
-                    const metaData = fileObject.data;
-                    metaData.fileVersionDateLocal = undefined;
-                    fileObject.data = metaData;
-                    fileObject.save().then(() => {
-                        // recursivly update the download state and resolve
-                        fileObject.updateNeedsDownload().then(() => {
-                            Log.write(this, "File Metadata updated after deletion.");
-                            resolve(fileObject);
-                        });
-                    });
-                });
+    private async resetFileVersionLocal(fileObject: ILIASObject): Promise<ILIASObject> {
+        const fileData: FileData = await FileData.find(fileObject.id);
 
-            }).catch(error => {
-                reject(error);
-            });
-        });
+        this.log.debug(() => "File meta found.");
+
+        // First update the local file date.
+        fileData.fileVersionDateLocal = undefined;
+        await fileData.save();
+        this.log.debug(() => "file meta saved");
+
+        //and update the metadata.
+        const metaData = fileObject.data;
+        metaData.fileVersionDateLocal = undefined;
+        fileObject.data = metaData;
+        await fileObject.save();
+
+        // recursively update the download state and resolve
+        await fileObject.updateNeedsDownload();
+        this.log.debug(() => "File Metadata updated after deletion.");
+
+        return fileObject;
     }
 
     /**
