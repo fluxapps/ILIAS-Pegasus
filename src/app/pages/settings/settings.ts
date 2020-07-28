@@ -1,8 +1,9 @@
 /** angular */
 import { Component, Inject, NgZone, OnDestroy, OnInit } from "@angular/core";
-import { AlertController, Config, NavController, ToastController } from "@ionic/angular";
+import { AlertController, NavController, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
-import { Observable, ReplaySubject, Subject } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
+import { map } from "rxjs/operators";
 /** misc */
 import { CONFIG_PROVIDER, ConfigProvider } from "../../config/ilias-config";
 import { DesktopItem } from "../../models/desktop-item";
@@ -17,7 +18,6 @@ import { UserStorageService } from "../../services/filesystem/user-storage.servi
 import { FooterToolbarService, Job } from "../../services/footer-toolbar.service";
 import { Logger } from "../../services/logging/logging.api";
 import { Logging } from "../../services/logging/logging.service";
-import { map } from "rxjs/operators";
 
 @Component({
     selector: "page-settings",
@@ -45,7 +45,6 @@ export class SettingsPage implements OnInit, OnDestroy {
         private readonly alertCtr: AlertController,
         private readonly userStorageManager: UserStorageMamager,
         private readonly userStorage: UserStorageService,
-        private readonly config: Config,
         private readonly ngZone: NgZone,
     ) {
     }
@@ -98,7 +97,6 @@ export class SettingsPage implements OnInit, OnDestroy {
             await this.translate.use(this.settings.language).toPromise();
 
             this.log.trace(() => "Switching language successful.");
-            this.config.set("backButtonText", this.translate.instant("back"));
 
             const toast: HTMLIonToastElement = await this.toast.create({
                 message: this.translate.instant("settings.settings_saved"),

@@ -4,13 +4,12 @@ import { Router } from "@angular/router";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 /** ionic-native */
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
-import { Config, ModalController, NavController, Platform, ToastController } from "@ionic/angular";
+import { ModalController, NavController, Platform, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 /** models */
 import { Settings } from "./models/settings";
 import { User } from "./models/user";
 import { ObjectListPage } from "./pages/object-list/object-list";
-import { OnboardingPage } from "./pages/onboarding/onboarding";
 import { AuthenticationProvider } from "./providers/authentication.provider";
 import { ThemeProvider } from "./providers/theme/theme.provider";
 import { Logger } from "./services/logging/logging.api";
@@ -47,7 +46,6 @@ export class AppComponent {
         private readonly platform: Platform,
         private readonly navCtrl: NavController,
         private readonly toastCtrl: ToastController,
-        private readonly config: Config,
         private readonly translate: TranslateService,
     ) {
 
@@ -185,7 +183,5 @@ export class AppComponent {
                     this.navCtrl.back();
             }
         });
-
-        this.config.set("backButtonText", this.translate.instant("back"));
     }
 }
