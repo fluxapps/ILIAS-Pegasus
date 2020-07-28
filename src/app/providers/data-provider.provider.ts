@@ -1,22 +1,28 @@
 /** angular */
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 /** models */
-import {User} from "../models/user";
-import {DesktopData, ILIASRestProvider} from "./ilias-rest.provider";
-import {ILIASObject} from "../models/ilias-object";
-import {DesktopItem} from "../models/desktop-item";
+import { User } from "../models/user";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
+import { DesktopData, ILIASRestProvider } from "./ilias-rest.provider";
+import { ILIASObject } from "../models/ilias-object";
+import { DesktopItem } from "../models/desktop-item";
 /** logging */
-import {Log} from "../services/log.service";
+import { Log } from "../services/log.service";
 /** misc */
-import {DataProviderFileObjectHandler} from "./handlers/file-object-handler";
+import { DataProviderFileObjectHandler } from "./handlers/file-object-handler";
 
 @Injectable({
     providedIn: "root"
 })
 export class DataProvider {
 
-    constructor(private readonly rest: ILIASRestProvider,
-                private readonly fileObjectHandler: DataProviderFileObjectHandler) {
+    private readonly log: Logger = Logging.getLogger("DataProvider");
+
+    constructor(
+        private readonly rest: ILIASRestProvider,
+        private readonly fileObjectHandler: DataProviderFileObjectHandler
+    ) {
     }
 
     /**
@@ -57,7 +63,7 @@ export class DataProvider {
      * @param refreshFiles
      * @returns {Promise<ILIASObject>}
      */
-    private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject|undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
+    private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject | undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
         Log.write(this, "Storing ILIAS Object");
 
         let the_iliasObject: ILIASObject = undefined;
@@ -70,13 +76,13 @@ export class DataProvider {
             })
             .then(iliasObject => iliasObject.parent)
             .then(parent => {
-                if(the_iliasObject.id == 0 && parent != undefined)
+                if (the_iliasObject.id == 0 && parent != undefined)
                     the_iliasObject.isNew = true;
                 return the_iliasObject.save() as Promise<ILIASObject>;
             })
             .then((iliasObject: ILIASObject) => {
-                if (iliasObject.type == "file") {
-                    if(refreshFiles)
+                if (iliasObject.type === "file") {
+                    if (refreshFiles)
                         return this.onSaveFile(user, iliasObject);
                     else {
                         return iliasObject.save() as Promise<ILIASObject>;
@@ -87,17 +93,10 @@ export class DataProvider {
             });
     }
 
-    private onSaveFile(user: User, iliasObject: ILIASObject): Promise<ILIASObject> {
-
-        let resolveObject: ILIASObject;
-
-        return this.fileObjectHandler.onSave(iliasObject, user)
-            .then(iliasObject => {
-                resolveObject = iliasObject;
-                return iliasObject.updateNeedsDownload();
-            }).then(() => {
-                return Promise.resolve(resolveObject);
-            })
+    private async onSaveFile(user: User, iliasObject: ILIASObject): Promise<ILIASObject> {
+        const saveResult: ILIASObject = await this.fileObjectHandler.onSave(iliasObject, user);
+        await iliasObject.updateNeedsDownload();
+        return saveResult;
     }
 
     /**
@@ -106,22 +105,14 @@ export class DataProvider {
      * @param user
      * @returns {Promise<ILIASObject[]>}
      */
-    protected storeILIASDesktopObjects(objects: Array<DesktopData>, user: User): Promise<Array<ILIASObject>> {
-            const iliasObjects = [];
-            const promises = [];
-            // We store desktop items that are only courses or groups
-            objects.forEach(object => {
-                const promise = this.storeILIASObject(object, user).then((iliasObject) => {
-                    iliasObjects.push(iliasObject);
-                });
-                promises.push(promise);
-            });
+    private async storeILIASDesktopObjects(objects: Array<DesktopData>, user: User): Promise<Array<ILIASObject>> {
+        // We store desktop items that are only courses or groups
+        const pendingIliasObjects: Array<Promise<ILIASObject>> = objects.map(object => this.storeILIASObject(object, user));
 
-            Log.write(this, "Storing Objects in Cache.");
-            return Promise.all(promises)
-                .then( () => DesktopItem.storeDesktopItems(user.id, iliasObjects) )
-                .then( () => Promise.resolve(iliasObjects) );
-
+        this.log.debug(() => "Storing Objects in Cache");
+        const iliasObjects: Array<ILIASObject> = await Promise.all(pendingIliasObjects);
+        await DesktopItem.storeDesktopItems(user.id, iliasObjects);
+        return iliasObjects;
     }
 
 
@@ -137,7 +128,7 @@ export class DataProvider {
      */
     private storeILIASObjects(remoteObjects: Array<DesktopData>, user: User, parentObject: ILIASObject, recursive: boolean = false, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
 
-        if(recursive) {
+        if (recursive) {
             return ILIASObject.findByParentRefIdRecursive(parentObject.refId, user.id)
                 .then(existingObjects => this.saveOrDeleteObjects(remoteObjects, existingObjects, user, parentObject, refreshFiles));
         } else {
@@ -154,8 +145,7 @@ export class DataProvider {
      * @param refreshFiles
      * @returns {Promise<ILIASObject[]>}
      */
-    private saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
-        const id: string = (rootParent) ? rootParent.refId.toString() : "-1";
+    private async saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         const iliasObjects: Array<ILIASObject> = [];
         const promises: Array<Promise<void>> = [];
         const objectsToDelete: Array<ILIASObject> = existingObjects;
@@ -174,15 +164,12 @@ export class DataProvider {
             promises.push(promise);
         });
 
-        return Promise.all(promises).then(() => {
-            // TODO: build the following into the chain.
-            // Delete all existing objects left that were not delivered
-            objectsToDelete.forEach(iliasObject => {
-                this.deleteObject(iliasObject, user);
-            });
+        await Promise.all(promises);
 
-            return Promise.resolve(iliasObjects);
-        });
+        // Delete all existing objects left that were not delivered
+        await Promise.all(objectsToDelete.map(iliasObject => this.deleteObject(iliasObject, user)));
+
+        return iliasObjects;
     }
 
     /**
@@ -191,8 +178,8 @@ export class DataProvider {
      * @param iliasObject
      * @param user
      */
-    private deleteObject(iliasObject: ILIASObject, user: User): Promise<object> {
-        const promises: Array<Promise<object>> = [];
+    private async deleteObject(iliasObject: ILIASObject, user: User): Promise<void> {
+        const promises: Array<Promise<void>> = [];
         promises.push(iliasObject.destroy());
         if (iliasObject.type == "file") {
             promises.push(this.fileObjectHandler.onDelete(iliasObject, user));
@@ -205,7 +192,7 @@ export class DataProvider {
                 });
             });
         }
-        return Promise.all(promises);
+        await Promise.all(promises);
     }
 
 
