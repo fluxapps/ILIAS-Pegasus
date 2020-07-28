@@ -3,11 +3,16 @@ import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
 
 @Injectable({
     providedIn: "root"
 })
 export class FileStorageService {
+
+    private readonly log: Logger = Logging.getLogger("FileStorageService");
+
     constructor(
         private readonly fileSystem: File,
         private readonly platform: Platform,
@@ -22,7 +27,7 @@ export class FileStorageService {
     async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {
         const storageLocation: string = await this.getStorageLocation();
         const userRoot: string = await this.rootForUser();
-        if(createRecursive) this.createRecursive(storageLocation, userRoot, name);
+        if(createRecursive) await this.createRecursive(storageLocation, userRoot, name);
         return `${storageLocation}${userRoot}/${name}/`;
     }
 
@@ -74,15 +79,18 @@ export class FileStorageService {
         try {
             try {
                 await this.fileSystem.removeRecursively(newPath, newDirName);
-            } catch(e) {
-                console.warn(`Unable to remove ${newPath}|${newDirName} resulted in error ${e.message} continue...`);
+            } catch(error) {
+                // Error code 1 means path not found which is the desired outcome of the operation
+                if (error.code !== 1) {
+                    this.log.warn(() => `Unable to remove "${newPath}${newDirName}" resulted in error ${error.message} continue...`);
+                }
             } finally {
                 if(copy) await this.fileSystem.copyDir(path, dirName, newPath, newDirName);
                 else await this.fileSystem.moveDir(path, dirName, newPath, newDirName);
             }
             return true;
-        } catch(e) {
-            console.warn(`Unable to move and replace ${path}|${dirName} => ${newPath}|${newDirName} resulted in error ${e.message}`);
+        } catch(error) {
+            this.log.warn(() => `Unable to move and replace "${path}${dirName}" => "${newPath}${newDirName}" resulted in error ${error.message}`);
             return false;
         }
     }
