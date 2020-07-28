@@ -70,6 +70,7 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     constructor(
         private readonly file: File,
+        private readonly userStorageManager: UserStorageMamager,
         @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
         @Inject(LEARNPLACE_PATH_BUILDER) private readonly pathBuilder: LearnplacePathBuilder,
         @Inject(LEARNPLACE_LOADER) private readonly loader: LearnplaceLoader
@@ -78,11 +79,11 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        await UserStorageMamager.addObjectToUserStorage(user.id, objectId, this);
+        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async remove(objectId: number, userId: number): Promise<void> {
-        await UserStorageMamager.removeObjectFromUserStorage(userId, objectId, this);
+        await this.userStorageManager.removeObjectFromUserStorage(userId, objectId, this);
 
         return (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 
