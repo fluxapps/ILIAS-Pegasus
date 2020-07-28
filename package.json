@@ -75,7 +75,7 @@
     "typeorm": "^0.1.21",
     "uuid-js": "^0.7.5",
     "web-animations-js": "^2.3.2",
-    "zone.js": "^0.9.1"
+    "zone.js": "^0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/architect": "^0.803.20",
