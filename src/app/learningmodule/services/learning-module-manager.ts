@@ -4,18 +4,18 @@
  * @author mschneiter <msc@studer-raimann.ch>
  * @version 1.0.0
  */
-import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
-import {StorageUtilization} from "../../services/filesystem/user-storage.mamager";
-import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
-import {LearningModule} from "../models/learning-module";
-import {File, DirectoryEntry} from "@ionic-native/file/ngx";
-import {ILIASObject} from "../../models/ilias-object";
-import {LEARNING_MODULE_LOADER, LearningModuleLoader} from "./learning-module-loader";
-import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
-import {FileStorageService} from "../../services/filesystem/file-storage.service";
+import { Inject, Injectable, InjectionToken } from "@angular/core";
+import { ILIASObject } from "../../models/ilias-object";
+import { User } from "../../models/user";
+import { AuthenticationProvider } from "../../providers/authentication.provider";
+import { FileStorageService } from "../../services/filesystem/file-storage.service";
+import { UserStorageMamager } from "../../services/filesystem/user-storage.mamager";
+import { Logger } from "../../services/logging/logging.api";
+import { Logging } from "../../services/logging/logging.service";
+import { LearningModule } from "../models/learning-module";
+import { LEARNING_MODULE_LOADER, LearningModuleLoader } from "./learning-module-loader";
+import { LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder } from "./learning-module-path-builder";
+import { LearningModuleStorageUtilisation } from "./learning-module-storage-utilisation";
 
 export interface LearningModuleManager {
 
@@ -38,11 +38,6 @@ export interface LearningModuleManager {
      * All stored files of the module will be removed as well.
      */
     remove(objectId: number, userId: number): Promise<void>;
-
-    /**
-     * Calculates the used storage of the learning module. The used storage within the sqlite database is not included.
-     */
-    getUsedStorage(objectId: number, userId: number): Promise<number>;
 }
 
 export const LEARNING_MODULE_MANAGER: InjectionToken<LearningModuleManager> = new InjectionToken("token for learning module manager.");
@@ -54,40 +49,47 @@ export const LEARNING_MODULE_MANAGER: InjectionToken<LearningModuleManager> = ne
  * @version 1.0.0
  */
 @Injectable()
-export class LearningModuleManagerImpl implements LearningModuleManager, StorageUtilization {
+export class LearningModuleManagerImpl implements LearningModuleManager {
+
+    private readonly log: Logger = Logging.getLogger("LearningModuleManagerImpl");
+
     constructor(
-        protected readonly fileSystem: File,
-        protected readonly fileStorage: FileStorageService,
+        private readonly storageUtilisation: LearningModuleStorageUtilisation,
+        private readonly fileStorage: FileStorageService,
+        private readonly userStorageManager: UserStorageMamager,
         @Inject(LEARNING_MODULE_LOADER) private readonly loader: LearningModuleLoader,
         @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) {}
 
     async checkAndDownload(objectId: number, userId: number): Promise<void> {
         const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
-        const alreadyLoaded: boolean = await obj.objectIsUnderFavorite();
-        if(!alreadyLoaded) await this.load(objectId);
+
+        console.warn(`Learning module needs download: ${obj.needsDownload} -> ${!!obj.needsDownload}`);
+        if (obj.needsDownload !== false) {
+            await this.load(objectId);
+            obj.needsDownload = false;
+            await obj.save();
+        }
     }
 
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
         const user: User = AuthenticationProvider.getUser();
-        await UserStorageMamager.addObjectToUserStorage(user.id, objectId, this);
+        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this.storageUtilisation);
     }
 
     async remove(objId: number, userId: number): Promise<void> {
-        await UserStorageMamager.removeObjectFromUserStorage(userId, objId, this);
+        this.log.debug(() => `Remove learning module object: "${objId}", user: "${userId}"`);
+        await this.userStorageManager.removeObjectFromUserStorage(userId, objId, this.storageUtilisation);
+
         // remove from database
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, userId);
         await lm.destroy();
+
         // remove from file system
         const localLmDir: string = await this.pathBuilder.dirInLocalLmDir("", false);
         const lmDirName: string = this.pathBuilder.lmDirName(objId);
+        this.log.debug(() => `Remove learning module dir: "${lmDirName}", Path: "${localLmDir}"`);
         await this.fileStorage.removeDir(localLmDir, lmDirName);
-    }
-
-    async getUsedStorage(objectId: number, userId: number): Promise<number> {
-        const lmDirPath: string = await this.pathBuilder.getLmDirByObjId(objectId);
-        const dir: DirectoryEntry = await this.fileSystem.resolveDirectoryUrl(lmDirPath);
-        return UserStorageService.getDirSizeRecursive(dir.nativeURL, this.fileSystem);
     }
 }

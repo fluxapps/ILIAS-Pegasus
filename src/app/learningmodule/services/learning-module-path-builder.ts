@@ -29,6 +29,11 @@ export interface LearningModulePathBuilder {
      * constructs the absolute path to the directory containing the contents of the learning module (with ending /)
      */
     getLmDirByObjId(objId: number): Promise<string>;
+
+    /**
+     * Constructs the absolute base path of the learning modules, without an ending slash.
+     */
+    absoluteBasePath(): Promise<string>;
 }
 
 export const LEARNING_MODULE_PATH_BUILDER: InjectionToken<LearningModulePathBuilder> = new InjectionToken("token for learning module path builder");
@@ -47,7 +52,12 @@ export class LearningModulePathBuilderImpl implements LearningModulePathBuilder 
         return `lm_${objId}/`;
     }
 
-    async dirInLocalLmDir(path: string, createRecursive: boolean): Promise<string> {
+    async absoluteBasePath(): Promise<string> {
+        const baseDir: string = this.withoutEndingSlash(this.lmsBaseDirName);
+        return this.fileStorage.dirForUser(baseDir, true);
+    }
+
+    async dirInLocalLmDir(path: string = "", createRecursive: boolean = false): Promise<string> {
         path = this.withoutEndingSlash(path);
         const baseDir: string = path.length ? this.lmsBaseDirName : this.withoutEndingSlash(this.lmsBaseDirName);
         return this.fileStorage.dirForUser(`${baseDir}${path}`, createRecursive);
