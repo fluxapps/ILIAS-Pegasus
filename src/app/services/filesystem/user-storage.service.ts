@@ -6,12 +6,17 @@ import {Settings} from "../../models/settings";
 import {FileService} from "../file.service";
 import {LEARNPLACE_MANAGER, LearnplaceManager} from "../../learnplace/services/learnplace.management";
 import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../../learningmodule/services/learning-module-manager";
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
 import {UserStorageMamager} from "./user-storage.mamager";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserStorageService {
+
+    private readonly log: Logger = Logging.getLogger("UserStorageService");
+
     constructor(
         private readonly fileSystem: File,
         private readonly platform: Platform,
@@ -43,16 +48,16 @@ export class UserStorageService {
      */
     async removeRecursive(containerObject: ILIASObject): Promise<void> {
         try {
-            console.trace("Start recursive removal of files");
+            this.log.debug(() => "Start recursive removal of files");
             const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
             iliasObjects.push(containerObject);
 
             for(const fileObject of iliasObjects)
                 await this.removeObject(fileObject);
-            console.log("Deleting Files complete");
+            this.log.info(() => "Deleting Files complete");
         }
         catch (error) {
-            console.error(`An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
+            this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -62,8 +67,6 @@ export class UserStorageService {
      * @param userId
      */
     async deleteAllCache(userId: number): Promise<void> {
-        let used: number = await UserStorageMamager.getUsedStorage(userId);
-        const settings: Settings = await Settings.findByUserId(userId);
         const ilObjList: Array<ILIASObject> = await ILIASObject.findByUserId(userId);
         for(let i: number = 0; i < ilObjList.length; i++) {
             await this.removeObject(ilObjList[i]);

@@ -1,6 +1,10 @@
-import {Injectable} from "@angular/core";
-import {User} from "../../models/user";
-import {ILIASObject} from "../../models/ilias-object";
+import { Injectable } from "@angular/core";
+import { Connection, getConnection } from "typeorm/browser";
+import { PEGASUS_CONNECTION_NAME } from "../../config/typeORM-config";
+import { ILIASObject } from "../../models/ilias-object";
+import { User } from "../../models/user";
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
 
 export interface StorageUtilization {
     /**
@@ -15,16 +19,17 @@ export interface StorageUtilization {
     providedIn: "root"
 })
 export class UserStorageMamager {
-    private static storageDifferences: Array<{userId: number, difference: number}> = [];
-    private static storageUpdateLock: boolean = false;
+
+    private readonly log: Logger = Logging.getLogger("UserStorageManager");
+    private storageUsageByUser: Map<number, number> = new Map<number, number>();
 
     /**
      * total used storage for a given user, as registered in the database
      * @param userId
      */
-    static async getUsedStorage(userId: number): Promise<number> {
+    async getUsedStorage(userId: number): Promise<number> {
         const user: User = await User.find(userId);
-        return user.totalUsedStorage;
+        return Math.max(0, user.totalUsedStorage);
     }
 
     /**
@@ -33,12 +38,17 @@ export class UserStorageMamager {
      * @param objectId
      * @param storage
      */
-    static async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        const io: ILIASObject = await ILIASObject.find(objectId);
+    async addObjectToUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        const io: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
         if(io.isOfflineAvailable) return;
 
         const difference: number = await storage.getUsedStorage(objectId, userId);
-        await UserStorageMamager.addDifferenceToUserStorage(userId, difference);
+        const total: number = await this.getUsedStorage(userId);
+        this.log.trace(() => `Add object to storage, diff: ${difference} to total: ${total}, new storage usage: ${total + difference}`);
+        if ((total + difference) < 0) {
+            this.log.error(() => `User storage manager out of sync, total: ${total}, with diff: ${difference} is negative!`);
+        }
+        await this.applyDiffToStorage(userId, difference);
 
         io.isOfflineAvailable = true;
         await io.save();
@@ -50,41 +60,38 @@ export class UserStorageMamager {
      * @param objectId
      * @param storage
      */
-    static async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
-        const io: ILIASObject = await ILIASObject.find(objectId);
+    async removeObjectFromUserStorage(userId: number, objectId: number, storage: StorageUtilization): Promise<void> {
+        const io: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
         if(!io.isOfflineAvailable) return;
 
         const difference: number = await storage.getUsedStorage(objectId, userId);
-        await UserStorageMamager.addDifferenceToUserStorage(userId, -difference);
+        const total: number = await this.getUsedStorage(userId);
+        this.log.trace(() => `Remove object from storage, diff: ${difference} to total: ${total}, new storage usage: ${total + difference}`);
+        if ((total + difference) < 0) {
+            this.log.error(() => `User storage manager out of sync, total: ${total}, with diff: ${difference} is negative!`);
+        }
+        await this.applyDiffToStorage(userId, -difference);
 
         io.isOfflineAvailable = false;
         await io.save();
     }
 
-    /**
-     * applies a difference in storage to the total used storage of the specified user
-     * @param userId
-     * @param difference
-     */
-    static async addDifferenceToUserStorage(userId: number, difference: number) {
-        UserStorageMamager.storageDifferences.push({userId: userId, difference: difference});
-        if (!UserStorageMamager.storageUpdateLock)
-            this.applyDifferenceToUserStorage();
-    }
+    private async applyDiffToStorage(userId: number, difference: number): Promise<void> {
+        this.log.debug(() => `storage: difference ${difference}`);
+        const user: User = await User.find(userId);
 
-    /**
-     * used to serialize writes of the total used storage
-     */
-    static async applyDifferenceToUserStorage() {
-        UserStorageMamager.storageUpdateLock = true;
-        while(UserStorageMamager.storageDifferences.length) {
-            const entry: {userId: number, difference: number} = UserStorageMamager.storageDifferences.pop();
-            console.log(`storage: difference ${entry.difference}`);
-            const user: User = await User.find(entry.userId);
-            user.totalUsedStorage = Number(user.totalUsedStorage) + Number(entry.difference);
-            await user.save();
-            console.log(`storage: used ${user.totalUsedStorage} by ${user.id}`);
+        // Required, because this function gets called async multiple times.
+        // Without the map, the calls would overwrite each others values.
+        // Example: a -> read 1, b -> read 1 | a calc +2, b calc +5 | a write 3, b write 6 | database content 6 but should be 8
+        if (!this.storageUsageByUser.has(userId)) {
+            this.storageUsageByUser.set(userId, user.totalUsedStorage);
         }
-        UserStorageMamager.storageUpdateLock = false;
+        const oldTotal: number = this.storageUsageByUser.get(userId);
+        const newTotal: number = Math.max(0, oldTotal + difference);
+        this.storageUsageByUser.set(userId, newTotal);
+
+        user.totalUsedStorage = newTotal;
+        await user.save();
+        this.log.debug(() => `storage: used ${user.totalUsedStorage}, by user with id: ${user.id}`);
     }
 }
