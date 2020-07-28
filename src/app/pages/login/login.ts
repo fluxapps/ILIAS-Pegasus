@@ -2,6 +2,7 @@ import {Component, Inject, NgZone} from "@angular/core";
 import {AppVersion} from "@ionic-native/app-version/ngx";
 import {InAppBrowserObject} from "@ionic-native/in-app-browser/ngx";
 import {AlertController, Events, ModalController, NavController, Platform} from "@ionic/angular";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
 import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
 import {Settings} from "../../models/settings";
 import {User} from "../../models/user";
@@ -14,7 +15,7 @@ import {LoadingPage} from "../../fallback/loading/loading.component";
 @Component({
     templateUrl: "login.html"
 })
-export class LoginPage {
+export class LoginPage implements ViewWillEnter {
 
     readonly installations: Array<ILIASInstallation> = [];
 
