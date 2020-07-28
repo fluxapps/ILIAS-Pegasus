@@ -60,8 +60,8 @@
             <ion-item-group>
                 <ion-item-divider color="list-element">{{ 'settings.summary' | translate }}</ion-item-divider>
                 <ion-item color="list-element">
-                    <ion-label [color]="totalSize>settings.quotaSize*1000*1000?'danger':null">{{ 'settings.total' | translate:[] }}:
-                        {{ totalSize | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
+                    <ion-label [color]="quotaColor | async">{{ 'settings.total' | translate }}:
+                        {{ totalSize | async | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
                     </ion-label>
                     <ion-button class="ilias-list-action-button" round color="light" slot="end" (click)="deleteAllFilesPrompt()">
                         <ion-icon name="trash" color="primary"></ion-icon>
