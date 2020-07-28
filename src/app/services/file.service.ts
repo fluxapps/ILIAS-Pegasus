@@ -1,28 +1,29 @@
 /** angular */
-import {Injectable} from "@angular/core";
-import {Events, Platform} from "@ionic/angular";
+import { Injectable } from "@angular/core";
+import { FileOpener } from "@ionic-native/file-opener/ngx";
+import { Events, Platform } from "@ionic/angular";
 /** ionic-native */
-import {DirectoryEntry, File, FileEntry, FileError, Flags} from "@ionic-native/file/ngx";
-import {TranslateService} from "@ngx-translate/core";
-import {Network} from "@ionic-native/network/ngx";
+import { DirectoryEntry, File, FileEntry, FileError, Flags } from "@ionic-native/file/ngx";
+import { TranslateService } from "@ngx-translate/core";
+import { Network } from "@ionic-native/network/ngx";
 /** models */
-import {User} from "../models/user";
-import {ILIASObject} from "../models/ilias-object";
-import {ILIASRestProvider} from "../providers/ilias-rest.provider";
-import {FileData} from "../models/file-data";
-import {Log} from "./log.service";
-import {Settings} from "../models/settings";
+import { User } from "../models/user";
+import { ILIASObject } from "../models/ilias-object";
+import { ILIASRestProvider } from "../providers/ilias-rest.provider";
+import { FileData } from "../models/file-data";
+import { Log } from "./log.service";
+import { Settings } from "../models/settings";
 /** errors and exceptions */
-import {IllegalStateError} from "../error/errors";
-import {CantOpenFileTypeException} from "../exceptions/CantOpenFileTypeException";
-import {NoWLANException} from "../exceptions/noWLANException";
+import { IllegalStateError } from "../error/errors";
+import { CantOpenFileTypeException } from "../exceptions/CantOpenFileTypeException";
+import { NoWLANException } from "../exceptions/noWLANException";
 /** logging */
-import {Logger} from "./logging/logging.api";
-import {Logging} from "./logging/logging.service";
+import { Logger } from "./logging/logging.api";
+import { Logging } from "./logging/logging.service";
 /** misc */
-import {isNullOrUndefined} from "../util/util.function";
-import {AuthenticationProvider} from "../providers/authentication.provider";
-import {UserStorageMamager, StorageUtilization} from "./filesystem/user-storage.mamager";
+import { isNullOrUndefined } from "../util/util.function";
+import { AuthenticationProvider } from "../providers/authentication.provider";
+import { UserStorageMamager, StorageUtilization } from "./filesystem/user-storage.mamager";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -46,7 +47,9 @@ export class FileService implements StorageUtilization {
         private readonly file: File,
         private readonly network: Network,
         private readonly userStorageManager: UserStorageMamager,
-    ) {}
+        private readonly fileOpener: FileOpener,
+    ) {
+    }
 
     /**
      * Return the storage location to store files for the given user and object, depending on platform (iOS or Android)
@@ -54,7 +57,7 @@ export class FileService implements StorageUtilization {
      * @param iliasObject
      * @returns {string}
      */
-     getStorageLocation(user: User, iliasObject: ILIASObject): string {
+    getStorageLocation(user: User, iliasObject: ILIASObject): string {
         if (this.platform.is("android")) {
             return `${this.file.externalApplicationStorageDirectory}ilias-app/${user.id}/${iliasObject.objId}/`;
         } else if (this.platform.is("ios")) {
@@ -67,18 +70,17 @@ export class FileService implements StorageUtilization {
     private async createDirectoryPath(path: string): Promise<void> {
         let basePath: string = "";
         if (this.platform.is("android")) {
-          basePath = this.file.externalApplicationStorageDirectory;
+            basePath = this.file.externalApplicationStorageDirectory;
         } else if (this.platform.is("ios")) {
-          basePath = this.file.dataDirectory;
-        }
-        else throw new IllegalStateError("Application must run on ios or android to determine the correct storage location.");
+            basePath = this.file.dataDirectory;
+        } else throw new IllegalStateError("Application must run on ios or android to determine the correct storage location.");
 
         const resourcePath: string = path.replace(basePath, "");
         const pathShards: Array<string> = resourcePath.split("/").filter((value) => value !== "");
 
         let previousDir: DirectoryEntry = await this.file.resolveDirectoryUrl(basePath);
         for (const shard of pathShards) {
-          previousDir = await this.file.getDirectory(previousDir, shard, <Flags>{create: true});
+            previousDir = await this.file.getDirectory(previousDir, shard, <Flags>{create: true});
         }
     }
 
@@ -130,7 +132,7 @@ export class FileService implements StorageUtilization {
      * @returns {Promise<FileEntry>}
      */
     existsFile(fileObject: ILIASObject): Promise<FileEntry> {
-        return new Promise((resolve: any, reject: (error: FileError|Error) => void): void => {
+        return new Promise((resolve: any, reject: (error: FileError | Error) => void): void => {
             User.find(fileObject.userId).then(user => {
                 const storageLocation: string = this.getStorageLocation(user, fileObject);
                 if (!window["resolveLocalFileSystemURL"]) {
@@ -160,7 +162,7 @@ export class FileService implements StorageUtilization {
      * Deletes the local object on the device
      */
     async removeObject(iliasObject: ILIASObject): Promise<void> {
-        if(
+        if (
             iliasObject.type === "file" ||
             iliasObject.isLearnplace() ||
             iliasObject.type === "htlm" ||
@@ -188,7 +190,7 @@ export class FileService implements StorageUtilization {
             const storageLocation: string = this.getStorageLocation(user, fileObject);
 
             // There's no local file to delete.
-            if(isNullOrUndefined(fileObject.data.fileVersionDateLocal)) {
+            if (isNullOrUndefined(fileObject.data.fileVersionDateLocal)) {
                 this.log.debug(() => `Skip removal of file with objId: ${fileObject.objId}, no local file version date present`);
                 return;
             }
@@ -235,54 +237,25 @@ export class FileService implements StorageUtilization {
         await fd.save();
     }
 
-    private openExisting(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
-        if (this.platform.is("android")) {
-            return this.openExistingAndroid(fileEntry, fileObject);
-        } else {
-            return this.openExistingIOS(fileEntry, fileObject);
+    private async openExisting(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
+        try {
+            this.log.debug(() => `Opening file: ${fileEntry.fullPath}`);
+            await this.fileOpener.open(
+                fileEntry.toURL(),
+                fileObject.data.fileType
+            );
+            this.log.trace(() => "Existing file successfully opened.");
+        } catch (error) {
+            if (error.status == 9) {
+                this.log.error(() => "Unable to open existing file because the file type is not supported.");
+                throw new CantOpenFileTypeException("Unable to open existing file because the file type is not supported.");
+            } else {
+                this.log.error(() => "Unable to open existing file with a general error.");
+                throw error;
+            }
         }
     }
 
-    private async openExistingAndroid(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
-      this.log.debug(() => `Opening file on Android: ${fileEntry.fullPath}`);
-        cordova.plugins["fileOpener2"].open(
-            fileEntry.toURL(),
-            fileObject.data.fileType,
-            {
-                error: (e): void => {
-                    if (e.status == 9) {
-                        this.log.error(() => "Unable to open existing file on Android because the file type is not supported.");
-                        throw new CantOpenFileTypeException("Unable to open existing file on Android because the file type is not supported.");
-                    }
-                    else {
-                        this.log.error(() => "Unable to open existing file on Android with a general error.");
-                        throw e;
-                    }
-                },
-                success: (): void => {
-                    this.log.trace(() => "Existing file successfully opened on Android.");
-                }
-            }
-        )
-    }
-
-    private async openExistingIOS(fileEntry: FileEntry, fileObject: ILIASObject): Promise<void> {
-        const user: User = AuthenticationProvider.getUser();
-        this.log.debug(() => `Opening file on iOS: ${this.getStorageLocation(user, fileObject)}${fileObject.data.fileName}`);
-
-      window["DocumentViewer"].previewFileFromUrlOrPath(
-          (msg) => {
-            this.log.trace(() => `Existing file successfully opened on iOS with message "${msg}"`);
-          },
-          (msg) => {
-            this.log.error(() => `Unable to open existing file on iOS with message "${msg}"`);
-            throw new CantOpenFileTypeException(`Unable to open existing file on iOS with message "${msg}"`);
-          },
-          fileEntry.toURL()
-        );
-    }
-
-//    User.c
     /**
      * Recursively calculates the used disk space by files under the given ilias Object - if they exist!.
      * Resolves a promise with the used disk space in bytes

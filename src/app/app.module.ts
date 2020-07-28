@@ -7,6 +7,7 @@ import { RouteReuseStrategy } from "@angular/router";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 /** ionic-native */
 import { Diagnostic } from "@ionic-native/diagnostic/ngx";
+import { FileOpener } from "@ionic-native/file-opener/ngx";
 import { File } from "@ionic-native/file/ngx";
 import { HTTP } from "@ionic-native/http/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
@@ -522,7 +523,8 @@ import { CssStyleService } from "./services/theme/css-style.service";
         IconProvider,
         AppVersion,
         Zip,
-        UniqueDeviceID
+        UniqueDeviceID,
+        FileOpener
     ],
     exports: [
         TranslateModule
