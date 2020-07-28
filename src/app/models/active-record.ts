@@ -41,7 +41,7 @@ export interface DatabaseConnector {
      * Deletes the object with given primary ID from database
      * @param id
      */
-    destroy(id: number): Promise<any>;
+    destroy(id: number): Promise<void>;
 
 }
 
@@ -133,7 +133,7 @@ export class SQLiteConnector implements DatabaseConnector {
         }
     };
 
-    destroy(id: number): Promise<any> {
+    destroy(id: number): Promise<void> {
         Log.describe(this, "deleting item with table and id: ", {table: this.table, id: id});
         return this.query("DELETE FROM " + this.table + " WHERE id = ?", [id]);
     }
@@ -206,7 +206,7 @@ export abstract class ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<any>}
      */
-    destroy(): Promise<any> {
+    destroy(): Promise<void> {
         return this.connector.destroy(this._id);
     }
 

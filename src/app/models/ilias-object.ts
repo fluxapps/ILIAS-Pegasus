@@ -5,6 +5,12 @@ import {SQLiteDatabaseService} from "../services/database.service";
 import {UserStorageService} from "../services/filesystem/user-storage.service";
 import {Log} from "../services/log.service";
 
+export const enum FavouriteStatus {
+    NONE = 0,
+    DOWNLOADED = 1,
+    PENDING = 2
+}
+
 export class ILIASObject extends ActiveRecord {
 
     // A nice technique to simulate class constants :) ILIASObject.OFFLINE_OWNER_USER => 'user'
@@ -310,7 +316,7 @@ export class ILIASObject extends ActiveRecord {
      * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
      */
     async removeFromFavorites(userStorage: UserStorageService, ignoreDeletionErrors: boolean = false): Promise<void> {
-        await this.setIsFavorite(0);
+        await this.setIsFavorite(FavouriteStatus.NONE);
         const underFavorite: boolean = await this.objectIsUnderFavorite();
         const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
 
@@ -331,7 +337,7 @@ export class ILIASObject extends ActiveRecord {
     /**
      * Set property 'isFavorite' of the 'iliasObject'
      */
-    async setIsFavorite(value: number): Promise<void> {
+    async setIsFavorite(value: FavouriteStatus): Promise<void> {
         this.isFavorite = value;
         await this.save();
     }
@@ -564,28 +570,24 @@ export class ILIASObject extends ActiveRecord {
 
     /**
      *
-     * @returns {Promise<T>} return a list of all ILIASObjects touched.
+     * @returns {Promise<Array<ILIASObject>>} return a list of all ILIASObjects touched.
      */
-    protected saveAndEscalateNeedsDownload(newValue): Promise<Array<ILIASObject>> {
+    private async saveAndEscalateNeedsDownload(newValue: boolean): Promise<Array<ILIASObject>> {
         if (newValue == this.needsDownload) {
-            Log.write(this, `Needs download stays the same for ${this.title}. No need for escalation.`);
-            return Promise.resolve([this]);
+            Log.write(this, `Needs download stays the same for "${this.title}", with objId: ${this.objId}. No need for escalation.`);
+            return Array.of(this);
         }
         this.needsDownload = newValue;
 
-        return this.save()
-            .then(() => this.parent)
-            .then((parent) => {
-                if (parent) {
-                    return parent.updateNeedsDownload(this.needsDownload)
-                        .then((objects) => {
-                        objects.push(this);
-                        return Promise.resolve(objects);
-                    });
-                } else {
-                    return Promise.resolve([this]);
-                }
-            });
+        await this.save();
+        const parent: ILIASObject = await this.parent;
+        if (parent) {
+            const objects: Array<ILIASObject> = await parent.updateNeedsDownload(this.needsDownload);
+            objects.push(this);
+            return objects;
+        } else {
+            return Array.of(this);
+        }
     }
 
     static findByUserId(userId: number): Promise<Array<ILIASObject>> {
@@ -627,7 +629,7 @@ export class ILIASObject extends ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<object>}
      */
-    destroy(): Promise<object> {
+    destroy(): Promise<void> {
         return super.destroy();
     }
 }

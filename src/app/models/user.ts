@@ -170,7 +170,7 @@ export class User extends ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<object>}
      */
-    destroy(): Promise<object> {
+    destroy(): Promise<void> {
         return super.destroy();
     }
 
