@@ -57,9 +57,7 @@ export interface ConfigProvider {
  * @author nmaerchy <nm@studer-raimann.ch>
  * @version 1.0.0
  */
-@Injectable({
-    providedIn: "root"
-})
+@Injectable()
  export class ILIASConfigProvider implements ConfigProvider {
 
   private readonly config: Promise<ILIASConfig>;

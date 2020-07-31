@@ -2,7 +2,7 @@ import {ActiveRecord, SQLiteConnector} from "./active-record";
 import {SQLiteDatabaseService} from "../services/database.service";
 import {Settings} from "./settings";
 
-export class User extends ActiveRecord {
+export class User extends ActiveRecord<User> {
 
     /**
      * The internal user-ID in ILIAS corresponding to the installation given by installationID

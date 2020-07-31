@@ -1,7 +1,8 @@
 /** angular */
 import { Component, Inject, NgZone, OnDestroy, OnInit } from "@angular/core";
-import { AlertController, NavController, ToastController } from "@ionic/angular";
+import { AlertController, LoadingController, NavController, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
+import { load } from "dotenv";
 import { Observable, ReplaySubject } from "rxjs";
 import { map } from "rxjs/operators";
 /** misc */
@@ -45,6 +46,7 @@ export class SettingsPage implements OnInit, OnDestroy {
         private readonly alertCtr: AlertController,
         private readonly userStorageManager: UserStorageMamager,
         private readonly userStorage: UserStorageService,
+        private readonly loadingCtrl: LoadingController,
         private readonly ngZone: NgZone,
     ) {
     }
@@ -143,23 +145,25 @@ export class SettingsPage implements OnInit, OnDestroy {
                 },
                 {
                     text: this.translate.instant("ok"),
-                    handler: (): void => {
-                        this.showFilesDeletingToast();
-                        this.footerToolbar.addJob(Job.DeleteFilesSettings, this.translate.instant("settings.deleting_files"));
-                        this.doDeleteAllFiles().then(() => {
-                            this.loadUsersAndDiskspace().then(() => {
-                                this.footerToolbar.removeJob(Job.DeleteFilesSettings);
-                                this.showFilesDeletedToast();
-                            }).catch((error): void => {
-                                this.log.error(() => `Unable to load user and disk space with error ${JSON.stringify(error)}`);
-                                this.footerToolbar.removeJob(Job.DeleteFilesSettings);
-                                this.showUnknownErrorOccurredAlert();
-                            });
-                        }).catch((): void => {
+                    handler: async(): Promise<void> => {
+                        // Lock the user to the settings page,
+                        // the user may navigate to the course view which would throws random errors if the delete task is still running
+                        const loading: HTMLIonLoadingElement = await this.loadingCtrl.create({backdropDismiss: false});
+                        try {
+                            await loading.present();
+                            this.showFilesDeletingToast();
+                            this.footerToolbar.addJob(Job.DeleteFilesSettings, this.translate.instant("settings.deleting_files"));
+                            await this.doDeleteAllFiles();
+                            await this.loadUsersAndDiskspace()
+                            this.footerToolbar.removeJob(Job.DeleteFilesSettings);
+                            await loading.dismiss();
+                            this.showFilesDeletedToast();
+                        } catch (error) {
                             this.log.error(() => "Unable to delete all files.");
+                            await loading.dismiss();
                             this.footerToolbar.removeJob(Job.DeleteFilesSettings);
                             this.showUnknownErrorOccurredAlert();
-                        });
+                        }
                     }
                 }
             ]

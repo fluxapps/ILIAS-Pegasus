@@ -70,10 +70,11 @@ export class ObjectListPage {
 
     pageTitle: string;
     parent: ILIASObject;
-    private content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
+    content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
 
-    private pageLayout: PageLayout;
-    private timeline: TimeLine;
+    pageLayout: PageLayout;
+    timeline: TimeLine;
+
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
     constructor(private readonly navCtrl: NavController,

@@ -7,11 +7,10 @@ import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
-import {StorageUtilization} from "../../services/filesystem/user-storage.mamager";
+import {StorageUtilization, UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
-import {UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 
 /**
  * Describes a service to manage learnplaces.
@@ -141,12 +140,24 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
                 paths.push(`${basePath}${picture.thumbnail}`);
             });
 
+            it.accordionBlocks.forEach((acc) => {
+                acc.videoBlocks.forEach((video: VideoBlockEntity) => paths.push(`${basePath}${video.url}`));
+                acc.pictureBlocks.forEach((picture: PictureBlockEntity) => {
+                    paths.push(`${basePath}${picture.url}`);
+                    paths.push(`${basePath}${picture.thumbnail}`);
+                });
+            });
+
+            this.log.debug(() => `Learnplace ${objectId} of user ${userId} contains ${paths.length} files`);
+
             for(const fullPath of paths) {
                 const [path, filename]: [string, string] = this.splitIntoPathNamePair(fullPath);
                 const result: FileEntry = await this.file.getFile(await this.file.resolveDirectoryUrl(path), filename, {create: false});
                 result.getMetadata(it => size += it.size);
             }
         });
+
+        this.log.debug(() => `Total size of learnplace ${objectId} owned by user ${userId}: ${size}`);
 
         return size;
     }

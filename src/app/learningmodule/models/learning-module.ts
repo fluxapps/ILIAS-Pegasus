@@ -2,7 +2,7 @@ import {ActiveRecord, SQLiteConnector} from "../../models/active-record";
 import {SQLiteDatabaseService} from "../../services/database.service";
 import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 
-export class LearningModule extends ActiveRecord {
+export class LearningModule extends ActiveRecord<LearningModule> {
     /**
      * objId of the ILIAS object corresponding to the lm
      */

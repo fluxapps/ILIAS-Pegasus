@@ -18,6 +18,12 @@ import { SynchronizationService } from "./services/synchronization.service";
 /** misc */
 import getMessage = Logging.getMessage;
 
+interface NavigatorSplashScreen {
+    splashscreen: {
+        hide(): void;
+    }
+}
+
 @Component({
     selector: "app-root",
     templateUrl: "app.component.html"
@@ -48,63 +54,66 @@ export class AppComponent {
         private readonly toastCtrl: ToastController,
         private readonly translate: TranslateService,
     ) {
-
-        // init after platform is ready and native stuff is available
-        this.initializeApp().then(() => {
-            this.log.info(() => "Platform is ready");
-        }).catch((error) => {
-            const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
-            const errorType: string = (error instanceof Error) ? error.name : "N/a";
-            this.log.warn(() => `Could not initialize app. Error type: ${errorType} Message: ${message}`)
-        });
+        this.splashScreen.hide();
+        this.initializeApp();
     }
 
     /**
      * Initialize everything that has to be done on start up.
      */
     private async initializeApp(): Promise<void> {
-        this.log.info(() => "Initialize app");
 
-        this.user = AuthenticationProvider.getUser();
+        try {
+            this.log.debug(() => "Initialize app component");
 
-        await this.initBackButton();
+            this.user = AuthenticationProvider.getUser();
 
-        if(AuthenticationProvider.isLoggedIn()) {
-            await this.sync.resetOfflineSynchronization(true);
-            await this.themeProvider.loadResources();
-        } else {
-            // Dont await modal
-            await this.presentOnboardingModal();
+            await this.initBackButton();
+
+            // This function call may logs the user out, therefore re validate if user is logged in afterwards
+            await this.validateUserLoginSessionVersion();
+
+            if(AuthenticationProvider.isLoggedIn()) {
+                // await this.sync.resetOfflineSynchronization(true);
+                await this.themeProvider.loadResources();
+                await this.startDownloadingOfflineContent();
+            } else {
+                await this.presentOnboardingModal();
+            }
+
+            this.log.info(() => "App component init successful");
+        } catch (error) {
+            const message: string = getMessage(error,  `Error occurred: \n${JSON.stringify(error)}`);
+            const errorType: string = (error instanceof Error) ? error.name : "N/a";
+            this.log.fatal(() => `Could not initialize app. Error type: ${errorType} Message: ${message}`)
+        } finally {
+            this.log.trace(() => "Hide splash screen");
+            ((navigator as unknown) as NavigatorSplashScreen).splashscreen.hide();
         }
+    }
 
+    private async validateUserLoginSessionVersion(): Promise<void> {
         if(AuthenticationProvider.isLoggedIn()) {
+            this.log.debug(() => "Validate user login session version");
             const currentAppVersion: string = await this.appVersionPlugin.getVersionNumber();
             if(this.user.lastVersionLogin !== currentAppVersion) {
                 await this.auth.logout();
-                return;
+                this.log.info(() => "Old user session detected logout user");
             }
-
-            const settings: Settings = await Settings.findByUserId(this.user.id);
-            if(settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
         }
+    }
 
-        this.splashScreen.hide();
+    private async startDownloadingOfflineContent(): Promise<void> {
+        this.log.debug(() => "Start downloading offline content if user activated the option");
+        const settings: Settings = await Settings.findByUserId(this.user.id);
+        if(settings.downloadOnStart && window.navigator.onLine) this.sync.loadAllOfflineContent();
     }
 
     /**
      * displays the introduction-slides
      */
-    async presentOnboardingModal(): Promise<void> {
+    private async presentOnboardingModal(): Promise<void> {
         await this.navCtrl.navigateRoot(["/onboarding"]);
-        /*
-        const modal: HTMLIonModalElement = await this.modal.create({
-            component: OnboardingPage,
-            cssClass: "modal-fullscreen",
-        });
-
-        await modal.present();
-
-         */
     }
 
     private async initBackButton(): Promise<void> {

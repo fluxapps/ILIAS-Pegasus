@@ -63,7 +63,7 @@ export class DataProvider {
      * @param refreshFiles
      * @returns {Promise<ILIASObject>}
      */
-    private storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject | undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
+    private async storeILIASObject(object: DesktopData, user: User, rootParent: ILIASObject | undefined = undefined, refreshFiles: boolean = true): Promise<ILIASObject> {
         Log.write(this, "Storing ILIAS Object");
 
         let the_iliasObject: ILIASObject = undefined;
@@ -78,7 +78,7 @@ export class DataProvider {
             .then(parent => {
                 if (the_iliasObject.id == 0 && parent != undefined)
                     the_iliasObject.isNew = true;
-                return the_iliasObject.save() as Promise<ILIASObject>;
+                return the_iliasObject.save();
             })
             .then((iliasObject: ILIASObject) => {
                 if (iliasObject.type === "file") {
@@ -88,7 +88,7 @@ export class DataProvider {
                         return iliasObject.save() as Promise<ILIASObject>;
                     }
                 } else {
-                    return Promise.resolve(iliasObject);
+                    return iliasObject;
                 }
             });
     }
@@ -107,12 +107,14 @@ export class DataProvider {
      */
     private async storeILIASDesktopObjects(objects: Array<DesktopData>, user: User): Promise<Array<ILIASObject>> {
         // We store desktop items that are only courses or groups
-        const pendingIliasObjects: Array<Promise<ILIASObject>> = objects.map(object => this.storeILIASObject(object, user));
-
         this.log.debug(() => "Storing Objects in Cache");
-        const iliasObjects: Array<ILIASObject> = await Promise.all(pendingIliasObjects);
-        await DesktopItem.storeDesktopItems(user.id, iliasObjects);
-        return iliasObjects;
+        const results: Array<ILIASObject> = [];
+        for (const desktopData of objects) {
+            results.push(await this.storeILIASObject(desktopData, user));
+        }
+
+        await DesktopItem.storeDesktopItems(user.id, results);
+        return results;
     }
 
 
@@ -147,27 +149,25 @@ export class DataProvider {
      */
     private async saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         const iliasObjects: Array<ILIASObject> = [];
-        const promises: Array<Promise<void>> = [];
         const objectsToDelete: Array<ILIASObject> = existingObjects;
         Log.describe(this, "Existing Objects.", existingObjects);
-        remoteObjects.forEach(remoteObject => {
-            const promise: Promise<void> = this.storeILIASObject(remoteObject, user, rootParent, refreshFiles).then((iliasObject) => {
-                iliasObjects.push(iliasObject);
-                // Check if the stored object exists already locally, if so, remove it from objectsToDelete
-                const objectIndex: number = existingObjects.findIndex(existingObject => {
-                    return existingObject.objId == iliasObject.objId;
-                });
-                if (objectIndex > -1) {
-                    objectsToDelete.splice(objectIndex, 1);
-                }
-            });
-            promises.push(promise);
-        });
 
-        await Promise.all(promises);
+        for (const remoteObject of remoteObjects) {
+            const iliasObject: ILIASObject = await this.storeILIASObject(remoteObject, user, rootParent, refreshFiles);
+            iliasObjects.push(iliasObject);
+            // Check if the stored object exists already locally, if so, remove it from objectsToDelete
+            const objectIndex: number = existingObjects.findIndex(existingObject => {
+                return existingObject.objId == iliasObject.objId;
+            });
+            if (objectIndex > -1) {
+                objectsToDelete.splice(objectIndex, 1);
+            }
+        }
 
         // Delete all existing objects left that were not delivered
-        await Promise.all(objectsToDelete.map(iliasObject => this.deleteObject(iliasObject, user)));
+        for (const objectToDelete of objectsToDelete) {
+            await this.deleteObject(objectToDelete, user)
+        }
 
         return iliasObjects;
     }
@@ -179,21 +179,17 @@ export class DataProvider {
      * @param user
      */
     private async deleteObject(iliasObject: ILIASObject, user: User): Promise<void> {
-        const promises: Array<Promise<void>> = [];
-        promises.push(iliasObject.destroy());
-        if (iliasObject.type == "file") {
-            promises.push(this.fileObjectHandler.onDelete(iliasObject, user));
+        if (iliasObject.type === "file") {
+            await this.fileObjectHandler.onDelete(iliasObject, user);
         }
+
         // Container object must also delete their children
         if (iliasObject.isContainer()) {
-            this.getObjectData(iliasObject, user, false, true).then(iliasObjects => {
-                iliasObjects.forEach(iliasObject => {
-                    promises.push(this.deleteObject(iliasObject, user));
-                });
-            });
+            const iliasObjects: Array<ILIASObject> = await this.getObjectData(iliasObject, user, false, true);
+            for (const entry of iliasObjects) {
+                await this.deleteObject(entry, user);
+            }
         }
-        await Promise.all(promises);
+        await iliasObject.destroy();
     }
-
-
 }

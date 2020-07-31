@@ -28,6 +28,7 @@ import { Log } from "./log.service";
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
 import { NEWS_SYNCHRONIZATION, NewsSynchronization } from "./news/news.synchronization";
+import { OverlayEventDetail } from "@ionic/core";
 
 interface SettledPromise<T> {
     status: "fulfilled" | "rejected";
@@ -85,7 +86,8 @@ export class SynchronizationService {
                 @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleLoader,
                 private readonly alertCtr: AlertController,
                 private readonly themeProvider: ThemeProvider,
-    ) {}
+    ) {
+    }
 
     /**
      * cancels all synchronization-processes and error-corrects
@@ -107,41 +109,46 @@ export class SynchronizationService {
 
         // handle the pending downloads
         const objects: Array<ILIASObject> = await ILIASObject.getAllOpenDownloads(this.user);
-        if(!objects.length) return;
-            if(askUserToLoadNow) {
-                let dismiss: boolean = false;
-                const buttons: Array<{text: string, handler(): void;}> = window.navigator.onLine ?
-                    [{
-                        text: this.translate.instant("sync.remove_from_favorites"),
-                        handler: (): void => {dismiss = true;}
-                    }, {
-                        text: this.translate.instant("sync.load_now"),
-                        handler: (): void => {dismiss = false;}
-                    }] :
-                    [{
-                        text: this.translate.instant("sync.ok"),
-                        handler: (): void => {dismiss = true;}
-                    }];
+        if (!objects.length) return;
+        if (askUserToLoadNow) {
+            let dismiss: boolean = false;
+            const buttons: Array<{ text: string, handler(): void; }> = window.navigator.onLine ?
+                [{
+                    text: this.translate.instant("sync.remove_from_favorites"),
+                    handler: (): void => {
+                        dismiss = true;
+                    }
+                }, {
+                    text: this.translate.instant("sync.load_now"),
+                    handler: (): void => {
+                        dismiss = false;
+                    }
+                }] :
+                [{
+                    text: this.translate.instant("sync.ok"),
+                    handler: (): void => {
+                        dismiss = true;
+                    }
+                }];
 
-                let objectsList: string = "<br>";
-                objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
+            let objectsList: string = "<br>";
+            objects.forEach((o: ILIASObject) => objectsList += `<br>• <i>${o.title}</i>`);
 
-                const alert: HTMLIonAlertElement = await this.alertCtr.create({
-                    header: this.translate.instant("sync.open_downloads_title"),
-                    message: ((objects.length === 1) ?
+            const alert: HTMLIonAlertElement = await this.alertCtr.create({
+                header: this.translate.instant("sync.open_downloads_title"),
+                message: ((objects.length === 1) ?
                         this.translate.instant("sync.open_downloads_text_sng") :
                         this.translate.instant("sync.open_downloads_text_plr").replace(/NUM/, objects.length.toString(10))
-                    ) + objectsList,
-                    buttons: buttons
-                });
-                alert.present();
-                alert.onDidDismiss().then(() => {
-                    if (dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
-                    else this.addObjectsToSyncQueue(objects);
-                });
-            } else {
-                objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
-            }
+                ) + objectsList,
+                buttons: buttons
+            });
+            await alert.present();
+            await alert.onDidDismiss();
+            if (dismiss) objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
+            else await this.addObjectsToSyncQueue(objects);
+        } else {
+            objects.forEach((o: ILIASObject) => o.removeFromFavorites(this.userStorage, true));
+        }
     }
 
     /**
@@ -160,12 +167,10 @@ export class SynchronizationService {
             const iliasObjects: Array<ILIASObject> = await this.executeLiveLoad(iliasObject);
             await this.processOpenSynchronizationTasks();
             return iliasObjects;
-        }
-        catch (error) {
+        } catch (error) {
             await this.syncEnded();
             throw error;
-        }
-        finally {
+        } finally {
             SynchronizationService.state.liveLoading = false;
         }
     }
@@ -175,11 +180,11 @@ export class SynchronizationService {
      * @returns Promise<void>
      */
     async loadAllOfflineContent(): Promise<void> {
-        if(SynchronizationService.state.loadingOfflineContent) return;
+        if (SynchronizationService.state.loadingOfflineContent) return;
 
         this.user = AuthenticationProvider.getUser();
         const favorites: Array<ILIASObject> = await ILIASObject.getFavoritesByUserId(this.user.id);
-        if(favorites.length === 0) return;
+        if (favorites.length === 0) return;
         await this.addObjectsToSyncQueue(favorites);
     }
 
@@ -187,11 +192,11 @@ export class SynchronizationService {
      * Add ILIASObjects to the syncOfflineQueue for offline-synchronization and start offline-sync, if it is not already running
      * @param iliasObjects
      */
-    async addObjectsToSyncQueue(iliasObjects: ILIASObject|Array<ILIASObject>): Promise<void> {
+    async addObjectsToSyncQueue(iliasObjects: ILIASObject | Array<ILIASObject>): Promise<void> {
         this.user = AuthenticationProvider.getUser();
         this.syncOfflineQueue = Array.prototype.concat(this.syncOfflineQueue, iliasObjects);
         this.updateOfflineSyncStatusMessage();
-        if(!SynchronizationService.state.loadingOfflineContent)
+        if (!SynchronizationService.state.loadingOfflineContent)
             await this.processOfflineSyncQueue();
     }
 
@@ -199,12 +204,12 @@ export class SynchronizationService {
      * Download all ILIASObjects and their contents in the syncOfflineQueue
      */
     async processOfflineSyncQueue(): Promise<void> {
-        if(!window.navigator.onLine) {
+        if (!window.navigator.onLine) {
             await this.resetOfflineSynchronization();
             throw new OfflineException("Tried to sync files when device was offline.");
         }
 
-        if(this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
+        if (this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
             this.syncOfflineQueue = [];
             this.syncOfflineQueueCnt = 0;
             SynchronizationService.state.loadingOfflineContent = false;
@@ -217,7 +222,7 @@ export class SynchronizationService {
 
         const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
         // the user may has unmarked the object in the mean time
-        if(ilObj.isFavorite) {
+        if (ilObj.isFavorite) {
             await ilObj.setIsFavorite(FavouriteStatus.PENDING);
             try {
                 await this.loadOfflineObjectRecursive(ilObj);
@@ -226,7 +231,7 @@ export class SynchronizationService {
             }
             await ILIASObject.setOfflineAvailableRecursive(ilObj, this.user, true);
             // the user may has unmarked the object in the mean time
-            if(ilObj.isFavorite) await ilObj.setIsFavorite(FavouriteStatus.DOWNLOADED);
+            if (ilObj.isFavorite) await ilObj.setIsFavorite(FavouriteStatus.DOWNLOADED);
             else await ilObj.removeFromFavorites(this.userStorage);
         }
 
@@ -255,7 +260,7 @@ export class SynchronizationService {
      */
     async loadOfflineObjectRecursive(iliasObject: ILIASObject): Promise<SyncResults> {
         await iliasObject.setIsFavorite(FavouriteStatus.PENDING);
-        if(SynchronizationService.state.recursiveSyncRunning) {
+        if (SynchronizationService.state.recursiveSyncRunning) {
             let resolver: any;
             let rejecter: any;
             const promise: Promise<SyncResults> = new Promise((resolve, reject) => {
@@ -272,7 +277,7 @@ export class SynchronizationService {
 
         return this.downloadContainerContent(iliasObject)
             .then((syncResult) => {
-                if(this.recursiveSyncQueue.length > 0) {
+                if (this.recursiveSyncQueue.length > 0) {
                     const sync: SyncEntry = this.recursiveSyncQueue.pop();
                     this.loadOfflineObjectRecursive(sync.object)
                         .then((syncResult: SyncResults) => {
@@ -314,8 +319,8 @@ export class SynchronizationService {
     }
 
     private async downloadLearningModules(iliasObjects: Array<ILIASObject>): Promise<void> {
-        for(const io of iliasObjects) {
-            if(io.type === "htlm" || io.type === "sahs") {
+        for (const io of iliasObjects) {
+            if (io.type === "htlm" || io.type === "sahs") {
                 await this.learningModuleManager.load(io.objId);
                 io.needsDownload = false;
                 await io.save();
@@ -326,57 +331,58 @@ export class SynchronizationService {
     /**
      * set local recursiveSyncRunning and db entry that a sync is in progress
      */
-    protected async syncStarted(): Promise<void> {
-        return new Promise((resolve, reject) => {
+    private async syncStarted(): Promise<void> {
+        try {
             SynchronizationService.state.recursiveSyncRunning = true;
-            SQLiteDatabaseService.instance().then(db => {
-                db.query(`INSERT INTO synchronization (userId, startDate, endDate, recursiveSyncRunning) VALUES (${this.user.id}, date('now'), NULL, 1)`)
-                    .then(() => {
-                        resolve();
-                    }).catch(err => {
-                    Log.error(this, err);
-                    reject();
-                });
-            });
-        });
+            const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+            await db.query(`INSERT INTO synchronization (userId, startDate, endDate, recursiveSyncRunning) VALUES (${this.user.id}, date('now'), NULL, 1)`);
+        } catch (error) {
+            this.log.error(() => `Encountered error while staring sync, with message: "${error.message}"`);
+        }
+
     }
 
     /**
      * set local recursiveSyncRunning and closes the db entry that a sync is in progress
      */
-    protected async syncEnded(): Promise<any> {
+    private async syncEnded(): Promise<void> {
         SynchronizationService.state.recursiveSyncRunning = false;
-        Log.write(this, "ending Sync.");
+        this.log.debug(() => "Synchronisation ending");
 
-        return SQLiteDatabaseService.instance()
-            .then(db => db.query(
-                `UPDATE synchronization SET recursiveSyncRunning = 0, endDate = date('now') WHERE userId = ${this.user.id} AND recursiveSyncRunning = 1`
-            ))
-            .then(() => this.updateLastSync(this.user.id));
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        await db.query(
+            "UPDATE synchronization SET recursiveSyncRunning = 0, endDate = date('now') WHERE userId = ? AND recursiveSyncRunning = 1;",
+            [this.user.id]
+        );
+        await this.updateLastSync(this.user.id);
+        this.log.info(() => "Synchronisation finished");
     }
 
-    updateLastSync(userId: number): Promise<any> {
+    async updateLastSync(userId: number): Promise<any> {
         return SQLiteDatabaseService.instance()
             .then(db =>
-              db.query(`SELECT endDate FROM synchronization WHERE userId = ${userId} AND endDate not Null ORDER BY endDate DESC LIMIT 1`))
+                db.query(
+                    "SELECT endDate FROM synchronization WHERE userId = ? AND endDate not Null ORDER BY endDate DESC LIMIT 1",
+                    [userId])
+            )
             .then((result) => {
-                if(result.rows.length == 0)
-                    return Promise.resolve(null);
+                if (result.rows.length === 0)
+                    return null;
                 Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
-				const now: Date = new Date();
-				this.lastSync = new Date(result.rows.item(0).endDate);
+                const now: Date = new Date();
+                this.lastSync = new Date(result.rows.item(0).endDate);
 
-				let date_string: string = "";
-				if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
-					if (now.getDate() == this.lastSync.getDate()) {
-						date_string = this.translate.instant("today");
-					} else if ((now.getDate() - 1) == this.lastSync.getDate()) {
-						date_string = this.translate.instant("yesterday");
-					}
-				}
+                let dateString: string = "";
+                if (now.getMonth() == this.lastSync.getMonth() && now.getFullYear() == this.lastSync.getFullYear()) {
+                    if (now.getDate() == this.lastSync.getDate()) {
+                        dateString = this.translate.instant("today");
+                    } else if ((now.getDate() - 1) == this.lastSync.getDate()) {
+                        dateString = this.translate.instant("yesterday");
+                    }
+                }
 
-				date_string = date_string ? date_string : this.lastSync.getDate()+"."+(this.lastSync.getMonth()+1)+"."+this.lastSync.getFullYear();
-                this.lastSyncString = date_string;
+                dateString = dateString ? dateString : `${this.lastSync.getDate()}.${this.lastSync.getMonth() + 1}.${this.lastSync.getFullYear()}`;
+                this.lastSyncString = dateString;
                 Log.describe(this, "lastdate", this.lastSync);
                 return Promise.resolve(this.lastSync);
             });
@@ -392,8 +398,8 @@ export class SynchronizationService {
         const space: number = await FileData.getTotalDiskSpace();
         // We split the objects in different categories.
         const downloads: Array<ILIASObject> = [];
-        const filesTooBig: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
-        const noMoreSpace: Array<{ object: ILIASObject, reason: LeftOutReason}> = [];
+        const filesTooBig: Array<{ object: ILIASObject, reason: LeftOutReason }> = [];
+        const noMoreSpace: Array<{ object: ILIASObject, reason: LeftOutReason }> = [];
         const filesAlreadySynced: Array<ILIASObject> = [];
 
         // Furthermore we need some infos
@@ -445,7 +451,7 @@ export class SynchronizationService {
      */
     protected executeFileDownloads(downloads: Array<ILIASObject>): Array<Promise<FileEntry>> {
         const results: Array<Promise<FileEntry>> = [];
-        for(const download of downloads) {
+        for (const download of downloads) {
             results.push(this.fileService.download(download))
         }
         return results;
@@ -460,14 +466,13 @@ export class SynchronizationService {
     }
 
     private async executeLiveLoad(parent: ILIASObject): Promise<Array<ILIASObject>> {
-        const iliasObjects: Promise<Array<ILIASObject>> = (parent === undefined)?
-            this.dataProvider.getDesktopData(this.user):
-            this.dataProvider.getObjectData(parent, this.user, false);
-
-        return iliasObjects
-            .then(() => this.syncEnded())
-            .then( () => Promise.resolve(iliasObjects))
-            .catch(await this.syncEnded());
+        try {
+            return (parent === undefined) ?
+                this.dataProvider.getDesktopData(this.user) :
+                this.dataProvider.getObjectData(parent, this.user, false);
+        } finally {
+            await this.syncEnded();
+        }
     }
 
     /**
@@ -484,7 +489,7 @@ export class SynchronizationService {
      * a method that posts for each result
      */
     async synchronizeFileLearningProgresses(): Promise<void> {
-        if(!window.navigator.onLine) return;
+        if (!window.navigator.onLine) return;
 
         const unsynced: Array<FileData> = await FileData.getOpenLearningProgressPosts();
         await this.fileService.postLearningProgressDone(unsynced);
@@ -495,7 +500,7 @@ export class SyncResults {
     constructor(public totalObjects: Array<ILIASObject>,
                 public objectsDownloaded: Array<ILIASObject>,
                 public objectsUnchanged: Array<ILIASObject>,
-                public objectsLeftOut: Array<{object: ILIASObject, reason: LeftOutReason}>,
+                public objectsLeftOut: Array<{ object: ILIASObject, reason: LeftOutReason }>,
                 public fileDownloads: Array<Promise<FileEntry>>) {
     }
 }

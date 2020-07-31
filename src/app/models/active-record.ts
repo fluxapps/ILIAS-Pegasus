@@ -1,7 +1,8 @@
 /** logging */
-import {Log} from "../services/log.service";
+import { EntityManager } from "typeorm/browser";
 /** misc */
-import {DatabaseService, SQLiteDatabaseService} from "../services/database.service";
+import { DatabaseService, SQLiteDatabaseService } from "../services/database.service";
+import { Log } from "../services/log.service";
 
 export interface DatabaseConnector {
     /**
@@ -19,14 +20,22 @@ export interface DatabaseConnector {
      * @param sql
      * @param params
      */
-    query(sql: string, params?: Array<any>);
+    query(sql: string, params?: Array<string | number>): Promise<object>;
+
+    /**
+     * Executes queries in a transaction.
+     * In order to execute queries the supplied entity manager MUST be used!
+     *
+     * @param project
+     */
+    transaction<T>(project: (entityManager: EntityManager) => Promise<T>): Promise<T>;
 
     /**
      * Read data from database with given ID and return fields and values
      * Returns a promise that resolves the data
      * @param id
      */
-    read(id: number): Promise<Object>;
+    read(id: number): Promise<object>;
 
     /**
      * Persist data with given values in database. If id is zero, create entry otherwise update entry
@@ -34,7 +43,7 @@ export interface DatabaseConnector {
      * @param id
      * @param values
      */
-    save(id: number, values: Array<any>): Promise<number>;
+    save(id: number, values: Array<string | number>): Promise<number>;
 
 
     /**
@@ -59,22 +68,27 @@ export class SQLiteConnector implements DatabaseConnector {
         this.dbFields = dbFields;
     }
 
-    query(sql: string, params = []) {
-        return SQLiteDatabaseService.instance()
-            .then(db => db.query(sql, params));
+    async query(sql: string, params: Array<string | number> = []): Promise<object> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        return db.query(sql, params);
     }
 
-    read(id: number): Promise<Object> {
-        return this.query("SELECT * FROM " + this.table + " WHERE id = ?", [id]).then((response: any) => {
+    async transaction<T>(project: (entityManager: EntityManager) => Promise<T>): Promise<T> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        return db.transaction(project);
+    }
+
+    read(id: number): Promise<object> {
+        return this.query(`SELECT * FROM ${this.table} WHERE id = ?`, [id]).then((response: any) => {
             if (response.rows.length == 0) {
-                const error = new Error("ActiveRecord: Could not find database entry with primary key `" + id + "` in table " + this.table);
+                const error: Error = new Error(`ActiveRecord: Could not find database entry with primary key ${id} in table ${this.table}`);
                 return Promise.reject(error);
             }
             return Promise.resolve(response.rows.item(0));
         });
     }
 
-    save(id: number, values: Array<any>): Promise<number> {
+    save(id: number, values: Array<string | number>): Promise<number> {
         if (id > 0) {
             return this.update(values, id);
         } else {
@@ -88,10 +102,9 @@ export class SQLiteConnector implements DatabaseConnector {
      * @param value
      * @returns {string[]}
      */
-    private nTimes(n, value) {
+    private nTimes(n: number, value: string): Array<string> {
         const placeholders: Array<string> = [];
-        for (let i = 0; i < n; i++) {
-            i = i; // just to shut up the linter
+        for (let i: number = 0; i < n; i++) {
             placeholders.push(value);
         }
         return placeholders;
@@ -100,25 +113,30 @@ export class SQLiteConnector implements DatabaseConnector {
     /**
      * Crates an entry for the DB and returns the ID.
      * @param values
-     * @returns {Promise<TResult>}
+     * @returns {Promise<number>}
      */
-    private create(values): Promise<number> {
-        this.setArrayValueToNow("createdAt", values);
-        return this.query("INSERT INTO " + this.table + "(" + this.dbFields.join() + ") VALUES (" + this.nTimes(this.dbFields.length, "?").join() + ")", values)
-            .then((response: any) => Promise.resolve(<number> response.insertId));
+    private async create(values: Array<string | number>): Promise<number> {
+        return this.transaction(async(em: EntityManager) => {
+            this.setArrayValueToNow("createdAt", values);
+            await em.query(`INSERT INTO ${this.table}(${this.dbFields.join()}) VALUES (${this.nTimes(this.dbFields.length, "?").join()})`, values);
+            const latestDataEntry: Array<{ id: number }> = await em.query(`SELECT id FROM ${this.table} ORDER BY id DESC`);
+            return latestDataEntry[0].id;
+        });
+
+        // const result: any = await this.query(`INSERT INTO ${this.table}(${this.dbFields.join()}) VALUES (${this.nTimes(this.dbFields.length, "?").join()})`, values)
+        // return result.insertId;
     };
 
     /**
      * updates the entry into the db an returns the ID
      * @param values
      * @param id
-     * @returns {Promise<TResult>}
+     * @returns {Promise<number>}
      */
-    private update(values, id): Promise<number> {
+    private async update(values: Array<number | string>, id: number): Promise<number> {
         this.setArrayValueToNow("updatedAt", values);
-        return this.query("UPDATE " + this.table + " SET " + this.dbFields.join("=?,") + "=? WHERE id = " + id, values).then( () => {
-            return Promise.resolve(<number> id);
-        });
+        await this.transaction((em: EntityManager) => em.query(`UPDATE ${this.table} SET ${this.dbFields.join("=?,")}=? WHERE id = ${id}`, values));
+        return id;
     };
 
     /**
@@ -126,28 +144,28 @@ export class SQLiteConnector implements DatabaseConnector {
      * @param values
      */
     private setArrayValueToNow(field, values) {
-        const pos = this.dbFields.indexOf(field);
+        const pos: number = this.dbFields.indexOf(field);
         if (pos > -1) {
-            const date = new Date().toISOString();
+            const date: string = new Date().toISOString();
             values[pos] = date;
         }
     };
 
-    destroy(id: number): Promise<void> {
+    async destroy(id: number): Promise<void> {
         Log.describe(this, "deleting item with table and id: ", {table: this.table, id: id});
-        return this.query("DELETE FROM " + this.table + " WHERE id = ?", [id]);
+        await this.query(`DELETE FROM ${this.table} WHERE id = ?`, [id]);
     }
 }
 
 /**
  * Base class for models that need to persis data in the database
  */
-export abstract class ActiveRecord {
+export abstract class ActiveRecord<T> {
 
     _id: number = 0;
     protected connector: DatabaseConnector;
 
-    constructor(id = 0, connector: DatabaseConnector) {
+    protected constructor(id: number = 0, connector: DatabaseConnector) {
         this._id = id;
         this.connector = connector;
     }
@@ -155,24 +173,24 @@ export abstract class ActiveRecord {
     /**
      * Initialize object properties from connector
      */
-    read(): Promise<ActiveRecord> {
-            return this.connector.read(this._id).then((data) => {
-                for (const key in data) {
-                    if (this.connector.dbFields.indexOf(key) > -1) {
-                        this[key] = data[key];
-                    }
-                }
-                return Promise.resolve(this);
-            });
+    async read(): Promise<T> {
+        const data: object = await this.connector.read(this._id);
+        for (const key in data) {
+            if (this.connector.dbFields.indexOf(key) > -1) {
+                this[key] = data[key];
+            }
+        }
+
+        return (this as unknown) as T;
     }
 
     /**
      * Build the ActiveRecord object from a given JS Object (handles primary key and all properties)
      * @param object
      */
-    readFromObject(object: Object) {
+    readFromObject(object: object): void {
         for (const property in object) {
-            if (property == "id") {
+            if (property === "id") {
                 this._id = object[property];
             } else if (object.hasOwnProperty(property)) {
                 this[property] = object[property];
@@ -185,7 +203,7 @@ export abstract class ActiveRecord {
      * Returns the primary key
      * @returns {number}
      */
-    get id() {
+    get id(): number {
         return this._id;
     }
 
@@ -194,11 +212,9 @@ export abstract class ActiveRecord {
      * Persist object in database, new objects are created while existing are updated
      * Returns a Promise resolving the saved object
      */
-    save(): Promise<ActiveRecord> {
-        return this.connector.save(this._id, this.getDbFieldValues()).then((newId) => {
-            this._id = newId;
-            return Promise.resolve(this);
-        });
+    async save(): Promise<T> {
+        this._id = await this.connector.save(this._id, this.getDbFieldValues());
+        return (this as unknown) as T;
     }
 
     /**

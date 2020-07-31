@@ -1,7 +1,9 @@
+import { UserEntity } from "../../entity/user.entity";
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
 import {ModalController, NavController} from "@ionic/angular";
-import {InjectionToken} from "@angular/core";
+import { Inject, InjectionToken } from "@angular/core";
+import { USER_REPOSITORY, UserRepository } from "../../providers/repository/repository.user";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 import {LearnplaceManager} from "../services/learnplace.management";
 import {ILIASObject} from "../../models/ilias-object";
@@ -19,7 +21,8 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         private readonly nav: NavController,
         private readonly learnplaceObjectId: number,
         private readonly learnplaceName: string,
-        private readonly modal: ModalController
+        private readonly modal: ModalController,
+        private readonly userRepository: UserRepository
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -33,8 +36,9 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         try {
             // load the learnplace if not contained in favorites
             // TODO how to handle changes of ILIAS object?
-            const ilObj: ILIASObject = await ILIASObject.find(this.learnplaceObjectId);
-            if(!ilObj.isFavorite && !await ilObj.objectIsUnderFavorite())
+            const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+            const ilObj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learnplaceObjectId, user.id);
+            if(!ilObj.needsDownload)
                 await this.manager.load(this.learnplaceObjectId);
             // open page for learnplace
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;

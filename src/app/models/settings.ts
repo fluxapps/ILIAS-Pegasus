@@ -6,7 +6,7 @@ import {SQLiteDatabaseService} from "../services/database.service";
 import {FileData} from "./file-data";
 import {ILIASObject} from "./ilias-object";
 
-export class Settings extends ActiveRecord {
+export class Settings extends ActiveRecord<Settings> {
 
     static NETWORK: Network;
 

@@ -421,11 +421,11 @@ import { CssStyleService } from "./services/theme/css-style.service";
 
         <FactoryProvider> {
             provide: OPEN_LEARNPLACE_ACTION_FACTORY,
-            useFactory: (manager: LearnplaceManager): OpenLearnplaceActionFunction =>
+            useFactory: (manager: LearnplaceManager, userRepository: UserRepository): OpenLearnplaceActionFunction =>
                 (nav: NavController, learnplaceObjectId: number, learnplaceName: string, modalController: ModalController): OpenLearnplaceAction =>
-                    new OpenLearnplaceAction(manager, nav, learnplaceObjectId, learnplaceName, modalController)
+                    new OpenLearnplaceAction(manager, nav, learnplaceObjectId, learnplaceName, modalController, userRepository)
             ,
-            deps: [LEARNPLACE_MANAGER]
+            deps: [LEARNPLACE_MANAGER, USER_REPOSITORY]
         },
         <FactoryProvider> {
             provide: OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY,

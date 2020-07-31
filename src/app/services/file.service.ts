@@ -1,29 +1,28 @@
 /** angular */
 import { Injectable } from "@angular/core";
 import { FileOpener } from "@ionic-native/file-opener/ngx";
-import { Events, Platform } from "@ionic/angular";
 /** ionic-native */
 import { DirectoryEntry, File, FileEntry, FileError, Flags } from "@ionic-native/file/ngx";
-import { TranslateService } from "@ngx-translate/core";
 import { Network } from "@ionic-native/network/ngx";
-/** models */
-import { User } from "../models/user";
-import { ILIASObject } from "../models/ilias-object";
-import { ILIASRestProvider } from "../providers/ilias-rest.provider";
-import { FileData } from "../models/file-data";
-import { Log } from "./log.service";
-import { Settings } from "../models/settings";
+import { Platform } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 /** errors and exceptions */
 import { IllegalStateError } from "../error/errors";
 import { CantOpenFileTypeException } from "../exceptions/CantOpenFileTypeException";
 import { NoWLANException } from "../exceptions/noWLANException";
+import { FileData } from "../models/file-data";
+import { ILIASObject } from "../models/ilias-object";
+import { Settings } from "../models/settings";
+/** models */
+import { User } from "../models/user";
+import { ILIASRestProvider } from "../providers/ilias-rest.provider";
+/** misc */
+import { isNullOrUndefined } from "../util/util.function";
+import { StorageUtilization, UserStorageMamager } from "./filesystem/user-storage.mamager";
+import { Log } from "./log.service";
 /** logging */
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
-/** misc */
-import { isNullOrUndefined } from "../util/util.function";
-import { AuthenticationProvider } from "../providers/authentication.provider";
-import { UserStorageMamager, StorageUtilization } from "./filesystem/user-storage.mamager";
 
 export interface DownloadProgress {
     fileObject: ILIASObject;
@@ -40,10 +39,9 @@ export class FileService implements StorageUtilization {
     private log: Logger = Logging.getLogger(FileService.name);
 
     constructor(
-        protected events: Events,
-        protected platform: Platform,
-        protected rest: ILIASRestProvider,
-        protected translate: TranslateService,
+        private readonly platform: Platform,
+        private readonly rest: ILIASRestProvider,
+        private readonly translate: TranslateService,
         private readonly file: File,
         private readonly network: Network,
         private readonly userStorageManager: UserStorageMamager,
