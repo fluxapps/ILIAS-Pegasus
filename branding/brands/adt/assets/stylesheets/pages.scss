@@ -285,22 +285,89 @@ ion-content.page_settings {
 // --------------------------------------------------
 .page_onboarding {
 
+    ion-slides {
+        height: 100%;
+        --bullet-background-active: var(--ion-color-primary-contrast);
+    }
+
     ion-slide {
-        height: 100vh;
         flex-direction: column;
+        height: 100%;
+
+        h1 {
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        @media screen and (orientation:landscape) {
+            h1 {
+                margin-top: 0;
+            }
+        }
     }
 
     img {
-        // max-width: 50vw;
-        max-height: 20vh;
-        overflow: hidden;
+
+        &.logo {
+            height: 40vw;
+            padding-bottom: 5%;
+        }
+
+        &.icon {
+            height: 40vw;
+        }
+        &.decentral{
+            height: 40vw;
+            margin-bottom: 15px;
+        }
+        &.lock{
+            height: 40vw;
+        }
+
+        @media screen and (orientation:landscape) {
+            &.logo {
+                height: 40vh;
+            }
+
+            &.icon {
+                height: 40vh;
+            }
+            &.decentral{
+                height: 40vh;
+                padding-top: 10px;
+            }
+            &.lock{
+                height: 38vh;
+            }
+        }
     }
 
 
     .step-one {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);
-        font-size: 2vh;
+
+        ion-list {
+            ion-item {
+                --color: var(--ion-color-primary-contrast);
+                --background: var(--ion-color-primary);
+                font-size: 2vh;
+
+                @media screen and (orientation:landscape) {
+                    font-size: 2vw;
+                }
+            }
+            background: var(--ion-color-primary);
+            color: var(--ion-color-primary-contrast);
+
+            @media screen and (max-width: 576px) {
+                width: 100%;
+            }
+
+            @media screen and (orientation:landscape) and (max-height: 576px) {
+                margin-bottom: 0;
+            }
+        }
 
     }
 
@@ -308,12 +375,18 @@ ion-content.page_settings {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);
         font-size: 2vh;
+        @media screen and (orientation:landscape) {
+            font-size: 2vw;
+        }
     }
 
     .step-three {
         background: var(--ion-color-primary);
         color: var(--ion-color-primary-contrast);
         font-size: 2vh;
+        @media screen and (orientation:landscape) {
+            font-size: 2vw;
+        }
     }
 
     .link {
