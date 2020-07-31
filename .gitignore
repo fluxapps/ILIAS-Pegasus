@@ -151,3 +151,5 @@ modules.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/webstorm+iml
 ./build.json
+
+src/environments/environment.generated.ts
