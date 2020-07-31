@@ -1,5 +1,6 @@
 /* angular */
 import {Component} from "@angular/core";
+import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
 import {NavController} from "@ionic/angular";
 /* misc */
 import {AuthenticationProvider} from "../../providers/authentication.provider";
@@ -16,7 +17,17 @@ import {AuthenticationProvider} from "../../providers/authentication.provider";
 })
 export class MenuPage {
 
-    constructor(public navCtrl: NavController, private readonly auth: AuthenticationProvider) {
+    private readonly BROWSER_OPTIONS: InAppBrowserOptions = {
+        location: "no",
+        clearsessioncache: "yes",
+        clearcache: "yes"
+    };
+
+    constructor(
+        private readonly navCtrl: NavController,
+        private readonly auth: AuthenticationProvider,
+        private readonly browser: InAppBrowser,
+    ) {
     }
 
     async navigateTo(url: string): Promise<void> {
@@ -28,6 +39,7 @@ export class MenuPage {
     }
 
     async openPrivacyPolicy(url: string): Promise<void> {
-        window.open(url , "_system");
+        const browserSession: InAppBrowserObject = this.browser.create(url, "_blank", this.BROWSER_OPTIONS);
+        browserSession.show();
     }
 }
