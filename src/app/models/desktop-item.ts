@@ -71,7 +71,7 @@ export class DesktopItem extends ActiveRecord<DesktopItem> {
      */
     async save(): Promise<DesktopItem> {
         await this.connector.transaction(async(em: EntityManager) => {
-            await this.connector.query(`INSERT OR REPLACE INTO ${this.connector.table}(userId, objId) VALUES (${this.userId}, ${this.objId})`);
+            await em.query(`INSERT OR REPLACE INTO ${this.connector.table}(userId, objId) VALUES (${this.userId}, ${this.objId})`);
             const latestDataEntry: Array<{ id: number }> = await em.query(
                 `SELECT * FROM ${this.connector.table} WHERE userId = ? AND objId = ?;`,
                 [this.userId, this.objId]
