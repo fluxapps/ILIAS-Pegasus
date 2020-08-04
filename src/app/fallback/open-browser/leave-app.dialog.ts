@@ -18,7 +18,7 @@ import { ViewController } from "@ionic/core";
 })
 export class LeaveAppDialog {
 
-    private readonly log: Logger = Logging.getLogger(LeaveAppDialog.name);
+    private readonly log: Logger = Logging.getLogger("LeaveAppDialog");
     private readonly params: LeaveAppDialogNavParams;
     readonly appName: Promise<string>;
     themeIonicContrastColor: string;

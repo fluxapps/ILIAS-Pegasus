@@ -64,7 +64,7 @@ export class LearningModuleManagerImpl implements LearningModuleManager {
     async checkAndDownload(objectId: number, userId: number): Promise<void> {
         const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objectId, userId);
 
-        console.warn(`Learning module needs download: ${obj.needsDownload} -> ${!!obj.needsDownload}`);
+        this.log.debug(() => `Learning module needs download: ${obj.needsDownload} -> ${!!obj.needsDownload}`);
         if (obj.needsDownload !== false) {
             await this.load(objectId);
             obj.needsDownload = false;

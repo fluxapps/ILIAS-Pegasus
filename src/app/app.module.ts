@@ -38,6 +38,7 @@ import { LocationFallbackScreen } from "./fallback/location/location-fallback.co
 /** pages and screens */
 // import {OnboardingPage} from "./pages/onboarding/onboarding";
 import { LeaveAppDialog } from "./fallback/open-browser/leave-app.dialog";
+import { LeaveAppDialogService } from "./fallback/open-browser/leave-app.service";
 import { RoamingFallbackScreen } from "./fallback/roaming/roaming-fallback.component";
 import { WifiFallbackScreen } from "./fallback/wifi/wifi-fallback.component";
 import {
@@ -432,13 +433,14 @@ import { CssStyleService } from "./services/theme/css-style.service";
             useFactory: (
                 browser: InAppBrowser,
                 modalController: ModalController,
-                manager: LearningModuleManager
+                manager: LearningModuleManager,
+                leaveAppService: LeaveAppDialogService
             ): OpenHtmlLearningModuleActionFunction =>
                 (
                     nav: NavController,
                     learningModuleObjectId: number,
                     pathBuilder: LearningModulePathBuilder,
-                    translate: TranslateService,
+                    translate: TranslateService
                 ):
                     OpenHtmlLearningModuleAction => new OpenHtmlLearningModuleAction(
                     nav,
@@ -447,26 +449,32 @@ import { CssStyleService } from "./services/theme/css-style.service";
                     browser,
                     translate,
                     pathBuilder,
-                    manager
+                    manager,
+                    leaveAppService
                 )
             ,
-            deps: [InAppBrowser, ModalController, LEARNING_MODULE_MANAGER]
+            deps: [InAppBrowser, ModalController, LEARNING_MODULE_MANAGER, LeaveAppDialogService]
         },
         <FactoryProvider> {
             provide: OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
-            useFactory: (manager: LearningModuleManager, modalController: ModalController): OpenScormLearningModuleActionFunction =>
+            useFactory: (
+                manager: LearningModuleManager,
+                modalController: ModalController,
+                leaveAppDialogService: LeaveAppDialogService
+            ): OpenScormLearningModuleActionFunction =>
                 (
                     learningModuleObjectId: number,
-                    navCtrl: NavController,
+                    navCtrl: NavController
                 ):
                     OpenScormLearningModuleAction => new OpenScormLearningModuleAction(
                     learningModuleObjectId,
                     modalController,
                     navCtrl,
                     manager,
+                    leaveAppDialogService
                 )
             ,
-            deps: [LEARNING_MODULE_MANAGER, ModalController]
+            deps: [LEARNING_MODULE_MANAGER, ModalController, LeaveAppDialogService]
         },
         {
             provide: LEARNING_MODULE_PATH_BUILDER,

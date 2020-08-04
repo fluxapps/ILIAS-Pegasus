@@ -3,6 +3,7 @@ import {ModalController, NavController} from "@ionic/angular";
 import {InjectionToken} from "@angular/core";
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ngx";
+import { LeaveAppDialogService } from "../../fallback/open-browser/leave-app.service";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {LearningModule} from "../models/learning-module";
@@ -20,6 +21,7 @@ export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
         private readonly translate: TranslateService,
         private readonly pathBuilder: LearningModulePathBuilder,
         private readonly learningModuleManager: LearningModuleManager,
+        private readonly leaveAppDialogService: LeaveAppDialogService,
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -38,7 +40,7 @@ export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
             return new ILIASObjectActionNoMessage();
         } catch (error) {
             await loadingPage.dismiss();
-            throw error;
+            await this.leaveAppDialogService.present();
         }
     }
 
@@ -67,7 +69,7 @@ export interface OpenHtmlLearningModuleActionFunction {
         nav: NavController,
         learningModuleObjectId: number,
         pathBuilder: LearningModulePathBuilder,
-        translate: TranslateService,
+        translate: TranslateService
     ): OpenHtmlLearningModuleAction
 }
 
