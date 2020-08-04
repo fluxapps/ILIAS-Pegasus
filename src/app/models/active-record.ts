@@ -78,7 +78,7 @@ export class SQLiteConnector implements DatabaseConnector {
         return db.transaction(project);
     }
 
-    read(id: number): Promise<object> {
+    async read(id: number): Promise<object> {
         return this.query(`SELECT * FROM ${this.table} WHERE id = ?`, [id]).then((response: any) => {
             if (response.rows.length == 0) {
                 const error: Error = new Error(`ActiveRecord: Could not find database entry with primary key ${id} in table ${this.table}`);
@@ -88,12 +88,8 @@ export class SQLiteConnector implements DatabaseConnector {
         });
     }
 
-    save(id: number, values: Array<string | number>): Promise<number> {
-        if (id > 0) {
-            return this.update(values, id);
-        } else {
-            return this.create(values);
-        }
+    async save(id: number, values: Array<string | number>): Promise<number> {
+        return  id > 0 ? this.update(values, id) : this.create(values);
     }
 
     /**
@@ -141,9 +137,10 @@ export class SQLiteConnector implements DatabaseConnector {
 
     /**
      *
+     * @param field
      * @param values
      */
-    private setArrayValueToNow(field, values) {
+    private setArrayValueToNow(field: string, values: Array<string | number>): void {
         const pos: number = this.dbFields.indexOf(field);
         if (pos > -1) {
             const date: string = new Date().toISOString();
