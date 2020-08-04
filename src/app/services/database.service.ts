@@ -1,4 +1,3 @@
-import { type } from "os";
 import { Connection, EntityManager } from "typeorm/browser";
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
@@ -35,6 +34,7 @@ class LegacySQLQueryResultCollection {
 export class SQLiteDatabaseService implements DatabaseService {
 
     private static singleton: SQLiteDatabaseService;
+    private static WRITE_LOCK: Promise<unknown> = Promise.resolve();
     static connection: Connection;
 
     private readonly log: Logger = Logging.getLogger("SQLiteDatabaseService");
@@ -49,7 +49,7 @@ export class SQLiteDatabaseService implements DatabaseService {
      * @deprecated Since version 1.1.0. Will be deleted in version 2.0.0. Use angular injection instead.
      */
     static async instance(): Promise<SQLiteDatabaseService> {
-        if (SQLiteDatabaseService.singleton != undefined) {
+        if (SQLiteDatabaseService.singleton !== undefined) {
             return SQLiteDatabaseService.singleton;
         }
 
@@ -64,6 +64,7 @@ export class SQLiteDatabaseService implements DatabaseService {
      * @returns {Promise<any>}
      */
     async query(sql: string, params: Array<unknown> = []): Promise<any> {
+        await this.waitForWriteLockRelease();
         const result: Array<unknown> = await SQLiteDatabaseService.connection.query(sql, params);
         this.log.debug(() => `Query result: ${JSON.stringify(result)}`);
         return {
@@ -75,6 +76,17 @@ export class SQLiteDatabaseService implements DatabaseService {
     }
 
     async transaction<T>(project: (entityManager: EntityManager) => Promise<T>): Promise<T> {
-        return SQLiteDatabaseService.connection.transaction(project);
+        await this.waitForWriteLockRelease();
+        const result: Promise<T> = SQLiteDatabaseService.connection.transaction(project);
+        SQLiteDatabaseService.WRITE_LOCK = result;
+        return result;
+    }
+
+    private async waitForWriteLockRelease(): Promise<void> {
+        let lock: Promise<unknown>;
+        do {
+            lock = SQLiteDatabaseService.WRITE_LOCK;
+            await lock;
+        } while(lock !== SQLiteDatabaseService.WRITE_LOCK);
     }
 }

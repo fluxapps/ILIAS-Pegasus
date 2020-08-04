@@ -61,7 +61,6 @@ export class SQLiteConnector implements DatabaseConnector {
 
     table: string;
     dbFields: Array<string>;
-    protected database: DatabaseService;
 
     constructor(table: string, dbFields: Array<string>) {
         this.table = table;
@@ -80,11 +79,10 @@ export class SQLiteConnector implements DatabaseConnector {
 
     async read(id: number): Promise<object> {
         return this.query(`SELECT * FROM ${this.table} WHERE id = ?`, [id]).then((response: any) => {
-            if (response.rows.length == 0) {
-                const error: Error = new Error(`ActiveRecord: Could not find database entry with primary key ${id} in table ${this.table}`);
-                return Promise.reject(error);
+            if (response.rows.length === 0) {
+                throw new Error(`ActiveRecord: Could not find database entry with primary key ${id} in table ${this.table}`);
             }
-            return Promise.resolve(response.rows.item(0));
+            return response.rows.item(0);
         });
     }
 
@@ -112,10 +110,10 @@ export class SQLiteConnector implements DatabaseConnector {
      * @returns {Promise<number>}
      */
     private async create(values: Array<string | number>): Promise<number> {
+        this.setArrayValueToNow("createdAt", values);
         return this.transaction(async(em: EntityManager) => {
-            this.setArrayValueToNow("createdAt", values);
-            await em.query(`INSERT INTO ${this.table}(${this.dbFields.join()}) VALUES (${this.nTimes(this.dbFields.length, "?").join()})`, values);
-            const latestDataEntry: Array<{ id: number }> = await em.query(`SELECT id FROM ${this.table} ORDER BY id DESC`);
+            await em.query(`INSERT INTO ${this.table}(${this.dbFields.join()}) VALUES (${this.nTimes(this.dbFields.length, "?").join()});`, values);
+            const latestDataEntry: Array<{ id: number }> = await em.query(`SELECT id FROM ${this.table} ORDER BY id DESC LIMIT 1;`);
             return latestDataEntry[0].id;
         });
 
@@ -131,7 +129,7 @@ export class SQLiteConnector implements DatabaseConnector {
      */
     private async update(values: Array<number | string>, id: number): Promise<number> {
         this.setArrayValueToNow("updatedAt", values);
-        await this.transaction((em: EntityManager) => em.query(`UPDATE ${this.table} SET ${this.dbFields.join("=?,")}=? WHERE id = ${id}`, values));
+        await this.query(`UPDATE ${this.table} SET ${this.dbFields.join("=?,")}=? WHERE id = ${id};`, values);
         return id;
     };
 
