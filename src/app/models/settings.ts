@@ -86,7 +86,7 @@ export class Settings extends ActiveRecord<Settings> {
             SQLiteDatabaseService.instance().then(db => {
                 db.query("SELECT * FROM settings WHERE userId = ?", [userId]).then((response) => {
                     const settings: Settings = new Settings();
-                    if (response.rows.length == 0) {
+                    if (response.rows.length === 0) {
                         settings.userId = userId;
                         resolve(settings);
                     } else {
@@ -114,9 +114,9 @@ export class Settings extends ActiveRecord<Settings> {
             return fileSize > this.downloadSize * 1000 * 1000;
     }
 
-    quotaExceeds(fileObject: ILIASObject): Promise<boolean> {
+    async quotaExceeds(fileObject: ILIASObject): Promise<boolean> {
             //only check files...
-            if(fileObject.type != "file") {
+            if(fileObject.type !== "file") {
             return Promise.resolve(false);
         }
 
