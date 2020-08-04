@@ -1,6 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Connection, getConnection } from "typeorm/browser";
-import { PEGASUS_CONNECTION_NAME } from "../../config/typeORM-config";
 import { ILIASObject } from "../../models/ilias-object";
 import { User } from "../../models/user";
 import { Logger } from "../logging/logging.api";
