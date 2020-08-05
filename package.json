@@ -87,7 +87,7 @@
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "^8.2.14",
     "@ionic/angular-toolkit": "^2.3.0",
-    "@ionic/cli": "^6.10.2",
+    "@ionic/cli": "^6.11.0",
     "@ionic/lab": "^2.0.19",
     "@types/jasmine": "^3.5.11",
     "@types/mapbox-gl": "^1.11.1",
