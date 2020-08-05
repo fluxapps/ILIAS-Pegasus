@@ -291,7 +291,14 @@ export class SynchronizationService {
     }
 
     async downloadContainerContent(container: ILIASObject): Promise<SyncResults> {
-        const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData(container, this.user, true);
+        const iliasObjects: Array<ILIASObject> = await this.dataProvider.getObjectData({
+            parentObject: container,
+            user: this.user,
+            recursive: true,
+            refreshFiles: true,
+            downloadMetadata: true
+        });
+
         iliasObjects.push(container);
         const syncResults: SyncResults = await this.checkForFileDownloads(iliasObjects);
         // @ts-ignore
@@ -465,11 +472,17 @@ export class SynchronizationService {
         await this.syncEnded();
     }
 
-    private async executeLiveLoad(parent: ILIASObject): Promise<Array<ILIASObject>> {
+    private async executeLiveLoad(parent: ILIASObject | undefined = undefined): Promise<Array<ILIASObject>> {
         try {
             return (parent === undefined) ?
                 this.dataProvider.getDesktopData(this.user) :
-                this.dataProvider.getObjectData(parent, this.user, false);
+                this.dataProvider.getObjectData({
+                    parentObject: parent,
+                    user: this.user,
+                    recursive: false,
+                    refreshFiles: true,
+                    downloadMetadata: true
+                });
         } finally {
             await this.syncEnded();
         }
