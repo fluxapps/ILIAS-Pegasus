@@ -42,14 +42,14 @@
                         <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element">
                             <ion-card-content>
                                 <ion-icon name="information-circle-outline" item-start></ion-icon>
-                                <span>{{pageLayout.text | translate: []}}</span>
+                                <span>{{pageLayout.text | translate}}</span>
                             </ion-card-content>
                         </ion-card>
 
                         <ion-card no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="primary" class="bottom-line list-element">
                             <ion-card-content>
                                 <ion-icon [name]=timeline.icon item-start></ion-icon>
-                                <span>{{timeline.text | translate: []}}</span>
+                                <span>{{timeline.text | translate}}</span>
                             </ion-card-content>
                         </ion-card>
                     </div>
@@ -63,9 +63,9 @@
                                 </ion-col>
                                 <ion-col size="7">
                                     <ion-card-content >
-                                        <span *ngIf="entry.presenter.showTypeAsText()">{{ entry.presenter.typeLangVar() | translate:[] }}:</span>
+                                        <span *ngIf="entry.presenter.showTypeAsText()">{{ entry.presenter.typeLangVar() | translate }}:</span>
                                         {{ entry.presenter.title() }}
-                                        <span *ngIf="!entry.presenter.title()">{{ 'no_title' | translate:[] }}</span>
+                                        <span *ngIf="!entry.presenter.title()">{{ 'no_title' | translate }}</span>
                                     </ion-card-content>
                                 </ion-col>
                                 <ion-col size="1" height="100%" class="ion-justify-content-end">
@@ -89,13 +89,13 @@
                         <!-- status : user in favorites, but nothing added -->
                     <ion-grid *ngIf="checkPageState({loading: false, favorites: true, desktop: true}) && !content.length">
                         <ion-row class="ion-justify-content-center ion-align-items-center">
-                            <ion-col col-12 class="ion-text-center">
+                            <ion-col size="12" class="ion-text-center">
                                 <img src="assets/icon/objectlist_favourites.svg" class="offline-image">
                             </ion-col>
                         </ion-row>
                         <ion-row>
-                            <ion-col col-12>
-                                <ion-label class="ion-text-center" color="lightish" text-wrap> {{ 'object-list.no_items' | translate:[] }}</ion-label>
+                            <ion-col size="12" class="ion-text-lg-center ion-text-wrap">
+                                <ion-label color="lightish"> {{ 'object-list.no_items' | translate }}</ion-label>
                             </ion-col>
                         </ion-row>
                     </ion-grid>
@@ -105,13 +105,13 @@
     <!-- status : user offline, not in favorites -->
     <ion-grid *ngIf="checkPageState({favorites: false, online: false})">
         <ion-row class="ion-justify-content-center ion-align-items-center">
-            <ion-col col-12 class="ion-text-center">
+            <ion-col size="12" class="ion-text-center">
                 <img src="assets/icon/objectlist_offline.svg" class="offline-image">
             </ion-col>
         </ion-row>
         <ion-row>
-            <ion-col col-12>
-                <ion-label class="ion-text-center" color="medium" text-wrap>{{ 'object-list.offline' | translate:[] }}</ion-label>
+            <ion-col size="12" class="ion-text-lg-center ion-text-wrap">
+                <ion-label color="medium">{{ 'object-list.offline' | translate }}</ion-label>
             </ion-col>
         </ion-row>
     </ion-grid>
