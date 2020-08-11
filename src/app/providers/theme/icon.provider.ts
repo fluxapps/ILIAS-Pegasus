@@ -3,6 +3,8 @@ import {Injectable} from "@angular/core";
 import {File} from "@ionic-native/file/ngx";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
 import {Settings} from "../../models/settings";
+import { Logger } from "../../services/logging/logging.api";
+import { Logging } from "../../services/logging/logging.service";
 import {AuthenticationProvider} from "../authentication.provider";
 import {CssStyleService} from "../../services/theme/css-style.service";
 import {ThemeSynchronizationService} from "../../services/theme/theme-synchronization.service";
@@ -12,8 +14,10 @@ import {FileStorageService} from "../../services/filesystem/file-storage.service
     providedIn: "root"
 })
 export class IconProvider {
-    private static src: Map<string, string | SafeResourceUrl> = new Map<string, string | SafeResourceUrl>();
-    private static defaultIconKey: string = "link";
+    private static readonly defaultIconKey: string = "link";
+    private static readonly src: Map<string, string | SafeResourceUrl> = new Map<string, string | SafeResourceUrl>();
+    private static readonly log: Logger = Logging.getLogger("IconProvider");
+
     private icons: Array<{key: string, loadedName: string, asset: string}> = [
         {key: "crs", loadedName: "course.svg", asset: "assets/icon/obj_course.svg"},
         {key: "fold", loadedName: "folder.svg", asset: "assets/icon/obj_folder.svg"},
@@ -34,7 +38,7 @@ export class IconProvider {
 
     static getIconSrc(key: string): string | SafeUrl {
         if(!IconProvider.src.has(IconProvider.defaultIconKey)) {
-            console.warn(`getIconSrc("${key}") of IconProvider called but the default key "${IconProvider.defaultIconKey}" is not set, returning undefined`);
+            IconProvider.log.warn(() => `getIconSrc("${key}") of IconProvider called but the default key "${IconProvider.defaultIconKey}" is not set, returning undefined`);
             return undefined;
         }
 
@@ -61,7 +65,7 @@ export class IconProvider {
                 } catch (e) {
                     // if the custom icon is not available, use the default one
                     src = this.icons[i].asset;
-                    console.warn(`unable to load custom icon ${fileName} in ${path}, resulted in error ${e.message}`);
+                    IconProvider.log.warn(() => `unable to load custom icon ${fileName} in ${path}, resulted in error ${e.message}`);
                 }
                 IconProvider.src.set(icon.key, src);
             }
