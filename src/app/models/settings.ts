@@ -28,7 +28,7 @@ export class Settings extends ActiveRecord<Settings> {
     /**
      * Max. allowed quota for all files the app is storing (mega bytes)
      */
-    quotaSize: number = 100000;
+    quotaSize: number = 10000;
 
     /**
      * If true, execute offline-data-sync when starting the app
