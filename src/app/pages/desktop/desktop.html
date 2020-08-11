@@ -10,34 +10,34 @@
 <ion-content class="page_desktop" fullscreen="true">
     <ion-grid class="desktop-grid">
         <ion-row>
-            <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
+            <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile tile-cours ion-no-margin" (click)="navigateTo('content')">
                     <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_course.svg" (load)="svgLoaded()" (click)="navigateTo('content')"></object>
-                    <ion-card-header text-uppercase class=tile-title > {{ 'object-list.title' | translate}} </ion-card-header>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'object-list.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('favorites')">
                     <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_favourites.svg" (load)="svgLoaded()" (click)="navigateTo('favorites')"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'favorites.title' | translate}} </ion-card-header>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'favorites.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center >
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('news')">
                     <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_news.svg" (load)="svgLoaded()" (click)="navigateTo('news')"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'news.title' | translate}} </ion-card-header>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'news.title' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()">
                     <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()" (click)="openILIASRepository()"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'repository' | translate}} </ion-card-header>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('menu')">
                     <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'menu' | translate}} </ion-card-header>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'menu' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
         </ion-row>
