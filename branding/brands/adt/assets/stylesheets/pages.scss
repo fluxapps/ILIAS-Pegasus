@@ -219,12 +219,24 @@ ion-content.page_settings {
 // pages/object-list
 // --------------------------------------------------
 .page_object_list {
-    .object-presenter-icon{
-        height:3rem;
-    }
+    .page_object_list {
+        .object-presenter-icon{
+            height:3rem;
+        }
 
-    .loading-text {
-        padding: 10px 0 10px 10px;
+        .loading-text {
+            padding: 10px 0 10px 10px;
+        }
+
+        .badge-link {
+            position: absolute;
+            top: 5%;
+            left:40%;
+        }
+
+        .offline-image{
+            width: 20%;
+        }
     }
 }
 
