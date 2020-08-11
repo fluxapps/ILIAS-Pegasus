@@ -1,6 +1,5 @@
 /** angular */
 import { Component, Inject } from "@angular/core";
-import { NavController } from "@ionic/angular";
 /** misc */
 import { OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction } from "../../actions/open-object-in-ilias-action";
 import { ThemeProvider } from "../../providers/theme/theme.provider";
@@ -24,7 +23,6 @@ export class DesktopPage {
     private readonly REF_ID_REPOSITORY: number = 1;
 
     constructor(
-        private readonly navCtrl: NavController,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
         @Inject(LINK_BUILDER)
@@ -34,11 +32,6 @@ export class DesktopPage {
     // count the number of loaded SVGs and set theme once all of them are loaded
     async svgLoaded(): Promise<void> {
         await ThemeProvider.setCustomColor();
-    }
-
-    // navigate to a tab
-    async navigateTo(url: string): Promise<void> {
-        await this.navCtrl.navigateForward(`tabs/${url}`);
     }
 
     // open repo in Browser inApp for iOS, external for Android
