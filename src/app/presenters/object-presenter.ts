@@ -103,31 +103,8 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
         }
     }
 
-    metaBadges(): Promise<Array<{value: string; color: string}>> {
-        return new Promise((resolve, reject) => {
-            const badges = [];
-            if (this.iliasObject.isNew) {
-                badges.push({value: "New", color: "primary"});
-            }
-            if (this.iliasObject.isUpdated) {
-                badges.push({value: "Updated", color: "primary"});
-            }
-            // Container display the number of new objects of their children
-            if (this.iliasObject.isContainer()) {
-                ILIASObject.findByParentRefIdRecursive(this.iliasObject.refId, this.iliasObject.userId).then(iliasObjects => {
-                    const newObjects = iliasObjects.filter(iliasObject => {
-                        return iliasObject.isNew;
-                    });
-                    const n = newObjects.length;
-                    if (n) {
-                        badges.push({value: n, color: "primary"});
-                    }
-                    resolve(badges);
-                });
-            } else {
-                resolve(badges);
-            }
-        });
+    async metaBadges(): Promise<Array<{value: string; color: string}>> {
+        return [];
     }
 
     metaIcons(): Promise<Array<{name: string; color: string}>> {

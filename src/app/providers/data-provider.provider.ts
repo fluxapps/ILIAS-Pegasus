@@ -154,10 +154,6 @@ export class DataProvider {
         const iliasObject: ILIASObject = await ILIASObject.findByRefIdAndUserId(parseInt(object.refId, 10), user.id);
         iliasObject.readFromObject(object);
 
-        const parent: ILIASObject = await iliasObject.parent;
-        if (iliasObject.id == 0 && parent !== undefined) {
-            iliasObject.isNew = true;
-        }
         await iliasObject.save();
 
         if (iliasObject.type === "file") {

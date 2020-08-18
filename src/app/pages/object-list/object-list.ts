@@ -325,12 +325,6 @@ export class ObjectListPage {
     onClick(iliasObject: ILIASObject): void {
         const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
-        // When executing the primary action, we reset the isNew state
-        if(iliasObject.isNew || iliasObject.isUpdated) {
-            iliasObject.isNew = false;
-            iliasObject.isUpdated = false;
-            iliasObject.save();
-        }
     }
 
     /**

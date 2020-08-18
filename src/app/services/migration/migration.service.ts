@@ -1,31 +1,25 @@
 /** angular */
-import {Inject, Injectable} from "@angular/core";
-/** migration */
-import {
-    DBMigration,
-    Migration,
-    MIGRATION_SUPPLIER,
-    MigrationError,
-    MigrationSupplier,
-    MigrationVersion
-} from "./migration.api";
-import {InitDatabase} from "../../migrations/V__1-init-database";
-import {AddObjectAttributes} from "../../migrations/V__2-add-object-attributes";
-import {CreateLearnplace} from "../../migrations/V__3-create-learnplace-shema";
-import {CreateNews} from "../../migrations/V__4-create-news-shema";
-import {UpdateUserSettingsSyncSchema} from "../../migrations/V__5-update-user-settings-sync-schema";
-import {MigrateOfflineAndFavorites} from "../../migrations/V__6-migrate-offline-and-favorites";
-import {FilesLearningProgress} from "../../migrations/V__7-files_learning_progress";
-import {SettingsThemeColor} from "../../migrations/V__8-settings_theme_color";
-import {AddThemeTimestamp} from "../../migrations/V__9-add_theme_timestamp";
-import {CreateLearningModulesSchema} from "../../migrations/V__10-create-learning-modules-schema";
-/** logging */
-import {Logger} from "../logging/logging.api";
-import {Logging} from "../logging/logging.service";
+import { Inject, Injectable } from "@angular/core";
 /** misc */
-import {Connection, getConnection, QueryRunner} from "typeorm/browser";
-import {PEGASUS_CONNECTION_NAME} from "../../config/typeORM-config";
-import {TotalUserStorage} from "../../migrations/V__11-total-user-storage";
+import { Connection, getConnection, QueryRunner } from "typeorm/browser";
+import { PEGASUS_CONNECTION_NAME } from "../../config/typeORM-config";
+import { InitDatabase } from "../../migrations/V__1-init-database";
+import { CreateLearningModulesSchema } from "../../migrations/V__10-create-learning-modules-schema";
+import { TotalUserStorage } from "../../migrations/V__11-total-user-storage";
+import { RemoveLegacyObjectsFields } from "../../migrations/V__12-remove-legacy-objects-fields";
+import { AddObjectAttributes } from "../../migrations/V__2-add-object-attributes";
+import { CreateLearnplace } from "../../migrations/V__3-create-learnplace-shema";
+import { CreateNews } from "../../migrations/V__4-create-news-shema";
+import { UpdateUserSettingsSyncSchema } from "../../migrations/V__5-update-user-settings-sync-schema";
+import { MigrateOfflineAndFavorites } from "../../migrations/V__6-migrate-offline-and-favorites";
+import { FilesLearningProgress } from "../../migrations/V__7-files_learning_progress";
+import { SettingsThemeColor } from "../../migrations/V__8-settings_theme_color";
+import { AddThemeTimestamp } from "../../migrations/V__9-add_theme_timestamp";
+/** logging */
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
+/** migration */
+import { DBMigration, Migration, MIGRATION_SUPPLIER, MigrationError, MigrationSupplier, MigrationVersion } from "./migration.api";
 
 /**
  * DB Migration with TypeORM.
@@ -148,7 +142,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
             new SettingsThemeColor(),
             new AddThemeTimestamp(),
             new CreateLearningModulesSchema(),
-            new TotalUserStorage()
+            new TotalUserStorage(),
+            new RemoveLegacyObjectsFields()
         ];
     }
 }

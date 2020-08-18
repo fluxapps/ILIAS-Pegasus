@@ -73,21 +73,6 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
     isOfflineAvailable: boolean;
 
     /**
-     * The owner that was setting this object to "offline available", either 'user' or 'system'
-     */
-    offlineAvailableOwner: string;
-
-    /**
-     * Object is marked as new
-     */
-    isNew: boolean;
-
-    /**
-     * Object is marked as updated
-     */
-    isUpdated: boolean;
-
-    /**
      * Object is marked as favorite
      */
     isFavorite: number;
@@ -134,9 +119,6 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
             "description",
             "link",
             "isOfflineAvailable",
-            "offlineAvailableOwner",
-            "isNew",
-            "isUpdated",
             "isFavorite",
             "data",
             "repoPath",
@@ -543,9 +525,6 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
         iliasObjects.push(iliasObject);
         for (const entry of iliasObjects) {
             entry.isOfflineAvailable = value;
-            if(value) {
-                entry.offlineAvailableOwner = undefined; // TODO sync how to set this value
-            }
             await entry.save();
         }
     }
@@ -559,8 +538,6 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
         if (this.type === "file") {
             // A file needs to check its file state and then escalate.
             return FileData.find(this.id).then(fileData => {
-                if (this.id && fileData.isUpdated())
-                    this.isUpdated = true;
                 return this.saveAndEscalateNeedsDownload(fileData.needsDownload());
             });
         } else if (this.isContainer()) {

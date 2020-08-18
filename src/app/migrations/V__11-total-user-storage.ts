@@ -21,7 +21,7 @@ export class TotalUserStorage implements Migration {
     async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             "ALTER TABLE users " +
-            "DROP totalUsedStorage"
+            "DROP COLUMN totalUsedStorage"
         );
     }
 }
