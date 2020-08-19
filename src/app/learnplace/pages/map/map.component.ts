@@ -51,8 +51,10 @@ export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDes
     ionViewDidLeave(): void {
         this.mapService.shutdown();
         this.mapSubscription.unsubscribe();
-        while (this.mapElement.firstChild) {
-            this.mapElement.removeChild(this.mapElement.firstChild);
+        if (!!this.mapElement) {
+            while (this.mapElement.firstChild) {
+                this.mapElement.removeChild(this.mapElement.firstChild);
+            }
         }
         this.mapSubscription = undefined;
     }
