@@ -74,7 +74,7 @@
     color: white !important;
     font-weight: bold;
     font-size: 3.75vmax;
-    
+
     // width: 60%;
     // padding-left: 20%;
     // padding-right: 20%;
@@ -82,7 +82,7 @@
     position: relative;
     padding-bottom: 1vh;
     padding-top: 3vh;
-    z-index: -9999 !important;  
+    z-index: -9999 !important;
   }
 
   .desktop-content{
@@ -93,9 +93,12 @@
     background-repeat: no-repeat;
 }
 
-// .learnplace-tabs{
+.news-title {
+    width:100%;
+    white-space: pre-line;
+}
 
-//     $tabs-ios-tab-icon-color-active: map_get($colors, primary);
-//     $tabs-ios-tab-icon-color: #942a2a;
-    
-// }
+.very-small-font{
+    font-size: 0.5em;
+    text-align: center;
+}
