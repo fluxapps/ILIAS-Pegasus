@@ -6,16 +6,15 @@
         </ion-row>
 
         <ion-row class="ion-padding-top ion-justify-content-center ion-align-items-center login-welcome-row">
-                <h1 class="huge-login-header ion-text-center">{{ 'login.hello' | translate:[]}}</h1>
+                <h1 class="huge-login-header ion-text-center">{{ 'login.hello' | translate}}</h1>
         </ion-row>
         <ion-row class="login-institution-row ion-padding ion-justify-content-center ion-align-items-end">
             <ion-item color="primary">
                 <ion-label class="ion-text-center" position="stacked"></ion-label>
-                <ion-select [(ngModel)]="installationId" interface="alert" class="ion-text-center" placeholder="{{ 'login.instructions' | translate }}" okText="{{ 'login.ok' | translate:[]}}" cancelText="{{ 'login.dismiss' | translate:[]}}">
+                <ion-select [(ngModel)]="installationId" interface="alert" class="ion-text-center" placeholder="{{ 'login.instructions' | translate }}" okText="{{ 'login.ok' | translate}}" cancelText="{{ 'login.dismiss' | translate}}">
                     <ion-select-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}</ion-select-option>
                 </ion-select>
             </ion-item>
-            <br>
         </ion-row>
 
         <ion-row class="ion-justify-content-center">
