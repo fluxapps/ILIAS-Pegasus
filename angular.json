@@ -42,7 +42,41 @@
                                 "input": "node_modules/mapbox-gl/dist/mapbox-gl.css"
                             }
                         ],
-                        "scripts": [],
+                        "scripts": [
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/sscompat.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/sscorlib.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/ssfx.Core.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/ssfx.UI.Forms.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/API_BASE.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/API.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/API_1484_11.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/Controls.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/LocalStorage.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/scormpool/Lib/Player.js"
+                            },
+                            {
+                                "input": "branding/common/scormplayer/setup_player.js"
+                            }
+                        ],
                         "fileReplacements": [
                             {
                                 "replace": "src/environments/environment.ts",
