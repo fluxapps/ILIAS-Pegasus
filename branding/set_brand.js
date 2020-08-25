@@ -111,8 +111,6 @@ function generateServerConfigFile(brand, config) {
         throw new Error(msg);
     }
 
-    config_out.installations.sort((a, b) => (a.title === b.title) ? 0 : ((a.title > b.title) ? 1 : -1));
-
     writeJSON("src/assets/config.json", config_out);
 }
 
