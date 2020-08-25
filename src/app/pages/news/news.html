@@ -23,6 +23,68 @@
         </ion-refresher-content>
     </ion-refresher>
 
+    <ion-list *ngIf="newsPresenters === undefined">
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+    </ion-list>
     <ion-list color="list-element">
         <ion-card *ngFor="let newsPresenter of newsPresenters"
                   (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element"
@@ -42,7 +104,7 @@
             </ion-card-content>
 
         </ion-card>
-        <ion-card *ngIf="newsPresenters === undefined">
+        <ion-card *ngIf="newsPresenters?.length === 0">
             <ion-card-content>
                 <p class="info-text">{{ 'new-objects.no_new_items' | translate:[] }}</p>
             </ion-card-content>
