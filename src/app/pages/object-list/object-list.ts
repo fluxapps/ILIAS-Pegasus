@@ -6,6 +6,7 @@ import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import { FeaturePolicyService } from "../../services/policy/feature-policy.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
@@ -104,6 +105,7 @@ export class ObjectListPage {
                 @Inject(OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY)
                 private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
+                private readonly featurePolicy: FeaturePolicyService,
     ) { }
 
     /* = = = = = = = *
@@ -331,6 +333,12 @@ export class ObjectListPage {
      * returns the primary action for the given object
      */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
+        if (!this.featurePolicy.isFeatureAvailable(iliasObject.type)) {
+            return this.openInIliasActionFactory(
+                this.translate.instant("actions.view_in_ilias"),
+                this.linkBuilder.default().target(iliasObject.refId)
+            );
+        }
 
         if(iliasObject.isLinked()) {
             return this.openInIliasActionFactory(

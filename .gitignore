@@ -153,3 +153,4 @@ modules.xml
 ./build.json
 
 src/environments/environment.generated.ts
+src/environments/features.json

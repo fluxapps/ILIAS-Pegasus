@@ -28,6 +28,7 @@ function execute() {
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
         setDirectoryContent("src/assets/scormplayer", "branding/common/scormplayer");
         linkFile("build.json", `branding/brands/${brand}/build.json`);
+        linkFile("src/environments/features.json", `branding/brands/${brand}/features.json`);
         generateServerConfigFile(brand, config);
         setValuesInProjectConfig(config);
         generateLangFiles(brand);
