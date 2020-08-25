@@ -164,19 +164,36 @@ ion-content.page_settings {
         padding-right: 5%;
         font-weight: 800;
         font-size: 3.0vh;
+        @media screen and (orientation:landscape) {
+            font-size: 3.0vw;
+        }
         color: white;
     }
 
     .login-top-logo-row{
-        height: 30vh;
+
     }
 
     .login-welcome-row{
         height: 10vh;
+        @media screen and (orientation:landscape) {
+            height: 10vw;
+        }
+    }
+
+    .login-institution-row ion-item {
+        --min-height: 0px;
+
+        > ion-label {
+            display: none;
+        }
     }
 
     .login-version-row{
-        height: 30vh;
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+        padding-bottom: 0;
     }
 
     .login-bottom-image{
@@ -191,28 +208,14 @@ ion-content.page_settings {
         display: none;
     }
     .login-top-image{
-        // display: none;
-
+        /*margin-top: var(--ion-safe-area-top, 0);*/
+        height: 70vw;
+        width: 70vw;
+        @media screen and (orientation:landscape) {
+            height: 30vh;
+            width: 30vh;
+        }
     }
-
-    // a, img {
-    //     align-self: flex-end;
-    //     position: absolute;
-    //     bottom: 3%;
-    // }
-
-    // .vertical-align-content > * {
-    //     display: flex!important;
-    //     align-content: center!important;
-    //     align-items: center!important;
-    // }
-
-    // .vertical-align-content a, .vertical-align-content img {
-    //     align-self: flex-end;
-    //     position: absolute;
-    //     vertical-align: center;
-    // }
-
 }
 
 // pages/object-list
