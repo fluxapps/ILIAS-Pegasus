@@ -1,19 +1,18 @@
-import {ErrorHandler, Injectable} from "@angular/core";
-import {AlertController} from "@ionic/angular";
-import {isNullOrUndefined, isNumber, isObject, isString} from "./util/util.function";
-import {TranslateService} from "@ngx-translate/core";
-import {Logger} from "./services/logging/logging.api";
-import {Logging} from "./services/logging/logging.service";
+import { ErrorHandler, Injectable } from "@angular/core";
+import { AlertController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 // errors and exceptions
-import {Error} from "tslint/lib/error";
-import {TimeoutError} from "rxjs";
-import {HttpRequestError, JsonValidationError, UnfinishedHttpRequestError} from "./providers/http";
-import {HardwareAccessError} from "./services/device/hardware-features/hardware-access.errors";
-import {FileErrorException} from "./exceptions/FileErrorException";
-import {CantOpenFileTypeException} from "./exceptions/CantOpenFileTypeException";
-import {NoWLANException} from "./exceptions/noWLANException";
-import {OfflineException} from "./exceptions/OfflineException";
-import {RESTAPIException} from "./exceptions/RESTAPIException";
+import { Error } from "tslint/lib/error";
+import { CantOpenFileTypeException } from "./exceptions/CantOpenFileTypeException";
+import { FileErrorException } from "./exceptions/FileErrorException";
+import { NoWLANException } from "./exceptions/noWLANException";
+import { OfflineException } from "./exceptions/OfflineException";
+import { RESTAPIException } from "./exceptions/RESTAPIException";
+import { HttpRequestError, JsonValidationError, UnfinishedHttpRequestError } from "./providers/http";
+import { HardwareAccessError } from "./services/device/hardware-features/hardware-access.errors";
+import { Logger } from "./services/logging/logging.api";
+import { Logging } from "./services/logging/logging.service";
+import { isNullOrUndefined, isNumber, isObject, isString } from "./util/util.function";
 
 interface AlertEntry {
     alert: HTMLIonAlertElement,
@@ -79,7 +78,7 @@ export class PegasusErrorHandler implements ErrorHandler {
                 return;
             }
 
-            if(unwrappedError instanceof TimeoutError) {
+            if(unwrappedError.name === "TimeoutError") {
                 this.log.warn(() => "Unable to sync due to request timeout.");
                 this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.server_not_reachable"));
                 return;
