@@ -1,5 +1,11 @@
 import { Injectable } from "@angular/core";
 import * as policyList from "../../../environments/features.json";
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
+
+interface FeaturePolicies {
+    disabled: Array<string>;
+}
 
 /**
  * This class provides information if a type can be handled by the app it self.
@@ -14,7 +20,18 @@ import * as policyList from "../../../environments/features.json";
 })
 export class FeaturePolicyService {
 
-    private readonly disabledFeatures: Set<string> = new Set<string>(policyList.disabled);
+    private readonly log: Logger = Logging.getLogger("FeaturePolicyService");
+    private readonly disabledFeatures: Set<string>;
+
+    constructor() {
+        const policy: FeaturePolicies = policyList;
+        if (policy.disabled.length > 0) {
+            this.log.info(() => `Load app feature policy, disabled: ${JSON.stringify(policy.disabled.join(" "))}`);
+        } else {
+            this.log.info(() => "Load app feature policy, no disabled features");
+        }
+        this.disabledFeatures = new Set<string>(policy.disabled);
+    }
 
     /**
      * Checks if a feature is enabled / disabled by the current app feature policy.
@@ -23,6 +40,8 @@ export class FeaturePolicyService {
      * @return returns true if the feature is permited by the policy, otherwise false.
      */
     isFeatureAvailable(type: string): boolean {
-        return !this.disabledFeatures.has(type);
+        const isFeatureDisabled: boolean = this.disabledFeatures.has(type);
+        this.log.trace(() => `App feature policy lookup: type="${type}", disabled=${isFeatureDisabled}`)
+        return !isFeatureDisabled;
     }
 }
