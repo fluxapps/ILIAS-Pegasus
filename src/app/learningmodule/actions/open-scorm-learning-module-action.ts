@@ -42,7 +42,7 @@ export class OpenScormLearningModuleAction extends ILIASObjectAction {
 
     async openSCORMModule(): Promise<void> {
         this.log.info(() => "Opening SCORM learning module");
-        await this.navCtrl.navigateForward(["learningmodule", this.learningModuleObjectId]);
+        await this.navCtrl.navigateForward(["/learningmodule", "sahs", this.learningModuleObjectId]);
     }
 
     alert(): ILIASObjectActionAlert | undefined {

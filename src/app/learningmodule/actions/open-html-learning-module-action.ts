@@ -6,12 +6,16 @@ import {InAppBrowser, InAppBrowserOptions} from "@ionic-native/in-app-browser/ng
 import { LeaveAppDialogService } from "../../fallback/open-browser/leave-app.service";
 import {User} from "../../models/user";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import { Logger } from "../../services/logging/logging.api";
+import { Logging } from "../../services/logging/logging.service";
 import {LearningModule} from "../models/learning-module";
 import {LearningModulePathBuilder} from "../services/learning-module-path-builder";
 import {TranslateService} from "@ngx-translate/core";
 import {LearningModuleManager} from "../services/learning-module-manager";
 
 export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
+
+    private readonly log: Logger = Logging.getLogger("OpenHtmlLearningModuleAction");
 
     constructor(
         private readonly nav: NavController,
@@ -45,18 +49,10 @@ export class OpenHtmlLearningModuleAction extends ILIASObjectAction {
     }
 
     async openHTMLModule(): Promise<void> {
-        console.log("opening HTML learning module");
+        this.log.info(() => "Opening HTLM learning module");
         const user: User = AuthenticationProvider.getUser();
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(this.learningModuleObjectId, user.id);
-        const url: string = await lm.getLocalStartFileUrl(this.pathBuilder);
-        const browserOptions: InAppBrowserOptions = {
-            location: "no",
-            clearsessioncache: "yes",
-            clearcache: "yes",
-            footer:"yes",
-            closebuttoncaption: this.translate.instant("close")
-        };
-        this.browser.create(url, "_blank", browserOptions);
+        await this.nav.navigateForward(["/learningmodule", "htlm", lm.objId]);
     }
 
     alert(): ILIASObjectActionAlert | undefined {

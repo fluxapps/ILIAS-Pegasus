@@ -5,12 +5,12 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {Routes, RouterModule} from "@angular/router";
 /** misc */
-import {ScormPage} from "./scorm";
+import {HtlmPage} from "./htlm";
 import { TranslateModule } from "@ngx-translate/core";
 
 
 const routes: Routes = [
-    {path: ":id", component: ScormPage, pathMatch: "full"}
+    {path: ":id", component: HtlmPage, pathMatch: "full"}
 ];
 
 @NgModule({
@@ -21,7 +21,7 @@ const routes: Routes = [
         TranslateModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [ScormPage]
+    declarations: [HtlmPage]
 })
 
-export class ScormPageModule {}
+export class HtlmPageModule {}

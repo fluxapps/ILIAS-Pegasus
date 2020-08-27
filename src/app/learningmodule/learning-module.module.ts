@@ -5,7 +5,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {IonicModule} from "@ionic/angular";
 
 const routes: Routes = [
-    {path: "", loadChildren: "./pages/scorm/scorm.module#ScormPageModule"},
+    {path: "sahs", loadChildren: "./pages/scorm/scorm.module#ScormPageModule"},
+    {path: "htlm", loadChildren: "./pages/htlm/htlm.module#HtlmPageModule"},
 ];
 
 @NgModule({
@@ -15,7 +16,6 @@ const routes: Routes = [
         ReactiveFormsModule,
         IonicModule,
         RouterModule.forChild(routes),
-    ],
-    exports: [RouterModule],
+    ]
 })
 export class LearningModuleModule {}
