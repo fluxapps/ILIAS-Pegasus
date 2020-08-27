@@ -2,14 +2,13 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, NgZone } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
+import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
 import { NavController, ToastController } from "@ionic/angular";
 /** misc */
 import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
-import { User } from "../models/user";
-import { Log } from "../services/log.service";
 import { ILIASInstallation } from "../config/ilias-config";
-import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
+import { User } from "../models/user";
 import { Logger } from "../services/logging/logging.api";
 import { Logging } from "../services/logging/logging.service";
 

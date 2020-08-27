@@ -1,9 +1,10 @@
-import {ActiveRecord, SQLiteConnector} from "./active-record";
-import {FileData} from "./file-data";
-import {User} from "./user";
-import {SQLiteDatabaseService} from "../services/database.service";
-import {UserStorageService} from "../services/filesystem/user-storage.service";
-import {Log} from "../services/log.service";
+import { SQLiteDatabaseService } from "../services/database.service";
+import { UserStorageService } from "../services/filesystem/user-storage.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
+import { ActiveRecord, SQLiteConnector } from "./active-record";
+import { FileData } from "./file-data";
+import { User } from "./user";
 
 export const enum FavouriteStatus {
     NONE = 0,
@@ -21,6 +22,8 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
     static get OFFLINE_OWNER_SYSTEM(): string {
         return "system";
     }
+
+    private readonly log: Logger = Logging.getLogger("ILIASObject");
 
     /**
      * Internal user-ID
@@ -164,7 +167,7 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
             try {
                 return JSON.parse(this._repoPath);
             } catch (e) {
-                Log.error(this, "Could not get json from: " + this._repoPath);
+                this.log.error(() => `Could not get json from: ${this._repoPath}`);
                 return [];
             }
         }
@@ -180,7 +183,7 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
         } else if ( path === null) {
             this._repoPath = null;
         }else {
-            Log.describe(this, "repo path is: ", path);
+            this.log.error(() => `repo path is: ${JSON.stringify(path)}`);
             throw new Error("Please provide a string or a list of strings for repoPath in ilias-object.ts");
         }
     }
@@ -534,7 +537,7 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
      * @returns {Promise<T>} returns a list of the changed objects
      */
     async updateNeedsDownload(childNeedsUpdate = null): Promise<Array<ILIASObject>> {
-        Log.write(this, "recursive update needs download. going through: " + this.title);
+        this.log.debug(() => `Recursive update needs download. going through: ${this.title}`);
         if (this.type === "file") {
             // A file needs to check its file state and then escalate.
             return FileData.find(this.id).then(fileData => {
@@ -565,7 +568,7 @@ export class ILIASObject extends ActiveRecord<ILIASObject> {
      */
     private async saveAndEscalateNeedsDownload(newValue: boolean): Promise<Array<ILIASObject>> {
         if (newValue == this.needsDownload) {
-            Log.write(this, `Needs download stays the same for "${this.title}", with objId: ${this.objId}. No need for escalation.`);
+            this.log.debug(() => `Needs download stays the same for "${this.title}", with objId: ${this.objId}. No need for escalation.`);
             return Array.of(this);
         }
         this.needsDownload = newValue;

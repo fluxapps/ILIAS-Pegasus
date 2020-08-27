@@ -19,7 +19,6 @@ import { ILIASRestProvider } from "../providers/ilias-rest.provider";
 /** misc */
 import { isNullOrUndefined } from "../util/util.function";
 import { StorageUtilization, UserStorageMamager } from "./filesystem/user-storage.mamager";
-import { Log } from "./log.service";
 /** logging */
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
@@ -36,7 +35,8 @@ export interface DownloadProgress {
 })
 export class FileService implements StorageUtilization {
 
-    private log: Logger = Logging.getLogger(FileService.name);
+    private static log: Logger = Logging.getLogger("FileService");
+    private log: Logger = FileService.log;
 
     constructor(
         private readonly platform: Platform,
@@ -134,7 +134,7 @@ export class FileService implements StorageUtilization {
             User.find(fileObject.userId).then(user => {
                 const storageLocation: string = this.getStorageLocation(user, fileObject);
                 if (!window["resolveLocalFileSystemURL"]) {
-                    Log.write(this, "ResolveLocalFileSystemURL is not a function. You're probably not on a phone.");
+                    this.log.debug(() => "ResolveLocalFileSystemURL is not a function. You're probably not on a phone.");
                     reject(new Error("ResolveLocalFileSystemURL is not a function. You're probably not on a phone."));
                     return;
                 }
@@ -150,7 +150,7 @@ export class FileService implements StorageUtilization {
                     }
                 });
             }).catch(error => {
-                Log.error(this, error);
+                this.log.error(() => `Encountered error while checking file: ${JSON.stringify(error)}`);
                 reject(error);
             });
         });
@@ -263,7 +263,7 @@ export class FileService implements StorageUtilization {
      */
     static calculateDiskSpace(iliasObject: ILIASObject, inUse: boolean = true): Promise<number> {
         return new Promise((resolve, reject) => {
-            Log.describe(this, "Calculating disk space for", iliasObject);
+            FileService.log.debug(() => `Calculating disk space for ilias object with refId: ${iliasObject.refId}`);
             ILIASObject.findByParentRefIdRecursive(iliasObject.refId, iliasObject.userId).then(iliasObjects => {
                 const fileObjects: Array<ILIASObject> = iliasObjects.filter(iliasObject => {
                     return iliasObject.type == "file";
@@ -273,9 +273,9 @@ export class FileService implements StorageUtilization {
 
                     const metaData = fileObject.data;
                     if (metaData.hasOwnProperty("fileVersionDateLocal") && metaData.fileVersionDateLocal || !inUse && metaData) {
-                        Log.describe(this, "Found disk space usage: ", fileObject.data);
+                        FileService.log.debug(() => `Found disk space usage: ${JSON.stringify(fileObject.data)}`);
 
-                        diskSpace += parseInt(metaData.fileSize);
+                        diskSpace += parseInt(metaData.fileSize, 10);
                     }
                 });
                 resolve(diskSpace);

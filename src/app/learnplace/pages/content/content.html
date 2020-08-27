@@ -1,9 +1,9 @@
-<ion-content padding-vertical color="nobg-w">
+<ion-content class="ion-padding-vertical" color="nobg-w">
 
   <div *ngIf="(blockList | async)?.length == 0" class="ion-padding">
     <ion-card color=primary>
       <ion-card-content>
-        <h1 text-center>{{"learnplace.block.no_content" | translate}}</h1>
+        <h1 class="ion-text-center">{{"learnplace.block.no_content" | translate}}</h1>
       </ion-card-content>
     </ion-card>
   </div>

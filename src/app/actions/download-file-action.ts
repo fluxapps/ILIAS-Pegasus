@@ -1,24 +1,21 @@
 /** angular */
-import {AlertController} from "@ionic/angular";
+import { AlertController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { OfflineException } from "../exceptions/OfflineException";
 /** models */
-import {ILIASObject} from "../models/ilias-object";
-import {User} from "../models/user";
-import {Settings} from "../models/settings";
+import { ILIASObject } from "../models/ilias-object";
+import { Settings } from "../models/settings";
+import { User } from "../models/user";
+import { FileService } from "../services/file.service";
 /** logging */
-import {Log} from "../services/log.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 /** misc */
-import {
-    ILIASObjectActionNoMessage,
-    ILIASObjectActionResult,
-    ILIASObjectAction,
-    ILIASObjectActionAlert
-} from "./object-action";
-import {TranslateService} from "@ngx-translate/core";
-import {FileService} from "../services/file.service";
-import {OfflineException} from "../exceptions/OfflineException";
+import { ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult } from "./object-action";
 
 export class DownloadFileAction extends ILIASObjectAction {
 
+    private readonly log: Logger = Logging.getLogger("DownloadFileAction");
 
     constructor(public title: string,
                        public fileObject: ILIASObject,
@@ -30,7 +27,7 @@ export class DownloadFileAction extends ILIASObjectAction {
 
     async execute(): Promise<ILIASObjectActionResult> {
         // Download is only executed if a newer version is available in ILIAS
-        Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
+        this.log.info(() => `Do we need to download the file first? ${this.fileObject.needsDownload}`);
         if (this.fileObject.needsDownload && this.file.isOffline())
             throw new OfflineException("File requireds download and is offline at the same time.");
 
@@ -79,7 +76,7 @@ export class DownloadFileAction extends ILIASObjectAction {
         this.file.download(this.fileObject, true).then(() => {
             resolve(new ILIASObjectActionNoMessage());
         }, (error) => {
-            Log.describe(this, "Could not download file: ", error);
+            this.log.error(() => `Could not download file: ${JSON.stringify(error)}`);
             reject(new Error(this.translate.instant("actions.offline_and_no_local_file")));
         });
     };

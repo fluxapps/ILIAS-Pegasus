@@ -1,12 +1,16 @@
 /** logging */
 import { EntityManager } from "typeorm/browser";
-import {Log} from "../services/log.service";
+import { SQLiteDatabaseService } from "../services/database.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 /** misc */
-import {ActiveRecord, SQLiteConnector} from "./active-record";
-import {SQLiteDatabaseService} from "../services/database.service";
-import {ILIASObject} from "./ilias-object";
+import { ActiveRecord, SQLiteConnector } from "./active-record";
+import { ILIASObject } from "./ilias-object";
 
 export class DesktopItem extends ActiveRecord<DesktopItem> {
+
+    private static readonly log: Logger = Logging.getLogger("DesktopItem");
+
     /**
      * Internal user-ID
      */
@@ -98,7 +102,7 @@ export class DesktopItem extends ActiveRecord<DesktopItem> {
         const desktopItems: Array<ILIASObject> = [];
         for (let i: number = 0; i < response.rows.length; i++) {
             desktopItems.push(await ILIASObject.find(response.rows.item(i).id));
-            Log.describe(this, "Desktop item row: ", response.rows.item(i));
+            DesktopItem.log.trace(() => `Desktop item row: ${JSON.stringify(response.rows.item(i))}`);
         }
 
         return desktopItems.sort(ILIASObject.compare);

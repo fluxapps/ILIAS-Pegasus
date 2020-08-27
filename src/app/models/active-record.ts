@@ -1,8 +1,9 @@
 /** logging */
 import { EntityManager } from "typeorm/browser";
 /** misc */
-import { DatabaseService, SQLiteDatabaseService } from "../services/database.service";
-import { Log } from "../services/log.service";
+import { SQLiteDatabaseService } from "../services/database.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 
 export interface DatabaseConnector {
     /**
@@ -58,6 +59,8 @@ export interface DatabaseConnector {
  * Connects a model to the database by providing table name and fields
  */
 export class SQLiteConnector implements DatabaseConnector {
+
+    private readonly log: Logger = Logging.getLogger("SQLiteConnector");
 
     table: string;
     dbFields: Array<string>;
@@ -147,7 +150,7 @@ export class SQLiteConnector implements DatabaseConnector {
     };
 
     async destroy(id: number): Promise<void> {
-        Log.describe(this, "deleting item with table and id: ", {table: this.table, id: id});
+        this.log.debug(() => `Deleting item with table "${this.table}" and id: ${id}`);
         await this.query(`DELETE FROM ${this.table} WHERE id = ?`, [id]);
     }
 }

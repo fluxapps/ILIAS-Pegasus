@@ -1,16 +1,15 @@
 /** angular */
 import { Injectable } from "@angular/core";
+import { DesktopItem } from "../models/desktop-item";
+import { ILIASObject } from "../models/ilias-object";
 /** models */
 import { User } from "../models/user";
+/** logging */
 import { Logger } from "../services/logging/logging.api";
 import { Logging } from "../services/logging/logging.service";
-import { DesktopData, ILIASRestProvider } from "./ilias-rest.provider";
-import { ILIASObject } from "../models/ilias-object";
-import { DesktopItem } from "../models/desktop-item";
-/** logging */
-import { Log } from "../services/log.service";
 /** misc */
 import { DataProviderFileObjectHandler } from "./handlers/file-object-handler";
+import { DesktopData, ILIASRestProvider } from "./ilias-rest.provider";
 
 export interface GetObjectDataOptions {
     parentObject: ILIASObject,
@@ -224,7 +223,7 @@ export class DataProvider {
     private async saveOrDeleteObjects(remoteObjects: Array<DesktopData>, existingObjects: Array<ILIASObject>, user: User, rootParent: ILIASObject, refreshFiles: boolean = true): Promise<Array<ILIASObject>> {
         const iliasObjects: Array<ILIASObject> = [];
         const objectsToDelete: Array<ILIASObject> = existingObjects;
-        Log.describe(this, "Existing Objects.", existingObjects);
+        this.log.trace(() => `Existing Objects: ${JSON.stringify(existingObjects)}`);
 
         for (const remoteObject of remoteObjects) {
             const iliasObject: ILIASObject = await this.storeILIASObject(remoteObject, user, rootParent, refreshFiles);

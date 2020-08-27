@@ -24,11 +24,9 @@ import { FileService } from "./file.service";
 import { UserStorageService } from "./filesystem/user-storage.service";
 import { FooterToolbarService, Job } from "./footer-toolbar.service";
 /** logging */
-import { Log } from "./log.service";
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
 import { NEWS_SYNCHRONIZATION, NewsSynchronization } from "./news/news.synchronization";
-import { OverlayEventDetail } from "@ionic/core";
 
 interface SettledPromise<T> {
     status: "fulfilled" | "rejected";
@@ -375,7 +373,7 @@ export class SynchronizationService {
             .then((result) => {
                 if (result.rows.length === 0)
                     return null;
-                Log.describe(this, "last sync: ", new Date(result.rows.item(0).endDate));
+                this.log.info(() => `last sync: ${new Date(result.rows.item(0).endDate)}`);
                 const now: Date = new Date();
                 this.lastSync = new Date(result.rows.item(0).endDate);
 
@@ -390,7 +388,7 @@ export class SynchronizationService {
 
                 dateString = dateString ? dateString : `${this.lastSync.getDate()}.${this.lastSync.getMonth() + 1}.${this.lastSync.getFullYear()}`;
                 this.lastSyncString = dateString;
-                Log.describe(this, "lastdate", this.lastSync);
+                this.log.debug(() => `lastdate: ${this.lastSync}`);
                 return Promise.resolve(this.lastSync);
             });
     }

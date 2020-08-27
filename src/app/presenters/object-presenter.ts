@@ -1,12 +1,13 @@
 /** services */
 import { SafeUrl } from "@angular/platform-browser";
-import {ILIASAppUtils} from "../services/ilias-app-utils.service";
-import {FileService} from "../services/file.service";
-/** logging */
-import {Log} from "../services/log.service";
 /** misc */
-import {ILIASObject} from "../models/ilias-object";
-import {ThemeProvider} from "../providers/theme/theme.provider";
+import { ILIASObject } from "../models/ilias-object";
+import { ThemeProvider } from "../providers/theme/theme.provider";
+import { FileService } from "../services/file.service";
+import { ILIASAppUtils } from "../services/ilias-app-utils.service";
+/** logging */
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 
 /**
  * Decorator to present data of ILIASObjects in the view.
@@ -56,6 +57,8 @@ export interface ILIASObjectPresenter {
  */
 export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
 
+    private readonly log: Logger = Logging.getLogger("GenericILIASObjectPresenter");
+
     constructor(
         protected iliasObject: ILIASObject
     ) {}
@@ -86,7 +89,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
             detailPromises.push(
                 FileService.calculateDiskSpace(this.iliasObject)
                     .then(diskSpace => {
-                        Log.describe(this, "Disk space used: ", ILIASAppUtils.formatSize(diskSpace));
+                        this.log.info(() => `Disk space used: ${ILIASAppUtils.formatSize(diskSpace)}`);
                         const detail = {label: "details.used_disk_space", value: ILIASAppUtils.formatSize(diskSpace)};
                         details.push(detail);
                         return Promise.resolve(detail);
