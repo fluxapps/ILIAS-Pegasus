@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import * as policyList from "../../../environments/features.json";
+import { default as policyList } from "../../../environments/features.json";
 import { Logger } from "../logging/logging.api";
 import { Logging } from "../logging/logging.service";
 
@@ -24,6 +24,7 @@ export class FeaturePolicyService {
     private readonly disabledFeatures: Set<string>;
 
     constructor() {
+        this.log.warn(() => JSON.stringify(policyList));
         const policy: FeaturePolicies = policyList;
         if (policy.disabled.length > 0) {
             this.log.info(() => `Load app feature policy, disabled: ${JSON.stringify(policy.disabled.join(" "))}`);
