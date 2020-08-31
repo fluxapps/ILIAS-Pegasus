@@ -102,13 +102,9 @@
 
 .page_menu {
 
-    // background-image: linear-gradient(to top left, $gradient-col1, $gradient-col1);
-    background-image: url('./assets/img/header.svg');
-    // background-color: map_get($colors, primary);
-    // background-position: top left;
-    background-size: 100vmin ;
-    background-repeat: no-repeat;
-    // background-color: map_get($colors, primary);
+    .menu-bottom-image{
+        display: none;
+    }
 
     ion-list{
         padding-top: 0;

@@ -80,8 +80,7 @@
 .page_menu {
     height: 100%;
    .menu-bottom-image{
-       position: absolute;
-       bottom: 0;
+       display: none;
    }
 
     ion-list{

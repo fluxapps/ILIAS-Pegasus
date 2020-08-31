@@ -75,10 +75,9 @@
 
 .page_menu {
     height: 100%;
-   .menu-bottom-image{
-       position: absolute;
-       bottom: 0;
-   }
+    .menu-bottom-image{
+        display: none;
+    }
 
     ion-list{
         padding-top: 0;
