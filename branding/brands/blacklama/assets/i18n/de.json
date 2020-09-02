@@ -2,12 +2,12 @@
     "test": "der test",
 
     "login": {
-        "hello":"Das Lama grüsst Dich!"
+        "hello":"Das Lama grüßt Dich!"
     },
 
     "onboarding": {
         "title1": "Mit Hilfe des Lamas kannst Du:",
         "concept1": "Das Lama verbindet Dich mit der ILIAS Installation Deiner Institution, Uni oder Schule. Und nur mit dieser."
       }
-    
+
 }
