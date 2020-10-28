@@ -8,6 +8,7 @@ import {NewsEntity} from "../../entity/news.entity";
 import {User} from "../../models/user";
 import {UserEntity} from "../../entity/user.entity";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import { IliasObjectService } from "../ilias-object.service";
 
 /**
  * The news synchronisation service synchronizes the news from ILIAS with the local stored news.
@@ -40,7 +41,8 @@ export class NewsSynchronizationImpl implements NewsSynchronization {
 
   constructor(
     @Inject(NEWS_REST)        private readonly newsRest: NewsRest,
-    @Inject(USER_REPOSITORY)  private readonly userRepository: UserRepository
+    @Inject(USER_REPOSITORY)  private readonly userRepository: UserRepository,
+    private readonly iliasObjectService: IliasObjectService
   ) {}
 
   /**
@@ -57,6 +59,8 @@ export class NewsSynchronizationImpl implements NewsSynchronization {
         const user: UserEntity = (await this.userRepository.find(activeUser.id)).get();
         user.news = mappedNews;
         await this.userRepository.save(user);
+
+        await this.iliasObjectService.downloadIlObjByRefID(news.map(val => val.newsContext));
     }
   }
 
@@ -65,7 +69,7 @@ export class NewsSynchronizationImpl implements NewsSynchronization {
 
     entity.newsId = newsItem.newsId;
     entity.newsContext = newsItem.newsContext;
-    entity.title = newsItem.title;
+    entity.title = newsItem.title.slice(newsItem.title.indexOf(":")+1, newsItem.title.length);
     entity.subtitle = newsItem.subtitle;
     entity.content = newsItem.content;
     entity.createDate = newsItem.createDate;

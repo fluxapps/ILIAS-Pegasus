@@ -26,6 +26,7 @@ import { OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction } from "./
 import { INIT_APP } from "./app-initialisation";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { IlObjIconComponent } from "./components/icon/il-obj-icon.component";
 /** configs */
 import { CONFIG_PROVIDER, ILIASConfigProvider } from "./config/ilias-config";
 import { Oauth2DataSupplierImpl, TokenResponseConsumerImpl } from "./config/ilias.rest-config";
@@ -149,7 +150,6 @@ import { CssStyleService } from "./services/theme/css-style.service";
         //ModalPage,
         // OnboardingPage,
         LeaveAppDialog,
-
         //TestPage,
         LoadingPage,
         //SyncFinishedModal,
@@ -163,7 +163,6 @@ import { CssStyleService } from "./services/theme/css-style.service";
     entryComponents: [
         // OnboardingPage,
         LeaveAppDialog,
-
         //SyncFinishedModal,
         LoadingPage,
         //HardwareFeaturePage,

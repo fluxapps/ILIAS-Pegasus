@@ -56,7 +56,8 @@ export class ObjectDetailsPage {
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) { }
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
+                private readonly ilObjPresenterFactory: ILIASObjectPresenterFactory) { }
 
     ionViewWillEnter(): void {
         this.object = ObjectListNavParams.details;
@@ -124,7 +125,7 @@ export class ObjectDetailsPage {
     }
 
     private loadObjectDetails(): void {
-        ILIASObjectPresenterFactory.instance(this.object).details().then(details => {
+        this.ilObjPresenterFactory.instance(this.object).details().then(details => {
             this.log.debug(() => `Details are displayed: ${JSON.stringify(details)}`);
             this.details = details;
         });

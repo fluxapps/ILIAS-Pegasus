@@ -7,6 +7,8 @@ import {IonicModule} from "@ionic/angular";
 /** misc */
 import {ObjectListPage} from "./object-list";
 import {TranslateModule} from "@ngx-translate/core";
+import { IconModule } from "src/app/components/icon/il-obj-icon.module";
+import { IlObjIconComponent } from "src/app/components/icon/il-obj-icon.component";
 
 const routes: Routes = [
     {path: "", component: ObjectListPage}
@@ -18,9 +20,11 @@ const routes: Routes = [
         FormsModule,
         ReactiveFormsModule,
         IonicModule,
+        IconModule,
         TranslateModule,
         RouterModule.forChild(routes)
     ],
+    entryComponents: [IlObjIconComponent],
     declarations: [ObjectListPage]
 })
 export class ObjectListPageModule {}

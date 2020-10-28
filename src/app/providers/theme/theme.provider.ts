@@ -18,8 +18,8 @@ export class ThemeProvider {
         private readonly themeSynch: ThemeSynchronizationService,
     ) {}
 
-    static getIconSrc(key: string): string | SafeUrl {
-        return IconProvider.getIconSrc(key);
+    async getIconSrc(key: string): Promise<string | SafeUrl> {
+        return this.iconProvider.getIconSrc(key);
     }
 
     static async setCustomColor(): Promise<void> {

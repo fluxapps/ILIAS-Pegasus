@@ -194,6 +194,7 @@ export class SynchronizationService {
         this.user = AuthenticationProvider.getUser();
         this.syncOfflineQueue = Array.prototype.concat(this.syncOfflineQueue, iliasObjects);
         this.updateOfflineSyncStatusMessage();
+
         if (!SynchronizationService.state.loadingOfflineContent)
             await this.processOfflineSyncQueue();
     }
@@ -207,11 +208,13 @@ export class SynchronizationService {
             throw new OfflineException("Tried to sync files when device was offline.");
         }
 
-        if (this.syncOfflineQueue.length === this.syncOfflineQueueCnt) {
+        if (this.syncOfflineQueue.length <= this.syncOfflineQueueCnt) {
+
             this.syncOfflineQueue = [];
             this.syncOfflineQueueCnt = 0;
             SynchronizationService.state.loadingOfflineContent = false;
             await this.processOpenSynchronizationTasks();
+
             return;
         }
 
@@ -221,6 +224,7 @@ export class SynchronizationService {
         const ilObj: ILIASObject = this.syncOfflineQueue[this.syncOfflineQueueCnt];
         // the user may has unmarked the object in the mean time
         if (ilObj.isFavorite) {
+
             await ilObj.setIsFavorite(FavouriteStatus.PENDING);
             try {
                 await this.loadOfflineObjectRecursive(ilObj);
@@ -242,6 +246,7 @@ export class SynchronizationService {
      * Set the status-message of the offline-synchronization
      */
     private updateOfflineSyncStatusMessage(): void {
+
         const cnt: number = this.syncOfflineQueueCnt + 1;
         const size: number = this.syncOfflineQueue.length;
         const title: string = this.syncOfflineQueue[this.syncOfflineQueueCnt].title;

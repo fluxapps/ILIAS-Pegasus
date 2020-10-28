@@ -1,5 +1,4 @@
-import {Component, Inject, NgZone} from "@angular/core";
-import {ModalController} from "@ionic/angular";
+import {ChangeDetectionStrategy, Component, Inject} from "@angular/core";
 import {ILIASObject} from "../../models/ilias-object";
 import {Builder} from "../../services/builder.base";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -14,6 +13,8 @@ import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {TranslateService} from "@ngx-translate/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
+import { first } from "rxjs/operators";
 
 /**
  * Generated class for the NewsComponent component.
@@ -23,13 +24,15 @@ import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
  */
 @Component({
     selector: "newsPresenters",
-    templateUrl: "news.html"
+    templateUrl: "news.html",
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsPage
 // implements OnInit
 {
 
-    newsPresenters: Array<[NewsItemModel, ILIASObjectPresenter]>;
+    newsPresenters: ReplaySubject<Array<[NewsItemModel, ILIASObjectPresenter]>> = new ReplaySubject(1);
+    isLoading: BehaviorSubject<boolean> = new BehaviorSubject(true);
     private readonly log: Logger = Logging.getLogger(NewsPage.name);
 
     constructor(
@@ -37,15 +40,18 @@ export class NewsPage
         private readonly translate: TranslateService,
         private readonly sync: SynchronizationService,
         readonly footerToolbar: FooterToolbarService,
-        private readonly modal: ModalController,
-        private readonly ngZone: NgZone,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
-    ) {}
+        private readonly ilObjPresenterFactory: ILIASObjectPresenterFactory
+    ) {
+        this.newsPresenters.pipe(first()).subscribe(res => {
+            this.isLoading.next(false);
+        });
+    }
 
     ionViewWillEnter(): void {
-        this.startNewsSync().then(() => this.reloadView());
+        this.startNewsSync()
         this.log.debug(() => "News view initialized.");
     }
 
@@ -68,14 +74,13 @@ export class NewsPage
         } finally {
             if(event) event.target.complete();
             this.reloadView();
+
         }
     }
 
     async reloadView(): Promise<void> {
-        await this.ngZone.run(() =>
-            this.fetchPresenterNewsTuples()
-                .then((newsPresenterItems: Array<[NewsItemModel, ILIASObjectPresenter]>) => {this.newsPresenters = newsPresenterItems})
-        );
+        const newsPresenterItems = await this.fetchPresenterNewsTuples();
+        this.newsPresenters.next(newsPresenterItems);
     }
 
     // ------------------- object-list duplicate ----------------------------
@@ -125,7 +130,7 @@ export class NewsPage
     private async fetchPresenterByRefId(refId: number): Promise<ILIASObjectPresenter> {
         const userId: number = AuthenticationProvider.getUser().id;
         const ilObj: ILIASObject = await ILIASObject.findByRefIdAndUserId(refId, userId);
-        return ILIASObjectPresenterFactory.instance(ilObj);
+        return this.ilObjPresenterFactory.instance(ilObj);
     }
 
     private async fetchPresenterNewsTuples(): Promise<Array<[NewsItemModel, ILIASObjectPresenter]>> {

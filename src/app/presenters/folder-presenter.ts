@@ -4,10 +4,6 @@ import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class FolderObjectPresenter extends GenericILIASObjectPresenter {
 
-    icon(): string | SafeUrl {
-        return ThemeProvider.getIconSrc("fold");
-    }
-
     showTypeAsText(): boolean {
         return false;
     }

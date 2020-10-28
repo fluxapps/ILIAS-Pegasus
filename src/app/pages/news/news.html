@@ -23,7 +23,7 @@
         </ion-refresher-content>
     </ion-refresher>
 
-    <ion-list *ngIf="newsPresenters === undefined">
+    <ion-list *ngIf="isLoading | async">
         <ion-card class="list-element">
             <ion-card-header>
                 <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
@@ -86,14 +86,14 @@
         </ion-card>
     </ion-list>
     <ion-list color="list-element">
-        <ion-card *ngFor="let newsPresenter of newsPresenters"
+        <ion-card *ngFor="let newsPresenter of newsPresenters | async"
                   (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element"
                   class="list-element">
             <ion-card-header>
                 <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
                 <ion-card-title>
                     <ion-avatar>
-                        <img [src]="newsPresenter[1].icon()">
+                        <app-icon [presenter]="newsPresenter[1]"></app-icon>
                     </ion-avatar>
                     {{newsPresenter[0].title}}
                 </ion-card-title>
@@ -104,7 +104,7 @@
             </ion-card-content>
 
         </ion-card>
-        <ion-card *ngIf="newsPresenters?.length === 0">
+        <ion-card *ngIf="(newsPresenters | async)?.length === 0">
             <ion-card-content>
                 <p class="info-text">{{ 'new-objects.no_new_items' | translate:[] }}</p>
             </ion-card-content>
