@@ -1,12 +1,10 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core";
-import { ILIASObject } from "../../../models/ilias-object";
-import { User } from "../../../models/user";
+import { IliasObjectService } from "src/app/services/ilias-object.service";
 import { HttpResponse } from "../../../providers/http";
-import { DesktopData } from "../../../providers/ilias-rest.provider";
 import { ILIAS_REST, ILIASRequestOptions, ILIASRest } from "../../../providers/ilias/ilias.rest";
 import { Logger } from "../../../services/logging/logging.api";
 import { Logging } from "../../../services/logging/logging.service";
-import { blocksJsonSchema, iliasObjectJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema } from "./json.schema";
+import { blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema } from "./json.schema";
 import { BlockObject, ILIASLinkBlock, JournalEntry, LearnPlace } from "./learnplace.pojo";
 
 const DEFAULT_REQUEST_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
@@ -73,7 +71,8 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
   private log: Logger = Logging.getLogger(ILIASLearnplaceAPI.name);
 
   constructor(
-    @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest
+    @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
+    private readonly ilObjService: IliasObjectService
   ) {}
 
   /**
@@ -161,50 +160,16 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
      * @private
      */
   private async downloadLinkBlockRelatedILIASObject(blocks: BlockObject): Promise<void> {
-      try {
-          const linkBlocks: Array<ILIASLinkBlock> = blocks.iliasLink.concat(
-              blocks.accordion.reduceRight(
-                  (prev, curr) => prev.concat(curr.iliasLink),
-                  new Array<ILIASLinkBlock>())
-          );
+      const linkBlocks: Array<ILIASLinkBlock> = blocks.iliasLink.concat(
+          blocks.accordion.reduceRight(
+              (prev, curr) => prev.concat(curr.iliasLink),
+              new Array<ILIASLinkBlock>())
+      );
 
-          if (linkBlocks.length === 0) {
-              return;
-          }
-
-          const user: User = await User.currentUser();
-          const pendingDownloads: Array<Promise<HttpResponse>> = new Array<Promise<HttpResponse>>();
-          const objNotFoundLocally: Map<number, ILIASObject> = new Map<number, ILIASObject>();
-          for (const linkBlock of linkBlocks) {
-              const localObject: ILIASObject = await ILIASObject.findByRefIdAndUserId(linkBlock.refId, user.id);
-              if (localObject.id === 0) {
-                  pendingDownloads.push(
-                      this.iliasRest.get(`/v3/ilias-app/object/${linkBlock.refId}`, DEFAULT_REQUEST_OPTIONS)
-                  );
-                  objNotFoundLocally.set(linkBlock.refId, localObject);
-              }
-          }
-
-          const finishedDownloads: Array<HttpResponse> = await Promise.all(pendingDownloads);
-
-          const iliasObjects: Array<DesktopData> = finishedDownloads.map(
-              (response) => response.handle<DesktopData>(
-                  (it) => it.json(iliasObjectJsonSchema)
-              )
-          );
-
-          for (const remoteObject of iliasObjects) {
-              const localObject: ILIASObject = objNotFoundLocally.get(parseInt(remoteObject.refId, 10));
-              localObject.readFromObject(remoteObject);
-              await localObject.save();
-          }
-      } catch (error) {
-          // We can't rethrow the error because some of the installation don't have the REST Plugin upgrades jet ... (19.08.2020)
-          if (!!error.prototype) {
-              this.log.warn(() => `Failed to download link block related ilias objects, with error: [error=${error.prototype.name}, message="${error.message}"]`);
-          }
-
-          this.log.warn(() => `Failed to download link block related ilias objects, with error: [error=unknown, message="${error.message}"]`);
+      if (linkBlocks.length === 0) {
+          return;
       }
+
+      await this.ilObjService.downloadIlObjByRefID(linkBlocks.map(block => block.refId));
   }
 }

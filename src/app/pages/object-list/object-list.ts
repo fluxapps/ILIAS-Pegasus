@@ -91,6 +91,7 @@ export class ObjectListPage {
                 private readonly ngZone: NgZone,
                 private readonly browser: InAppBrowser,
                 private readonly userStorage: UserStorageService,
+                private readonly ilObjPresenterFactory: ILIASObjectPresenterFactory,
                 readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -306,15 +307,8 @@ export class ObjectListPage {
     private sortAndSetObjectList(ilObjects: Array<ILIASObject>): void {
         ilObjects.sort(ILIASObject.compare);
         const content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
-        ilObjects.forEach(o => content.push({object: o, presenter: ILIASObjectPresenterFactory.instance(o)}));
+        ilObjects.forEach(o => content.push({object: o, presenter: this.ilObjPresenterFactory.instance(o)}));
         this.content = content;
-    }
-
-    /**
-     * method fot the template to get the source of the badge icon
-     */
-    private getBadgeSrc(): string | SafeUrl {
-        return ThemeProvider.getIconSrc("link");
     }
 
     /* = = = = = *

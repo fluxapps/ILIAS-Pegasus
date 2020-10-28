@@ -5,11 +5,6 @@ import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class FileObjectPresenter extends GenericILIASObjectPresenter {
 
-    icon(): string | SafeUrl {
-        return ThemeProvider.getIconSrc("file");
-        //return "assets/icon/obj_file.svg";
-    }
-
     title(): string {
         return super.title() + ` (${this.getFormattedSize()})`;
     }

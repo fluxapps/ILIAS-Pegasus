@@ -18,7 +18,7 @@ export interface ILIASObjectPresenter {
     /**
      * Returns the ionic icon name for this object
      */
-    icon(): string | SafeUrl;
+    readonly icon: Promise<string | SafeUrl>;
 
     /**
      * Returns the title
@@ -58,13 +58,17 @@ export interface ILIASObjectPresenter {
 export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
 
     private readonly log: Logger = Logging.getLogger("GenericILIASObjectPresenter");
+    private readonly _icon: Promise<string | SafeUrl>;
 
     constructor(
-        protected iliasObject: ILIASObject
-    ) {}
+        protected iliasObject: ILIASObject,
+        protected readonly themeProvider: ThemeProvider
+    ) {
+        this._icon = this.themeProvider.getIconSrc(this.iliasObject.type);
+    }
 
-    icon(): string | SafeUrl {
-        return ThemeProvider.getIconSrc("link");
+    get icon(): Promise<string | SafeUrl> {
+        return this._icon;
     }
 
     title(): string {

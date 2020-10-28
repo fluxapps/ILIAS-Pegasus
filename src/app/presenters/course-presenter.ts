@@ -4,11 +4,6 @@ import {ThemeProvider} from "../providers/theme/theme.provider";
 
 export class CourseObjectPresenter extends GenericILIASObjectPresenter {
 
-    icon(): string | SafeUrl {
-        return ThemeProvider.getIconSrc("crs");
-        //return "assets/icon/obj_course.svg";
-    }
-
     showTypeAsText(): boolean {
         return false;
     }
