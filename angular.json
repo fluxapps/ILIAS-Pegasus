@@ -1,5 +1,5 @@
 {
-    "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
+    "$schema": "./node_modules/@angular-devkit/core/src/experimental/workspace/workspace-schema.json",
     "version": 1,
     "defaultProject": "app",
     "newProjectRoot": "projects",
@@ -111,10 +111,7 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "app:build",
-                        "ssl": true,
-                        "sslKey": ".ionic/ssl/key.pem",
-                        "sslCert": ".ionic/ssl/cert.pem"
+                        "browserTarget": "app:build"
                     },
                     "configurations": {
                         "production": {

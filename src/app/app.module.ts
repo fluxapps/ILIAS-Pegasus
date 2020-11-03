@@ -13,6 +13,7 @@ import { HTTP } from "@ionic-native/http/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { Network } from "@ionic-native/network/ngx";
+import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { SQLite } from "@ionic-native/sqlite/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -383,14 +384,14 @@ import { CssStyleService } from "./services/theme/css-style.service";
         // Actions
         <FactoryProvider> {
             provide: OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
-            useFactory: (browser: InAppBrowser, platform: Platform, modal: ModalController):
+            useFactory: (browser: InAppBrowser, platform: Platform, modal: ModalController, safariViewController: SafariViewController):
                 (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction => {
                 return (
                     title: string,
                     urlBuilder: Builder<Promise<string>>
-                ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal);
+                ): OpenObjectInILIASAction => new OpenObjectInILIASAction(title, urlBuilder, browser, platform, modal, safariViewController);
             },
-            deps: [InAppBrowser, Platform, ModalController]
+            deps: [InAppBrowser, Platform, ModalController, SafariViewController]
         },
         AlwaysStrategy,
         NeverStrategy,
@@ -531,7 +532,8 @@ import { CssStyleService } from "./services/theme/css-style.service";
         AppVersion,
         Zip,
         UniqueDeviceID,
-        FileOpener
+        FileOpener,
+        SafariViewController,
     ],
     exports: [
         TranslateModule
