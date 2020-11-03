@@ -1,34 +1,36 @@
-<ion-content class="page_login ion-no-padding" color="nobg-w" fullscreen="true">
+<ion-content class="page_login ion-no-padding">
 
-    <ion-grid class="ion-padding-top">
+    <ion-grid>
         <ion-row class="ion-justify-content-center login-top-logo-row">
                 <img src="assets/img/login.svg" alt="" class="login-top-image"/>
         </ion-row>
 
         <ion-row class="ion-padding-top ion-justify-content-center ion-align-items-center login-welcome-row">
-                <h1 class="huge-login-header ion-text-center">{{ 'login.hello' | translate}}</h1>
+                <h1 class="huge-login-header ion-text-center ion-no-margin">{{ 'login.hello' | translate}}</h1>
         </ion-row>
-        <ion-row class="login-institution-row ion-padding ion-justify-content-center ion-align-items-end">
-            <ion-item color="primary">
-                <ion-label class="ion-text-center" position="stacked"></ion-label>
-                <ion-select [(ngModel)]="installationId" interface="alert" class="ion-text-center" placeholder="{{ 'login.instructions' | translate }}" okText="{{ 'login.ok' | translate}}" cancelText="{{ 'login.dismiss' | translate}}">
-                    <ion-select-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}</ion-select-option>
-                </ion-select>
-            </ion-item>
+        <ion-row class="login-institution-row ion-padding">
+            <ion-grid>
+                <ion-row class="ion-justify-content-center">
+                    <!--ion-item color="primary" lines="none">
+                        <ion-select [(ngModel)]="installationId" interface="alert" class="ion-text-center" placeholder="{{ 'login.instructions' | translate }}" okText="{{ 'login.ok' | translate}}" cancelText="{{ 'login.dismiss' | translate}}">
+                            <ion-select-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}</ion-select-option>
+                        </ion-select>
+                    </ion-item-->
+                    <ion-select [(ngModel)]="installationId" interface="alert" class="ion-text-center" placeholder="{{ 'login.instructions' | translate }}" okText="{{ 'login.ok' | translate}}" cancelText="{{ 'login.dismiss' | translate}}">
+                        <ion-select-option *ngFor="let installation of installations" [value]="installation.id">{{ installation.title }}</ion-select-option>
+                    </ion-select>
+                </ion-row>
+                <ion-row class="ion-justify-content-center">
+                    <ion-button color="light" fill="outline" shape="round"  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate }}</ion-button>
+                </ion-row>
+            </ion-grid>
         </ion-row>
 
-        <ion-row class="ion-justify-content-center">
-            <ion-button color="light" fill="outline" shape="round"  (click)="login()" [disabled]="!installationId">{{ 'login.login' | translate }}</ion-button>
-        </ion-row>
-
-        <ion-row class="ion-padding ion-justify-content-center ion-align-items-end login-version-row">
-            <ion-item class="ion-text-center" color="primary" no-lines>
-                Version {{appVersionStr | async}}
-            </ion-item>
-        </ion-row>
-
-        <ion-row class="ion-justify-content-center styled-bottom-row">
-
+        <ion-row class="ion-padding login-version-row ion-align-items-center">
+            <p id="version-if-footer" class="ion-no-margin">Version {{appVersionStr | async}}</p>
+            <ion-col class="ion-align-items-stretch ion-justify-content-center login-version-row-img-col">
+                <img src="assets/img/login_bottom.svg" class="login-bottom-image" alt="login bottom banner which contains additional infos like companies which founded the project." />
+            </ion-col>
         </ion-row>
     </ion-grid>
 

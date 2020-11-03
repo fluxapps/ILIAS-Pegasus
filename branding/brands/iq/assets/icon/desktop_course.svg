@@ -1,35 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 24.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 164 99" style="enable-background:new 0 0 164 99;" xml:space="preserve">
-<style type="text/css">
-	.st0{opacity:0.75;fill:#5FBBBA;stroke:#FFFFFF;stroke-width:2;stroke-miterlimit:10;enable-background:new    ;}
-	.st1{clip-path:url(#SVGID_4_);fill:none;stroke:#FFFFFF;stroke-miterlimit:10;}
-	.st2{fill:none;stroke:#FFFFFF;stroke-miterlimit:10;}
-</style>
-<path class="st0" d="M110.4,49.5H53.6v5.7h15.1L57.6,79.6c-0.6,1.4,0,3.1,1.4,3.7c0.3,0.3,0.6,0.3,0.9,0.3c1.1,0,2-0.6,2.6-1.7
-	l4.3-9.4h30.4l4.3,9.4c0.6,1.1,1.4,1.7,2.6,1.7c0.3,0,0.9,0,1.1-0.3c1.4-0.6,2-2.3,1.4-3.7L95.4,55.2h15.1V49.5z M89.4,55.8
-	l5.1,11.4H69.2l5.1-11.4c0-0.3,0-0.3,0-0.6h14.5C89.4,55.5,89.4,55.5,89.4,55.8z"/>
-<rect id="SVGID_1_" x="53.6" y="15.4" class="st0" width="56.9" height="39.8"/>
-<title>icon/desktop_ZWH/content</title>
-<desc>Created with Sketch.</desc>
-<rect x="53.6" y="49.5" class="st0" width="56.9" height="5.7"/>
-<g>
-	<g>
-		<g>
-			<g>
-				<defs>
-					<rect id="SVGID_3_" x="53.6" y="15.4" width="56.9" height="39.8"/>
-				</defs>
-				<clipPath id="SVGID_4_">
-					<use xlink:href="#SVGID_3_"  style="overflow:visible;"/>
-				</clipPath>
-				<rect x="53.6" y="15.4" class="st1" width="56.9" height="39.8"/>
-			</g>
-		</g>
-	</g>
-	<g>
-		<rect id="SVGID_2_" x="53.6" y="15.4" class="st2" width="56.9" height="39.8"/>
-	</g>
-</g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="161px" height="159px" viewBox="0 0 161 159" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon/4.0/desktop_IQ/IQ_crs_grp03@2x</title>
+    <g id="icon/4.0/desktop_IQ/IQ_crs_grp03" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-4" transform="translate(0.000000, 1.000000)">
+            <g id="Group-5" transform="translate(0.000000, 7.000000)">
+                <path d="M44,82 L114,82 C117.313708,82 120,84.6862915 120,88 L120,119.736386 C119.999995,121.809863 118.929426,123.736387 117.168685,124.831421 C104.124505,132.943807 91.40161,137 79,137 C66.598388,137 53.8754911,132.943806 40.8313092,124.831417 C39.0705693,123.73638 38,121.809856 38,119.736378 L38,88 C38,84.6862915 40.6862915,82 44,82 Z" id="Rectangle" stroke="#FFFFFF" stroke-width="3" fill-opacity="0.75" fill="#5FBBBA"></path>
+                <path d="M30.3469529,26.8008054 L92.2875858,60.5114777 C92.7952203,60.7877535 93.2122465,61.2047797 93.4885223,61.7124142 L127.199195,123.653047 C127.991222,125.108334 127.453544,126.930141 125.998258,127.722169 C125.177734,128.168732 124.196013,128.207579 123.342769,127.827247 L57.1823242,98.3363871 C56.5060103,98.0349218 55.9650782,97.4939897 55.6636129,96.8176758 L26.1727525,30.6572311 C25.4981939,29.1439113 26.178144,27.3702854 27.6914638,26.6957268 C28.5447082,26.3153951 29.526429,26.3542422 30.3469529,26.8008054 Z" id="Rectangle" stroke="#FFFFFF" stroke-width="3" fill="#5FBBBA" transform="translate(77.000000, 77.000000) rotate(-45.000000) translate(-77.000000, -77.000000) "></path>
+                <polyline id="Path-5" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" points="75 75 97 98.8804484 97 112"></polyline>
+                <path d="M97,110.999629 C100.037566,110.999629 102.5,113.462063 102.5,116.499629 L102.5,122.999629 L102.5,122.999629 L91.5,122.999629 L91.5,116.499629 C91.5,113.462063 93.9624339,110.999629 97,110.999629 Z" id="Rectangle" fill="#FFFFFF"></path>
+            </g>
+            <g id="Group-3" transform="translate(77.000000, 0.000000)" stroke="#FFFFFF">
+                <g id="Group" transform="translate(18.000000, 18.000000)">
+                    <path d="M12.8547554,54.3439465 L12.8547554,47.9845485 L12.8547554,47.9845485 C12.8547554,38.5835847 0,35.1148222 0,23.1250836 C0,11.135345 9.71638741,0 23.3722826,0 L23.7807718,0.00333032256 C37.2215339,0.22279234 46.7445652,11.2552424 46.7445652,23.1250836 C46.7445652,35.1148222 33.8898098,38.5835847 33.8898098,47.9845485 L33.8898098,47.9845485 L33.8898098,54.3439465 L12.8547554,54.3439465 Z" id="Combined-Shape" stroke-width="3" fill-opacity="0.75" fill="#FFFFFF"></path>
+                    <path d="M15.7762908,61.1252174 C15.7762908,61.1815764 31.5525815,61.1815764 31.5525815,61.1252174 C31.5525815,62.1046634 31.5525815,63.0841094 31.5525815,64.0635554 C31.5525815,65.9275164 30.0415426,67.4385554 28.1775815,67.4385554 L19.1512908,67.4385554 C17.2873297,67.4385554 15.7762908,65.9275164 15.7762908,64.0635554 C15.7762908,63.0841094 15.7762908,62.1046634 15.7762908,61.1252174 Z" id="Rectangle" stroke-width="2" fill="#004D9F"></path>
+                    <rect id="Rectangle" stroke-width="2" fill="#004D9F" x="9.34891304" y="50.8751839" width="28.0467391" height="5.7812709" rx="2.89063545"></rect>
+                    <rect id="Rectangle" stroke-width="2" fill="#004D9F" x="11.6861413" y="56.6564548" width="23.3722826" height="5.7812709" rx="2.89063545"></rect>
+                </g>
+                <g id="Group-2" stroke-linecap="square" stroke-width="3">
+                    <line x1="40.74375" y1="0.340382022" x2="40.74375" y2="9.87107865" id="Line-3"></line>
+                    <line x1="73.33875" y1="15.8844944" x2="66.3541071" y2="21.5575281" id="Line-3"></line>
+                    <line x1="81.4875" y1="50.49" x2="72.1746429" y2="48.2207865" id="Line-3"></line>
+                    <line x1="0" y1="50.49" x2="9.31285714" y2="48.2207865" id="Line-3"></line>
+                    <line x1="8.14875" y1="15.8844944" x2="15.1333929" y2="21.5575281" id="Line-3"></line>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>
