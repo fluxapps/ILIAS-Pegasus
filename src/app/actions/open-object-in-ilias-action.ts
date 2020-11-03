@@ -1,5 +1,6 @@
 /** angular */
 import { InjectionToken } from "@angular/core";
+import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
 import { ModalController, Platform } from "@ionic/angular";
 /** ionic-native */
 import { InAppBrowser, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
@@ -23,7 +24,8 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         private readonly target: Builder<Promise<string>>,
         private readonly browser: InAppBrowser,
         private readonly platform: Platform,
-        private readonly modal: ModalController
+        private readonly modal: ModalController,
+        private readonly safariViewController: SafariViewController,
     ) {
         super()
     }
@@ -62,17 +64,48 @@ export class OpenObjectInILIASAction extends ILIASObjectAction {
         this.openDialog = undefined;
     }
 
-    private openBrowserIos(link: string): void {
-        this.log.trace(() => "Open ios browser (internal).");
+    private async openBrowserIos(link: string): Promise<void> {
         this.log.trace(() => `Navigate to url: ${link}`);
-        const options: InAppBrowserOptions = {
-            location: "no",
-            clearcache: "yes",
-            clearsessioncache: "yes"
-        };
+        const sfViewControllerAvailable: boolean = await this.safariViewController.isAvailable();
 
-        //encode url or the browser will be stuck in a loading screen of death as soon as it reads the | character. (20.02.18)
-        this.browser.create(encodeURI(link), "_blank", options);
+        const uri: string = encodeURI(link);
+        if (sfViewControllerAvailable) {
+            // Use SFViewController
+            this.log.trace(() => "Open ios browser (SFViewController).");
+            this.safariViewController.show({
+                url: uri,
+                hidden: false,
+                animated: true,
+                transition: "curl",
+                enterReaderModeIfAvailable: false,
+                tintColor: getComputedStyle(document.body).getPropertyValue("--ion-color-primary-tint")
+            }).subscribe((result: {event: string}) => {
+                switch (result.event) {
+                    case "opened":
+                        this.log.debug(() => "SFViewController open event")
+                        break;
+                    case "loaded":
+                        this.log.debug(() => "SFViewController open event")
+                        break;
+                    case "closed":
+                        this.log.debug(() => "SFViewController open event")
+                        break;
+                }
+                },
+                (error: unknown) => console.error(() => `Encountered error while opening SFViewController: ${JSON.stringify(error)}`)
+            );
+        } else {
+            // Use WKWebView
+            this.log.trace(() => "Open ios browser (WKWebView).");
+            const options: InAppBrowserOptions = {
+                location: "no",
+                clearcache: "yes",
+                clearsessioncache: "yes"
+            };
+
+            //encode url or the browser will be stuck in a loading screen of death as soon as it reads the | character. (20.02.18)
+            this.browser.create(uri, "_blank", options);
+        }
 
     }
 
