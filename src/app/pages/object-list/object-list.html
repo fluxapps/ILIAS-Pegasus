@@ -1,5 +1,5 @@
-<ion-header id="header-object-list" >
-    <ion-toolbar color="primary">
+<ion-header id="header-object-list">
+    <ion-toolbar color="primary" >
         <ion-buttons slot="start">
             <ion-button *ngIf="checkPageState({desktop: false})" (click)="navigateBackInHierarchy()"><ion-icon name="arrow-back"></ion-icon></ion-button>
             <!--ion-back-button text=""></--ion-back-button-->
@@ -22,7 +22,7 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true" class="page_object_list">
+<ion-content class="page_object_list">
     <ion-refresher  slot="fixed"
      (ionRefresh)="loadAndRenderContent($event)"
      [closeDuration]="400"
@@ -115,9 +115,9 @@
     <!-- Sekeletion -->
         <ng-container *ngIf="(checkPageState({loading: true}) && (checkPageState({favorites: true}) || checkPageState({favorites: false, online: true})))">
             <!-- status : synchronization in progress, refresher not pulled -->
-            <ion-card>
+            <ion-card *ngIf="(checkPageState({loadingOffline: true}) && (checkPageState({favorites: true})))">
                 <ion-row>
-                    <ion-label class="loading-text" *ngIf="(checkPageState({loadingOffline: true}) && (checkPageState({favorites: true})))">{{sync.footerToolbarOfflineContent.loadingText}}</ion-label>
+                    <ion-label class="loading-text">{{sync.footerToolbarOfflineContent.loadingText}}</ion-label>
                 </ion-row>
             </ion-card>
 

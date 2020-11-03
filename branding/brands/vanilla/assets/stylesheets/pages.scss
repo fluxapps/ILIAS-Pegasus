@@ -24,7 +24,7 @@
 // --------------------------------------------------
 .page_news {
      //font-sizes
-     ion-card-title{
+    ion-card-title{
         font-size: 1.2rem;
 
     }
@@ -66,8 +66,8 @@
 
 
     .tile {
-    opacity: 0.9;
-    border-radius: 2%;
+      opacity: 0.9;
+      border-radius: 2%;
     }
 
 }
@@ -85,6 +85,11 @@
     ion-list{
         padding-top: 0;
         padding-bottom: 0;
+
+        ion-item {
+            --background: var(--ion-color-primary);
+            --color: var(--ion-color-primary-contrast);
+        }
     }
 
     .privacy-iq{
@@ -98,6 +103,7 @@
         display: none
     }
 
+    
 }
 
 // pages/settings
@@ -124,7 +130,6 @@ ion-content.page_settings {
     ion-label.activeUser {
         font-weight: bold;
     }
-
 }
 
 // pages/info
@@ -148,67 +153,55 @@ ion-content.page_settings {
 // pages/login
 // --------------------------------------------------
 .page_login {
-    background-color: var(--ion-color-primary);
-    line-height: 1.8em;
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  line-height: 1.8em;
 
-    #version-if-footer {
-        font-size: 1em;
-        opacity: 0.2;
-    }
+  #version-if-footer {
+      font-size: 1em;
+      opacity: 0.4;
+  }
 
-    .huge-login-header {
-        padding-top: 5%;
-        padding-bottom: 5%;
-        font-weight: 800;
-        font-size: 3.0vh;
-        color: var(--ion-color-primary-contrast);
-    }
+  .huge-login-header {
+      padding-top: 5%;
+      padding-bottom: 5%;
+      font-weight: 800;
+      font-size: 3.0vh;
+  }
 
-    .login-top-logo-row{
-        height: 30vh;
-    }
+  .login-top-logo-row{
+      height: 30vh;
+      > img {
+          height: 100%;
+      }
+  }
 
-    .login-welcome-row{
-        height: 10vh;
-    }
+  .login-welcome-row{
+      height: 10vh;
+  }
 
-    .login-version-row{
-        height: 30vh;
-    }
+  .login-institution-row {
+      height: 30vh;
+  }
 
-    .login-bottom-image{
-        display: none;
-    }
+  .login-version-row{
+      height: 30vh;
+      flex-direction: column-reverse;
 
-    .styled-bottom-row{
-        background-image: url('./assets/img/header.svg');
-        background-size: 100vw ;
-        background-repeat: no-repeat;
-        height: 30vh;
-    }
-    .login-top-image{
-        // display: none;
+      .login-bottom-image {
+          display: none;
+          height: 100%;
+          margin: 0 auto;
+      }
 
-    }
+      .login-version-row-img-col {
+          display: flex;
+      }
+  }
 
-    // a, img {
-    //     align-self: flex-end;
-    //     position: absolute;
-    //     bottom: 3%;
-    // }
-
-    // .vertical-align-content > * {
-    //     display: flex!important;
-    //     align-content: center!important;
-    //     align-items: center!important;
-    // }
-
-    // .vertical-align-content a, .vertical-align-content img {
-    //     align-self: flex-end;
-    //     position: absolute;
-    //     vertical-align: center;
-    // }
-
+  ion-item {
+      --ion-color-primary: var(--ion-color-primary-contrast);
+  }
 }
 
 // pages/object-list
@@ -435,6 +428,14 @@ ion-content.page_settings {
     //     height: 20vw;
     // }
 
+}
+
+// tabs
+// --------------------------------------------------
+.page_tabs {
+  // ion-tab-bar, ion-tab-bar * {
+  //   background-color: var(--ion-color-primary);
+  // } 
 }
 
 // app/fallback/location/location-fallbackscreen.scss

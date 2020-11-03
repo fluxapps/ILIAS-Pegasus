@@ -1,18 +1,18 @@
 {
-  "ios": {
-    "debug": {
-      "codeSignIdentity": "iPhone Developer",
-      "provisioningProfile": "201809_Pegasus",
-      "developmentTeam": "ZQ66BZ3DPL",
-      "packageType": "development"
+    "ios": {
+        "debug": {
+            "codeSignIdentity": "Apple Development",
+            "provisioningProfile": "aa2dbb2e-49aa-4ae4-9435-245c2812dc41",
+            "developmentTeam": "ZQ66BZ3DPL",
+            "packageType": "development"
+        },
+        "release": {
+            "codeSignIdentity": "Apple Distribution",
+            "provisioningProfile": "d49737b4-664c-4ba6-a944-55ae15c166ab",
+            "developmentTeam": "ZQ66BZ3DPL",
+            "packageType": "app-store"
+        }
     },
-    "release": {
-      "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "7d863c02-1eb3-4a39-b43a-af967028c094",
-      "developmentTeam": "ZQ66BZ3DPL",
-      "packageType": "app-store"
-    }
-  },
     "android": {
         "debug": {
             "packageType": "apk"
