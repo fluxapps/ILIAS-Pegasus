@@ -26,8 +26,8 @@
             </ion-grid>
         </ion-row>
 
-        <ion-row class="ion-padding login-version-row ion-align-items-center">
-            <p id="version-if-footer" class="ion-no-margin">Version {{appVersionStr | async}}</p>
+        <ion-row class="ion-padding login-version-row ion-align-items-center ion-text-center">
+            <p id="version-if-footer" class="ion-no-margin ">{{'Version' | translate}} {{appVersionStr | async}}</p>
             <ion-col class="ion-align-items-stretch ion-justify-content-center login-version-row-img-col">
                 <img src="assets/img/login_bottom.svg" class="login-bottom-image" alt="login bottom banner which contains additional infos like companies which founded the project." />
             </ion-col>
