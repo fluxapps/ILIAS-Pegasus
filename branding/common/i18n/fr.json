@@ -1,4 +1,88 @@
 {
+    "courses": "Cours",
+    "map": "Carte",
+    "content": "Contenu",
+    "home": {
+        "title": "Accueil"
+    },
+    "login": {
+        "ok": "S\u00e9lectionner",
+        "dismiss": "Annuler",
+        "title": "Connexion",
+        "hello": "Bienvenue sur ILIAS Pegasus !",
+        "instructions": "Choisissez votre institution",
+        "instructions2": "Choisissez votre institution",
+        "login": "Connexion",
+        "offline_title": "Pas de connexion Internet",
+        "offline_content": "Votre appareil doit \u00eatre connect\u00e9 \u00e0 Internet pour que vous puissiez vous connecter."
+    },
+    "fallback": {
+        "synchronization_subtitle": "Veuillez patienter quelques secondes pendant que nous synchronisons votre compte ILIAS.",
+        "generic": {
+            "loading": "Chargement",
+            "loading_subtitle": "Attendez une minute. Le t\u00e9l\u00e9chargement du contenu peut prendre un certain temps."
+        },
+        "learnplace": {
+            "loading": "Lieu d'apprentissage",
+            "loading_subtitle": "Attendez une minute. Si le lieu d'apprentissage contient beaucoup de contenu, le t\u00e9l\u00e9chargement peut prendre un certain temps."
+        },
+        "learningmodule": {
+            "loading": "Module d'apprentissage",
+            "loading_subtitle": "Attendez une minute. Si le lieu d'apprentissage contient beaucoup de contenu, le t\u00e9l\u00e9chargement peut prendre un certain temps."
+        },
+        "browser": "Vous quittez l'application {{app_name}}",
+        "browser_ok": "Ok, c'est parti !",
+        "browser_no": "Non, revenir !",
+        "loading": "Lieu d'apprentissage",
+        "loading_subtitle": "Attendez une minute. Si le lieu d'apprentissage contient beaucoup de contenu, le t\u00e9l\u00e9chargement peut prendre un certain temps.",
+        "synchronization": "Veuillez patienter quelques secondes pendant que nous synchronisons avec ILIAS\u2026"
+    },
+    "Version": "Version",
+    "info": {
+        "version-card": {
+            "title": "Bas\u00e9 sur ILIAS-Pegasus",
+            "content": "Version"
+        },
+        "reporting-card": {
+            "title": "Suggestions et remarques sur les bugs",
+            "content": "Vous avez trouv\u00e9 un bug ? Aidez-nous \u00e0 am\u00e9liorer l'application. Contactez"
+        },
+        "reporting-card-zwh": {
+            "subtitle": "Fourniture et design",
+            "content": "Contact"
+        },
+        "content-card": {
+            "title": "Note sur le contenu",
+            "content": "Malgr\u00e9 un contr\u00f4le attentif du contenu, nous d\u00e9clinons toute responsabilit\u00e9 li\u00e9e au contenu provenant de liens externes. Les op\u00e9rateurs des pages faisant l'objet d'un lien externe sont les seuls responsables du contenu de ces pages. Pour une bonne optimisation de l'application, les donn\u00e9es d'utilisation sont consign\u00e9es et \u00e9valu\u00e9es de mani\u00e8re anonyme."
+        },
+        "stura-card": {
+            "title": "Conseil \u00e9tudiant de",
+            "subtitle": "Financement",
+            "content": "Les sp\u00e9cifications et le d\u00e9veloppement de la premi\u00e8re version de l'application ont \u00e9t\u00e9 financ\u00e9s par la proposition budg\u00e9taire des \u00e9tudiants du conseil \u00e9tudiant de l'universit\u00e9 de Fribourg."
+        },
+        "freiburg-card": {
+            "title": "Centre de donn\u00e9es",
+            "subtitle": "Chef de projet",
+            "content": "Le centre de donn\u00e9s de l'universit\u00e9 de Fribourg g\u00e8re la phase de sp\u00e9cification et d'impl\u00e9mentation de l'application."
+        },
+        "marburg-card": {
+            "title": "Centre de donn\u00e9es universitaire",
+            "subtitle": "Responsable du module ILIAS REST",
+            "content": "Le centre informatique de l'universit\u00e9 Philipps de Marbourg fournit l'interface de ILIAS avec le module ILIAS REST."
+        },
+        "sig-card": {
+            "subtitle": "Communaut\u00e9 et coordination des d\u00e9veloppements ult\u00e9rieurs",
+            "content": "Le p\u00f4le d'int\u00e9r\u00eat commun (SIG) ILIAS Mobile est responsable de la coordination des d\u00e9veloppements ult\u00e9rieurs de l'application et propose un espace de discussion autour de l'application."
+        },
+        "sturai-card": {
+            "subtitle": "Maintenance et d\u00e9veloppement de l'appli",
+            "content": "Cette application est d\u00e9velopp\u00e9e et entretenue par les groupes studer\u00a0+\u00a0raimann ag et IT-and Learning-Solutions."
+        },
+        "title": "Info",
+        "guide": "Guide",
+        "instructions1": "Lorsque vous \u00eates sur la page d'accueil \u00ab Mes cours et groupes \u00bb, vous pouvez marquer les cours et les groupes comme \u00e9tant \u00ab disponibles hors ligne \u00bb. Ils sont alors signal\u00e9s par un nuage gris. Une fois les fichiers synchronis\u00e9s, le nuage devient bleu.",
+        "instructions2": "La synchronisation d\u00e9marre automatiquement \u00e0 chaque fois que l'application est lanc\u00e9e ou qu'un cours est marqu\u00e9 comme disponible hors ligne. Vous pouvez \u00e9galement lancer la synchronisation manuelle en faisant glisser vers le bas (glisser pour rafra\u00eechir) la page \u00ab Mes cours et groupes \u00bb."
+    },
     "test": "le test",
     "back": "Retour",
     "Synchronize": "Synchroniser",
@@ -73,12 +157,6 @@
         "users": "Utilisateur",
         "deleting_files": "Suppression des fichiers",
         "downloadOnStart": "T\u00e9l\u00e9charger les favoris au d\u00e9marrage"
-    },
-    "info": {
-        "title": "Info",
-        "guide": "Guide",
-        "instructions1": "Lorsque vous \u00eates sur la page d'accueil \u00ab Mes cours et groupes \u00bb, vous pouvez marquer les cours et les groupes comme \u00e9tant \u00ab disponibles hors ligne \u00bb. Ils sont alors signal\u00e9s par un nuage gris. Une fois les fichiers synchronis\u00e9s, le nuage devient bleu.",
-        "instructions2": "La synchronisation d\u00e9marre automatiquement \u00e0 chaque fois que l'application est lanc\u00e9e ou qu'un cours est marqu\u00e9 comme disponible hors ligne. Vous pouvez \u00e9galement lancer la synchronisation manuelle en faisant glisser vers le bas (glisser pour rafra\u00eechir) la page \u00ab Mes cours et groupes \u00bb."
     },
     "logout": {
         "title": "D\u00e9connexion",
@@ -162,15 +240,6 @@
         "open_downloads_text_sng": "Le t\u00e9l\u00e9chargement de ce favori a \u00e9chou\u00e9 parce que l'application \u00e9tait ferm\u00e9e :",
         "open_downloads_text_plr": "Le t\u00e9l\u00e9chargement de ces NUM favoris a \u00e9chou\u00e9 parce que l'application a \u00e9t\u00e9 ferm\u00e9e :"
     },
-    "login": {
-        "title": "Connexion",
-        "hello": "Bienvenue sur ILIAS Pegasus !",
-        "instructions": "Choisissez votre institution",
-        "instructions2": "Choisissez votre institution",
-        "login": "Connexion",
-        "offline_title": "Pas de connexion Internet",
-        "offline_content": "Votre appareil doit \u00eatre connect\u00e9 \u00e0 Internet pour que vous puissiez vous connecter."
-    },
     "object_type": {
         "crs": "Cours",
         "crsr": "R\u00e9f\u00e9rence du cours",
@@ -244,14 +313,6 @@
                 "too_far_away": "Vous \u00eates trop loin du lieu d'apprentissage pour voir cet accord\u00e9on"
             }
         }
-    },
-    "fallback": {
-        "browser": "Vous quittez l'application ILIAS ",
-        "browser_ok": "Ok, c'est parti !",
-        "browser_no": "Non, revenir !",
-        "loading": "Lieu d'apprentissage",
-        "loading_subtitle": "Attendez une minute. Si le lieu d'apprentissage contient beaucoup de contenu, le t\u00e9l\u00e9chargement peut prendre un certain temps.",
-        "synchronization": "Veuillez patienter quelques secondes pendant que nous synchronisons avec ILIAS\u2026"
     },
     "onboarding": {
         "title1": "Avec l'aide de cette application, vous pouvez :",

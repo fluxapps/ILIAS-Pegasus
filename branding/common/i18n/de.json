@@ -27,6 +27,7 @@
     "courses": "Kurse",
     "map": "Karte",
     "content": "Inhalt",
+    "Version": "Version",
     "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
@@ -77,12 +78,6 @@
         "users": "Benutzer*innen",
         "deleting_files": "Dateien werden gelöscht",
         "downloadOnStart": "Favoriten bei Start der App laden"
-    },
-    "info": {
-        "title": "Info",
-        "guide": "Anleitung",
-        "instructions1": "Wenn du auf der Startseite 'Meine Kurse & Gruppen' bist, kannst du die Kurse und Gruppen als offline verfügbar markieren. Sie werden mit einer grauen Wolke gekennzeichnet. Sobald die Dateien synchronisiert wurden, wird die Wolke blau.",
-        "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder, wenn ein Kurs als offline verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch ein Herunterziehen (Pull to Refresh) der Seite 'Meine Kurse & Gruppen'."
     },
     "logout": {
         "title": "Logout",
@@ -292,5 +287,50 @@
         "datasecurity3": "ILIAS Pegasus ist ein Open Source Projekt. Wenn Du Dich selbst überzeugen möchtest, was die App tut, dann kannst Du hier den Code einsehen:",
         "next":"Weiter",
         "start": "Los geht's"
-      }
+      },
+      "info": {
+        "title": "Info",
+        "guide": "Anleitung",
+        "instructions1": "Wenn du auf der Startseite 'Meine Kurse & Gruppen' bist, kannst du die Kurse und Gruppen als offline verfügbar markieren. Sie werden mit einer grauen Wolke gekennzeichnet. Sobald die Dateien synchronisiert wurden, wird die Wolke blau.",
+        "instructions2": "Die Synchronisation startet automatisch bei jedem Start der App oder, wenn ein Kurs als offline verfügbar markiert wurde. Manuell kann die Synchronisation ebenfalls gestartet werden durch ein Herunterziehen (Pull to Refresh) der Seite 'Meine Kurse & Gruppen'.",
+        "version-card": {
+            "title": "Basierend auf ILIAS-Pegasus",
+            "content": "Version"
+        },
+        "reporting-card": {
+            "title": "Anregungen und Hinweise zu Fehlern",
+            "content": "Hast du einen Fehler gefunden? Bitte hilf uns die App zu verbessern. Melde dich bei"
+        },
+        "reporting-card-zwh": {
+            "subtitle": "Bereitstellung und Design",
+            "content": "Ansprechpartnerin"
+        },
+        "content-card": {
+            "title": "Inhaltshinweis",
+            "content": "Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich. Für die Optimierung der App werden Nutzungsdaten anonymisiert protokolliert und ausgewertet."
+        },
+        "stura-card": {
+            "title": "Studierendenrat der",
+            "subtitle": "Finanzierung",
+            "content": "Die Spezifikation und die Entwicklung der ersten Version der App wurden finanziert durch das Studierendenvorschlagsbudget des Studierendenrates der Universität Freiburg."
+        },
+        "freiburg-card": {
+            "title": "Rechenzentrum",
+            "subtitle": "Projektleitung",
+            "content": "Das Rechenzentrum der Universität Freiburg hat die Spezifikations- und Umsetzungsphase der App geleitet."
+        },
+        "marburg-card": {
+            "title": "Hochschulrechenzentrum",
+            "subtitle": "Verantwortlich für das ILIAS RESTPlugin",
+            "content": "Das Hochschulrechenzentrum der Philipps-Universität Marburg ermöglicht mit dem ILIAS RESTPlugin die Schnittstelle zu ILIAS."
+        },
+        "sig-card": {
+            "subtitle": "Community und Koordination Weiterentwicklung",
+            "content":  "Die Special Interest Group (SIG) ILIAS Mobile ist verantwortlich für die Koordination der Weiterentwicklung der App und bietet einen Raum für Diskussionen rund um die App."
+        },
+        "sturai-card": {
+            "subtitle": "App-Entwicklung & Wartung",
+            "content": "Die App wurde umgesetzt und wird gewartet durch die studer + raimann ag, IT- and Learning-Solutions."
+        }
     }
+}

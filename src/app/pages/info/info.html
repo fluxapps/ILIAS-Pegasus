@@ -29,17 +29,17 @@
             <ion-card-title>{{this.appName | async}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <p>Basierend auf ILIAS-Pegasus</p>
-            <p>Version {{this.version | async}}&nbsp;({{this.versionCode | async}})</p>
+            <p>{{'info.version-card.title' | translate}}</p>
+            <p>{{'info.version-card.content' | translate}} {{this.version | async}}&nbsp;({{this.versionCode | async}})</p>
         </ion-card-content>
     </ion-card>
 
     <ion-card class="reporting-card">
         <ion-card-header>
-            <ion-card-title>Anregungen und Hinweise zu Fehlern</ion-card-title>
+            <ion-card-title>{{'info.reporting-card.title' | translate}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <p>Hast du einen Fehler gefunden? Bitte hilf uns die App zu verbessern. Melde dich bei:</p>
+            <p>{{'info.reporting-card.content' | translate}}:</p>
             <a (click)="browse('mailto:support@ilias-pegasus.de')">support@ilias-pegasus.de</a>
         </ion-card-content>
     </ion-card>
@@ -47,10 +47,10 @@
     <ion-card class="reporting-card-zwh">
         <ion-card-header>
             <ion-card-title>Zentralstelle für die Weiterbildung im Handwerk e. V.</ion-card-title>
-            <ion-card-subtitle>Bereitstellung und Design </ion-card-subtitle>
+            <ion-card-subtitle>{{'info.reporting-card-zwh.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            Ansprechpartnerin: <br>
+            {{'info.reporting-card-zwh.content' | translate}}: <br>
             Anna Wunderle (UX & UI Design) <br>
             Tel: 0211/302009-56 <br>
             <a (click)="browse('mailto:awunderle@zwh.de')">awunderle@zwh.de</a>
@@ -66,10 +66,10 @@
     <ion-card class="reporting-card-iq">
         <ion-card-header>
             <ion-card-title>Zentralstelle für die Weiterbildung im Handwerk e. V.</ion-card-title>
-            <ion-card-subtitle>Bereitstellung und Design </ion-card-subtitle>
+            <ion-card-subtitle>{{'info.reporting-card-zwh.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            Ansprechpartnerin: <br>
+            {{'info.reporting-card-zwh.content' | translate}}: <br>
             Anna Wunderle (UX & UI Design) <br>
             Tel: 0211/302009-23 <br>
             <a (click)="browse('mailto:mutiq@zwh.de')">mutiq@zwh.de</a>
@@ -89,10 +89,10 @@
     <!--KARTE INHALT-->
     <ion-card>
         <ion-card-header>
-            <ion-card-title>Inhaltshinweis</ion-card-title>
+            <ion-card-title>{{'info.content-card.title' | translate}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich. Für die Optimierung der App werden Nutzungsdaten anonymisiert protokolliert und ausgewertet.</p>
+            <p>{{'info.content-card.content' | translate}}</p>
         </ion-card-content>
     </ion-card>
 
@@ -100,11 +100,11 @@
     <ion-card class="stura-card">
         <img src="assets/img/stura.jpg">
         <ion-card-header>
-            <ion-card-title>Studierendenrat der Universität Freiburg</ion-card-title>
-            <ion-card-subtitle>Finanzierung</ion-card-subtitle>
+            <ion-card-title>{{'info.stura-card.title' | translate}} Universität Freiburg</ion-card-title>
+            <ion-card-subtitle>{{'info.stura-card.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <p>Die Spezifikation und die Entwicklung der ersten Version der App wurden finanziert durch das Studierendenvorschlagsbudget des Studierendenrates der Universität Freiburg.</p>
+            <p>{{'info.stura-card.content' | translate}}</p>
         </ion-card-content>
         <div>
             <ion-button color="primary" fill="clear" (click)="browse('https://www.stura.uni-freiburg.de')">
@@ -118,11 +118,11 @@
     <ion-card class="freiburg-card">
         <img src="assets/img/unifrei.jpg">
         <ion-card-header>
-            <ion-card-title>Rechenzentrum Albert-Ludwigs-Universität Freiburg</ion-card-title>
-            <ion-card-subtitle>Projektleitung</ion-card-subtitle>
+            <ion-card-title>{{'info.freiburg-card.title' | translate}} Albert-Ludwigs-Universität Freiburg</ion-card-title>
+            <ion-card-subtitle>{{'info.freiburg-card.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <p>Das Rechenzentrum der Universität Freiburg hat die Spezifikations- und Umsetzungsphase der App geleitet.</p>
+            <p>{{'info.freiburg-card.content' | translate}}</p>
         </ion-card-content>
         <div>
             <ion-button color="primary" fill="clear" (click)="browse('https://www.rz.uni-freiburg.de')">
@@ -136,11 +136,11 @@
     <ion-card class="marburg-card">
         <img src="assets/img/unimar.png">
         <ion-card-header>
-            <ion-card-title>Hochschulrechenzentrum Philipps-Universität Marburg</ion-card-title>
-            <ion-card-subtitle>Verantwortlich für das ILIAS RESTPlugin</ion-card-subtitle>
+            <ion-card-title>{{'info.marburg-card.title' | translate}} Philipps-Universität Marburg</ion-card-title>
+            <ion-card-subtitle>{{'info.marburg-card.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <p>Das Hochschulrechenzentrum der Philipps-Universität Marburg ermöglicht mit dem ILIAS RESTPlugin die Schnittstelle zu ILIAS.</p>
+            <p>{{'info.marburg-card.content' | translate}}</p>
         </ion-card-content>
         <div>
             <ion-button color="primary" fill="clear" (click)="browse('https://www.uni-marburg.de/hrz')">
@@ -154,10 +154,10 @@
     <ion-card class="sig-card">
         <ion-card-header>
             <ion-card-title>ILIAS SIG Mobile</ion-card-title>
-            <ion-card-subtitle>Community und Koordination Weiterentwicklung</ion-card-subtitle>
+            <ion-card-subtitle>{{'info.sig-card.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <p>Die Special Interest Group (SIG) ILIAS Mobile ist verantwortlich für die Koordination der Weiterentwicklung der App und bietet einen Raum für Diskussionen rund um die App.</p>
+            <p>{{'info.sig-card.content' | translate}}</p>
         </ion-card-content>
         <div>
             <ion-button color="primary" fill="clear" (click)="browse('https://www.ilias.de/docu/goto_docu_grp_5182.html')">
@@ -172,10 +172,10 @@
         <img src="assets/img/sturai.png">
         <ion-card-header>
             <ion-card-title>studer + raimann ag</ion-card-title>
-            <ion-card-subtitle>App-Entwicklung & Wartung</ion-card-subtitle>
+            <ion-card-subtitle>{{'info.sturai-card.subtitle' | translate}}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <p>Die App wurde umgesetzt und wird gewartet durch die studer + raimann ag, IT- and Learning-Solutions.</p>
+            <p>{{'info.sturai-card.content' | translate}}</p>
         </ion-card-content>
         <div>
             <ion-button color="primary" fill="clear" (click)="browse('https://www.studer-raimann.ch')">
