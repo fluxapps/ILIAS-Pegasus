@@ -30,6 +30,7 @@ import { ObjectListNavParams } from "../object-list/object-list.nav-params";
 @Component({
     selector: "page-object-details",
     templateUrl: "object-details.html",
+    styleUrls: ["object-details.scss"]
 })
 export class ObjectDetailsPage {
 

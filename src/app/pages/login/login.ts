@@ -12,7 +12,8 @@ import { ThemeProvider } from "../../providers/theme/theme.provider";
 import { SynchronizationService } from "../../services/synchronization.service";
 
 @Component({
-    templateUrl: "login.html"
+    templateUrl: "login.html",
+    styleUrls: ["./login.scss"]
 })
 export class LoginPage implements ViewWillEnter {
 

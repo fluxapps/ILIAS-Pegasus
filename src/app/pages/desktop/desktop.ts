@@ -17,6 +17,7 @@ import { LINK_BUILDER, LinkBuilder } from "../../services/link/link-builder.serv
 @Component({
     selector: "page-desktop",
     templateUrl: "desktop.html",
+    styleUrls: ["desktop.scss"]
 })
 export class DesktopPage {
 

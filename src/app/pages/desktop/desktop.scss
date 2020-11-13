@@ -1,0 +1,37 @@
+.page_desktop {
+    --background: var(--custom-background, var(--ion-background-color));
+}
+
+.tile {
+    opacity: 0.9;
+    border-radius: var(--page-desktop-border-radius, 2%);
+    border: 
+        var(--page-desktop-border-color, transparent)
+        solid 
+        var(--page-desktop-border-width, 0px);
+
+    object {
+        margin: 10px auto;
+    }
+}
+
+.tile-image {
+    height: auto;
+    width: var(--page-desktop-tile-icon-width, 60%);
+    margin: 0.5em auto;
+    display: block;
+    pointer-events: none;
+}
+
+
+.tile4 {
+    display: var(--page-desktop-tile-4-display, block);
+}
+
+.tile5 {
+    display: var(--page-desktop-tile-4-display, block);
+}
+
+.tile-title{
+    color: var(--page-desktop-text-color, rgba(0,0,0,0.8)) !important;
+}

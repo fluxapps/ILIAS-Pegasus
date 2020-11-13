@@ -7,7 +7,8 @@ import { BLOCK_SERVICE, BlockService } from "../../services/block.service";
 import { LearnplaceNavParams } from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
-    templateUrl: "content.html"
+    templateUrl: "content.html",
+    styleUrls: ["content.scss"]
 })
 export class ContentPage implements ViewWillEnter, ViewDidLeave, OnDestroy {
 

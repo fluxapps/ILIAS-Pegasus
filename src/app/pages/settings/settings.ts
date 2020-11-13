@@ -22,7 +22,8 @@ import { Logging } from "../../services/logging/logging.service";
 
 @Component({
     selector: "page-settings",
-    templateUrl: "settings.html"
+    templateUrl: "settings.html",
+    styleUrls: ["settings.scss"]
 })
 export class SettingsPage implements OnInit, OnDestroy {
 

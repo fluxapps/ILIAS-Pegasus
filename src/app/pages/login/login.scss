@@ -1,0 +1,76 @@
+.page_login {
+    --background: var(--custom-background, var(--ion-color-primary));
+    --color: var(--page-login-color, var(--ion-color-primary-contrast));
+    line-height: 1.8em;
+
+    text-align: center;
+}
+
+#version-if-footer {
+    font-size: 1em;
+    opacity: 0.4;
+}
+
+.huge-login-header {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    font-weight: 800;
+    font-size: 3.0vh;
+    color: var(--ion-color-primary-contrast);
+}
+
+.login-top-logo-row{
+    height: 30vh;
+    > img {
+        height: 100%;
+    }
+}
+
+.login-welcome-row{
+    height: 10vh;
+}
+
+.login-institution-row {
+    height: 30vh;
+}
+
+.login-version-row{
+    height: 30vh;
+    flex-direction: column-reverse;
+
+    .login-bottom-image {
+        height: 100%;
+        margin: 0 auto;
+        display: var(--page-login-bottom-image-display, none);
+    }
+
+    .login-version-row-img-col {
+        display: flex;
+    }
+}
+
+.login-top-image{
+    /*margin-top: var(--ion-safe-area-top, 0);*/
+    height: 70vw;
+    width: 70vw;
+    @media screen and (orientation:landscape) {
+        height: 30vh;
+        width: 30vh;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ion-item {
+    --ion-color-primary: rgba(255,255, 255, 0);
+}

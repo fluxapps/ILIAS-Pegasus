@@ -6,17 +6,21 @@
     // set to "true" or "false"
     --theme-from-plugin: "false";
 
-    // Custom Tab Colorr
-    --ion-background-color: linear-gradient(to top, #017C8E, #AFD0CA);
+    // Custom Tab Color
+    --ion-background-color: #f6f6f6;
+    --ion-background-color-custom: linear-gradient(to top, #017C8E, #AFD0CA);
     --ion-text-color: white !important;
     ion-card {
         border-radius: 0;
         border-color: var(--ion-color-primary-contrast);
         border-style: solid;
-        border-width: 3px;
+        border-width: 0.25em;
         --color: var(--ion-color-primary-contrast);
         --border-radius: 0;
     }
+
+    // colors
+    --ion-item-border-color: transparent;
 
     --ion-color-primary: #017C8E;
     --ion-color-primary-rgb: 1, 124, 142;

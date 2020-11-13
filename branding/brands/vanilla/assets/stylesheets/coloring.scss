@@ -10,7 +10,7 @@
     // whether the color-values are synchronized with the setting in the pegasus-helper-plugin
     // set to "true" or "false"
     --theme-from-plugin: "true";
-
+    --ion-background-color: var(--ion-color-light);
     // font
     --ion-font-family:  "Raleway", sans-serif;
 

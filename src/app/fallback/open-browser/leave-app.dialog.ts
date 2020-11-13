@@ -14,7 +14,8 @@ import { ViewController } from "@ionic/core";
 
 
 @Component({
-    templateUrl: "leave-app.dialog.html"
+    templateUrl: "leave-app.dialog.html",
+    styleUrls: ["leave-app.scss"]
 })
 export class LeaveAppDialog {
 

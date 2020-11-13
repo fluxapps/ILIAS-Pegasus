@@ -10,7 +10,8 @@ import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     selector: "map",
-    templateUrl: "map.html"
+    templateUrl: "map.html",
+    styleUrls: ["map.scss"]
 })
 export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDestroy {
 

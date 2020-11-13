@@ -8,7 +8,8 @@ export enum LoadingPageType {
 }
 
 @Component({
-    templateUrl: "loading.html"
+    templateUrl: "loading.html",
+    styleUrls: ["loading.scss"]
 })
 export class LoadingPage {
     // the type of object that is being loaded

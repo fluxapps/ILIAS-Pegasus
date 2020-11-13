@@ -1,0 +1,36 @@
+.page_object_list {
+    --background: var(--custom-background, var(--ion-background-color));
+}
+
+.object-presenter-icon{
+    height: 3rem;
+}
+
+.loading-text {
+    padding: 0.5em 0 0.5em 0.5em;
+}
+
+.badge-link {
+    position: absolute;
+    top: 5%;
+    left: 40%;
+}
+
+.offline-image{
+    width: 20%;
+    display: block;
+    margin: 0 auto;
+    filter: var(--page-object-list-image-filter, brightness(1));
+}
+
+ion-card {
+    margin: 1em;
+}
+
+ion-icon {
+    color: var(--page-object-list-icon-color, var(--ion-color-primary));
+}
+
+ion-list {
+    background: transparent !important;
+}
