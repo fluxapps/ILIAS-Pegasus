@@ -1,0 +1,39 @@
+.page_menu {
+    height: 100%;
+    --background: var(--page-menu-background-color, var(--ion-color-primary)) !important;
+}
+
+.menu-bottom-image{
+    display: var(--page-menu-bottom-image-display, none);
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    transform: rotate(270deg);
+
+    @media screen and (min-width: 576px) {
+        right: 0;
+        left: unset;
+        width: 20%;
+        transform: rotate(180deg);
+    }
+
+    @media screen and (min-width: 1200px) {
+        width: 15%;
+    }
+}
+
+ion-list{
+    padding-top: 0;
+    padding-bottom: 0;
+    background: transparent !important;
+}
+
+ion-item {
+    color: var(--page-menu-background-color-contrast, var(--ion-color-primary-contrast));
+}
+
+ion-icon {
+    // --color: var(--page-menu-icon-color) !important;
+}

@@ -33,20 +33,16 @@
                     </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
-                <ion-card button="true" class="tile tile-repository ion-no-margin" (click)="openILIASRepository()">
-                    <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()" (click)="openILIASRepository()"></object>
-                    <ion-card-header class="tile-title ion-text-uppercase">
-                        <ion-label>{{ 'repository' | translate}}</ion-label>
-                    </ion-card-header>
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile4">
+                <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()">
+                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()" (click)="openILIASRepository()"></object>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
-                <ion-card button="true" class="tile tile-menu ion-no-margin" [routerLink]="['/tabs/menu']">
-                    <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
-                    <ion-card-header class="tile-title ion-text-uppercase">
-                        <ion-label>{{ 'menu' | translate}}</ion-label>
-                    </ion-card-header>
+            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile5">
+                <ion-card button="true" class="tile ion-no-margin" [routerLink]="['/tabs/menu']">
+                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'menu' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
         </ion-row>

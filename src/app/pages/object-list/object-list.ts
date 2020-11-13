@@ -57,6 +57,7 @@ interface PageState {
 @Component({
     selector: "page-object-list",
     templateUrl: "object-list.html",
+    styleUrls: ["object-list.scss"]
 })
 export class ObjectListPage {
     state: PageState = {

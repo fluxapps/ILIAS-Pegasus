@@ -19,6 +19,7 @@ export interface ILIASInstallation {
   readonly apiKey: string;
   readonly apiSecret: string;
   readonly accessTokenTTL: number;
+  readonly privacyPolicy: string;
 }
 
 export const CONFIG_PROVIDER: InjectionToken<ConfigProvider> = new InjectionToken<ConfigProvider>("Token for ConfigProvider");
@@ -70,12 +71,23 @@ export interface ConfigProvider {
 
   async loadConfig(): Promise<ILIASConfig> { return this.config }
 
-  async loadInstallation(installationId: number): Promise<ILIASInstallation> {
+  async loadInstallation(installationId: number): Promise<Readonly<ILIASInstallation>> {
 
-     const iliasConfig: ILIASConfig = await this.config;
+    const iliasConfig: ILIASConfig = await this.config;
 
-    const installation: ILIASInstallation | undefined = iliasConfig.installations
+    let installation: ILIASInstallation | undefined = iliasConfig.installations
       .find(it => it.id == installationId);
+
+    installation = {
+      id: installation.id,
+      title: installation.title,
+      url: installation.url,
+      clientId: installation.clientId,
+      apiKey: installation.apiKey,
+      apiSecret: installation.apiSecret,
+      accessTokenTTL: installation.accessTokenTTL,
+      privacyPolicy: installation.privacyPolicy ? installation.privacyPolicy : "https://www.ilias-pegasus.de/datenschutz/"
+    };
 
     if (isDefined(installation)) {
       return installation;
@@ -109,7 +121,11 @@ const configSchema: object = {
           "clientId": {"type": "string"},
           "apiKey": {"type": "string"},
           "apiSecret": {"type": "string"},
-          "accessTokenTTL": {"type": "number"}
+          "accessTokenTTL": {"type": "number"},
+          "privacyPolicy": {
+            "type": "string",
+            "default": "https://www.ilias-pegasus.de/datenschutz/"
+          }
         },
         "required": ["id", "title", "url", "clientId", "apiKey", "apiSecret", "accessTokenTTL"]
       }

@@ -3,7 +3,8 @@ import { Component, ViewChild } from "@angular/core";
 import { IonSlides, NavController } from "@ionic/angular";
 
 @Component({
-    templateUrl: "onboarding.html"
+    templateUrl: "onboarding.html",
+    styleUrls: ["./onboarding.scss"]
 })
 export class OnboardingPage {
 

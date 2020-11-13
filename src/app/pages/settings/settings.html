@@ -63,8 +63,8 @@
                     <ion-label [color]="quotaColor | async">{{ 'settings.total' | translate }}:
                         {{ totalSize | async | fileSize }} / {{ settings.quotaSize*1000*1000 | fileSize }}
                     </ion-label>
-                    <ion-button class="ilias-list-action-button" slot="end" (click)="deleteAllFilesPrompt()">
-                        <ion-icon class="trash-icon" slot="icon-only" src="assets/icon/bin.svg" color="primary"></ion-icon>
+                    <ion-button class="ilias-list-action-button" class="trash-button" slot="end" (click)="deleteAllFilesPrompt()">
+                        <ion-icon class="trash-icon" slot="icon-only" src="assets/icon/bin.svg"></ion-icon>
                     </ion-button>
                 </ion-item>
             </ion-item-group>

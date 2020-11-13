@@ -1,3 +1,39 @@
+:root {
+    --custom-background: var(--ion-background-color-custom);
+
+    // login
+    --page-login-bottom-row-dispay: none;
+
+    // desktop
+    --page-desktop-text-color: var(--ion-color-primary-contrast);
+    --page-desktop-border-radius: 0px;
+    --page-desktop-border-width: 5px;
+    --page-desktop-border-color: white;
+    --page-desktop-icon-width: 60%;
+    --page-desktop-tile-4-display: none;
+    --page-desktop-tile-5-display: none;
+
+    // object-list
+    --page-object-list-image-filter: brightness(3);
+    --page-object-list-icon-color: var(--ion-color-primary-contrast);
+
+    // menu
+    --page-menu-background-color: var(--ion-background-color-custom);
+    --page-menu-icon-color: var(--ion-color-grey);
+    --page-menu-bottom-image-display: none;
+
+    // info
+    --page-version-card-custom: block;
+    --page-reporting-card-community: none;
+    --page-reporting-card-zwh: block;
+    --page-info-card-community: none;
+
+    // tabs
+    --tabs-background-color: var(--ion-color-primary);
+    --tabs-icon-color: var(--ion-color-light-grey);
+    --tabs-icon-color-selected: var(--ion-color-primary-contrast);
+}
+
 //MARK: Animation
 
 @keyframes bounce {

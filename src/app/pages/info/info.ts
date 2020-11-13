@@ -13,6 +13,7 @@ import {AppVersion} from "@ionic-native/app-version/ngx";
 @Component({
   selector: "page-info",
   templateUrl: "info.html",
+  styleUrls: ["info.scss"]
 })
 export class InfoPage {
 

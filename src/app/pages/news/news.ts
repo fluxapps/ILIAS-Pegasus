@@ -25,6 +25,7 @@ import { first } from "rxjs/operators";
 @Component({
     selector: "newsPresenters",
     templateUrl: "news.html",
+    styleUrls: ["news.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsPage

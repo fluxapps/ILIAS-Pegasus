@@ -9,7 +9,8 @@
     //
     //
     // Custom Tab Color
-    --ion-background-color: linear-gradient(to top, #004d9f, #9bc8e5);
+    --ion-background-color: #f7f7f7;
+    --ion-background-color-custom: linear-gradient(to top, #004d9f, #9bc8e5);
     --ion-text-color: white !important;
 
     ion-card {
@@ -20,6 +21,7 @@
         --color: var(--ion-color-primary-contrast);
         --border-radius: 0;
     }
+
 
     --ion-color-primary: #004D9F;
     --ion-color-primary-rgb: 0, 77, 159;
