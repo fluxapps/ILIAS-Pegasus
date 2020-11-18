@@ -11,6 +11,7 @@ import { Settings } from "./models/settings";
 import { User } from "./models/user";
 import { ObjectListPage } from "./pages/object-list/object-list";
 import { AuthenticationProvider } from "./providers/authentication.provider";
+import { NetworkProvider } from "./providers/network.provider";
 import { ThemeProvider } from "./providers/theme/theme.provider";
 import { Logger } from "./services/logging/logging.api";
 import { Logging } from "./services/logging/logging.service";
@@ -53,6 +54,7 @@ export class AppComponent {
         private readonly navCtrl: NavController,
         private readonly toastCtrl: ToastController,
         private readonly translate: TranslateService,
+        private readonly networkProvider: NetworkProvider
     ) {
         this.splashScreen.hide();
         this.initializeApp();
@@ -80,6 +82,9 @@ export class AppComponent {
             } else {
                 await this.presentOnboardingModal();
             }
+
+            // Network events
+            this.networkProvider.initNetworkEvents();
 
             this.log.info(() => "App component init successful");
         } catch (error) {
