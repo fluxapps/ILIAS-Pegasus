@@ -1,5 +1,6 @@
 /** angular */
 import { Component, ViewChild } from "@angular/core";
+import { AppVersion } from "@ionic-native/app-version/ngx";
 import { IonSlides, NavController } from "@ionic/angular";
 
 @Component({
@@ -7,13 +8,16 @@ import { IonSlides, NavController } from "@ionic/angular";
     styleUrls: ["./onboarding.scss"]
 })
 export class OnboardingPage {
-
+    readonly appName: Promise<string>;
     @ViewChild(IonSlides, {"static": false})
     slides: IonSlides;
 
     constructor(
         private readonly navCtrl: NavController,
-    ) { }
+        appVersion: AppVersion,
+    ) {
+        this.appName = appVersion.getAppName();
+    }
 
     async nextSlide(): Promise<void> {
         const isEnd: boolean = await this.slides.isEnd();

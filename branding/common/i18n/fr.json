@@ -9,7 +9,7 @@
         "ok": "S\u00e9lectionner",
         "dismiss": "Annuler",
         "title": "Connexion",
-        "hello": "Bienvenue sur ILIAS Pegasus !",
+        "hello": "Bienvenue sur {{app_name}}!",
         "instructions": "Choisissez votre institution",
         "instructions2": "Choisissez votre institution",
         "login": "Connexion",
@@ -320,12 +320,12 @@
         "function2": "rendre vos cours et fichiers disponibles hors ligne.",
         "function3": "vous connecter une bonne fois pour toute.",
         "title2": "Une application d\u00e9centralis\u00e9e",
-        "concept1": "L'application Pegasus vous connecte au syst\u00e8me ILIAS de votre \u00e9tablissement, universit\u00e9 ou \u00e9cole.",
+        "concept1": "L'application {{app_name}} vous connecte au syst\u00e8me ILIAS de votre \u00e9tablissement, universit\u00e9 ou \u00e9cole.",
         "concept2": "Si votre \u00e9tablissement n'a pas encore adh\u00e9r\u00e9, contactez-nous",
         "title3": "Vos donn\u00e9es sont en s\u00e9curit\u00e9 !",
         "datasecurity1": "Vos donn\u00e9es sont uniquement enregistr\u00e9es sur votre appareil. L'application ne collecte aucune information personnelle. Si vous voulez en savoir plus, vous trouverez ici la",
         "datasecurity2": "politique de confidentialit\u00e9",
-        "datasecurity3": "ILIAS Pegasus est un projet open source. Si vous voulez voir par vous-m\u00eame comme fonctionne l'application, vous trouverez le code ici :",
+        "datasecurity3": "{{app_name}} est un projet open source. Si vous voulez voir par vous-m\u00eame comme fonctionne l'application, vous trouverez le code ici :",
         "next": "suivant",
         "start": "C'est parti"
     }

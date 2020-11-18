@@ -163,7 +163,7 @@
     },
     "login": {
         "title": "Login",
-        "hello":"Welcome to ILIAS Pegasus!",
+        "hello":"Welcome to {{app_name}}!",
         "instructions":"Choose your institution",
         "instructions2":"Choose your institution",
         "login": "Login",
@@ -271,12 +271,12 @@
         "function2": "make your courses & files available offline.",
         "function3": "log in once and stay logged in.",
         "title2": "A decentralized app",
-        "concept1": "The Pegasus app connects you to the ILIAS installation of your institution, university or school.",
+        "concept1": "The {{app_name}} app connects you to the ILIAS installation of your institution, university or school.",
         "concept2": "If your institution did not join yet, contact us",
         "title3":"Your data is safe!",
         "datasecurity1": "Your data will only be stored on your device. The app does not collect any personal information. If you want to check this in detail, you will find here the",
         "datasecurity2": "privacy policy",
-        "datasecurity3": "ILIAS Pegasus is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
+        "datasecurity3": "{{app_name}} is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
         "next":"next",
         "start": "Let's go"
     },

@@ -6,7 +6,7 @@
         </ion-row>
 
         <ion-row class="ion-padding-top ion-justify-content-center ion-align-items-center login-welcome-row">
-                <h1 class="huge-login-header ion-text-center ion-no-margin">{{ 'login.hello' | translate}}</h1>
+                <h1 class="huge-login-header ion-text-center ion-no-margin">{{ 'login.hello'  | translate:{app_name: (this.appName | async)} }}</h1>
         </ion-row>
         <ion-row class="login-institution-row ion-padding">
             <ion-grid>

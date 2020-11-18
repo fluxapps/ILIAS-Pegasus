@@ -2,14 +2,14 @@
 		<ion-slides pager="false">
 				<ion-slide class="step-one">
 					<img src="assets/img/onboarding_welcome.png" class="logo">
-					<h1>{{ 'onboarding.title1' | translate}}</h1>
+					<h1>{{ 'onboarding.title1' | translate:{app_name: (this.appName | async)} }}</h1>
                     <ion-list detail="false" lines="none">
                         <ion-item>
                             <ion-avatar slot="start">
                                 <img src="assets/icon/icon_file.svg" alt="file object icon"/>
                             </ion-avatar>
                             <ion-text>
-                                {{ 'onboarding.function1' | translate}}
+                                {{ 'onboarding.function1' | translate }}
                             </ion-text>
                         </ion-item>
                         <ion-item>
@@ -17,7 +17,7 @@
                                 <img src="assets/icon/more.svg" alt="more icon">
                             </ion-avatar>
                             <ion-text>
-                                {{ 'onboarding.function2' | translate}}
+                                {{ 'onboarding.function2' | translate }}
                             </ion-text>
                         </ion-item>
                         <ion-item>
@@ -25,7 +25,7 @@
                                 <img class="onboarding-key" src="assets/img/onboarding_key.svg" alt="key icon">
                             </ion-avatar>
                             <ion-text>
-                                {{ 'onboarding.function3' | translate}}
+                                {{ 'onboarding.function3' | translate }}
                             </ion-text>
                         </ion-item>
                     </ion-list>
@@ -36,7 +36,7 @@
                         <img src="assets/img/onboarding_decentralized.png" class="decentral">
                         <figcaption>
                             <h1>{{ 'onboarding.title2' | translate}}</h1>
-                            <p class="concept1">{{ 'onboarding.concept1' | translate}}</p>
+                            <p class="concept1">{{ 'onboarding.concept1' | translate:{app_name: (this.appName | async)} }}</p>
                             <p class="concept2">{{ 'onboarding.concept2' | translate}}
                                 <ion-label href="mailto:support@ilias-pegasus.de">support@ilias-pegasus.de</ion-label>
                             </p>
@@ -53,7 +53,7 @@
 							<a class="link" href="https://www.ilias-pegasus.de/datenschutz/">{{ 'onboarding.datasecurity2' | translate}}</a>
 						</p>
 						<p class="ion-text-center">
-							{{ 'onboarding.datasecurity3' | translate}}
+							{{ 'onboarding.datasecurity3' | translate:{app_name: (this.appName | async)} }}
                             <a class="link" href="https://github.com/studer-raimann/ILIAS-Pegasus">Github</a>
 						</p>
 					</ion-text>

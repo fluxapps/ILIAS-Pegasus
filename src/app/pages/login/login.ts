@@ -17,6 +17,7 @@ import { SynchronizationService } from "../../services/synchronization.service";
 })
 export class LoginPage implements ViewWillEnter {
 
+    readonly appName: Promise<string>;
     readonly installations: Array<ILIASInstallation> = [];
 
     /**
@@ -28,7 +29,7 @@ export class LoginPage implements ViewWillEnter {
     constructor(private readonly platform: Platform,
                 private readonly sync: SynchronizationService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ILIASConfigProvider,
-                private readonly appVersionPlugin: AppVersion,
+                private readonly appVersion: AppVersion,
                 private readonly auth: AuthenticationProvider,
                 private readonly alertCtr: AlertController,
                 private readonly translate: TranslateService,
@@ -42,7 +43,9 @@ export class LoginPage implements ViewWillEnter {
           this.installationId = this.installations[0].id;
       });
 
-      this.appVersionStr = this.appVersionPlugin.getVersionNumber();
+      this.appName = appVersion.getAppName();
+
+      this.appVersionStr = this.appVersion.getVersionNumber();
     }
 
     ionViewWillEnter(): void {
