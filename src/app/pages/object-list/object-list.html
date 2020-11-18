@@ -1,22 +1,24 @@
 <ion-header id="header-object-list">
     <ion-toolbar color="primary" >
         <ion-buttons slot="start">
-            <ion-button *ngIf="checkPageState({desktop: false})" (click)="navigateBackInHierarchy()"><ion-icon name="arrow-back"></ion-icon></ion-button>
+            <ion-button *ngIf="checkPageState({desktop: false})" (click)="navigateBackInHierarchy()">
+                <ion-icon color="light" name="arrow-back"></ion-icon>
+            </ion-button>
             <!--ion-back-button text=""></--ion-back-button-->
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end" *ngIf="parent !== undefined">
             <ion-button *ngIf="!parent.isFavorite" (click)="executeSetFavoriteValueAction(parent, true);$event.stopPropagation();">
-                    <ion-icon slot="icon-only" src="./assets/icon/favorites-outline.svg"></ion-icon>
+                    <ion-icon color="light" slot="icon-only" src="./assets/icon/favorites-outline.svg"></ion-icon>
             </ion-button>
             <ion-button *ngIf="parent.isFavorite === 1" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation();">
-                    <ion-icon slot="icon-only" src="./assets/icon/favorites.svg"></ion-icon>
+                    <ion-icon color="light" slot="icon-only" src="./assets/icon/favorites.svg"></ion-icon>
             </ion-button>
             <ion-button *ngIf="parent.isFavorite === 2" (click)="executeSetFavoriteValueAction(parent, false);$event.stopPropagation()">
-                    <ion-icon slot="icon-only" name="md-download"></ion-icon>
+                    <ion-icon color="light" slot="icon-only" name="md-download"></ion-icon>
             </ion-button>
             <ion-button (click)="showActions(parent);$event.stopPropagation();">
-                    <ion-icon slot="icon-only" name="md-more"></ion-icon>
+                    <ion-icon color="light" slot="icon-only" name="md-more"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
