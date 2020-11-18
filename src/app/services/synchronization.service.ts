@@ -1,7 +1,7 @@
 /** angular */
 import { Inject, Injectable } from "@angular/core";
 import { FileEntry } from "@ionic-native/file";
-import { AlertController } from "@ionic/angular";
+import { AlertController, Events } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { from, merge, Observable } from "rxjs";
 import { OfflineException } from "../exceptions/OfflineException";
@@ -84,7 +84,12 @@ export class SynchronizationService {
                 @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleLoader,
                 private readonly alertCtr: AlertController,
                 private readonly themeProvider: ThemeProvider,
+                private readonly eventCtrl: Events
     ) {
+        eventCtrl.subscribe("network:online", () => {
+            console.log('Im Online and downloading now');
+            this.loadAllOfflineContent();
+        });
     }
 
     /**

@@ -23,6 +23,10 @@
     filter: var(--page-object-list-image-filter, brightness(1));
 }
 
+.offline-message {
+    color: var(--ion-text-color);
+}
+
 ion-card {
     margin: 1em;
 }

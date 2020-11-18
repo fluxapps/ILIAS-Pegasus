@@ -1,7 +1,7 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import { SafeUrl } from "@angular/platform-browser";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import {ActionSheetController, AlertController, Events, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -108,6 +108,7 @@ export class ObjectListPage {
                 private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
                 private readonly featurePolicy: FeaturePolicyService,
+                private readonly eventCtrl: Events
     ) { }
 
     /* = = = = = = = *
@@ -209,6 +210,23 @@ export class ObjectListPage {
         return true;
     }
 
+    /**
+     * observes the network status and updates on changes
+     */
+    observeNetworkState(): void {
+        this.eventCtrl.subscribe("network:online", () => {
+            const currentState: PageState = this.state;
+            currentState.online = true;
+            this.setPageStateAndRender(currentState);
+        });
+
+        this.eventCtrl.subscribe("network:offline", () => {
+            const currentState: PageState = this.state;
+            currentState.online = false;
+            this.setPageStateAndRender(currentState);
+        });
+    }
+
     /* = = = = = = = = = *
      *  LOADING CONTENT  *
      * = = = = = = = = = */
@@ -226,6 +244,8 @@ export class ObjectListPage {
      * ionic did-enter-event: load content and display result
      */
     async ionViewDidEnter(): Promise<void> {
+        this.observeNetworkState();
+        this.sync.loadAllOfflineContent();
         await this.loadAndRenderContent();
     }
 
@@ -396,7 +416,7 @@ export class ObjectListPage {
     }
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
-        this.updatePageState();
+        // this.updatePageState();
         if(!this.state.online) return;
 
         const actions: Array<ILIASObjectAction> = [];
