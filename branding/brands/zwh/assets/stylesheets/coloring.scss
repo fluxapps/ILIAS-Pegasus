@@ -123,10 +123,10 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --ion-background-color: linear-gradient(to top, #001021, #004F9F);
+        --ion-background-color-custom: linear-gradient(to top, #001021, #004F9F);
 
         ion-tab-bar {
-            --ion-color-primary: #001021;
+            --tabs-background-color: #001021;
         }
 
         /*--ion-color-primary: #00191D;
