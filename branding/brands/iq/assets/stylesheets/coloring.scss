@@ -10,6 +10,7 @@
     --ion-background-color: #f6f6f6;
     --ion-background-color-custom: linear-gradient(to top, #017C8E, #AFD0CA);
     --ion-text-color: white !important;
+
     ion-card {
         border-radius: 0;
         border-color: var(--ion-color-primary-contrast);
@@ -122,10 +123,10 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --ion-background-color: linear-gradient(to top, #00191D, #017C8E);
+        --ion-background-color-custom: linear-gradient(to top, #00191D, #017C8E);
 
         ion-tab-bar {
-            --ion-color-primary: #00191D;
+            --tabs-background-color: #00191D;
         }
 
         /*--ion-color-primary: #00191D;

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:none;stroke:#FFFFFF;stroke-width:3;stroke-miterlimit:10;}
-</style>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
 <g>
-	<path class="st0" d="M8.9,20c-2.3,0-4.2-1.9-4.2-4.2l0,0c0-2.3,1.9-4.2,4.2-4.2h7.3c2.3,0,4.2,1.9,4.2,4.2l0,0
-		c0,2.3-1.9,4.2-4.2,4.2H8.9z"/>
-	<path class="st0" d="M16,20c-2.3,0-4.2-1.9-4.2-4.2l0,0c0-2.3,1.9-4.2,4.2-4.2h7.3c2.3,0,4.2,1.9,4.2,4.2l0,0
-		c0,2.3-1.9,4.2-4.2,4.2H16z"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="M8.828,20.167c-2.302,0-4.167-1.865-4.167-4.167
+		l0,0c0-2.302,1.865-4.167,4.166-4.167h7.282c2.302,0,4.167,1.865,4.167,4.167l0,0c0,2.302-1.865,4.167-4.167,4.167H8.828z"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="M15.892,20.167c-2.303,0-4.167-1.865-4.167-4.167
+		l0,0c0-2.302,1.864-4.167,4.167-4.167h7.277c2.305,0,4.17,1.865,4.17,4.167l0,0c0,2.302-1.865,4.167-4.17,4.167H15.892z"/>
 </g>
 </svg>
