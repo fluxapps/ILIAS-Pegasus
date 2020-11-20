@@ -5,24 +5,28 @@
 .tile {
     opacity: 0.9;
     border-radius: var(--page-desktop-border-radius, 2%);
-    border: 
+    border:
         var(--page-desktop-border-color, transparent)
-        solid 
+        solid
         var(--page-desktop-border-width, 0px);
 
     object {
-        margin: 10px auto;
+        margin: 1em auto;
     }
 }
 
 .tile-image {
-    height: auto;
-    width: var(--page-desktop-tile-icon-width, 60%);
-    margin: 0.5em auto;
-    display: block;
-    pointer-events: none;
+    max-width: 100%;
+    max-height: 100%;
 }
 
+.big-card {
+    height: 25vh;
+}
+
+.small-card {
+    height: 15vh;
+}
 
 .tile4 {
     display: var(--page-desktop-tile-4-display, block);
