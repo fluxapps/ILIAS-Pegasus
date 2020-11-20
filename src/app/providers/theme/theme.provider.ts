@@ -16,20 +16,21 @@ export class ThemeProvider {
     constructor(
         private readonly iconProvider: IconProvider,
         private readonly themeSynch: ThemeSynchronizationService,
+        private readonly cssStyle: CssStyleService
     ) {}
 
     async getIconSrc(key: string): Promise<string | SafeUrl> {
         return this.iconProvider.getIconSrc(key);
     }
 
-    static async setCustomColor(): Promise<void> {
-        if(CssStyleService.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
-            await CssStyleService.setCustomColor();
+    async setCustomColor(): Promise<void> {
+        if(this.cssStyle.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
+            await this.cssStyle.setCustomColor();
         }
     }
 
-    static setDefaultColor(): void {
-        CssStyleService.setDefaultColor();
+    setDefaultColor(): void {
+        this.cssStyle.setDefaultColor();
     }
 
     async loadResources(): Promise<void> {
@@ -39,9 +40,9 @@ export class ThemeProvider {
     async synchronizeAndSetCustomTheme(): Promise<void> {
         if(!window.navigator.onLine) return;
 
-        if(CssStyleService.dynamicThemeEnabled()) {
+        if(this.cssStyle.dynamicThemeEnabled()) {
             await this.themeSynch.synchronize();
-            await ThemeProvider.setCustomColor();
+            await this.setCustomColor();
         }
         await this.loadResources();
     }

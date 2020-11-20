@@ -27,12 +27,13 @@ export class DesktopPage {
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
         @Inject(LINK_BUILDER)
-        private readonly linkBuilder: LinkBuilder
+        private readonly linkBuilder: LinkBuilder,
+        private themeProvider: ThemeProvider
     ) {}
 
     // count the number of loaded SVGs and set theme once all of them are loaded
     async svgLoaded(): Promise<void> {
-        await ThemeProvider.setCustomColor();
+        await this.themeProvider.setCustomColor();
     }
 
     // open repo in Browser inApp for iOS, external for Android

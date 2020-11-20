@@ -36,7 +36,8 @@ export class IconProvider {
         private readonly filesystem: File,
         @Inject(FILESYSTEM_TOKEN) private readonly fsService: Filesystem,
         private readonly webview: WebView,
-        private readonly sanitizer: DomSanitizer
+        private readonly sanitizer: DomSanitizer,
+        private readonly cssStyle: CssStyleService,
     ) {}
 
     async getIconSrc(key: string): Promise<string | SafeUrl> {
@@ -45,19 +46,19 @@ export class IconProvider {
 
         try {
             if (await this.filesystem.checkFile(`${this.filesystem.applicationDirectory}/www/assets/icon/`, `icon_${key}.svg`))
-                return `assets/icon/icon_${key}.svg`;            
+                return `assets/icon/icon_${key}.svg`;
         } catch (err) {
             this.log.warn(() => `Couldn't find icon icon_${key}.svg`);
-            
+
             if (this.src.has(this.defaultIconKey))
                 return this.src.get(this.defaultIconKey);
-            else 
+            else
                 return `assets/icon/icon_${this.defaultIconKey}.svg`;
         }
     }
 
     async loadResources(): Promise<void> {
-        if(CssStyleService.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
+        if(this.cssStyle.dynamicThemeEnabled() && await ThemeSynchronizationService.dynamicThemeAvailable()) {
             const path: string = await this.fileStorage.dirForUser("icons");
             for(let i: number = 0; i < this.icons.length; i++) {
                 const icon: {key: string, loadedName: string}= this.icons[i];

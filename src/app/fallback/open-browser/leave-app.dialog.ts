@@ -28,6 +28,7 @@ export class LeaveAppDialog {
         private readonly nav: NavParams,
         private readonly modalCtrl: ModalController,
         private readonly appVersion: AppVersion,
+        private readonly cssStyle: CssStyleService,
     ) {
         this.params = <LeaveAppDialogNavParams>nav.data;
         this.appName = this.appVersion.getAppName();
@@ -35,8 +36,8 @@ export class LeaveAppDialog {
 
     ionViewWillEnter(): void {
         this.themeIonicContrastColor = "light";
-        if(CssStyleService.customIsSet) {
-            this.themeIonicContrastColor = CssStyleService.customColorContrast ? "light" : "dark";
+        if(this.cssStyle.customIsSet) {
+            this.themeIonicContrastColor = this.cssStyle.customColorContrast ? "light" : "dark";
         }
     }
 

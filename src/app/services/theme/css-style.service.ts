@@ -9,11 +9,11 @@ import {User} from "../../models/user";
     providedIn: "root"
 })
 export class CssStyleService {
-    static customIsSet: boolean;
-    static customColorHex: string;
-    static customColorContrast: boolean;
+    customIsSet: boolean;
+    customColorHex: string;
+    customColorContrast: boolean;
 
-    private static colorNames: Array<string> = [
+    private colorNames: Array<string> = [
         "primary_shade",
         "primary_shade_rgb",
         "primary_normal",
@@ -23,7 +23,7 @@ export class CssStyleService {
         "contrast_shade"
     ];
 
-    private static propertyNames: object = {
+    private propertyNames: object = {
         "primary_shade" : [
             "--ion-color-primary-shade",
             "--ion-color-secondary-shade"
@@ -57,47 +57,49 @@ export class CssStyleService {
         ]
     };
 
+    constructor() {}
+
     /**
      * checks whether the theme should be managed dynamically
      */
-    static dynamicThemeEnabled(): boolean {
-        return CssStyleService.getCSSValueAsBoolean("--theme-from-plugin");
+    dynamicThemeEnabled(): boolean {
+        return this.getCSSValueAsBoolean("--theme-from-plugin");
     }
 
     /**
      * checks whether custom coloring is activated, reads the custom color
      * from settings and changes the css- and csv-colors accordingly
      */
-    static async setCustomColor(): Promise<void> {
-        const themeCols: object = await CssStyleService.getThemeColors();
+    async setCustomColor(): Promise<void> {
+        const themeCols: object = await this.getThemeColors();
 
-        CssStyleService.colorNames.forEach(colorName =>
-            CssStyleService.propertyNames[colorName].forEach(propertyName =>
-                CssStyleService.setCSSValue(propertyName, themeCols[colorName])
+        this.colorNames.forEach(colorName =>
+            this.propertyNames[colorName].forEach(propertyName =>
+                this.setCSSValue(propertyName, themeCols[colorName])
             )
         );
 
-        CssStyleService.setCSVColors("tile-image", themeCols["primary_tint"]);
-        CssStyleService.customIsSet = true;
+        this.setCSVColors("tile-image", themeCols["primary_tint"]);
+        this.customIsSet = true;
     }
 
     /**
      * sets the coloring according to the default settings in the scss-stylesheets
      */
-    static setDefaultColor(): void {
-        CssStyleService.colorNames.forEach(name =>
-            CssStyleService.propertyNames[name].forEach(property =>
+    setDefaultColor(): void {
+        this.colorNames.forEach(name =>
+            this.propertyNames[name].forEach(property =>
                 document.documentElement.style.removeProperty(property)
             )
         );
 
-        CssStyleService.customIsSet = false;
+        this.customIsSet = false;
     }
 
     /**
      * reads a css-value from the root-element
      */
-    private static getCSSValue(name: string): string {
+    private getCSSValue(name: string): string {
         return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     }
 
@@ -105,21 +107,21 @@ export class CssStyleService {
      * converts a css-value from the root-element to a boolean: if the value-string
      * contains true, return true, and false otherwise
      */
-    private static getCSSValueAsBoolean(name: string): boolean {
-        return CssStyleService.getCSSValue(name).includes("true");
+    private getCSSValueAsBoolean(name: string): boolean {
+        return this.getCSSValue(name).includes("true");
     }
 
     /**
      * sets the value of a css-property in the root-element
      */
-    private static setCSSValue(name: string, value: string): void {
+    private setCSSValue(name: string, value: string): void {
         document.documentElement.style.setProperty(name, value);
     }
 
     /**
      * collects all CSV-images of the class className and changes the primary color
      */
-    private static setCSVColors(className: string, hex: string): void {
+    private setCSVColors(className: string, hex: string): void {
         const svgs: HTMLCollection = document.getElementsByClassName(className);
 
         for (let i: number = 0; i < svgs.length; i++) {
@@ -138,48 +140,48 @@ export class CssStyleService {
      * loads the color-value from the settings-table. if no value is set,
      * returns current primary color
      */
-    private static getCustomColor(settings: Settings): string {
+    private getCustomColor(settings: Settings): string {
         const colSettings: string = settings.themeColorHex;
-        const colCSS: string = CssStyleService.getCSSValue("--ion-color-primary");
+        const colCSS: string = this.getCSSValue("--ion-color-primary");
         return colSettings ? colSettings : colCSS;
     }
 
     /**
      * computes the colors of the theme, based on a custom primary color
      */
-    private static async getThemeColors(): Promise<object> {
+    private async getThemeColors(): Promise<object> {
         const settings: Settings = await AuthenticationProvider.getUser().settings;
-        CssStyleService.customColorHex =  CssStyleService.getCustomColor(settings);
-        CssStyleService.customColorContrast = settings.themeContrastColor;
+        this.customColorHex =  this.getCustomColor(settings);
+        this.customColorContrast = settings.themeContrastColor;
 
         function toRgbRange(v: number): number {
             return Math.max(0, Math.min(255, v));
         }
 
-        const normal: Array<number> = CssStyleService.hexToRgb(CssStyleService.customColorHex);
+        const normal: Array<number> = this.hexToRgb(this.customColorHex);
         const shade: Array<number> = normal.map(v => toRgbRange(v - 12));
         const tint: Array<number> = normal.map(v => toRgbRange(v + 12), 255);
 
-        const contrast: Array<number> =  CssStyleService.customColorContrast ? [255, 255, 255] : [10, 10, 10];
-        const cShade: Array<number> = CssStyleService.customColorContrast ?
+        const contrast: Array<number> =  this.customColorContrast ? [255, 255, 255] : [10, 10, 10];
+        const cShade: Array<number> = this.customColorContrast ?
             contrast.map(v => toRgbRange(v - 40)) :
             contrast.map(v => toRgbRange(v + 40));
 
         return {
-            "primary_shade" : CssStyleService.rgbToHex(shade),
+            "primary_shade" : this.rgbToHex(shade),
             "primary_shade_rgb" : `${shade[0]},${shade[1]},${shade[2]}`,
-            "primary_normal": CssStyleService.rgbToHex(normal),
-            "primary_tint": CssStyleService.rgbToHex(tint),
-            "contrast_normal": CssStyleService.rgbToHex(contrast),
+            "primary_normal": this.rgbToHex(normal),
+            "primary_tint": this.rgbToHex(tint),
+            "contrast_normal": this.rgbToHex(contrast),
             "contrast_normal_rgb": `${contrast[0]},${contrast[1]},${contrast[2]}`,
-            "contrast_shade": CssStyleService.rgbToHex(cShade)
+            "contrast_shade": this.rgbToHex(cShade)
         };
     }
 
     /**
      * converts the RGB-array [r, g, b] of a color to the HEX-string #******
      */
-    private static rgbToHex(rgb: Array<number>): string {
+    private rgbToHex(rgb: Array<number>): string {
         function toTwoDigitHex(val: number): string {
             const hex: string = val.toString(16);
             return hex.length == 1 ? "0" + hex : hex;
@@ -193,7 +195,7 @@ export class CssStyleService {
     /**
      * converts the HEX-string #****** of a color to the RGB-array [r, g, b]
      */
-    private static hexToRgb(hex: string): Array<number> {
+    private hexToRgb(hex: string): Array<number> {
         const rgb: Array<number> = [];
 
         for(let i: number = 1; i < hex.length; i += 2) {
