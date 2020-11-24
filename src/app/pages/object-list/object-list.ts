@@ -348,7 +348,7 @@ export class ObjectListPage {
      * returns the primary action for the given object
      */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
-        if (!this.featurePolicy.isFeatureAvailable(iliasObject.type)) {
+        if (!this.featurePolicy.isObjectAvailable(iliasObject.type)) {
             return this.openInIliasActionFactory(
                 this.translate.instant("actions.view_in_ilias"),
                 this.linkBuilder.default().target(iliasObject.refId)
