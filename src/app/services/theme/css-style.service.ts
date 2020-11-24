@@ -4,7 +4,7 @@ import {Settings} from "../../models/settings";
 import {IconProvider} from "../../providers/theme/icon.provider";
 import {Icon} from "ionicons/dist/types/icon/icon";
 import {User} from "../../models/user";
-import { FeaturePolicyService } from "../policy/feature-policy.service";
+import { FeaturePolicyService, Features } from "../policy/feature-policy.service";
 
 @Injectable({
     providedIn: "root"
@@ -66,7 +66,7 @@ export class CssStyleService {
      * checks whether the theme should be managed dynamically
      */
     dynamicThemeEnabled(): boolean {
-        return this.featurePolicy.isFeatureAvailable("theme:custom")
+        return this.featurePolicy.isFeatureAvailable(Features.CUSTOM_THEME);
     }
 
     /**

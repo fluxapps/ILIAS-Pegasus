@@ -77,7 +77,7 @@ export class AppComponent {
 
             if(AuthenticationProvider.isLoggedIn()) {
                 // await this.sync.resetOfflineSynchronization(true);
-                await this.themeProvider.loadResources();
+                await this.themeProvider.synchronizeAndSetCustomTheme();
                 await this.startDownloadingOfflineContent();
             } else {
                 await this.presentOnboardingModal();

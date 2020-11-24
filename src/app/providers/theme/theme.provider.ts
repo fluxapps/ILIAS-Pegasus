@@ -3,7 +3,6 @@ import { SafeUrl } from "@angular/platform-browser";
 import {IconProvider} from "./icon.provider";
 import {ThemeSynchronizationService} from "../../services/theme/theme-synchronization.service";
 import {CssStyleService} from "../../services/theme/css-style.service";
-import {FeaturePolicyService} from "../../services/policy/feature-policy.service";
 
 /**
  * this provider bundles together the functionality of the IconProvider,
@@ -18,7 +17,6 @@ export class ThemeProvider {
         private readonly iconProvider: IconProvider,
         private readonly themeSynch: ThemeSynchronizationService,
         private readonly cssStyle: CssStyleService,
-        private readonly featurePolicy: FeaturePolicyService
     ) {}
 
     async getIconSrc(key: string): Promise<string | SafeUrl> {
@@ -36,10 +34,6 @@ export class ThemeProvider {
     }
 
     async loadResources(): Promise<void> {
-        if (!this.featurePolicy.isFeatureAvailable("theme:custom")) return;
-
-        await this.themeSynch.synchronize();
-        await this.setCustomColor();
         await this.iconProvider.loadResources();
     }
 
