@@ -1,6 +1,7 @@
 {
     "disabled": [
         "sahs",
-        "htlm"
+        "htlm",
+        "theme:custom"
     ]
 }

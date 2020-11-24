@@ -41,8 +41,9 @@ export class FeaturePolicyService {
      * @return returns true if the feature is permited by the policy, otherwise false.
      */
     isFeatureAvailable(type: string): boolean {
-        const isFeatureDisabled: boolean = this.disabledFeatures.has(type);
-        this.log.trace(() => `App feature policy lookup: type="${type}", disabled=${isFeatureDisabled}`)
-        return !isFeatureDisabled;
+        const available: boolean = !this.disabledFeatures.has(type);
+
+        this.log.trace(() => `App feature policy lookup: type="${type}" ${available ? "enabled" : "disabled"}`)
+        return available;
     }
 }

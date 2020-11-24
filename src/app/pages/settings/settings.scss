@@ -26,9 +26,10 @@ ion-label.activeUser {
 
 .trash-button {
     --background: transparent;
+    --background-activated: transparent;
 }
 
 .trash-icon {
-    --ion-color-primary: black;
-
+    color: var(--ion-color-primary, black) !important;
+    --color: var(--ion-color-primary, black) !important;
 }

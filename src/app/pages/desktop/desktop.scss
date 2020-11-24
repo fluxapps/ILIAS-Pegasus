@@ -5,24 +5,44 @@
 .tile {
     opacity: 0.9;
     border-radius: var(--page-desktop-border-radius, 2%);
-    border: 
+    border:
         var(--page-desktop-border-color, transparent)
-        solid 
+        solid
         var(--page-desktop-border-width, 0px);
 
     object {
-        margin: 10px auto;
+        margin: 1em auto;
     }
 }
 
-.tile-image {
-    height: auto;
-    width: var(--page-desktop-tile-icon-width, 60%);
-    margin: 0.5em auto;
-    display: block;
-    pointer-events: none;
+.big-card {
+    height: 25vh;
 }
 
+.small-card {
+    height: 15vh;
+}
+
+.tile-image {
+    // min-height: 20px;
+    // min-width: 20px;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    padding: .5em;
+}
+
+.svg-icon {
+    color: var(--ion-color-secondary, transparent);
+    fill: none;
+    stroke: var(--icon-stroke-color, #282828);
+    stroke-miterlimit: 10;
+}
+
+.black-stroke {
+    stroke: var(--icon-stroke-color-strong, black) !important;
+}
 
 .tile4 {
     display: var(--page-desktop-tile-4-display, block);

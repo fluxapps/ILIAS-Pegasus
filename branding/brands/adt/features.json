@@ -1,3 +1,5 @@
 {
-    "disabled": []
+    "disabled": [
+        "theme:custom"
+    ]
 }

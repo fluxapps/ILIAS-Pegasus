@@ -54,7 +54,7 @@ export class AppComponent {
         private readonly navCtrl: NavController,
         private readonly toastCtrl: ToastController,
         private readonly translate: TranslateService,
-        private readonly networkProvider: NetworkProvider
+        private readonly networkProvider: NetworkProvider,
     ) {
         this.splashScreen.hide();
         this.initializeApp();

@@ -8,8 +8,8 @@
         <mask id="mask-2" fill="white">
             <use xlink:href="#path-1"></use>
         </mask>
-        <use id="Combined-Shape" fill="#00305D" fill-rule="nonzero" xlink:href="#path-1"></use>
-        <g id="Group" mask="url(#mask-2)" fill="#87b15e">
+        <use id="Combined-Shape" fill-rule="nonzero" xlink:href="#path-1"></use>
+        <g id="Group" mask="url(#mask-2)" style="fill: currentColor">
             <g id="🎨Color">
                 <rect id="Rectangle" x="0" y="0" width="39" height="39"></rect>
             </g>
