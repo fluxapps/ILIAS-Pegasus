@@ -34,14 +34,14 @@
 }
 
 .svg-icon {
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-secondary, transparent);
     fill: none;
-    stroke: var(--icon-stroke-color);
+    stroke: var(--icon-stroke-color, #282828);
     stroke-miterlimit: 10;
 }
 
 .black-stroke {
-    stroke: var(--icon-stroke-color-strong) !important;
+    stroke: var(--icon-stroke-color-strong, black) !important;
 }
 
 .tile4 {
