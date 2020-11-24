@@ -71,7 +71,7 @@ export class CssStyleService {
 
     /**
      * checks whether custom coloring is activated, reads the custom color
-     * from settings and changes the css- and csv-colors accordingly
+     * from settings and changes the css-colors accordingly
      */
     async setCustomColor(): Promise<void> {
         const themeCols: object = await this.getThemeColors();
@@ -82,7 +82,6 @@ export class CssStyleService {
             )
         );
 
-        this.setCSVColors("tile-image", themeCols["primary_tint"]);
         this.customIsSet = true;
     }
 
@@ -119,24 +118,6 @@ export class CssStyleService {
      */
     private setCSSValue(name: string, value: string): void {
         document.documentElement.style.setProperty(name, value);
-    }
-
-    /**
-     * collects all CSV-images of the class className and changes the primary color
-     */
-    private setCSVColors(className: string, hex: string): void {
-        const svgs: HTMLCollection = document.getElementsByClassName(className);
-
-        for (let i: number = 0; i < svgs.length; i++) {
-            const e: any = svgs[i];
-            const svgDoc: any = e.getSVGDocument();
-            if(svgDoc != undefined) {
-                const style: any = svgDoc.styleSheets[0];
-                if(style != undefined) {
-                    style.rules[0].style.fill = hex;
-                }
-            }
-        }
     }
 
     /**
