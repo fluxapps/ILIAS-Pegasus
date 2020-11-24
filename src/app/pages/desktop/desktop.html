@@ -11,8 +11,10 @@
         <ion-row>
             <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile tile-course ion-no-margin" [routerLink]="['/tabs/content']">
-                    <div class=" big-card">
-                        <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_course.svg" (load)="svgLoaded()"></object>
+                    <div class="big-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_course.svg#course"/>
+                        </svg>
                     </div>
                     <ion-card-header class="tile-title ion-text-uppercase">
                         <ion-label>{{ 'object-list.title' | translate}}</ion-label>
@@ -21,8 +23,10 @@
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile tile-favourites ion-no-margin" [routerLink]="['/tabs/favorites']">
-                    <div class=" small-card">
-                        <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_favourites.svg" (load)="svgLoaded()"></object>
+                    <div class="small-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_favourites.svg#favourites"/>
+                        </svg>
                     </div>
                     <ion-card-header class="tile-title ion-text-uppercase">
                         <ion-label>{{ 'favorites.title' | translate}}</ion-label>
@@ -31,9 +35,13 @@
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
                 <ion-card button="true" class="tile tile-news ion-no-margin" [routerLink]="['/tabs/news']">
-                    <div class=" small-card">
-                        <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_news.svg" (load)="svgLoaded()"></object>
+                    <div class="small-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_news.svg#news"/>
+                        </svg>
                     </div>
+
+
                     <ion-card-header class="tile-title ion-text-uppercase">
                         <ion-label>{{ 'news.title' | translate}}</ion-label>
                     </ion-card-header>
@@ -41,16 +49,21 @@
             </ion-col>
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile4">
                 <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()" [routerLink]="['/tabs/desktop']">
-                    <div class=" small-card">
-                        <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()"></object>
+                    <div class="small-card">
+                        <svg class="tile-image" >
+                            <use class="svg-icon black-stroke" xlink:href="assets/icon/desktop_repository.svg#repository"/>
+                        </svg>
                     </div>
                     <ion-card-header class="tile-title ion-text-uppercase"> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
+
             <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile5">
                 <ion-card button="true" class="tile ion-no-margin" [routerLink]="['/tabs/menu']">
-                    <div class=" small-card">
-                        <object class="tile-image" type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
+                    <div class="small-card">
+                        <svg class="tile-image black-stroke">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_menu.svg#menu"/>
+                        </svg>
                     </div>
                     <ion-card-header class="tile-title ion-text-uppercase"> {{ ('menu' | translate)}} </ion-card-header>
                 </ion-card>
