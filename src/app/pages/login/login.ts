@@ -36,7 +36,8 @@ export class LoginPage implements ViewWillEnter {
                 private readonly themeProvider: ThemeProvider,
                 private readonly modal: ModalController,
                 private readonly navCtrl: NavController,
-                private readonly ngZone: NgZone
+                private readonly ngZone: NgZone,
+                private readonly themeProivder: ThemeProvider
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
@@ -49,7 +50,7 @@ export class LoginPage implements ViewWillEnter {
     }
 
     ionViewWillEnter(): void {
-        ThemeProvider.setDefaultColor();
+        this.themeProvider.setDefaultColor();
     }
 
     async login(): Promise<void> {

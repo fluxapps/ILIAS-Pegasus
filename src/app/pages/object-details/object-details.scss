@@ -1,7 +1,7 @@
 .page_object_details {
-    --background: var(--custom-background, var(--ion-color-primary));
-    --color: white;
-    color: white;
+    --background: var(--custom-background, var(--ion-background-color));
+    --color: var(--ion-text-color);
+    color: var(--ion-text-color);
 }
 
 ion-header {
@@ -11,7 +11,7 @@ ion-header {
 
 ion-list, ion-list * {
     background: transparent;
-    color: white;
+    color: var(--ion-text-color);
 }
 
 ion-item {
