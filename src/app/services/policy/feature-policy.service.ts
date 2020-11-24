@@ -5,6 +5,11 @@ import { Logging } from "../logging/logging.service";
 
 interface FeaturePolicies {
     disabled: Array<string>;
+    customeTheme?: boolean;
+}
+
+export enum Features {
+    CUSTOM_THEME = "customTheme"
 }
 
 /**
@@ -21,29 +26,42 @@ interface FeaturePolicies {
 export class FeaturePolicyService {
 
     private readonly log: Logger = Logging.getLogger("FeaturePolicyService");
+    private readonly policy: FeaturePolicies;
     private readonly disabledFeatures: Set<string>;
 
     constructor() {
         this.log.warn(() => JSON.stringify(policyList));
-        const policy: FeaturePolicies = policyList;
-        if (policy.disabled.length > 0) {
-            this.log.info(() => `Load app feature policy, disabled: ${JSON.stringify(policy.disabled.join(" "))}`);
+        this.policy = policyList;
+
+        if (this.policy.disabled.length > 0) {
+            this.log.info(() => `Load app object policy, disabled: ${JSON.stringify(this.policy.disabled.join(" "))}`);
         } else {
-            this.log.info(() => "Load app feature policy, no disabled features");
+            this.log.info(() => "Load app object policy, no disabled ILIAS Object features");
         }
-        this.disabledFeatures = new Set<string>(policy.disabled);
+
+        this.disabledFeatures = new Set<string>(this.policy.disabled);
     }
 
     /**
-     * Checks if a feature is enabled / disabled by the current app feature policy.
+     * Checks if a ILIAS Object is enabled / disabled by the current app feature policy.
      *
      * @param {string} type - The ilias type which should get checked against the feature policy.
-     * @return returns true if the feature is permited by the policy, otherwise false.
+     * @return returns true if the object is permited by the policy, otherwise false.
      */
-    isFeatureAvailable(type: string): boolean {
+    isObjectAvailable(type: string): boolean {
         const available: boolean = !this.disabledFeatures.has(type);
 
-        this.log.trace(() => `App feature policy lookup: type="${type}" ${available ? "enabled" : "disabled"}`)
+        this.log.trace(() => `App feature policy lookup: object="${type}" ${available ? "enabled" : "disabled"}`)
         return available;
+    }
+
+    /**
+     * Checks if a ILIAS Feature is enabled / disabled by the current app feature policy.
+     *
+     * @param {Features} type - The feature which should get checked against the feature policy.
+     * @return returns true if the feature is permited by the policy, otherwise false.
+     */
+    isFeatureAvailable(type: Features): boolean {
+        return !!this.policy[type];
     }
 }

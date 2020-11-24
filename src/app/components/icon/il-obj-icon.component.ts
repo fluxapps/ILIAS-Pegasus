@@ -43,7 +43,7 @@ export class IlObjIconComponent implements OnInit, AfterViewInit {
 
   shouldOpenInIlias(): boolean {
     if (!this.ilObject) return false;
-    if (!this.featurePolicy.isFeatureAvailable(this.ilObject.type)) return true;
+    if (!this.featurePolicy.isObjectAvailable(this.ilObject.type)) return true;
     if (this.ilObject.isLinked()) return true;
     if (this.ilObject.isContainer()) return false;
     if (this.ilObject.isLearnplace()) return false;
