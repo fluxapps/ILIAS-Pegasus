@@ -9,7 +9,7 @@
 <ion-content class="page page_desktop">
     <ion-grid class="desktop-grid">
         <ion-row>
-            <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
+            <ion-col size="12" size-sm="4" size-md="12" size-lg="12" size-xl="12" class="ion-text-center">
                 <ion-card button="true" class="tile tile-course ion-no-margin" [routerLink]="['/tabs/content']">
                     <div class="big-card">
                         <svg class="tile-image">
@@ -21,7 +21,10 @@
                     </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
+        </ion-row>
+
+        <ion-row>
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center">
                 <ion-card button="true" class="tile tile-favourites ion-no-margin" [routerLink]="['/tabs/favorites']">
                     <div class="small-card">
                         <svg class="tile-image">
@@ -33,21 +36,21 @@
                     </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center">
+
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center">
                 <ion-card button="true" class="tile tile-news ion-no-margin" [routerLink]="['/tabs/news']">
                     <div class="small-card">
                         <svg class="tile-image">
                             <use class="svg-icon" xlink:href="assets/icon/desktop_news.svg#news"/>
                         </svg>
                     </div>
-
-
                     <ion-card-header class="tile-title ion-text-uppercase">
                         <ion-label>{{ 'news.title' | translate}}</ion-label>
                     </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile4">
+
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center tile4">
                 <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()" [routerLink]="['/tabs/desktop']">
                     <div class="small-card">
                         <svg class="tile-image" >
@@ -58,7 +61,7 @@
                 </ion-card>
             </ion-col>
 
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" class="ion-text-center tile5">
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center tile5">
                 <ion-card button="true" class="tile ion-no-margin" [routerLink]="['/tabs/menu']">
                     <div class="small-card">
                         <svg class="tile-image black-stroke">

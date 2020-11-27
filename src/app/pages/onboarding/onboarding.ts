@@ -2,10 +2,12 @@
 import { Component, ViewChild } from "@angular/core";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { IonSlides, NavController } from "@ionic/angular";
-
 @Component({
     templateUrl: "onboarding.html",
-    styleUrls: ["./onboarding.scss"]
+    styleUrls: ["./onboarding.scss"],
+    host: {
+        "(window:resize)": "onResize()"
+    }
 })
 export class OnboardingPage {
     readonly appName: Promise<string>;
@@ -17,6 +19,12 @@ export class OnboardingPage {
         appVersion: AppVersion,
     ) {
         this.appName = appVersion.getAppName();
+    }
+
+    onResize(): void {
+        this.slides.options = {
+            width: window.outerWidth
+        }
     }
 
     async nextSlide(): Promise<void> {
