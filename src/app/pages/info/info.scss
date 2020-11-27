@@ -11,7 +11,7 @@
         --border-radius: 0;
     }
 
-    .version-card p:first {
+    .version-card ion-card-content p:first-child {
         display: var(--page-version-card-custom, none);
         margin: 0;
     }
