@@ -15,6 +15,8 @@
 const FS = require("fs");
 const OS = require("os");
 const deepmerge = require("deepmerge");
+const { Validator } = require("jsonschema");
+
 let console_log = "";
 execute();
 
@@ -35,7 +37,9 @@ function execute() {
         refreshPlatforms(platforms);
     } catch(e) {
         console_log += e.stack;
-        throw(e);
+        if (globalThis.process.exitCode === 0) {
+            globalThis.process.exitCode = 1;
+        }
     } finally {
         writeLog(brand);
     }
@@ -47,28 +51,28 @@ function getFlagValues() {
     if (brand === undefined) throw new Error("(set_brand.js) flag for setting the brand not found. use as 'npm run setbrand -- --brand=[BRAND_NAME]'");
     if (!FS.existsSync(`branding/brands/${brand}`))
         throw new Error(`(set_brand.js) the directory 'branding/brands/${brand}' for the brand '${brand}' does not exist`);
-    consoleOut(`(set_brand.js) setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
+    consoleOut(`setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
 
     let platforms = getFlagValueFromArgv("platforms");
     switch (platforms) {
         case undefined:
             platforms = "ia";
-            consoleOut(`(set_brand.js) flag 'platforms' not found, adding ios and android platforms by default`);
+            consoleOut(`flag 'platforms' not found, adding ios and android platforms by default`);
             break;
         case "ia":
         case "ai":
             platforms = "ia";
-            consoleOut(`(set_brand.js) adding the platforms ios and android`);
+            consoleOut(`adding the platforms ios and android`);
             break;
         case "i":
-            consoleOut(`(set_brand.js) adding the platform ios`);
+            consoleOut(`adding the platform ios`);
             break;
         case "a":
-            consoleOut(`(set_brand.js) adding the platform android`);
+            consoleOut(`adding the platform android`);
             break;
         case "none":
             platforms = undefined;
-            consoleOut(`(set_brand.js) not adding any platforms`);
+            consoleOut(`not adding any platforms`);
             break;
         default:
             throw new Error(`(set_brand.js) unable to interpret the flag 'platforms', set to '${platforms}'. possible values are 'ia', 'ai', 'i', 'a'`);
@@ -90,7 +94,24 @@ function getFlagValueFromArgv(name) {
 
 // generate "src/assets/config.json"
 function generateServerConfigFile(brand, config) {
-    const config_server = loadJSON("branding/common/config/server.config.json", "utf8").installations;
+    const jsonValidator = new Validator();
+    const schema = jsonValidator.addSchema(
+        loadJSON("branding/common/config/server.config.schema.json", "utf8"),
+        "https://www.ilias-pegasus.de/app/draft-07/schema/server.config.schema.json"
+    );
+    const fullConfig = loadJSON("branding/common/config/server.config.json", "utf8");
+    const result = jsonValidator.validate(fullConfig, schema, {throwError: false});
+
+    for (const validationError of result.errors) {
+        consoleError(`Validation of "branding/common/config/server.config.json" failed with message "${validationError.message}" for property "${validationError.property}".`);
+    }
+
+    if (result.errors.length > 0) {
+        globalThis.process.exitCode = 1;
+        throw new Error("(set_brand.js) Server config json invalid!");
+    }
+
+    const config_server = fullConfig.installations;
     const config_out = { "installations": [] };
     const installationMap = config_server.reduceRight((col, it) => col.set(it.id, it), new Map());
     const brandInstallationIds = config.ilias_installation_ids;
@@ -106,9 +127,10 @@ function generateServerConfigFile(brand, config) {
     }
 
     if (missingIds.length > 0) {
-        let msg = `(set_brand.js) unable to match all ilias installation ids in ${JSON.stringify(brandInstallationIds)}. `;
+        let msg = `unable to match all ilias installation ids in ${JSON.stringify(brandInstallationIds)}. `;
         msg += `The following ids are missing ${JSON.stringify(missingIds)}. `;
         msg += `This selection of ids is set in 'src/assets/${brand}/config.json' and the ilias installations are set in 'branding/common/config/server.config.json'`;
+        consoleError(msg);
         throw new Error(msg);
     }
 
@@ -175,19 +197,19 @@ function refreshPlatforms(platforms) {
 
     if(platforms.indexOf("i") !== -1)
         if (OS.platform() === "darwin") runShell("npx ionic cordova platform add ios");
-        else consoleOut(`(set_brand.js) did not add ios-platform on the operating system "${OS.platform()}"`);
+        else consoleOut(`did not add ios-platform on the operating system "${OS.platform()}"`);
 }
 
 // run cmd as a shell-script
 function runShell(cmd) {
     const exec = require("child_process").exec;
     exec(cmd, (err, stdout, stderr) => {
-        consoleOut(`(set_brand.js) running command "${cmd}"`);
-        consoleOut(`(set_brand.js) stdout ${stdout}`);
+        consoleOut(`running command "${cmd}"`);
+        consoleOut(`stdout ${stdout}`);
         if(err !== null) {
-            consoleOut(`(set_brand.js) err ${err}`);
-            consoleOut(`(set_brand.js) stderr ${stderr}`);
-            throw new Error(`(set_brand.js) failed when running command "${cmd}", see the output above for details`);
+            consoleOut(`err ${err}`);
+            consoleOut(`stderr ${stderr}`);
+            throw new Error(`failed when running command "${cmd}", see the output above for details`);
         }
     });
 }
@@ -267,8 +289,16 @@ function writeJSON(file, data) {
 
 // write msg to console and add it to console_log
 function consoleOut(msg) {
-    console.log(msg);
-    console_log += msg + "\n";
+    const message = `(set_brand.js) ${msg}`;
+    console.info(message);
+    console_log += `${message}\n`;
+}
+
+// write msg to stderr and add it to console_log
+function consoleError(msg) {
+    const message = `(set_brand.js) ${msg}`;
+    console.error(message);
+    console_log += `${message}\n`;
 }
 
 // generates a log for this script at src/assets/branding.log
