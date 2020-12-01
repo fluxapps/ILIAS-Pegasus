@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.ilias-pegasus.de/app/draft-07/schema/server.config.schema.json",
+    "type": "object",
+    "title": "The server config root schema",
+    "description": "The root schema comprises the entire server config JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "installations": [
+                {
+                    "id": 1,
+                    "title": "<list-title>",
+                    "url": "https://ilias.of-your-university.com",
+                    "clientId": "<ilias-client-id>",
+                    "apiKey": "<api-client>",
+                    "apiSecret": "<api-secret>",
+                    "accessTokenTTL": 36000
+                }
+            ]
+        }
+    ],
+    "required": [
+        "installations"
+    ],
+    "properties": {
+        "installations": {
+            "$id": "#/properties/installations",
+            "type": "array",
+            "title": "The installations schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "id": 1,
+                        "title": "<list-title>",
+                        "url": "https://ilias.of-your-university.com",
+                        "clientId": "<ilias-client-id>",
+                        "apiKey": "<api-client>",
+                        "apiSecret": "<api-secret>",
+                        "accessTokenTTL": 36000
+                    }
+                ]
+            ],
+            "additionalItems": false,
+            "items": {
+                "$id": "#/properties/installations/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/installations/items/anyOf/0",
+                        "type": "object",
+                        "title": "ILIAS Server configuration",
+                        "description": "ILIAS Server configuration which is used for all the server side communication",
+                        "default": {},
+                        "examples": [
+                            {
+                                "id": 1,
+                                "title": "<list-title>",
+                                "url": "https://ilias.of-your-university.com",
+                                "clientId": "<ilias-client-id>",
+                                "apiKey": "<api-client>",
+                                "apiSecret": "<api-secret>",
+                                "accessTokenTTL": 36000
+                            }
+                        ],
+                        "required": [
+                            "id",
+                            "title",
+                            "url",
+                            "clientId",
+                            "apiKey",
+                            "apiSecret",
+                            "accessTokenTTL"
+                        ],
+                        "properties": {
+                            "id": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/id",
+                                "type": "integer",
+                                "title": "The id schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "minimum": 1,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "title": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/title",
+                                "type": "string",
+                                "title": "The title schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "minLength": 3,
+                                "examples": [
+                                    "<list-title>"
+                                ]
+                            },
+                            "url": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/url",
+                                "type": "string",
+                                "title": "ILIAS URL",
+                                "description": "ILIAS installation url.",
+                                "pattern": "^(https:\/\/)(.{3,}\\.[a-zA-Z]{2,})(\/.+)?(?<!\/|\\.php.*)$",
+                                "examples": [
+                                    "https://ilias.of-your-university.com"
+                                ]
+                            },
+                            "clientId": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/clientId",
+                                "type": "string",
+                                "title": "The clientId schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "default",
+                                "minLength": 1,
+                                "examples": [
+                                    "<ilias-client-id>"
+                                ]
+                            },
+                            "apiKey": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/apiKey",
+                                "type": "string",
+                                "title": "The apiKey schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "minLength": 1,
+                                "examples": [
+                                    "<api-client>"
+                                ]
+                            },
+                            "apiSecret": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/apiSecret",
+                                "type": "string",
+                                "title": "The apiSecret schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "minLength": 1,
+                                "examples": [
+                                    "<api-secret>"
+                                ]
+                            },
+                            "accessTokenTTL": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/accessTokenTTL",
+                                "type": "integer",
+                                "title": "The accessTokenTTL schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "minimum": 1,
+                                "examples": [
+                                    3600
+                                ]
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                ]
+            }
+        }
+    },
+    "additionalProperties": false
+}
