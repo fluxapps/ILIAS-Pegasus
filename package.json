@@ -95,6 +95,7 @@
     "codelyzer": "^5.2.2",
     "colors": "^1.4.0",
     "cordova": "^10.0.0",
+    "cordova-common": "^4.0.2",
     "cordova-custom-config": "^5.1.0",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-ionic-keyboard": "^2.2.0",

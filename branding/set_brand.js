@@ -16,6 +16,7 @@ const FS = require("fs");
 const OS = require("os");
 const deepmerge = require("deepmerge");
 const { Validator } = require("jsonschema");
+const { ConfigParser } = require("cordova-common");
 
 let console_log = "";
 execute();
@@ -139,35 +140,26 @@ function generateServerConfigFile(brand, config) {
 
 // set values in "config.xml"
 function setValuesInProjectConfig(config) {
+
+    const cordovaConf = new ConfigParser("config.xml");
+
+
     // for each entry, the 'setValueInTag'-method is called until the tag was found once
     const androidId = config.projectConfig.androidId || config.projectConfig.id;
-    let toDoList = [
-        {tag: "<widget ", pre: "id=\"", value: config.projectConfig.id, post: "\"", done: false},
-        {tag: "<widget ", pre: "android-packageName=\"", value: androidId, post: "\"", done: false},
-        {tag: "<name>", pre: "<name>", value: config.projectConfig.name, post: "</name>", done: false},
-        {tag: "<description>", pre: "<description>", value: config.projectConfig.description, post: "</description>", done: false}
-    ];
+    const package = loadJSON("package.json");
 
-    // iterate trough lines of 'config.xml' until all tags have ben found
-    let lines = FS.readFileSync("config.xml", "utf8").split("\n");
-    let done = false;
-    for(let i = 0; (i < lines.length) && !done; i++) {
-        done = true;
-        toDoList.forEach(e => {
-            [lines[i], e.done] = (e.done) ? [lines[i], e.done] : setValueInTag(lines[i], e.tag, e.pre, e.value, e.post);
-            done &= e.done;
-        });
-    }
+    /**
+     * @type string
+     */
+    let name = config.projectConfig.name;
+    name = name.replace(' ', '-');
 
-    if(!done) {
-        let notDone = "";
-        toDoList.forEach(function(e) {
-            notDone += (e.done) ? "" : `${e.tag} `;
-        });
-        throw new Error(`(set_brand.js) unable to set the value(s) for the following tag(s) [ ${notDone}] in 'config.xml'`);
-    }
-
-    FS.writeFileSync("config.xml", lines.join("\n"));
+    cordovaConf.setPackageName(config.projectConfig.id);
+    cordovaConf.doc.getroot().attrib["android-packageName"] = androidId;
+    cordovaConf.setGlobalPreference("AppendUserAgent", `${name}/${package.version}`);
+    cordovaConf.setName(config.projectConfig.name);
+    cordovaConf.setDescription(config.projectConfig.description);
+    cordovaConf.write();
 }
 
 // generate language-files from a global and a brand-specific source
