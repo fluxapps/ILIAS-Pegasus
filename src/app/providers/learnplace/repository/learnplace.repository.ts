@@ -1,5 +1,5 @@
-import {AccordionEntity} from "../../entity/accordion.entity";
-import {LearnplaceEntity} from "../../entity/learnplace.entity";
+import {AccordionEntity} from "../../../entity/learnplace/accordion.entity";
+import {LearnplaceEntity} from "../../../entity/learnplace/learnplace.entity";
 import {Injectable, InjectionToken} from "@angular/core";
 import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
 import {Database} from "../../../services/database/database";
@@ -8,10 +8,10 @@ import {Optional} from "../../../util/util.optional";
 import {Logging} from "../../../services/logging/logging.service";
 import {Logger} from "../../../services/logging/logging.api";
 import {isDefined} from "../../../util/util.function";
-import {LinkblockEntity} from "../../entity/linkblock.entity";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
-import {TextblockEntity} from "../../entity/textblock.entity";
-import {VideoBlockEntity} from "../../entity/videoblock.entity";
+import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
+import {PictureBlockEntity} from "../../../entity/learnplace/pictureBlock.entity";
+import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
+import {VideoBlockEntity} from "../../../entity/learnplace/videoblock.entity";
 
 /**
  * Describes a CRUD repository for {@link LearnplaceEntity}.

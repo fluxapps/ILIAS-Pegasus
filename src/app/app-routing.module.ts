@@ -10,7 +10,7 @@ const routes: Routes = [
     {path: "onboarding", loadChildren: () => import("./pages/onboarding/onboarding.module").then((m) => m.OnboardingPageModule)},
     {
         path: "learnplace",
-        loadChildren: () => import("./learnplace/learnplace.module").then((m) => m.LearnplaceModule),
+        loadChildren: () => import("./pages/learnplace/learnplace.module").then((m) => m.LearnplacePageModule),
         canActivate: [AuthenticationProvider]
     },
     {
@@ -19,6 +19,10 @@ const routes: Routes = [
         canActivate: [AuthenticationProvider]
     },
     {path: "**", redirectTo: "login"},
+  {
+    path: 'learnplace',
+    loadChildren: () => import('./pages/learnplace/learnplace.module').then( m => m.LearnplacePageModule)
+  },
 ];
 
 @NgModule({

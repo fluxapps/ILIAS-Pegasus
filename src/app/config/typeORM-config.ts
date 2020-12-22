@@ -3,13 +3,13 @@ import {Injectable} from "@angular/core";
 /** entries */
 import {NewsEntity} from "../entity/news.entity";
 import {UserEntity} from "../entity/user.entity";
-import { LearnplaceEntity, LocationEntity, MapEntity, VisitJournalEntity } from "../learnplace/entity/learnplace.entity";
-import {LinkblockEntity} from "../learnplace/entity/linkblock.entity";
-import {PictureBlockEntity} from "../learnplace/entity/pictureBlock.entity";
-import {TextblockEntity} from "../learnplace/entity/textblock.entity";
-import {VideoBlockEntity} from "../learnplace/entity/videoblock.entity";
-import {VisibilityEntity} from "../learnplace/entity/visibility.entity";
-import {AccordionEntity} from "../learnplace/entity/accordion.entity";
+import { LearnplaceEntity, LocationEntity, MapEntity, VisitJournalEntity } from "../entity/learnplace/learnplace.entity";
+import {LinkblockEntity} from "../entity/learnplace/linkblock.entity";
+import {PictureBlockEntity} from "../entity/learnplace/pictureBlock.entity";
+import {TextblockEntity} from "../entity/learnplace/textblock.entity";
+import {VideoBlockEntity} from "../entity/learnplace/videoblock.entity";
+import {VisibilityEntity} from "../entity/learnplace/visibility.entity";
+import {AccordionEntity} from "../entity/learnplace/accordion.entity";
 /** misc */
 import {isDevMode} from "../devmode";
 import {DatabaseConfigurationAdapter, DatabaseConnectionRegistry} from "../services/database/database.api";

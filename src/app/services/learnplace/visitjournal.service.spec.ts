@@ -4,10 +4,10 @@ import {
   SynchronizedVisitJournalWatch,
   VisitJournalSynchronizationImpl
 } from "./visitjournal.service";
-import {LearnplaceAPI} from "../providers/rest/learnplace.api";
-import {VisitJournalRepository} from "../providers/repository/visitjournal.repository";
-import {LearnplaceEntity, VisitJournalEntity} from "../entity/learnplace.entity";
-import {LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {LearnplaceAPI} from "../../providers/learnplace/rest/learnplace.api";
+import {VisitJournalRepository} from "../../providers/learnplace/repository/visitjournal.repository";
+import {LearnplaceEntity, VisitJournalEntity} from "../../entity/learnplace/learnplace.entity";
+import {LearnplaceRepository} from "../../providers/learnplace/repository/learnplace.repository";
 import {UserRepository} from "../../providers/repository/repository.user";
 import {IllegalStateError} from "../../error/errors";
 

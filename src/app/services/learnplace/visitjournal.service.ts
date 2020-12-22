@@ -1,18 +1,18 @@
 
 import { mergeMap, filter, takeWhile, map, tap, catchError, withLatestFrom, takeUntil } from "rxjs/operators";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
-import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../providers/repository/visitjournal.repository";
+import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/learnplace/rest/learnplace.api";
+import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../../providers/learnplace/repository/visitjournal.repository";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {LocationWatch} from "./location";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/learnplace/repository/learnplace.repository";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {Geolocation} from "../../services/device/geolocation/geolocation.service";
 import {isDefined} from "../../util/util.function";
 import {IllegalStateError} from "../../error/errors";
 import {IliasCoordinates} from "./geodesy";
-import {LearnplaceEntity, VisitJournalEntity} from "../entity/learnplace.entity";
+import {LearnplaceEntity, VisitJournalEntity} from "../../entity/learnplace/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
 import { Observable, from, combineLatest, of, Subject } from "rxjs";
 

@@ -4,7 +4,7 @@ import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 import {Optional} from "../../../util/util.optional";
 import {Logging} from "../../../services/logging/logging.service";
-import { MapEntity } from "../../entity/learnplace.entity";
+import { MapEntity } from "../../../entity/learnplace/learnplace.entity";
 
 /**
  * Describes a CRUD repository for {@link MapEntity}.

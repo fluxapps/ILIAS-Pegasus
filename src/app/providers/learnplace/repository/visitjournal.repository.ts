@@ -4,7 +4,7 @@ import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 import {Logging} from "../../../services/logging/logging.service";
 import {Logger} from "../../../services/logging/logging.api";
-import { VisitJournalEntity } from "../../entity/learnplace.entity";
+import { VisitJournalEntity } from "../../../entity/learnplace/learnplace.entity";
 
 /**
  * Describes a CRUD repository for {@link VisitJournalEntity}.

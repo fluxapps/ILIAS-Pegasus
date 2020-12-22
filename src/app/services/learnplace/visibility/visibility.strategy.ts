@@ -8,9 +8,9 @@ import { Geolocation } from "../../../services/device/geolocation/geolocation.se
 import { Logger } from "../../../services/logging/logging.api";
 import { Logging } from "../../../services/logging/logging.service";
 import { isDefined } from "../../../util/util.function";
-import { LearnplaceEntity, VisitJournalEntity } from "../../entity/learnplace.entity";
-import { LEARNPLACE_REPOSITORY, LearnplaceRepository } from "../../providers/repository/learnplace.repository";
-import { LEARNPLACE_API, LearnplaceAPI } from "../../providers/rest/learnplace.api";
+import { LearnplaceEntity, VisitJournalEntity } from "../../../entity/learnplace/learnplace.entity";
+import { LEARNPLACE_REPOSITORY, LearnplaceRepository } from "../../../providers/learnplace/repository/learnplace.repository";
+import { LEARNPLACE_API, LearnplaceAPI } from "../../../providers/learnplace/rest/learnplace.api";
 import { IliasCoordinates } from "../geodesy";
 import { VisibilityAware } from "./visibility.context";
 

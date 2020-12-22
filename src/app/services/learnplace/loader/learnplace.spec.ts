@@ -1,13 +1,13 @@
 import {createSpyObject} from "../../../../test.util.spec";
 import {LearnplaceLoadingError, RestLearnplaceLoader} from "./learnplace";
-import {LearnplaceAPI} from "../../providers/rest/learnplace.api";
-import {BlockObject, JournalEntry, LearnPlace} from "../../providers/rest/learnplace.pojo";
-import {LearnplaceRepository} from "../../providers/repository/learnplace.repository";
-import {LearnplaceEntity} from "../../entity/learnplace.entity";
+import {LearnplaceAPI} from "../../../providers/learnplace/rest/learnplace.api";
+import {BlockObject, JournalEntry, LearnPlace} from "../../../providers/learnplace/rest/learnplace.pojo";
+import {LearnplaceRepository} from "../../../providers/learnplace/repository/learnplace.repository";
+import {LearnplaceEntity} from "../../../entity/learnplace/learnplace.entity";
 import {Optional} from "../../../util/util.optional";
-import {MapEntity} from "../../entity/map.entity";
-import {LocationEntity} from "../../entity/location.entity";
-import {VisibilityEntity} from "../../entity/visibility.entity";
+import {MapEntity} from "../../../entity/learnplace/map.entity";
+import {LocationEntity} from "../../../entity/learnplace/location.entity";
+import {VisibilityEntity} from "../../../entity/learnplace/visibility.entity";
 import {HttpRequestError} from "../../../providers/http";
 import {
     AccordionMapper,

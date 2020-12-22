@@ -1,11 +1,11 @@
-import { UserEntity } from "../../entity/user.entity";
-import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
-import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
+import { UserEntity } from "../entity/user.entity";
+import {LoadingPage, LoadingPageType} from "../fallback/loading/loading.component";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "./object-action";
 import {ModalController, NavController} from "@ionic/angular";
-import { Inject, InjectionToken } from "@angular/core";
-import { USER_REPOSITORY, UserRepository } from "../../providers/repository/repository.user";
-import {LearnplaceManager} from "../services/learnplace.management";
-import {ILIASObject} from "../../models/ilias-object";
+import { InjectionToken } from "@angular/core";
+import { UserRepository } from "../providers/repository/repository.user";
+import {LearnplaceManager} from "../services/learnplace/learnplace.management";
+import {ILIASObject} from "../models/ilias-object";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.

@@ -7,8 +7,8 @@ import { from, merge, Observable } from "rxjs";
 import { OfflineException } from "../exceptions/OfflineException";
 import { LearningModuleLoader } from "../learningmodule/services/learning-module-loader";
 import { LEARNING_MODULE_MANAGER } from "../learningmodule/services/learning-module-manager";
-import { LEARNPLACE_MANAGER, LearnplaceManager } from "../learnplace/services/learnplace.management";
-import { VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization } from "../learnplace/services/visitjournal.service";
+import { LEARNPLACE_MANAGER, LearnplaceManager } from "./learnplace/learnplace.management";
+import { VISIT_JOURNAL_SYNCHRONIZATION, VisitJournalSynchronization } from "../services/learnplace/visitjournal.service";
 /** models */
 import { FileData } from "../models/file-data";
 import { FavouriteStatus, ILIASObject } from "../models/ilias-object";

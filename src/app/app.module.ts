@@ -62,21 +62,21 @@ import {
     LearningModulePathBuilderImpl
 } from "./learningmodule/services/learning-module-path-builder";
 // actions for learnplaces
-import { OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction } from "./learnplace/actions/open-learnplace-action";
+import { OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceAction, OpenLearnplaceActionFunction } from "./actions/open-learnplace-action";
 import {
     REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION,
     RemoveLocalLearnplaceAction,
     RemoveLocalLearnplaceActionFunction
-} from "./learnplace/actions/remove-local-learnplace-action";
+} from "./actions/remove-local-learnplace-action";
 // providers for learnplaces
-import { LEARNPLACE_REPOSITORY, TypeORMLearnplaceRepository } from "./learnplace/providers/repository/learnplace.repository";
-import { MAP_REPOSITORY, TypeORMMapRepository } from "./learnplace/providers/repository/map.repository";
-import { TypeORMVisitJournalRepository, VISIT_JOURNAL_REPOSITORY } from "./learnplace/providers/repository/visitjournal.repository";
-import { ILIASLearnplaceAPI, LEARNPLACE_API } from "./learnplace/providers/rest/learnplace.api";
+import { LEARNPLACE_REPOSITORY, TypeORMLearnplaceRepository } from "./providers/learnplace/repository/learnplace.repository";
+import { MAP_REPOSITORY, TypeORMMapRepository } from "./providers/learnplace/repository/map.repository";
+import { TypeORMVisitJournalRepository, VISIT_JOURNAL_REPOSITORY } from "./providers/learnplace/repository/visitjournal.repository";
+import { ILIASLearnplaceAPI, LEARNPLACE_API } from "./providers/learnplace/rest/learnplace.api";
 /** learnplaces */
 // services for learnplaces
-import { LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl } from "./learnplace/services/learnplace.management";
-import { LEARNPLACE_LOADER, RestLearnplaceLoader } from "./learnplace/services/loader/learnplace";
+import { LEARNPLACE_MANAGER, LearnplaceManager, LearnplaceManagerImpl } from "./services/learnplace/learnplace.management";
+import { LEARNPLACE_LOADER, RestLearnplaceLoader } from "./services/learnplace/loader/learnplace";
 import {
     AccordionMapper,
     LinkBlockMapper,
@@ -84,17 +84,17 @@ import {
     TextBlockMapper,
     VideoBlockMapper,
     VisitJournalMapper
-} from "./learnplace/services/loader/mappers";
-import { HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER } from "./learnplace/services/loader/resource";
-import { MAP_SERVICE, VisibilityManagedMapService } from "./learnplace/services/map.service";
-import { VisibilityStrategyApplier } from "./learnplace/services/visibility/visibility.context";
-import { AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy } from "./learnplace/services/visibility/visibility.strategy";
+} from "./services/learnplace/loader/mappers";
+import { HttpResourceTransfer, LEARNPLACE_PATH_BUILDER, LearnplacePathBuilderImpl, RESOURCE_TRANSFER } from "./services/learnplace/loader/resource";
+import { MAP_SERVICE, VisibilityManagedMapService } from "./services/learnplace/map.service";
+import { VisibilityStrategyApplier } from "./services/learnplace/visibility/visibility.context";
+import { AfterVisitPlaceStrategy, AlwaysStrategy, NeverStrategy, OnlyAtPlaceStrategy } from "./services/learnplace/visibility/visibility.strategy";
 import {
     SynchronizedVisitJournalWatch,
     VISIT_JOURNAL_SYNCHRONIZATION,
     VISIT_JOURNAL_WATCH,
     VisitJournalSynchronizationImpl
-} from "./learnplace/services/visitjournal.service";
+} from "./services/learnplace/visitjournal.service";
 import { OnboardingPageModule } from "./pages/onboarding/onboarding.module";
 import { HardwareFeaturePage } from "./pages/test-hardware-feature/test-hardware-feature";
 import { AuthenticationProvider } from "./providers/authentication.provider";

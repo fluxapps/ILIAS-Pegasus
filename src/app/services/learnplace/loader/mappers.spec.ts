@@ -9,17 +9,17 @@ import {
     AccordionBlock,
     ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
     VideoBlock
-} from "../../providers/rest/learnplace.pojo";
-import {TextblockEntity} from "../../entity/textblock.entity";
+} from "../../../providers/learnplace/rest/learnplace.pojo";
+import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
 import {getVisibilityEntity} from "./learnplace.spec";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
-import {LinkblockEntity} from "../../entity/linkblock.entity";
-import {VideoBlockEntity} from "../../entity/videoblock.entity";
+import {PictureBlockEntity} from "../../../entity/learnplace/pictureBlock.entity";
+import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
+import {VideoBlockEntity} from "../../../entity/learnplace/videoblock.entity";
 import {LearnplacePathBuilder, LearnplacePathBuilderImpl, ResourceTransfer} from "./resource";
 import {File} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {AccordionEntity} from "../../entity/accordion.entity";
-import { VisitJournalEntity } from "../../entity/learnplace.entity";
+import {AccordionEntity} from "../../../entity/learnplace/accordion.entity";
+import { VisitJournalEntity } from "../../../entity/learnplace/learnplace.entity";
 
 describe("a text block mapper", () => {
 

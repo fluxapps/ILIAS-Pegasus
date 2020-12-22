@@ -1,21 +1,21 @@
-import {TextblockEntity} from "../../entity/textblock.entity";
+import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
 import {
   AccordionBlock, ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
   VideoBlock
-} from "../../providers/rest/learnplace.pojo";
-import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
-import {VisibilityEntity} from "../../entity/visibility.entity";
+} from "../../../providers/learnplace/rest/learnplace.pojo";
+import {PictureBlockEntity} from "../../../entity/learnplace/pictureBlock.entity";
+import {VisibilityEntity} from "../../../entity/learnplace/visibility.entity";
 import {Optional} from "../../../util/util.optional";
 import {Inject, Injectable} from "@angular/core";
-import {LinkblockEntity} from "../../entity/linkblock.entity";
-import {VideoBlockEntity} from "../../entity/videoblock.entity";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
+import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
+import {VideoBlockEntity} from "../../../entity/learnplace/videoblock.entity";
+import {VisitJournalEntity} from "../../../entity/learnplace/visit-journal.entity";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder, RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {File} from "@ionic-native/file/ngx";
 import {isDefined} from "../../../util/util.function";
-import {AccordionEntity} from "../../entity/accordion.entity";
+import {AccordionEntity} from "../../../entity/learnplace/accordion.entity";
 
 /**
  * Describes a mapper for an array.

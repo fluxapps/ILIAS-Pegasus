@@ -1,7 +1,7 @@
 import {InjectionToken} from "@angular/core";
-import {IOError} from "../../error/errors";
-import {LearnplaceManager} from "../services/learnplace.management";
-import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionError, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
+import {IOError} from "../error/errors";
+import {LearnplaceManager} from "../services/learnplace/learnplace.management";
+import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionError, ILIASObjectActionResult, ILIASObjectActionSuccess} from "./object-action";
 import {TranslateService} from "@ngx-translate/core";
 
 export class RemoveLocalLearnplaceAction extends ILIASObjectAction {
