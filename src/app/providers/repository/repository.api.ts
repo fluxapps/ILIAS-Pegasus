@@ -90,7 +90,6 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
      * @throws {RepositoryError} if an error occurs during this operation
      */
     async save(entity: T): Promise<T> {
-
         try {
 
             await this.database.ready(this.connectionName);
@@ -127,7 +126,7 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
 
             const result: T = await this.connection
                 .getRepository(this.getEntityName())
-                .findOneById(primaryKey) as T;
+                .findOne(primaryKey) as T;
 
             return Optional.ofNullable(result);
 
@@ -156,7 +155,7 @@ export abstract class AbstractCRUDRepository<T, K> implements CRUDRepository<T, 
 
             await this.connection
                 .getRepository(this.getEntityName())
-                .deleteById(entity[this.getIdName()]);
+                .delete(entity[this.getIdName()]);
         } catch (error) {
             this.log.debug(() => `Could not delete entity "${this.getEntityName()}": error=${JSON.stringify(error)}`);
             throw new RepositoryError(Logging.getMessage(error, `Could not delete entity "${this.getEntityName()}"`));

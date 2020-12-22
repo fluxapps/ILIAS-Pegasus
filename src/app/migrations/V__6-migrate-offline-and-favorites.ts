@@ -8,7 +8,6 @@ import {Migration, MigrationVersion} from "../services/migration/migration.api";
 import {QueryRunner} from "typeorm/browser";
 
 export class MigrateOfflineAndFavorites implements Migration {
-
     readonly version: MigrationVersion = new MigrationVersion("V__6");
 
     async up(queryRunner: QueryRunner): Promise<void> {

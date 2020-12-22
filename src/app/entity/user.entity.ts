@@ -38,8 +38,7 @@ export class UserEntity {
   totalUsedStorage: number;
 
   @ManyToMany(type => NewsEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
+    cascade: true,
     eager: true
   })
   @JoinTable(<JoinTableOptions>{

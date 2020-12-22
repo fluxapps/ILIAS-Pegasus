@@ -8,15 +8,15 @@ import {NewsLinkBuilder, NewsLinkBuilderImpl} from "./news.builder";
 describe("A news link builder ", () => {
 
   const mockInstallationLinkSupplier: InstallationLinkSupplier = <InstallationLinkSupplier>{
-    get: (): Promise<string> => undefined
+    get: async(): Promise<string> => undefined
   };
 
   const mockTokenSupplier: TokenSupplier = <TokenSupplier>{
-    get: (): Promise<string> => undefined
+    get: async(): Promise<string> => undefined
   };
 
   const mockUserRepository: UserRepository = <UserRepository>{
-    findAuthenticatedUser: (): Promise<Optional<UserEntity>> => undefined
+    findAuthenticatedUser: async(): Promise<Optional<UserEntity>> => undefined
   };
 
   let subject: NewsLinkBuilder = new NewsLinkBuilderImpl(mockInstallationLinkSupplier, mockTokenSupplier, mockUserRepository);

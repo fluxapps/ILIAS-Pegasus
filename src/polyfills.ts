@@ -55,6 +55,11 @@
  **/
 import "web-animations-js";  // Run `npm install --save web-animations-js`.
 
+//@ts-ignore
+window.TYPED_ARRAY_SUPPORT = true;
+//@ts-ignore
+window.global = window;
+
 /**
  * By default, zone.js will patch all possible macroTask and DomEvents
  * user can disable parts of macroTask/DomEvents patch by setting following flags

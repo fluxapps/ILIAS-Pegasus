@@ -1,9 +1,7 @@
 import {LEARNPLACE_API, LearnplaceAPI} from "../../providers/rest/learnplace.api";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/repository/learnplace.repository";
 import {BlockObject, JournalEntry, LearnPlace} from "../../providers/rest/learnplace.pojo";
-import {LearnplaceEntity} from "../../entity/learnplace.entity";
-import {LocationEntity} from "../../entity/location.entity";
-import {MapEntity} from "../../entity/map.entity";
+import { LearnplaceEntity, LocationEntity, MapEntity, VisitJournalEntity } from "../../entity/learnplace.entity";
 import {Logging} from "../../../services/logging/logging.service";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {VisibilityEntity} from "../../entity/visibility.entity";
@@ -17,7 +15,6 @@ import {
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
 import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest} from "rxjs";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {TextblockEntity} from "../../entity/textblock.entity";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../entity/linkblock.entity";

@@ -15,11 +15,11 @@ import {getVisibilityEntity} from "./learnplace.spec";
 import {PictureBlockEntity} from "../../entity/pictureBlock.entity";
 import {LinkblockEntity} from "../../entity/linkblock.entity";
 import {VideoBlockEntity} from "../../entity/videoblock.entity";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {LearnplacePathBuilder, LearnplacePathBuilderImpl, ResourceTransfer} from "./resource";
 import {File} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
 import {AccordionEntity} from "../../entity/accordion.entity";
+import { VisitJournalEntity } from "../../entity/learnplace.entity";
 
 describe("a text block mapper", () => {
 
@@ -560,9 +560,7 @@ describe("a visit journal mapper", () => {
                     }
                 ];
 
-
                 const result: Array<VisitJournalEntity> = await mapper.map(local, remote);
-
 
                 const expected: Array<VisitJournalEntity> = [
                     new VisitJournalEntity().applies(function(): void {
@@ -577,7 +575,9 @@ describe("a visit journal mapper", () => {
                     })
                 ];
 
-                expect(result).toEqual(expected);
+                const isEqual: boolean = JSON.stringify(result) === JSON.stringify(expected);
+
+                expect(isEqual).toBeTrue();
             });
         });
 

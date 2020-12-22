@@ -34,9 +34,7 @@ export class AccordionEntity {
   visibility: VisibilityEntity;
 
   @ManyToMany(type => TextblockEntity, <RelationOptions>{
-      cascadeInsert: true,
-      cascadeUpdate: true,
-      cascadeRemove: false,
+    cascade: ["insert", "update"],
     eager: true
   })
   @JoinTable(<JoinTableOptions>{
@@ -53,9 +51,7 @@ export class AccordionEntity {
   textBlocks: Array<TextblockEntity>;
 
   @ManyToMany(type => PictureBlockEntity, <RelationOptions>{
-      cascadeInsert: true,
-      cascadeUpdate: true,
-      cascadeRemove: false,
+    cascade: ["insert", "update"],
     eager: true
   })
   @JoinTable(<JoinTableOptions>{
@@ -73,9 +69,7 @@ export class AccordionEntity {
 
 
   @ManyToMany(type => LinkblockEntity, <RelationOptions>{
-      cascadeInsert: true,
-      cascadeUpdate: true,
-      cascadeRemove: false,
+    cascade: ["insert", "update"],
     eager: true
   })
   @JoinTable(<JoinTableOptions>{
@@ -93,9 +87,7 @@ export class AccordionEntity {
 
 
   @ManyToMany(type => VideoBlockEntity, <RelationOptions>{
-      cascadeInsert: true,
-      cascadeUpdate: true,
-      cascadeRemove: false,
+    cascade: ["insert", "update"],
     eager: true
   })
   @JoinTable(<JoinTableOptions>{

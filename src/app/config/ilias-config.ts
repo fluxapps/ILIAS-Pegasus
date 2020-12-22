@@ -1,7 +1,6 @@
 /** angular */
 import {Injectable, InjectionToken} from "@angular/core";
 /** misc */
-import {ILIASConfig} from "./ilias-config";
 import {HttpClient, HttpResponse} from "../providers/http";
 import {isDefined} from "../util/util.function";
 

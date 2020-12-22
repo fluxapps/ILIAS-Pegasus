@@ -11,7 +11,7 @@ import { IonSlides, NavController } from "@ionic/angular";
 })
 export class OnboardingPage {
     readonly appName: Promise<string>;
-    @ViewChild(IonSlides, {"static": false})
+    @ViewChild(IonSlides)
     slides: IonSlides;
 
     constructor(

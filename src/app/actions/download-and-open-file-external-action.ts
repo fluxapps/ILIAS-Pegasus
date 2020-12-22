@@ -136,7 +136,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
     checkFileTooBigAndDownload(settings: Settings): Promise<ILIASObjectActionResult> {
         return new Promise((resolve, reject): void => {
             if (settings.fileTooBig(this.fileObject)) {
-                const alert: Promise<HTMLIonAlertElement> = this.alerter.create({
+                this.alerter.create({
                     header: this.translate.instant("actions.download_with_file_too_big"),
                     message: this.translate.instant("actions.download_with_file_too_big_text"),
                     buttons: [

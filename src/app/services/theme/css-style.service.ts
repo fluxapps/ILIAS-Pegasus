@@ -1,9 +1,6 @@
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {Settings} from "../../models/settings";
-import {IconProvider} from "../../providers/theme/icon.provider";
-import {Icon} from "ionicons/dist/types/icon/icon";
-import {User} from "../../models/user";
 import { FeaturePolicyService, Features } from "../policy/feature-policy.service";
 
 @Injectable({

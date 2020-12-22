@@ -14,7 +14,7 @@ describe("IliasObjectService", () => {
                 {provide: ILIAS_REST, useValue: spyRest}
             ]
         });
-        service = TestBed.get(IliasObjectService);
+        service = TestBed.inject(IliasObjectService);
     });
 
     it("should be created", () => {

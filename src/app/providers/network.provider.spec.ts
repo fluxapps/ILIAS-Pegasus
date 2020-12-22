@@ -1,24 +1,34 @@
 import { TestBed } from "@angular/core/testing";
 import { Network } from "@ionic-native/network/ngx";
-import { Events } from "@ionic/angular";
 import { createSpyObject } from "../../test.util.spec";
 
 import { NetworkProvider } from "./network.provider";
+
+const mockNetwork = new Network();
 
 describe("NetworkProvider", () => {
     let service: NetworkProvider;
 
     const spyNetwork: jasmine.SpyObj<Network> = createSpyObject(Network);
-    const spyEvents: jasmine.SpyObj<Events> = createSpyObject(Events);
+
+    spyNetwork.Connection = {
+        UNKNOWN: "",
+        ETHERNET: "",
+        WIFI: "",
+        CELL_2G: "",
+        CELL_3G: "",
+        CELL_4G: "",
+        CELL: "",
+        NONE: "none"
+    };
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
                 {provide: Network, useValue: spyNetwork},
-                {provide: Events, useValue: spyEvents}
             ]
         });
-        service = TestBed.get(NetworkProvider);
+        service = TestBed.inject(NetworkProvider);
     });
 
     it("should be created", () => {

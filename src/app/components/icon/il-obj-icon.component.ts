@@ -15,7 +15,7 @@ export class IlObjIconComponent implements OnInit, AfterViewInit {
   @Input("ilObject") ilObject: ILIASObject;
   @Input("size") size: number;
 
-  @ViewChild("container", {static: false}) container: ElementRef;
+  @ViewChild("container") container: ElementRef;
 
   linkIcon: Promise<string | SafeUrl>;
   showSubIcon: boolean;

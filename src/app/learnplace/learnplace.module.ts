@@ -6,7 +6,7 @@ import {IonicModule} from "@ionic/angular";
 import {GeolocationModule} from "../services/device/geolocation/geolocation.module";
 
 const routes: Routes = [
-    {path: "", loadChildren: "./pages/learnplace-tabs/learnplace-tabs.module#LearnplaceTabsPageModule"}
+    {path: "", loadChildren: () => import("./pages/learnplace-tabs/learnplace-tabs.module").then((m) => m.LearnplaceTabsPageModule)}
 ];
 
 @NgModule({

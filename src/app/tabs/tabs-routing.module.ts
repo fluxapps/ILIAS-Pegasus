@@ -7,33 +7,60 @@ const routes: Routes = [
         children: [
             {path: "home",
                 children: [
-                    {path: "", loadChildren: "../pages/desktop/desktop.module#DesktopPageModule"},
+                    {
+                        path: "",
+                        loadChildren: () => import("../pages/desktop/desktop.module").then((m) => m.DesktopPageModule)
+                    },
                 ]
             },
             {path: "content",
                 children: [
                     {path: "", redirectTo: "0", pathMatch: "full"},
-                    {path: "details", loadChildren: "../pages/object-details/object-details.module#ObjectDetailsPageModule"},
-                    {path: ":depth", loadChildren: "../pages/object-list/object-list.module#ObjectListPageModule"},
+                    {
+                        path: "details",
+                        loadChildren: () => import("../pages/object-details/object-details.module").then((m) => m.ObjectDetailsPageModule)
+                    },
+                    {
+                        path: ":depth",
+                        loadChildren: () => import("../pages/object-list/object-list.module").then((m) => m.ObjectListPageModule)
+                    },
                 ]
             },
             {path: "news",
                 children: [
-                    {path: "", loadChildren: "../pages/news/news.module#NewsPageModule"},
+                    {
+                        path: "",
+                        loadChildren: () => import("../pages/news/news.module").then((m) => m.NewsPageModule)
+                    },
                 ]
             },
             {path: "favorites",
                 children: [
                     {path: "", redirectTo: "0", pathMatch: "full"},
-                    {path: "details", loadChildren: "../pages/object-details/object-details.module#ObjectDetailsPageModule"},
-                    {path: ":depth", loadChildren: "../pages/object-list/object-list.module#ObjectListPageModule"},
+                    {
+                        path: "details",
+                        loadChildren: () => import("../pages/object-details/object-details.module").then((m) => m.ObjectDetailsPageModule)
+                    },
+                    {
+                        path: ":depth",
+                        loadChildren: () => import("../pages/object-list/object-list.module").then((m) => m.ObjectListPageModule)
+                    },
                 ]
             },
             {path: "menu",
                 children: [
-                    {path: "", loadChildren: "../pages/menu/menu.module#MenuPageModule"},
-                    {path: "settings", loadChildren: "../pages/settings/settings.module#SettingsPageModule"},
-                    {path: "info", loadChildren: "../pages/info/info.module#InfoPageModule"},
+                    {
+                        path: "",
+                        loadChildren: () => import("../pages/menu/menu.module").then((m) => m.MenuPageModule)
+                    },
+                    {
+                        path: "settings",
+                        loadChildren: () => import("../pages/settings/settings.module").then((m) => m.SettingsPageModule)
+                    },
+                    {
+                        path: "info",
+                        loadChildren: () => import("../pages/info/info.module").then((m) => m.InfoPageModule)
+                    },
                 ]
             },
             {path: "**", redirectTo: "home"},

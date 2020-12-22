@@ -8,7 +8,6 @@ import {IonicModule} from "@ionic/angular";
 import {ObjectListPage} from "./object-list";
 import {TranslateModule} from "@ngx-translate/core";
 import { IconModule } from "src/app/components/icon/il-obj-icon.module";
-import { IlObjIconComponent } from "src/app/components/icon/il-obj-icon.component";
 
 const routes: Routes = [
     {path: "", component: ObjectListPage}
@@ -24,7 +23,6 @@ const routes: Routes = [
         TranslateModule,
         RouterModule.forChild(routes)
     ],
-    entryComponents: [IlObjIconComponent],
     declarations: [ObjectListPage]
 })
 export class ObjectListPageModule {}

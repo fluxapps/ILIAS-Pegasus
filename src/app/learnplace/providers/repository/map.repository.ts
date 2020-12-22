@@ -1,10 +1,10 @@
-import {MapEntity} from "../../entity/map.entity";
 import {Injectable, InjectionToken} from "@angular/core";
 import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
 import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 import {Optional} from "../../../util/util.optional";
 import {Logging} from "../../../services/logging/logging.service";
+import { MapEntity } from "../../entity/learnplace.entity";
 
 /**
  * Describes a CRUD repository for {@link MapEntity}.

@@ -161,17 +161,6 @@ import { CssStyleService } from "./services/theme/css-style.service";
 
         HardwareFeaturePage
     ],
-    entryComponents: [
-        // OnboardingPage,
-        LeaveAppDialog,
-        //SyncFinishedModal,
-        LoadingPage,
-        //HardwareFeaturePage,
-        // fallback screens
-        //WifiFallbackScreen,
-        //LocationFallbackScreen,
-        //RoamingFallbackScreen,
-    ],
     imports: [
         HttpClientModule,
         BrowserModule,

@@ -112,9 +112,11 @@ export const INIT_APP: FactoryProvider = {
         Settings.NETWORK = network;
         SQLiteDatabaseService.SQLITE = sqlite;
 
+        console.log("before database init")
         await database.ready(PEGASUS_CONNECTION_NAME);
         await migration.migrate();
 
+        console.log("before user init")
         await AuthenticationProvider.loadUserFromDatabase();
 
         if(AuthenticationProvider.isLoggedIn()) {

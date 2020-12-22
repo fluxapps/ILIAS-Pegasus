@@ -9,11 +9,10 @@ import {LearnplaceTabsPage} from "./learnplace-tabs.component";
 import {TranslateModule} from "@ngx-translate/core";
 
 const routes: Routes = [
-    {path: "", component: LearnplaceTabsPage,
+    {path: ":refId", component: LearnplaceTabsPage,
         children: [
-            {path: "", redirectTo: "content"},
-            {path: "content", loadChildren: "../content/content.module#ContentPageModule"},
-            {path: "map", loadChildren: "../map/map.module#MapPageModule"},
+            {path: "content", loadChildren: () => import("../content/content.module").then(m => m.ContentPageModule)},
+            {path: "map", loadChildren: () =>  import("../map/map.module").then(m => m.MapPageModule)}
         ]
     }
 ];

@@ -36,7 +36,7 @@ export interface NewsLinkBuilder extends Builder<Promise<string>> {
   context(context: number): NewsLinkBuilder;
 }
 
-export const NEWS_LINK_BUILDER: InjectionToken<() => NewsLinkBuilder> = new InjectionToken("token for news link builder factory");
+export const NEWS_LINK_BUILDER: InjectionToken<() => NewsLinkBuilder> = new InjectionToken<() => NewsLinkBuilder>("token for news link builder factory");
 
 @Injectable({
     providedIn: "root"

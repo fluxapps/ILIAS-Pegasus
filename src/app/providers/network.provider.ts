@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Network } from "@ionic-native/network/ngx";
-import { Events } from "@ionic/angular";
+import { Observable, ReplaySubject } from "rxjs";
 
-export enum StatusEnum {
+export enum NetworkStatus {
     Online,
     Offline
 }
@@ -12,12 +12,15 @@ export enum StatusEnum {
 })
 export class NetworkProvider {
 
-    private previousStatus: StatusEnum = StatusEnum.Online;
+    private previousStatus: NetworkStatus = NetworkStatus.Online;
+    private _state: ReplaySubject<NetworkStatus> = new ReplaySubject<NetworkStatus>(1)
+
+    readonly state: Observable<NetworkStatus> = this._state.asObservable();
 
     constructor(
         private readonly network: Network,
-        private readonly eventCtrl: Events
     ) {
+        this._state.next(network.type !== network.Connection.NONE ? NetworkStatus.Online : NetworkStatus.Offline);
     }
 
     /**
@@ -25,20 +28,18 @@ export class NetworkProvider {
      */
     initNetworkEvents(): void {
         this.network.onDisconnect().subscribe(() => {
-            if (this.previousStatus == StatusEnum.Online) {
-                this.eventCtrl.publish("network:offline");
-                this.eventCtrl.publish("network:change");
+            if (this.previousStatus == NetworkStatus.Online) {
+                this._state.next(NetworkStatus.Offline);
             }
-            this.previousStatus = StatusEnum.Offline;
+            this.previousStatus = NetworkStatus.Offline;
         });
 
         this.network.onConnect().subscribe(() => {
-            if (this.previousStatus == StatusEnum.Offline) {
-                this.eventCtrl.publish("network:online");
-                this.eventCtrl.publish("network:change");
+            if (this.previousStatus == NetworkStatus.Offline) {
+                this._state.next(NetworkStatus.Online);
             }
 
-            this.previousStatus = StatusEnum.Online;
+            this.previousStatus = NetworkStatus.Online;
         })
     }
 }

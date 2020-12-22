@@ -1,7 +1,7 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import { SafeUrl } from "@angular/platform-browser";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, Events, ModalController, NavController, ToastController} from "@ionic/angular";
+import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -42,6 +42,7 @@ import {
     OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
     OpenScormLearningModuleActionFunction
 } from "../../learningmodule/actions/open-scorm-learning-module-action";
+import { NetworkProvider, NetworkStatus } from "src/app/providers/network.provider";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -108,7 +109,7 @@ export class ObjectListPage {
                 private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
                 private readonly featurePolicy: FeaturePolicyService,
-                private readonly eventCtrl: Events
+                private readonly networkProvider: NetworkProvider
     ) { }
 
     /* = = = = = = = *
@@ -214,15 +215,9 @@ export class ObjectListPage {
      * observes the network status and updates on changes
      */
     observeNetworkState(): void {
-        this.eventCtrl.subscribe("network:online", () => {
+        this.networkProvider.state.subscribe(state => {
             const currentState: PageState = this.state;
-            currentState.online = true;
-            this.setPageStateAndRender(currentState);
-        });
-
-        this.eventCtrl.subscribe("network:offline", () => {
-            const currentState: PageState = this.state;
-            currentState.online = false;
+            currentState.online = state === NetworkStatus.Online ? true : false;
             this.setPageStateAndRender(currentState);
         });
     }

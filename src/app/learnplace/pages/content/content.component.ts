@@ -1,10 +1,12 @@
 import { Component, Inject, NgZone, OnDestroy } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { ViewDidLeave, ViewWillEnter } from "ionic-lifecycle-interface";
 import { ReplaySubject, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { ILIASObject } from "src/app/models/ilias-object";
+import { AuthenticationProvider } from "src/app/providers/authentication.provider";
 import { BlockModel } from "../../services/block.model";
 import { BLOCK_SERVICE, BlockService } from "../../services/block.service";
-import { LearnplaceNavParams } from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     templateUrl: "content.html",
@@ -18,11 +20,15 @@ export class ContentPage implements ViewWillEnter, ViewDidLeave, OnDestroy {
     constructor(
         @Inject(BLOCK_SERVICE) private readonly blockService: BlockService,
         private readonly zone: NgZone,
+        private readonly route: ActivatedRoute,
     ) { }
 
-    ionViewWillEnter(): void {
+    async ionViewWillEnter(): Promise<void> {
+        const lpRefId: number = Number.parseInt(this.route.snapshot.parent.parent.paramMap.get("refId"));
+        const ilObj: ILIASObject = await ILIASObject.findByRefIdAndUserId(lpRefId, AuthenticationProvider.getUser().id);
+
         // we detect property changes, when a block list is emitted to update the UI with the new block list
-        this.blockService.getBlockList(LearnplaceNavParams.learnplaceObjectId)
+        this.blockService.getBlockList(ilObj.objId)
             .pipe(
                 takeUntil(this.dispose$)
             ).subscribe((it) => {

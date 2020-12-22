@@ -6,8 +6,7 @@ import {
 } from "./visitjournal.service";
 import {LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {VisitJournalRepository} from "../providers/repository/visitjournal.repository";
-import {VisitJournalEntity} from "../entity/visit-journal.entity";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
+import {LearnplaceEntity, VisitJournalEntity} from "../entity/learnplace.entity";
 import {LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {UserRepository} from "../../providers/repository/repository.user";
 import {IllegalStateError} from "../../error/errors";
