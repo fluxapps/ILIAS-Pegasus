@@ -3,7 +3,6 @@ import { mergeMap, filter, takeWhile, map, tap, catchError, withLatestFrom, take
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {LEARNPLACE_API, LearnplaceAPI} from "../providers/rest/learnplace.api";
 import {VISIT_JOURNAL_REPOSITORY, VisitJournalRepository} from "../providers/repository/visitjournal.repository";
-import {VisitJournalEntity} from "../entity/visit-journal.entity";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {LocationWatch} from "./location";
@@ -13,7 +12,7 @@ import {Geolocation} from "../../services/device/geolocation/geolocation.service
 import {isDefined} from "../../util/util.function";
 import {IllegalStateError} from "../../error/errors";
 import {IliasCoordinates} from "./geodesy";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
+import {LearnplaceEntity, VisitJournalEntity} from "../entity/learnplace.entity";
 import {UserEntity} from "../../entity/user.entity";
 import { Observable, from, combineLatest, of, Subject } from "rxjs";
 
@@ -198,7 +197,6 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
      * @return {boolean} true if the conditions are met, otherwise false
      */
     private checkConditions(it: [UserEntity, LearnplaceEntity, IliasCoordinates]): boolean {
-
         const [user, learnplace, position]: [UserEntity, LearnplaceEntity, IliasCoordinates] = it;
 
         if (isDefined(learnplace.visitJournal.find(it => it.userId == user.iliasUserId))) {

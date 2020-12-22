@@ -73,7 +73,6 @@
     "no-unsafe-finally": true,
     "no-unused-expression": true,
     "no-duplicate-variable": true,
-    "no-unused-variable": true,
     "no-var-keyword": true,
     "no-void-expression": [true, "ignore-arrow-function-shorthand"],
     "prefer-conditional-expression": [true, "check-else-if"],

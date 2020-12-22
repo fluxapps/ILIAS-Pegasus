@@ -1,17 +1,66 @@
-import {LocationEntity} from "./location.entity";
-import {MapEntity} from "./map.entity";
 import {
     Column,
-    Entity, JoinColumn, JoinColumnOptions, JoinTable, JoinTableOptions, ManyToMany, OneToMany, OneToOne, PrimaryColumn,
+    Entity,
+    JoinColumn,
+    JoinColumnOptions,
+    JoinTable,
+    JoinTableOptions,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+    PrimaryGeneratedColumn,
     RelationOptions
 } from "typeorm/browser";
 import {TextblockEntity} from "./textblock.entity";
 import {PictureBlockEntity} from "./pictureBlock.entity";
 import {LinkblockEntity} from "./linkblock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";
-import {VisitJournalEntity} from "./visit-journal.entity";
+import { VisibilityEntity } from "./visibility.entity";
 import {AccordionEntity} from "./accordion.entity";
 import {UserEntity} from "../../entity/user.entity";
+
+@Entity("Location")
+export class LocationEntity {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    latitude: number;
+
+    @Column()
+    longitude: number;
+
+    @Column()
+    elevation: number;
+
+    @Column()
+    radius: number;
+
+    @OneToOne(() => LearnplaceEntity, (type) => type.location)
+    @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
+    learnplace: unknown;
+}
+
+@Entity("Map")
+export class MapEntity {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    zoom: number;
+
+    @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
+    @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
+    visibility: VisibilityEntity;
+
+    @OneToOne(() => LearnplaceEntity, (type) => type.map)
+    @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
+    learnplace: unknown;
+}
 
 @Entity("Learnplace")
 export class LearnplaceEntity {
@@ -22,113 +71,123 @@ export class LearnplaceEntity {
     @Column()
     objectId: number;
 
-    @OneToOne(type => UserEntity, <RelationOptions>{cascadeAll: false, lazy: true})
+    @OneToOne(type => UserEntity, <RelationOptions>{cascade: false, lazy: true})
     @JoinColumn(<JoinColumnOptions>{name: "FK_user", referencedColumnName: "id"})
     user: Promise<UserEntity>;
 
-    @OneToOne(type => LocationEntity, location => location.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    @OneToOne(() => LocationEntity, (type) => type.learnplace, <RelationOptions>{cascade: true, eager: true})
     location: LocationEntity;
 
-    @OneToOne(type => MapEntity, map => map.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    @OneToOne(() => MapEntity, (type) => type.learnplace, <RelationOptions>{cascade: true, eager: true})
     map: MapEntity;
 
-    @OneToMany(type => VisitJournalEntity, visitJournal => visitJournal.learnplace, <RelationOptions>{cascadeAll: true, eager: true})
+    @OneToMany(() => VisitJournalEntity, (type) => type.learnplace, <RelationOptions>{cascade: true, eager: true})
     visitJournal: Array<VisitJournalEntity>;
 
-    @ManyToMany(type => AccordionEntity, <RelationOptions>{
-    cascadeInsert: true,
-    cascadeUpdate: true,
-    cascadeRemove: false,
-    eager: true
+    @ManyToMany(() => AccordionEntity, <RelationOptions>{
+        cascade: ["insert", "update"],
+        eager: true
     })
     @JoinTable(<JoinTableOptions>{
-    name: "learnplace_accordion",
-    joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: <JoinColumnOptions>{
-      name: "accordionId",
-      referencedColumnName: "id"
-    }
+        name: "learnplace_accordion",
+        joinColumn: <JoinColumnOptions>{
+            name: "learnplaceId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: <JoinColumnOptions>{
+            name: "accordionId",
+            referencedColumnName: "id"
+        }
     })
     accordionBlocks: Array<AccordionEntity>;
 
-    @ManyToMany(type => TextblockEntity, <RelationOptions>{
-        cascadeInsert: true,
-        cascadeUpdate: true,
-        cascadeRemove: false,
-    eager: true
+    @ManyToMany(() => TextblockEntity, <RelationOptions>{
+        cascade: ["insert", "update"],
+        eager: true
     })
     @JoinTable(<JoinTableOptions>{
-    name: "learnplace_textblock",
-    joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: <JoinColumnOptions>{
-      name: "textblockId",
-      referencedColumnName: "id"
-    }
+        name: "learnplace_textblock",
+        joinColumn: <JoinColumnOptions>{
+            name: "learnplaceId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: <JoinColumnOptions>{
+            name: "textblockId",
+            referencedColumnName: "id"
+        }
     })
     textBlocks: Array<TextblockEntity>;
 
-    @ManyToMany(type => PictureBlockEntity, <RelationOptions>{
-        cascadeInsert: true,
-        cascadeUpdate: true,
-        cascadeRemove: false,
-    eager: true
+    @ManyToMany(() => PictureBlockEntity, <RelationOptions>{
+        cascade: ["insert", "update"],
+        eager: true
     })
     @JoinTable(<JoinTableOptions>{
-    name: "learnplace_pictureblock",
-    joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: <JoinColumnOptions>{
-      name: "pictureblockId",
-      referencedColumnName: "id"
-    }
+        name: "learnplace_pictureblock",
+        joinColumn: <JoinColumnOptions>{
+            name: "learnplaceId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: <JoinColumnOptions>{
+            name: "pictureblockId",
+            referencedColumnName: "id"
+        }
     })
     pictureBlocks: Array<PictureBlockEntity>;
 
 
-    @ManyToMany(type => LinkblockEntity, <RelationOptions>{
-        cascadeInsert: true,
-        cascadeUpdate: true,
-        cascadeRemove: false,
-    eager: true
+    @ManyToMany(() => LinkblockEntity, <RelationOptions>{
+        cascade: ["insert", "update"],
+        eager: true
     })
     @JoinTable(<JoinTableOptions>{
-    name: "learnplace_linkblock",
-    joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: <JoinColumnOptions>{
-      name: "linkblockId",
-      referencedColumnName: "id"
-    }
+        name: "learnplace_linkblock",
+        joinColumn: <JoinColumnOptions>{
+            name: "learnplaceId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: <JoinColumnOptions>{
+            name: "linkblockId",
+            referencedColumnName: "id"
+        }
     })
     linkBlocks: Array<LinkblockEntity>;
 
 
-    @ManyToMany(type => VideoBlockEntity, <RelationOptions>{
-        cascadeInsert: true,
-        cascadeUpdate: true,
-        cascadeRemove: false,
-    eager: true
+    @ManyToMany(() => VideoBlockEntity, <RelationOptions>{
+        cascade: ["insert", "update"],
+        eager: true
     })
     @JoinTable(<JoinTableOptions>{
-    name: "learnplace_videoblock",
-    joinColumn: <JoinColumnOptions>{
-      name: "learnplaceId",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: <JoinColumnOptions>{
-      name: "videoblockId",
-      referencedColumnName: "id"
-    }
+        name: "learnplace_videoblock",
+        joinColumn: <JoinColumnOptions>{
+            name: "learnplaceId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: <JoinColumnOptions>{
+            name: "videoblockId",
+            referencedColumnName: "id"
+        }
     })
     videoBlocks: Array<VideoBlockEntity>;
+}
+
+@Entity("VisitJournal")
+export class VisitJournalEntity {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    userId: number;
+
+    @Column()
+    time: number;
+
+    @Column()
+    synchronized: boolean;
+
+    @ManyToOne(() => LearnplaceEntity, (type) => type.visitJournal)
+    @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace"})
+    learnplace: LearnplaceEntity;
 }

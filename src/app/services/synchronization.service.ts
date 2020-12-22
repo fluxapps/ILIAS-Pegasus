@@ -1,7 +1,7 @@
 /** angular */
 import { Inject, Injectable } from "@angular/core";
 import { FileEntry } from "@ionic-native/file";
-import { AlertController, Events } from "@ionic/angular";
+import { AlertController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { from, merge, Observable } from "rxjs";
 import { OfflineException } from "../exceptions/OfflineException";
@@ -17,6 +17,7 @@ import { User } from "../models/user";
 import { AuthenticationProvider } from "../providers/authentication.provider";
 /** misc */
 import { DataProvider } from "../providers/data-provider.provider";
+import { NetworkProvider, NetworkStatus } from "../providers/network.provider";
 import { ThemeProvider } from "../providers/theme/theme.provider";
 /** services */
 import { SQLiteDatabaseService } from "./database.service";
@@ -84,12 +85,14 @@ export class SynchronizationService {
                 @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleLoader,
                 private readonly alertCtr: AlertController,
                 private readonly themeProvider: ThemeProvider,
-                private readonly eventCtrl: Events
+                networkProvider: NetworkProvider
     ) {
-        eventCtrl.subscribe("network:online", () => {
-            console.log('Im Online and downloading now');
-            this.loadAllOfflineContent();
-        });
+        networkProvider.state.subscribe(state => {
+            if (state === NetworkStatus.Online && AuthenticationProvider.isLoggedIn()) {
+                console.log('Im Online and downloading now');
+                this.loadAllOfflineContent();
+            }
+        })
     }
 
     /**

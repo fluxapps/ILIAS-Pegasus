@@ -8,8 +8,7 @@ import { Geolocation } from "../../../services/device/geolocation/geolocation.se
 import { Logger } from "../../../services/logging/logging.api";
 import { Logging } from "../../../services/logging/logging.service";
 import { isDefined } from "../../../util/util.function";
-import { LearnplaceEntity } from "../../entity/learnplace.entity";
-import { VisitJournalEntity } from "../../entity/visit-journal.entity";
+import { LearnplaceEntity, VisitJournalEntity } from "../../entity/learnplace.entity";
 import { LEARNPLACE_REPOSITORY, LearnplaceRepository } from "../../providers/repository/learnplace.repository";
 import { LEARNPLACE_API, LearnplaceAPI } from "../../providers/rest/learnplace.api";
 import { IliasCoordinates } from "../geodesy";

@@ -5,11 +5,19 @@ import {AuthenticationProvider} from "./providers/authentication.provider";
 
 const routes: Routes = [
     {path: "", redirectTo: "tabs", pathMatch: "full"},
-    {path: "tabs", loadChildren: "./tabs/tabs.module#TabsPageModule", canActivate: [AuthenticationProvider]},
-    {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
-    {path: "onboarding", loadChildren: "./pages/onboarding/onboarding.module#OnboardingPageModule"},
-    {path: "learnplace/:id", loadChildren: "./learnplace/learnplace.module#LearnplaceModule", canActivate: [AuthenticationProvider]},
-    {path: "learningmodule", loadChildren: "./learningmodule/learning-module.module#LearningModuleModule", canActivate: [AuthenticationProvider]},
+    {path: "tabs", loadChildren: () => import("./tabs/tabs.module").then((m) => m.TabsPageModule), canActivate: [AuthenticationProvider]},
+    {path: "login", loadChildren: () => import("./pages/login/login.module").then((m) => m.LoginPageModule)},
+    {path: "onboarding", loadChildren: () => import("./pages/onboarding/onboarding.module").then((m) => m.OnboardingPageModule)},
+    {
+        path: "learnplace",
+        loadChildren: () => import("./learnplace/learnplace.module").then((m) => m.LearnplaceModule),
+        canActivate: [AuthenticationProvider]
+    },
+    {
+        path: "learningmodule",
+        loadChildren: () => import("./learningmodule/learning-module.module").then((m) => m.LearningModuleModule),
+        canActivate: [AuthenticationProvider]
+    },
     {path: "**", redirectTo: "login"},
 ];
 

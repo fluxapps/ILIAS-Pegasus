@@ -4,19 +4,19 @@ import {Column, Entity, JoinColumn, JoinColumnOptions, ManyToOne, PrimaryGenerat
 @Entity("VisitJournal")
 export class VisitJournalEntity {
 
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  userId: number;
+    @Column()
+    userId: number;
 
-  @Column()
-  time: number;
+    @Column()
+    time: number;
 
-  @Column()
-  synchronized: boolean;
+    @Column()
+    synchronized: boolean;
 
-  @ManyToOne(type => LearnplaceEntity, learnplace => learnplace.visitJournal)
-  @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
-  learnplace: LearnplaceEntity;
+    @ManyToOne(type => LearnplaceEntity, learnplace => learnplace.visitJournal)
+    @JoinColumn(<JoinColumnOptions>{name: "FK_learnplace", referencedColumnName: "id"})
+    learnplace: LearnplaceEntity;
 }

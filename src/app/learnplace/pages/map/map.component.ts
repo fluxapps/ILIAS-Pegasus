@@ -1,12 +1,14 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import {ViewDidLeave, ViewWillEnter, ViewDidEnter} from "ionic-lifecycle-interface";
 import {Subscription} from "rxjs";
+import { ILIASObject } from "src/app/models/ilias-object";
+import { AuthenticationProvider } from "src/app/providers/authentication.provider";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
 import {CameraOptions, GeoCoordinate, MapBuilder, Marker} from "../../../services/map.service";
 import {MapModel} from "../../services/block.model";
 import {MAP_SERVICE, MapService} from "../../services/map.service";
-import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     selector: "map",
@@ -15,9 +17,10 @@ import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 })
 export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDestroy {
 
-    @ViewChild("map", {"static": false}) mapElement: Element;
+    @ViewChild("map") mapElement: Element;
 
     private learnplaceObjectId: number;
+    private lpRefId: number;
     title: string;
 
     map: MapModel | undefined = undefined;
@@ -29,17 +32,21 @@ export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDes
     constructor(
         @Inject(MAP_SERVICE) private readonly mapService: MapService,
         private readonly detectorRef: ChangeDetectorRef,
+        private readonly route: ActivatedRoute,
     ) { }
 
-    ionViewWillEnter(): void {
-        this.learnplaceObjectId = LearnplaceNavParams.learnplaceObjectId;
-        this.title = LearnplaceNavParams.learnplaceName;
+    async ionViewWillEnter(): Promise<void> {
+        this.lpRefId = Number.parseInt(this.route.snapshot.parent.parent.paramMap.get("refId"));
+        const ilObj: ILIASObject = await ILIASObject.findByRefIdAndUserId(this.lpRefId, AuthenticationProvider.getUser().id);
+        this.learnplaceObjectId = ilObj.objId;
+        this.title = ilObj.title;
+
         this.mapSubscription = this.mapService.getMap(this.learnplaceObjectId)
             .subscribe({
                 next: this.init.bind(this),
                 error: (error): void => {
                     this.log.error(() => Logging.getMessage(error, "Map could not be initialized"));
-                    this.log.debug(() => `Error during map initialization: ${JSON.stringify(error)}`);
+                    this.log.error(() => `Error during map initialization: ${JSON.stringify(error)}`);
                 }
             });
     }

@@ -1,10 +1,10 @@
 import {AbstractCRUDRepository, CRUDRepository, RepositoryError} from "../../../providers/repository/repository.api";
-import {VisitJournalEntity} from "../../entity/visit-journal.entity";
 import {Injectable, InjectionToken} from "@angular/core";
 import {Database} from "../../../services/database/database";
 import {PEGASUS_CONNECTION_NAME} from "../../../config/typeORM-config";
 import {Logging} from "../../../services/logging/logging.service";
 import {Logger} from "../../../services/logging/logging.api";
+import { VisitJournalEntity } from "../../entity/learnplace.entity";
 
 /**
  * Describes a CRUD repository for {@link VisitJournalEntity}.

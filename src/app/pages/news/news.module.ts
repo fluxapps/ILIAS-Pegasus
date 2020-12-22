@@ -24,7 +24,6 @@ const routes: Routes = [
         IconModule,
         RouterModule.forChild(routes)
     ],
-    entryComponents: [IlObjIconComponent],
     declarations: [NewsPage]
 })
 export class NewsPageModule {}

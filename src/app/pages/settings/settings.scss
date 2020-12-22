@@ -33,3 +33,7 @@ ion-label.activeUser {
     color: var(--ion-color-primary, black) !important;
     --color: var(--ion-color-primary, black) !important;
 }
+
+ion-toolbar {
+    padding: 0 1em;
+}

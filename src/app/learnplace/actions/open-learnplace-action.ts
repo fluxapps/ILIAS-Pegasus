@@ -4,7 +4,6 @@ import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, I
 import {ModalController, NavController} from "@ionic/angular";
 import { Inject, InjectionToken } from "@angular/core";
 import { USER_REPOSITORY, UserRepository } from "../../providers/repository/repository.user";
-import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
 import {LearnplaceManager} from "../services/learnplace.management";
 import {ILIASObject} from "../../models/ilias-object";
 
@@ -40,10 +39,8 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
             const ilObj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learnplaceObjectId, user.id);
             if(!ilObj.needsDownload)
                 await this.manager.load(this.learnplaceObjectId);
-            // open page for learnplace
-            LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
-            LearnplaceNavParams.learnplaceName = this.learnplaceName;
-            await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);
+
+            await this.nav.navigateForward(["learnplace", ilObj.refId, "content"]);
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {

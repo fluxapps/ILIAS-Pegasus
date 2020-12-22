@@ -1,5 +1,5 @@
-import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner, Table, TableColumn} from "typeorm/browser";
+import { Migration, MigrationVersion } from "../services/migration/migration.api";
+import { QueryRunner, Table, TableColumn } from "typeorm/browser";
 
 /**
  * migration for learning modules
@@ -10,13 +10,16 @@ export class CreateLearningModulesSchema implements Migration {
     readonly version: MigrationVersion = new MigrationVersion("V__10");
 
     async up(queryRunner: QueryRunner): Promise<void> {
-        const learningModule: Table = new Table("learning_modules", [
-            new TableColumn({name: "id", type: "integer", isPrimary: true, isGenerated: true, isNullable: false}),
-            new TableColumn({name: "objId", type: "integer",  isPrimary: false, isNullable: false}),
-            new TableColumn({name: "userId", type: "integer", isNullable: false}),
-            new TableColumn({name: "relativeStartFile", type: "string", isNullable: false}),
-            new TableColumn({name: "timestamp", type: "integer", isNullable: false}),
-        ]);
+        const learningModule: Table = new Table({
+            name: "learning_modules",
+            columns: [
+                new TableColumn({name: "id", type: "integer", isPrimary: true, isGenerated: true, isNullable: false}),
+                new TableColumn({name: "objId", type: "integer", isPrimary: false, isNullable: false}),
+                new TableColumn({name: "userId", type: "integer", isNullable: false}),
+                new TableColumn({name: "relativeStartFile", type: "string", isNullable: false}),
+                new TableColumn({name: "timestamp", type: "integer", isNullable: false}),
+            ]
+        });
 
         await queryRunner.createTable(learningModule);
     }

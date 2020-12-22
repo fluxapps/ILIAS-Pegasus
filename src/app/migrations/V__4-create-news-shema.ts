@@ -1,5 +1,5 @@
-import {Migration, MigrationVersion} from "../services/migration/migration.api";
-import {QueryRunner, Table, TableColumn} from "typeorm/browser";
+import { Migration, MigrationVersion } from "../services/migration/migration.api";
+import { QueryRunner, Table, TableColumn } from "typeorm/browser";
 
 /**
  * Migration for News page.
@@ -9,32 +9,38 @@ import {QueryRunner, Table, TableColumn} from "typeorm/browser";
  */
 export class CreateNews implements Migration {
 
-  readonly version: MigrationVersion = new MigrationVersion("V__4");
+    readonly version: MigrationVersion = new MigrationVersion("V__4");
 
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    const news: Table = new Table("News", [
-      new TableColumn({name: "newsId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
-      new TableColumn({name: "newsContext", type: "integer", isNullable: false}),
-      new TableColumn({name: "title", type: "string", isNullable: false}),
-      new TableColumn({name: "subtitle", type: "string", isNullable: false}),
-      new TableColumn({name: "content", type: "string", isNullable: false}),
-      new TableColumn({name: "createDate", type: "integer", isNullable: false}),
-      new TableColumn({name: "updateDate", type: "integer", isNullable: false}),
-    ]);
+    async up(queryRunner: QueryRunner): Promise<void> {
+        const news: Table = new Table({
+            name: "News",
+            columns: [
+                new TableColumn({name: "newsId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+                new TableColumn({name: "newsContext", type: "integer", isNullable: false}),
+                new TableColumn({name: "title", type: "string", isNullable: false}),
+                new TableColumn({name: "subtitle", type: "string", isNullable: false}),
+                new TableColumn({name: "content", type: "string", isNullable: false}),
+                new TableColumn({name: "createDate", type: "integer", isNullable: false}),
+                new TableColumn({name: "updateDate", type: "integer", isNullable: false}),
+            ]
+        });
 
-    const usersNewsJunctionTable: Table = new Table("users_news", [
-      new TableColumn({name: "usersId", type: "integer", isPrimary: true,  isGenerated: false, isNullable: false}),
-      new TableColumn({name: "newsId", type: "integer", isPrimary: true,  isGenerated: false, isNullable: false})
-    ]);
+        const usersNewsJunctionTable: Table = new Table({
+            name: "users_news",
+            columns: [
+                new TableColumn({name: "usersId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false}),
+                new TableColumn({name: "newsId", type: "integer", isPrimary: true, isGenerated: false, isNullable: false})
+            ]
+        });
 
-    await queryRunner.createTable(news);
-    await queryRunner.createTable(usersNewsJunctionTable);
+        await queryRunner.createTable(news);
+        await queryRunner.createTable(usersNewsJunctionTable);
 
-  }
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("News");
-    await queryRunner.dropTable("users_news");
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropTable("News");
+        await queryRunner.dropTable("users_news");
+    }
 }

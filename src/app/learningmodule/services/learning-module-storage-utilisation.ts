@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@angular/core";
 import { DirectoryEntry, File } from "@ionic-native/file/ngx";
+import { FileStorageService } from "src/app/services/filesystem/file-storage.service";
 import { StorageUtilization } from "../../services/filesystem/user-storage.mamager";
 import { UserStorageService } from "../../services/filesystem/user-storage.service";
 import { Logger } from "../../services/logging/logging.api";
@@ -15,6 +16,7 @@ export class LearningModuleStorageUtilisation implements StorageUtilization {
 
     constructor(
         private readonly fileSystem: File,
+        private readonly fileStorage: FileStorageService,
         @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
     ) {
     }
@@ -23,7 +25,7 @@ export class LearningModuleStorageUtilisation implements StorageUtilization {
         try {
             const lmDirPath: string = await this.pathBuilder.getLmDirByObjId(objectId);
             const dir: DirectoryEntry = await this.fileSystem.resolveDirectoryUrl(lmDirPath);
-            return UserStorageService.getDirSizeRecursive(dir.nativeURL, this.fileSystem);
+            return this.fileStorage.getDirSizeRecursive(dir.nativeURL);
         } catch (error) {
             // Cordova file plugin throws its own error objects. Code 1 means NOT_FOUND_ERR.
             // See: https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-file/#list-of-error-codes-and-meanings

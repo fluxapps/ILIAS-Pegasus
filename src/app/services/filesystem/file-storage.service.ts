@@ -1,4 +1,4 @@
-import {DirectoryEntry, File, Flags} from "@ionic-native/file/ngx";
+import {DirectoryEntry, Entry, File, Flags} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
 import {Injectable} from "@angular/core";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
@@ -120,5 +120,49 @@ export class FileStorageService {
         } catch(e) {
             return false;
         }
+    }
+
+    /**
+     * takes a url with at least one subdirectory and returns an array with the
+     * first entry as the path to the last directory and the second entry as the
+     * name of the last directory
+     * @param dir string
+     */
+    private decomposeDirUrl(dir: string): Array<string> {
+        let ind: number = dir.lastIndexOf("/");
+        dir = dir.substring(0, ind);
+        ind = dir.lastIndexOf("/");
+        return [dir.substring(0, ind), dir.substring(ind+1, dir.length)];
+    }
+
+    /**
+     * computes the used disk space for the contents of a directory
+     * @param dir string
+     * @param fileSystem
+     */
+    async getDirSizeRecursive(dir: string): Promise<number> {
+        let list: Array<Entry>;
+        try {
+            const dirArr: Array<string> = this.decomposeDirUrl(dir);
+            list = await this.fileSystem.listDir(dirArr[0], dirArr[1]);
+        } catch (e) {
+            console.log(`error: ${e.message} for directory ${dir}`);
+        }
+
+        let diskSpace: number = 0;
+
+        let newList: Array<Entry>;
+        while(list.length) {
+            const entry: Entry = list.pop();
+            if(entry.isFile) {
+                entry.getMetadata(md => diskSpace += md.size);
+            } else {
+                const dirArr: Array<string> = this.decomposeDirUrl(entry.nativeURL);
+                newList = await this.fileSystem.listDir(dirArr[0], dirArr[1]);
+                newList.forEach(e => list.push(e));
+            }
+        }
+
+        return diskSpace;
     }
 }

@@ -5,8 +5,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {IonicModule} from "@ionic/angular";
 
 const routes: Routes = [
-    {path: "sahs", loadChildren: "./pages/scorm/scorm.module#ScormPageModule"},
-    {path: "htlm", loadChildren: "./pages/htlm/htlm.module#HtlmPageModule"},
+    {path: "sahs", loadChildren: () => import('./pages/scorm/scorm.module').then(m => m.ScormPageModule)},
+    {path: "htlm", loadChildren: () => import('./pages/htlm/htlm.module').then(m => m.HtlmPageModule)},
 ];
 
 @NgModule({
