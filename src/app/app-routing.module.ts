@@ -19,10 +19,6 @@ const routes: Routes = [
         canActivate: [AuthenticationProvider]
     },
     {path: "**", redirectTo: "login"},
-  {
-    path: 'learnplace',
-    loadChildren: () => import('./pages/learnplace/learnplace.module').then( m => m.LearnplacePageModule)
-  },
 ];
 
 @NgModule({

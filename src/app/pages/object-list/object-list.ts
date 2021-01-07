@@ -41,6 +41,7 @@ import {
     OpenScormLearningModuleActionFunction
 } from "../../learningmodule/actions/open-scorm-learning-module-action";
 import { NetworkProvider, NetworkStatus } from "src/app/providers/network.provider";
+import { LearnplaceManagerImpl, LEARNPLACE_MANAGER } from "src/app/services/learnplace/learnplace.management";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -107,7 +108,8 @@ export class ObjectListPage {
                 private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
                 private readonly featurePolicy: FeaturePolicyService,
-                private readonly networkProvider: NetworkProvider
+                private readonly networkProvider: NetworkProvider,
+                @Inject(LEARNPLACE_MANAGER) private readonly lpManager: LearnplaceManagerImpl,
     ) { }
 
     /* = = = = = = = *
@@ -240,6 +242,9 @@ export class ObjectListPage {
         this.observeNetworkState();
         this.sync.loadAllOfflineContent();
         await this.loadAndRenderContent();
+
+        this.lpManager.learnplaces = this.getLearnplaces();
+
     }
 
     /**
@@ -532,5 +537,12 @@ export class ObjectListPage {
             linkBuilder.target(this.parent.refId)
         );
         this.executeAction(action);
+    }
+
+    private getLearnplaces(): Array<number> {
+        return this.content.map(item => {
+            if (item.object.type === "xsrl" && !!item.object)
+                return item.object.objId;
+        }).filter(id => id);
     }
 }

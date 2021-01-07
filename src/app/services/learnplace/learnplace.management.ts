@@ -66,6 +66,16 @@ export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new Injecti
 export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilization{
 
     private log: Logger = Logging.getLogger(LearnplaceManagerImpl.name);
+    private _learnplaces: Array<number>;
+
+    get learnplaces(): Array<number> {
+        return this._learnplaces;
+    }
+
+    set learnplaces(ids: Array<number>) {
+        this._learnplaces = ids;
+        ids.forEach(async id => await this.load(id));
+    }
 
     constructor(
         private readonly file: File,

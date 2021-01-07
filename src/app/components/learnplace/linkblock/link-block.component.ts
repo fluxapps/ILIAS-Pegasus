@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
-import {LinkBlockModel} from "../../services/block.model";
+import {LinkBlockModel} from "../../../services/learnplace/block.model";
 import {LINK_BUILDER, LinkBuilder} from "../../../services/link/link-builder.service";
 import {
     OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY,
@@ -17,7 +17,8 @@ import {isDefined} from "../../../util/util.function";
 
 @Component({
     selector: "link-block",
-    templateUrl: "link-block.html"
+    templateUrl: "link-block.html",
+    styleUrls: ["../block.scss"]
 })
 export class LinkBlock implements OnInit, OnDestroy {
 

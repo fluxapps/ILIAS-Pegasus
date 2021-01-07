@@ -4,11 +4,12 @@ import {Platform} from "@ionic/angular";
 import {Subscription} from "rxjs";
 import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {isDefined} from "../../../util/util.function";
-import {VideoBlockModel} from "../../services/block.model";
+import {VideoBlockModel} from "../../../services/learnplace/block.model";
 
 @Component({
   selector: "video-block",
-  templateUrl: "video-block.html"
+  templateUrl: "video-block.html",
+  styleUrls: ["../block.scss"]
 })
 export class VideoBlock implements OnInit, OnDestroy {
 

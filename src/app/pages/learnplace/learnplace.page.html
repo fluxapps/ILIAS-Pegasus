@@ -1,9 +1,52 @@
+<ion-menu side="end" contentId="main">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Learnplaces</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item [routerLink]="['/tabs/content']">Courses</ion-item>
+        <ion-item *ngFor="let lp of learnplaces">
+            <ion-icon name="pin"></ion-icon>
+            {{lp}}
+        </ion-item>
+      </ion-list>
+    </ion-content>
+</ion-menu>
+<ion-router-outlet id="main"></ion-router-outlet>
+
 <ion-header>
-  <ion-toolbar>
-    <ion-title>learnplace</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-title>
+            <ion-icon name="pin"></ion-icon>
+            {{title}}
+        </ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button text=""></ion-back-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-menu-button text=""></ion-menu-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content no-bounce has-bouncing="false" forceOverscroll="false">
+    <ion-header class="map" collapse="condense">
+        <div class="overlay">
 
+        </div>
+        <app-map [places]="mapPlaces" [selected]="selected"></app-map>
+    </ion-header>
+    <div class="content">
+        <div *ngFor="let block of (blockList | async)">
+
+            <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
+            <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
+            <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
+            <link-block *ngIf="block.isLink()" [value]="block"></link-block>
+            <accordion-block *ngIf="block.isAccordion()" [value]="block"></accordion-block>
+
+        </div>
+    </div>
 </ion-content>

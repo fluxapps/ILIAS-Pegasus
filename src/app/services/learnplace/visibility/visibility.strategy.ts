@@ -100,7 +100,7 @@ export class AlwaysStrategy implements VisibilityStrategy {
      * @return {Observable<T>} an observable for the given {@code object}
      */
     on<T extends VisibilityAware>(object: T): Observable<T> {
-        return Observable.create((subscriber: Subscriber<T>) => {
+        return new Observable((subscriber: Subscriber<T>) => {
             object.visible = true;
             subscriber.next(object);
             subscriber.complete();

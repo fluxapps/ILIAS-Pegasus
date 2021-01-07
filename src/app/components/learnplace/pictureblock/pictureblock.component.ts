@@ -5,12 +5,13 @@ import {Platform} from "@ionic/angular";
 import {Filesystem, FILESYSTEM_TOKEN} from "../../../services/filesystem";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";
-import {PictureBlockModel} from "../../services/block.model";
+import {PictureBlockModel} from "../../../services/learnplace/block.model";
 import {WebView} from "@ionic-native/ionic-webview/ngx";
 
 @Component({
     selector: "picture-block",
-    templateUrl: "picture-block.html"
+    templateUrl: "picture-block.html",
+    styleUrls: ["../block.scss"]
 })
 export class PictureBlock implements OnInit {
 

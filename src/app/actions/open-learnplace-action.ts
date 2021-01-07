@@ -37,10 +37,12 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
             // TODO how to handle changes of ILIAS object?
             const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
             const ilObj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learnplaceObjectId, user.id);
-            if(!ilObj.needsDownload)
-                await this.manager.load(this.learnplaceObjectId);
+            // if(!ilObj.needsDownload)
+            //     await this.manager.load(this.learnplaceObjectId);
 
-            await this.nav.navigateForward(["learnplace", ilObj.refId, "content"]);
+            console.error("Nav to learnpalce");
+            await this.nav.navigateForward(["learnplace", ilObj.refId]);
+
             await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {

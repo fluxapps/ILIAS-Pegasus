@@ -3,16 +3,16 @@ import {
     VideoBlockModel
 } from "./block.model";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
+import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/learnplace/repository/learnplace.repository";
 import {VisibilityStrategyApplier} from "./visibility/visibility.context";
-import {LearnplaceEntity} from "../entity/learnplace.entity";
+import {LearnplaceEntity} from "../../entity/learnplace/learnplace.entity";
 import {VisibilityStrategyType} from "./visibility/visibility.strategy";
 import {DomSanitizer} from "@angular/platform-browser";
-import {AccordionEntity} from "../entity/accordion.entity";
-import {TextblockEntity} from "../entity/textblock.entity";
-import {PictureBlockEntity} from "../entity/pictureBlock.entity";
-import {LinkblockEntity} from "../entity/linkblock.entity";
-import {VideoBlockEntity} from "../entity/videoblock.entity";
+import {AccordionEntity} from "../../entity/learnplace/accordion.entity";
+import {TextblockEntity} from "../../entity/learnplace/textblock.entity";
+import {PictureBlockEntity} from "../../entity/learnplace/pictureBlock.entity";
+import {LinkblockEntity} from "../../entity/learnplace/linkblock.entity";
+import {VideoBlockEntity} from "../../entity/learnplace/videoblock.entity";
 import {Observable,  from, combineLatest } from "rxjs";
 import {USER_REPOSITORY, UserRepository} from "../../providers/repository/repository.user";
 import {Logger} from "../../services/logging/logging.api";

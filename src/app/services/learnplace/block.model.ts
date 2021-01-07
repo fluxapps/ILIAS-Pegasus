@@ -9,15 +9,16 @@ import {VisibilityStrategyType} from "./visibility/visibility.strategy";
  * @author nmaerchy <nm@studer-raimann.ch>
  * @since 2.0.0
  */
-export class MapModel implements VisibilityAware {
+export class MapPlaceModel implements VisibilityAware {
 
-  constructor(
-    readonly latitude: number,
-    readonly longitude: number,
-    readonly zoom: number,
-    private readonly visibility: VisibilityStrategyType,
-    public visible: boolean = false,
-  ) {}
+    constructor(
+        readonly id: number,
+        readonly latitude: number,
+        readonly longitude: number,
+        readonly zoom: number,
+        private readonly visibility: VisibilityStrategyType,
+        public visible: boolean = false,
+    ) {}
 
   /**
    * Determines the language variable by considering the

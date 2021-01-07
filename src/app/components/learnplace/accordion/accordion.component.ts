@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {AccordionBlockModel, BlockModel} from "../../services/block.model";
+import {AccordionBlockModel, BlockModel} from "../../../services/learnplace/block.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Subscription,  Observable } from "rxjs";
 import {isDefined} from "../../../util/util.function";
@@ -8,6 +8,7 @@ import { shareReplay } from "rxjs/operators";
 @Component({
   selector: "accordion-block",
   templateUrl: "accordion.html",
+  styleUrls: ["../block.scss"],
   animations: [
     trigger("expanded", [
       state("0", style({
