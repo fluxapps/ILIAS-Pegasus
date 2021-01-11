@@ -1,5 +1,8 @@
 /** angular */
 import {Injectable, InjectionToken} from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
+import { AuthenticationProvider } from "../providers/authentication.provider";
+import { of } from "rxjs";
 /** misc */
 import {ILIASConfig} from "./ilias-config";
 import {HttpClient, HttpResponse} from "../providers/http";
@@ -49,6 +52,13 @@ export interface ConfigProvider {
    * @throw {ReferenceError} if the given id does not exists
    */
   loadInstallation(installationId: number): Promise<ILIASInstallation>
+
+  /**
+   * Returns the last loaded installation
+   *
+   * @returns {Promise<ILIASInstallation>} the resulting ILIAS installation
+   */
+  getInstallation(): Promise<Readonly<ILIASInstallation>>
 }
 
 /**
@@ -61,17 +71,30 @@ export interface ConfigProvider {
 @Injectable()
  export class ILIASConfigProvider implements ConfigProvider {
 
-  private readonly config: Promise<ILIASConfig>;
+    private readonly config: Promise<ILIASConfig>;
+    private installation: Promise<ILIASInstallation>;
 
-   constructor(
-     private readonly http: HttpClient
-   ) {
-      this.config = this.loadFile();
-   }
+    constructor(
+        private readonly http: HttpClient,
+        private readonly translate: TranslateService
+    ) {
+        this.config = this.loadFile();
+        this.observeTranslation();
+    }
 
-  async loadConfig(): Promise<ILIASConfig> { return this.config }
+    observeTranslation() {
+        this.translate.onLangChange.subscribe(async (lang: string) => {
+            await this.loadInstallation(AuthenticationProvider.getUser().installationId);
+        });
+    }
 
-  async loadInstallation(installationId: number): Promise<Readonly<ILIASInstallation>> {
+    async getInstallation(): Promise<Readonly<ILIASInstallation>> {
+        return this.installation;
+    }
+
+    async loadConfig(): Promise<ILIASConfig> { return this.config }
+
+    async loadInstallation(installationId: number): Promise<Readonly<ILIASInstallation>> {
 
     const iliasConfig: ILIASConfig = await this.config;
 
@@ -86,11 +109,14 @@ export interface ConfigProvider {
       apiKey: installation.apiKey,
       apiSecret: installation.apiSecret,
       accessTokenTTL: installation.accessTokenTTL,
-      privacyPolicy: installation.privacyPolicy ? installation.privacyPolicy : "https://www.ilias-pegasus.de/datenschutz/"
+      privacyPolicy: installation.privacyPolicy
+        ? installation.privacyPolicy
+        : `https://www.ilias-pegasus.de/${await this.translate.get("privacy").toPromise()}/`
     };
 
     if (isDefined(installation)) {
-      return installation;
+        this.installation = of(installation).toPromise();
+        return installation;
     }
 
     throw new ReferenceError(`Installation with id '${installationId}' does not exists in file: ${CONFIG_FILE}`);
