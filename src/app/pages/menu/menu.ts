@@ -1,7 +1,8 @@
 /* angular */
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
-import {NavController} from "@ionic/angular";
+import {NavController, ViewWillEnter} from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 import { ConfigProvider, CONFIG_PROVIDER } from "src/app/config/ilias-config";
 /* misc */
 import {AuthenticationProvider} from "../../providers/authentication.provider";
@@ -17,9 +18,9 @@ import {AuthenticationProvider} from "../../providers/authentication.provider";
     templateUrl: "menu.html",
     styleUrls: ["menu.scss"]
 })
-export class MenuPage {
-    
-    readonly privacyPolicy: Promise<string>;
+export class MenuPage implements ViewWillEnter {
+
+    privacyPolicy: string = "datenschutz";
     private readonly BROWSER_OPTIONS: InAppBrowserOptions = {
         location: "no",
         clearsessioncache: "yes",
@@ -31,10 +32,10 @@ export class MenuPage {
         private readonly auth: AuthenticationProvider,
         private readonly browser: InAppBrowser,
         @Inject(CONFIG_PROVIDER) private readonly config: ConfigProvider,
-    ) {
-        this.privacyPolicy = config.loadInstallation(AuthenticationProvider.getUser().installationId).then(installation => {
-            return installation.privacyPolicy;
-        })
+    ) {}
+
+    async ionViewWillEnter(): Promise<void> {
+        await this.config.getInstallation().then(installation => this.privacyPolicy = installation.privacyPolicy);
     }
 
     async navigateTo(url: string): Promise<void> {
@@ -45,8 +46,8 @@ export class MenuPage {
         await this.auth.logout();
     }
 
-    async openPrivacyPolicy(url: Promise<string>): Promise<void> {
-        const browserSession: InAppBrowserObject = this.browser.create(await url, "_blank", this.BROWSER_OPTIONS);
+    async openPrivacyPolicy(url: string): Promise<void> {
+        const browserSession: InAppBrowserObject = this.browser.create(url, "_blank", this.BROWSER_OPTIONS);
         browserSession.show();
     }
 }

@@ -28,6 +28,7 @@
     "map": "Karte",
     "content": "Inhalt",
     "Version": "Version",
+    "privacy": "datenschutz",
     "datasecurity": {"title": "Datenschutzerklärung"},
     "object-list": {
         "title" : "Meine Kurse & Gruppen",
