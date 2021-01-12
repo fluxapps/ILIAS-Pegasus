@@ -1,8 +1,9 @@
 /* angular */
 import {Component, Inject, OnInit} from "@angular/core";
 import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
-import {NavController, ViewWillEnter} from "@ionic/angular";
+import {NavController} from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
 import { ConfigProvider, CONFIG_PROVIDER } from "src/app/config/ilias-config";
 /* misc */
 import {AuthenticationProvider} from "../../providers/authentication.provider";
