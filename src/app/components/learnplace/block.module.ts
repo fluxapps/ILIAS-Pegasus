@@ -5,6 +5,8 @@ import { PictureBlock } from "./pictureblock/pictureblock.component"
 import { VideoBlock } from "./videoblock/videoblock.component"
 import { LinkBlock } from "./linkblock/link-block.component"
 import { AccordionBlock } from "./accordion/accordion.component"
+import { TranslateModule } from "@ngx-translate/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -16,6 +18,9 @@ import { AccordionBlock } from "./accordion/accordion.component"
     ],
     imports: [
         CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TranslateModule
     ],
     exports: [
         TextBlock,

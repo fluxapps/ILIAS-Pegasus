@@ -1,8 +1,9 @@
-import { ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MenuController, NavController, ViewDidEnter, ViewDidLeave, ViewWillEnter } from "@ionic/angular";
-import { forkJoin, Observable, ReplaySubject, Subject, Subscription,  } from "rxjs";
-import { map, takeUntil } from "rxjs/operators";
+import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { MapComponent } from "src/app/components/map/map.component";
 import { ILIASObject } from "src/app/models/ilias-object";
 import { AuthenticationProvider } from "src/app/providers/authentication.provider";
 import { Hardware } from "src/app/services/device/hardware-features/hardware-feature.service";
@@ -12,7 +13,7 @@ import { LearnplaceManagerImpl, LEARNPLACE_MANAGER } from "src/app/services/lear
 import { VisitJournalWatch, VISIT_JOURNAL_WATCH } from "src/app/services/learnplace/visitjournal.service";
 import { Logger } from "src/app/services/logging/logging.api";
 import { Logging } from "src/app/services/logging/logging.service";
-import { CameraOptions, GeoCoordinate, Marker, MapService, MAP_SERVICE } from "../../services/learnplace/map.service";
+import { MapService, MAP_SERVICE } from "../../services/learnplace/map.service";
 
 
 @Component({
@@ -21,22 +22,26 @@ import { CameraOptions, GeoCoordinate, Marker, MapService, MAP_SERVICE } from ".
   styleUrls: ["./learnplace.page.scss"],
 })
 export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDestroy {
-    // @ViewChild("map") mapElement: Element;
+    @ViewChild("map") elMap: MapComponent;
+    @ViewChild("mapWrapper") elMapWrapper: Element;
+    @ViewChild("content") elContent: ElementRef;
 
-    title: string;
-    map: MapPlaceModel | undefined = undefined;
-    learnplaces: Array<number>
+    ilObj: Subject<ILIASObject> = new Subject<ILIASObject>();
+    menuItems: Subject<Array<ILIASObject>> = new Subject<Array<ILIASObject>>();
     mapPlaces: Array<MapPlaceModel>;
-    selected: MapPlaceModel;
+    displayMap: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    loadingBlocks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+    isEmptyBlock: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    private lpRefId: number;
-    private lpObjId: number;
-    private mapPlaceSubscription: Subscription | undefined = undefined;
     private readonly log: Logger = Logging.getLogger(LearnplacePage.name);
     private readonly dispose$: Subject<void> = new Subject<void>();
+    readonly lastView: string;
     readonly blockList: ReplaySubject<Array<BlockModel>> = new ReplaySubject<Array<BlockModel>>(1);
 
-  constructor(
+    private currentBlockList: Array<BlockModel> = [];
+    private objId: number = 0;
+
+    constructor(
         @Inject(BLOCK_SERVICE) private readonly blockService: BlockService,
         @Inject(MAP_SERVICE) private readonly mapService: MapService,
         private readonly route: ActivatedRoute,
@@ -45,41 +50,54 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         private readonly zone: NgZone,
         private readonly detectorRef: ChangeDetectorRef,
         private readonly menu: MenuController,
+        private readonly renderer: Renderer2,
         @Inject(VISIT_JOURNAL_WATCH) private readonly visitJournalWatch: VisitJournalWatch,
         @Inject(LEARNPLACE_MANAGER) private readonly lpManager: LearnplaceManagerImpl
 
-  ) { }
+    ) { }
 
     async ionViewWillEnter(): Promise<void> {
         await this.hardware.requireLocation()
             .onFailure(() => this.nav.pop())
             .check();
 
-        this.lpRefId = +this.route.snapshot.paramMap.get("refId");
+        const lpRefId = +this.route.snapshot.paramMap.get("refId");
 
-        const ilObj: ILIASObject = await ILIASObject.findByRefIdAndUserId(this.lpRefId, AuthenticationProvider.getUser().id);
+        this.ilObj.subscribe(async (obj) => {
+            this.visitJournalWatch.setLearnplace(obj.objId);
+            this.visitJournalWatch.start();
+            this.objId = obj.objId;
 
-        this.lpObjId = ilObj.objId;
-        this.learnplaces = this.lpManager.learnplaces;
-        console.error(this.lpObjId, this.lpRefId);
-        this.title = ilObj.title;
-        this.visitJournalWatch.setLearnplace(ilObj.objId);
-        this.visitJournalWatch.start();
+            this.blockService.getBlockList(obj.objId)
+                .pipe(
+                    takeUntil(this.dispose$)
+                ).subscribe(
+                    (it) => {
+                        console.log("Block List: ", it);
 
-        this.blockService.getBlockList(ilObj.objId)
-        .pipe(
-            takeUntil(this.dispose$)
-        ).subscribe((it) => {
-            console.log("Block List: ", it);
-            this.zone.run(() => this.blockList.next(it));
+                        if (it !== this.currentBlockList) {
+                            this.zone.run(() => this.blockList.next(it));
+                            this.currentBlockList = it;
+
+                            this.loadingBlocks.next(false);
+                            this.isEmptyBlock.next(false);
+                            this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
+                            this.renderer.addClass(this.elContent.nativeElement, "slide-in");
+                        }
+                    },
+                    (err) => {
+                        console.error(err);
+                    },
+                    () => {
+                        this.loadingBlocks.next(false);
+                    }
+                );
+
+            await this.initLearnplaces(obj.parentRefId);
+            this.initMenu();
         });
 
-        forkJoin(this.mapService.getMapPlaces(this.lpManager.learnplaces)).subscribe(places => {
-            this.mapPlaces = places;
-        });
-        this.mapService.getMapPlace(this.lpObjId).subscribe(place => {
-            this.selected = place;
-        })
+        this.ilObj.next(await ILIASObject.findByRefIdAndUserId(lpRefId, AuthenticationProvider.getUser().id));
     }
 
     async ionViewDidEnter(): Promise<void> {
@@ -92,13 +110,8 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.dispose$.next();
         this.blockService.shutdown();
         this.mapService.shutdown();
-        if (this.mapPlaceSubscription) this.mapPlaceSubscription.unsubscribe();
 
-        // if (!!this.mapElement) {
-        //     while (this.mapElement.firstChild) {
-        //         this.mapElement.removeChild(this.mapElement.firstChild);
-        //     }
-        // }
+        this.destroyMap();
         this.mapPlaces = undefined;
     }
 
@@ -108,8 +121,71 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.blockList.complete();
     }
 
+    async initMenu(): Promise<void> {
+        const items: Array<ILIASObject> = [];
+        this.lpManager.learnplaces.forEach(async id => {
+            items.push(await ILIASObject.findByObjIdAndUserId(id, AuthenticationProvider.getUser().id))
+        });
+
+        this.menuItems.next(items);
+    }
+
+    async initLearnplaces(parentRefId: number): Promise<void> {
+        if (this.mapPlaces)
+            return;
+
+
+        if (!this.lpManager?.learnplaces) {
+            const lps: Array<ILIASObject> = (await ILIASObject.findByParentRefId(parentRefId, AuthenticationProvider.getUser().id))
+                .filter(obj => obj.type === "xsrl")
+
+            await this.lpManager.setLearnplaces(lps.map(lp => lp.objId));
+        }
+
+        forkJoin(this.mapService.getMapPlaces(this.lpManager.learnplaces)).subscribe(places => {
+            this.mapPlaces = places;
+        });
+    }
+
+    async openLearnplace(objId: number, map?: MapPlaceModel): Promise<void> {
+        if (map) {
+            objId = map.id;
+            this.elMap.selectedPlace = map;
+        } else
+            this.mapService.getMapPlace(objId).subscribe(place => this.elMap.selectedPlace = place);
+
+        await this.changeLearnplace(objId);
+        await this.menu.close();
+    }
+
+    async changeLearnplace(objId: number): Promise<void> {
+        if (objId === this.objId)
+            return;
+
+        this.loadingBlocks.next(true);
+        this.renderer.addClass(this.elContent.nativeElement, "slide-out");
+
+        this.ilObj.next(await ILIASObject.findByObjIdAndUserId(objId, AuthenticationProvider.getUser().id));
+    }
+
     async toggleMenu(): Promise<void> {
-        console.error(await this.menu.getMenus());
         await this.menu.open();
+    }
+
+    overview() {
+        this.elMap.mapOverview();
+    }
+
+    destroyMap(): void {
+        if (!!this.elMap) {
+            while (this.elMap.elMap.firstChild) {
+                this.elMap.elMap.removeChild(this.elMap.elMap.firstChild);
+            }
+        }
+    }
+
+    navigateBack() {
+        // TODO: route into parentref, not to the last view
+        this.nav.pop();
     }
 }

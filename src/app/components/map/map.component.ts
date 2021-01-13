@@ -1,12 +1,19 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import { Observable, Subscription } from 'rxjs';
+import {
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    Renderer2,
+    ViewChild,
+    EventEmitter } from '@angular/core';
 import { Hardware } from 'src/app/services/device/hardware-features/hardware-feature.service';
 import { MapPlaceModel } from 'src/app/services/learnplace/block.model';
-import { MapService, MAP_SERVICE } from 'src/app/services/learnplace/map.service';
 import { Logger } from 'src/app/services/logging/logging.api';
 import { Logging } from 'src/app/services/logging/logging.service';
-import mapboxgl from "mapbox-gl"
+import mapboxgl, { LngLatBoundsLike } from "mapbox-gl"
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -106,6 +113,12 @@ export class MapEvaluationError extends Error {
     }
 }
 
+enum ERRORS {
+    NONE = 0,
+    CONNECTION,
+    GPS
+}
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -113,175 +126,185 @@ export class MapEvaluationError extends Error {
 })
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
     @Input("places") places: Array<MapPlaceModel>;
-    @Input("selected") selected: MapPlaceModel;
+    @Input("selected") selected: number;
 
-    @ViewChild("map") mapElement: ElementRef;
+    @Output("clickedPlace") clickedPlace = new EventEmitter<MapPlaceModel>();
 
-    map: MapPlaceModel | undefined = undefined;
+    @ViewChild("map") elMap: Element;
+
 
     private readonly DEFAULT_ZOOM: number = 13;
     private readonly log: Logger = Logging.getLogger(MapComponent.name);
 
-    private mapPlaceSubscription: Subscription | undefined = undefined;
-
-    private cameraPosition?: CameraOptions;
-    private markerOptions?: Marker;
-    private placeOptions?: Array<MapPlaceModel>
-    private binding?: string | HTMLElement;
+    private _selectedPlace: MapPlaceModel;
+    private objIdMarker: Map<number, HTMLElement> = new Map<number, HTMLElement>();
     private mapboxMap: mapboxgl.Map;
+    private buildFlag: boolean = false;
+
+    map: MapPlaceModel | undefined = undefined;
+    hasError: ERRORS = ERRORS.NONE;
+
+    get selectedPlace(): MapPlaceModel {
+        return this._selectedPlace;
+    }
+
+    set selectedPlace(place: MapPlaceModel) {
+        if (!this.mapboxMap)
+            return;
+
+        if (this._selectedPlace)
+            this.renderer.removeClass(this.objIdMarker.get(this._selectedPlace.id), "selected");
+
+        if (!place.visible)
+            return;
+
+        this.renderer.addClass(this.objIdMarker.get(place.id), "selected");
+        this.mapboxMap.flyTo({
+            center: [place.longitude, place.latitude]
+        });
+
+        this._selectedPlace = place;
+    }
 
     constructor(
         private readonly hardware: Hardware,
-        private readonly nav: NavController,
         private readonly detectorRef: ChangeDetectorRef,
-        @Inject(MAP_SERVICE) private readonly mapService: MapService
+        private readonly renderer: Renderer2,
     ) { }
 
     async ngOnInit(): Promise<void> {
-        console.error("inside mapcomponent")
-
         await this.hardware.requireLocation()
-            .onFailure(() => this.nav.pop())
+            .onFailure(() => this.hasError = ERRORS.GPS)
             .check();
     }
 
     async ngOnChanges(): Promise<void> {
-        console.error(this.places);
-        console.error(this.selected);
-
-        if (!this.selected) {
-            // TODO error
+        if (this.buildFlag)
             return;
-        } else if (!this.places) {
-            this.places = [this.selected];
-        }
-        await this.initMap(this.selected);
 
+        if (!this.selected)
+            return;
+        else if (!this.places)
+            return;
+
+        await this.initMap(this.selected);
+        this.buildFlag = true;
     }
 
     ngOnDestroy(): void {
-        if (this.mapPlaceSubscription) this.mapPlaceSubscription.unsubscribe();
-
-        if (!!this.mapElement) {
-            while (this.mapElement.nativeElement.firstChild) {
-                this.mapElement.nativeElement.removeChild(this.mapElement.nativeElement.firstChild);
+        if (!!this.elMap) {
+            while (this.elMap.firstChild) {
+                this.elMap.removeChild(this.elMap.firstChild);
             }
         }
+
+        this.buildFlag = false;
     }
 
-    private async initMap(place: MapPlaceModel): Promise<void> {
+    private async initMap(placeId: number): Promise<void> {
         this.detectorRef.detectChanges();
-        console.error("building map");
-        console.error(this.mapElement);
         /*
          * Only build map if its visible.
          * Otherwise the builder will fail, because there
          * is no html element to bind.
          */
-        if(place.visible) {
-            const camera: CameraOptions = <CameraOptions>{
-                zoom: place.zoom,
-                position: <GeoCoordinate>{
-                    latitude: place.latitude,
-                    longitude: place.longitude
-                }
-            };
+        const selectedPlace: MapPlaceModel = this.places.find(place => {
+            return place.id == placeId
+        });
 
-            const marker: Marker = <Marker>{
-                position: <GeoCoordinate>{
-                    latitude: place.latitude, longitude: place.longitude
-                },
-                title: "1"
-            };
+        // settings
+        const camera: CameraOptions = <CameraOptions>{
+            zoom: selectedPlace.zoom,
+            position: <GeoCoordinate>{
+                latitude: selectedPlace.latitude,
+                longitude: selectedPlace.longitude
+            }
+        };
 
-            this.mapboxMap = new mapboxgl.Map({
-                container: "map",
-                center: [camera.position.longitude, camera.position.latitude],
-                style: "mapbox://styles/mapbox/streets-v9",
-                zoom: camera.zoom,
-                interactive: true
-            });
+        this.mapboxMap = new mapboxgl.Map({
+            container: "map",
+            center: [camera.position.longitude, camera.position.latitude],
+            style: "mapbox://styles/mapbox/streets-v9",
+            zoom: camera.zoom,
+            interactive: true
+        });
 
-            this.mapboxMap.addControl(new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true
-                },
-                trackUserLocation: true
-            }));
-            // Add geolocate control to the map.
-            this.mapboxMap.addControl(new mapboxgl.NavigationControl({
-                showCompass: true,
-                showZoom: true
-            }));
+        // controls
+        this.mapboxMap.addControl(new mapboxgl.FullscreenControl(), "top-left");
 
-            this.mapboxMap.addControl(new mapboxgl.FullscreenControl());
+        this.mapboxMap.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+        }));
 
-            this.mapboxMap.once("load", () => {
-                this.mapboxMap.loadImage(
-                    "assets/icon/map_marker_001.png",
-                    (error, image) => {
-                    if (error) throw error;
-                    const imageName: string = "learnplace";
-                    this.mapboxMap.addImage(imageName, image);
-                    this.mapboxMap.addLayer({
-                        id: "points",
-                        type: "symbol",
-                        source: {
-                            type: "geojson",
-                            data: <GeoJSON.FeatureCollection<GeoJSON.Geometry>>{
-                                type: "FeatureCollection",
-                                features: [{
-                                    type: "Feature",
-                                    geometry: {
-                                        type: "Point",
-                                        coordinates: [marker.position.longitude, marker.position.latitude]
-                                    }
-                                }]
-                            }
-                        },
-                        layout: {
-                            "icon-image": imageName,
-                            "icon-size": 0.25
-                        }
-                    });
+        this.mapboxMap.addControl(new mapboxgl.NavigationControl({
+            showCompass: true,
+            showZoom: true
+        }));
+
+        // markers
+        const markers: Array<mapboxgl.Marker> = this.places
+            .filter(place => place.visible)
+            .map(place => {
+
+                const el: HTMLElement = this.renderer.createElement("div") as HTMLElement;
+                this.renderer.addClass(el, "marker");
+                this.objIdMarker.set(place.id, el);
+
+                el.addEventListener("click", e => {
+                    this.clickedPlace.emit(place);
                 });
+
+                return new mapboxgl.Marker(el)
+                    .setLngLat(new mapboxgl.LngLat(place.longitude, place.latitude))
+                    .addTo(this.mapboxMap);
             });
 
-            this.places.filter((place: MapPlaceModel) =>
-                place.visible &&
-                !(place.latitude === marker.position.latitude && place.longitude === marker.position.longitude)
-            )
-            .forEach((place: MapPlaceModel, i: number) => {
-                console.error(place);
-                this.mapboxMap.loadImage(
-                    "assets/icon/map_marker_001.png",
-                    (error, image) => {
-                    if (error) throw error;
-                    const imageName: string = i.toString();
-                    this.mapboxMap.addImage(imageName, image);
-                    this.mapboxMap.addLayer({
-                        id: "points-" + i,
-                        type: "symbol",
-                        source: {
-                            type: "geojson",
-                            data: <GeoJSON.FeatureCollection<GeoJSON.Geometry>>{
-                                type: "FeatureCollection",
-                                features: [{
-                                    type: "Feature",
-                                    geometry: {
-                                        type: "Point",
-                                        coordinates: [place.longitude, place.latitude]
-                                    }
-                                }]
-                            }
-                        },
-                        layout: {
-                            "icon-image": imageName,
-                            "icon-size": 0.15
-                        }
-                    });
-                });
-            });
+
+        // select a marker
+        this.selectedPlace = selectedPlace;
+
+        if (!selectedPlace.visible) {
+            this.mapOverview();
         }
+    }
+
+    mapOverview(): void {
+        const sortedByLong = this.places
+            .filter(place => place.visible)
+            .sort((a, b) => b.longitude - a.longitude);
+        const sortedByLat = this.places
+            .filter(place => place.visible)
+            .sort((a, b) => b.latitude - a.latitude);
+
+        const bound: Array<[number, number]> = [
+            this.places
+                .map(place => {
+                    return [
+                        sortedByLong[0].longitude,
+                        sortedByLat[0].latitude
+                    ]})[0] as [number, number],
+            this.places
+                .map(place => {
+                    return [
+                        sortedByLong.reverse()[0].longitude,
+                        sortedByLat.reverse()[0].latitude
+                    ]})[0] as [number, number]
+        ];
+
+        // 10% of the distance between two points
+        const margin: number = Math.sqrt(Math.pow(bound[0][0] - bound[1][0], 2) + Math.pow(bound[0][1] - bound[1][1], 2)) / 10;
+
+        bound[0] = bound[0].map(val => val + margin) as [number, number];
+        bound[1] = bound[1].map(val => val - margin) as [number, number];
+
+        this.mapboxMap.fitBounds(bound as LngLatBoundsLike);
+    }
+
+    resize(height: number): void {
+        this.renderer.setStyle(this.elMap, "height", height);
+        this.mapboxMap.resize();
     }
 }

@@ -242,9 +242,7 @@ export class ObjectListPage {
         this.observeNetworkState();
         this.sync.loadAllOfflineContent();
         await this.loadAndRenderContent();
-
-        this.lpManager.learnplaces = this.getLearnplaces();
-
+        await this.lpManager.setLearnplaces(this.getLearnplaces());
     }
 
     /**

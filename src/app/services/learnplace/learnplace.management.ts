@@ -52,6 +52,8 @@ export interface LearnplaceManager {
      * @returns {Promise<number>} The used storage in bytes.
      */
     getUsedStorage(objectId: number, userId: number): Promise<number>;
+
+    getLearnplace(objId: number)
 }
 
 export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new InjectionToken("token for learnplace manager.");
@@ -72,11 +74,6 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
         return this._learnplaces;
     }
 
-    set learnplaces(ids: Array<number>) {
-        this._learnplaces = ids;
-        ids.forEach(async id => await this.load(id));
-    }
-
     constructor(
         private readonly file: File,
         private readonly userStorageManager: UserStorageMamager,
@@ -84,6 +81,16 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
         @Inject(LEARNPLACE_PATH_BUILDER) private readonly pathBuilder: LearnplacePathBuilder,
         @Inject(LEARNPLACE_LOADER) private readonly loader: LearnplaceLoader
     ){}
+
+    async setLearnplaces(ids: Array<number>): Promise<void> {
+        this._learnplaces = ids;
+        ids.forEach(async id => await this.load(id));
+        return;
+    }
+
+    async getLearnplace(objId: number) {
+        return this.learnplaceRepository.findByObjectIdAndUserId(objId, AuthenticationProvider.getUser().id);
+    }
 
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);

@@ -238,7 +238,6 @@ export class VisibilityManagedMapService implements MapService {
     }
 
     places(ilObjIds: Array<MapPlaceModel>) {
-        console.error("setting additional places")
         this.placeOptions = ilObjIds;
 
         return this;
@@ -252,7 +251,6 @@ export class VisibilityManagedMapService implements MapService {
     }
 
     async build(): Promise<StandardMap> {
-        console.error("building map");
         this.throwIfUndefined(this.cameraPosition, () => {
             return new MapEvaluationError("Can not build map: Requires camera position");
         });
@@ -281,9 +279,6 @@ export class VisibilityManagedMapService implements MapService {
             showCompass: true,
             showZoom: true
         }));
-
-        console.error("im here")
-
 
         this.applyIfNotUndefined(this.markerOptions, (marker) => {
             this.mapboxMap.once("load", () => {
@@ -317,16 +312,12 @@ export class VisibilityManagedMapService implements MapService {
                 });
 
                 this.applyIfNotUndefined(this.placeOptions, places => {
-                    console.error(places)
                     if (places.length > 1) {
-                        console.error("should add additional places")
-                        console.error(places);
                         places.filter((place: MapPlaceModel) =>
                                 place.visible &&
                                 !(place.latitude === marker.position.latitude && place.longitude === marker.position.longitude)
                             )
                             .forEach((place: MapPlaceModel, i: number) => {
-                                console.error(place);
                                 this.mapboxMap.loadImage(
                                     "assets/icon/map_marker_001.png",
                                     (error, image) => {
@@ -396,37 +387,58 @@ export class VisibilityManagedMapService implements MapService {
      * @returns {Observable<MapPlaceModel>} an observable of the map
      */
     getMapPlace(lpObjId: number): Observable<MapPlaceModel> {
-        return from(this.userRepository.findAuthenticatedUser())
-            .pipe(
-                switchMap(it => {
-                    return from(this.learnplaceRepository.findByObjectIdAndUserId(lpObjId, it.get().id))
-                }),
-                switchMap(it => {
-                    console.error(it.get())
-                    console.log("Map learnplace:", it.get());
-                    const learnplace: LearnplaceEntity = it.get();
 
-                    const map: MapPlaceModel = new MapPlaceModel(
-                        lpObjId,
-                        learnplace.location.latitude,
-                        learnplace.location.longitude,
-                        learnplace.map.zoom,
-                        VisibilityStrategyType[learnplace.map.visibility.value]
-                    );
+        return new Observable((observer) => {
+            // tslint:disable-next-line: no-floating-promises
+            this.learnplaceRepository.findByObjectIdAndUserId(lpObjId, AuthenticationProvider.getUser().id).then(it => {
+                const learnplace: LearnplaceEntity = it.get();
 
-                    this.visibilityStrategyApplier.setLearnplace(learnplace.id);
-                    return this.visibilityStrategyApplier.apply(map, VisibilityStrategyType[learnplace.map.visibility.value]);
-                })
-            );
+                const place: MapPlaceModel = new MapPlaceModel(
+                    lpObjId,
+                    learnplace.location.latitude,
+                    learnplace.location.longitude,
+                    learnplace.map.zoom,
+                    VisibilityStrategyType[learnplace.map.visibility.value]
+                );
+
+                this.visibilityStrategyApplier.setLearnplace(learnplace.id);
+                this.visibilityStrategyApplier.apply(place, VisibilityStrategyType[learnplace.map.visibility.value])
+                    .subscribe(place => {
+                        observer.next(place)
+                        observer.complete();
+                    });
+            });
+        });
+
+        // return from(this.userRepository.findAuthenticatedUser())
+        //     .pipe(
+        //         switchMap(it => {
+        //             return from(this.learnplaceRepository.findByObjectIdAndUserId(lpObjId, it.get().id))
+        //         }),
+        //         switchMap(it => {
+        //             console.log("Map learnplace:", it.get());
+        //             const learnplace: LearnplaceEntity = it.get();
+
+        //             const place: MapPlaceModel = new MapPlaceModel(
+        //                 lpObjId,
+        //                 learnplace.location.latitude,
+        //                 learnplace.location.longitude,
+        //                 learnplace.map.zoom,
+        //                 VisibilityStrategyType[learnplace.map.visibility.value]
+        //             );
+
+        //             console.error("a");
+        //             this.visibilityStrategyApplier.setLearnplace(learnplace.id);
+        //             return this.visibilityStrategyApplier.apply(place, VisibilityStrategyType[learnplace.map.visibility.value]);
+        //         })
+        //     );
     }
 
     getMapPlaces(lpObjIds: Array<number>): Array<Observable<MapPlaceModel>> {
-        console.error("getting places");
         if (!lpObjIds) {
-            console.error("undefinded bull")
-            console.error(lpObjIds);
             return;
         }
+
         return lpObjIds.map(id => this.getMapPlace(id));
     }
 

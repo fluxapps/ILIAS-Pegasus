@@ -71,7 +71,6 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
     async findByObjectIdAndUserId(objectId: number, userId: number): Promise<Optional<LearnplaceEntity>> {
 
         try {
-            console.error(`searching for learnplace ${objectId}, ${userId}`);
             await this.database.ready(PEGASUS_CONNECTION_NAME);
 
             this.logger.trace(() => `Find learnplace by object id and user id: objectId=${objectId}, userId=${userId}`);
@@ -86,8 +85,6 @@ export class TypeORMLearnplaceRepository extends AbstractCRUDRepository<Learnpla
                 .createQueryBuilder( "learnplace")
                 .where("learnplace.objectId = :objectId AND learnplace.FK_user = :userId", {objectId: objectId, userId: userId})
                 .getRawOne();
-
-            console.error(rawLearnplace);
 
             if(isDefined(rawLearnplace) && isDefined(rawLearnplace.learnplace_id)) {
                 return this.find(rawLearnplace.learnplace_id);

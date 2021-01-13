@@ -46,40 +46,41 @@ export class VisibilityStrategyApplier {
      this.learnplaceId = id;
   }
 
-  /**
-   * Applies the strategy matching the given {@code strategy} to the given {@code model}.
-   *
-   * If the setter {@link VisibilityStrategyApplier#setLearnplace} was not called,
-   * this method throws an {@link IllegalStateError}.
-   *
-   * @param {T} model - model to apply the strategy on
-   * @param {VisibilityStrategyType} strategy - the strategy type to use
-   *
-   * @throws {IllegalStateError} if the setter for the learnplace was not called
-   */
-   apply<T extends VisibilityAware>(model: T, strategy: VisibilityStrategyType): Observable<T> {
+    /**
+     * Applies the strategy matching the given {@code strategy} to the given {@code model}.
+     *
+     * If the setter {@link VisibilityStrategyApplier#setLearnplace} was not called,
+     * this method throws an {@link IllegalStateError}.
+     *
+     * @param {T} model - model to apply the strategy on
+     * @param {VisibilityStrategyType} strategy - the strategy type to use
+     *
+     * @throws {IllegalStateError} if the setter for the learnplace was not called
+     */
+    apply<T extends VisibilityAware>(model: T, strategy: VisibilityStrategyType): Observable<T> {
+        switch (strategy) {
+            case VisibilityStrategyType.ALWAYS:
+                return this.alwaysStrategy.on(model);
+            case VisibilityStrategyType.NEVER:
+                return this.neverStrategy.on(model);
+            case VisibilityStrategyType.ONLY_AT_PLACE:
+                this.requireLearnplace();
+                return this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
+            case VisibilityStrategyType.AFTER_VISIT_PLACE:
+                this.requireLearnplace();
+                return this.afterVisitPlace.membership(this.learnplaceId).on(model);
+            default:
+                console.error("no visiblitiy strategy");
+        }
+    }
 
-      switch (strategy) {
-        case VisibilityStrategyType.ALWAYS:
-          return this.alwaysStrategy.on(model);
-        case VisibilityStrategyType.NEVER:
-          return this.neverStrategy.on(model);
-        case VisibilityStrategyType.ONLY_AT_PLACE:
-          this.requireLearnplace();
-          return this.onlyAtPlaceStrategy.membership(this.learnplaceId).on(model);
-        case VisibilityStrategyType.AFTER_VISIT_PLACE:
-          this.requireLearnplace();
-          return this.afterVisitPlace.membership(this.learnplaceId).on(model);
-      }
-   }
-
-  /**
-   * Shutdown the {@link OnlyAtPlaceStrategy} and {@link AfterVisitPlaceStrategy} by invoking their {@code shutdown} method.
-   */
-  shutdown(): void {
-     this.onlyAtPlaceStrategy.shutdown();
-     this.afterVisitPlace.shutdown();
-   }
+    /**
+     * Shutdown the {@link OnlyAtPlaceStrategy} and {@link AfterVisitPlaceStrategy} by invoking their {@code shutdown} method.
+     */
+    shutdown(): void {
+        this.onlyAtPlaceStrategy.shutdown();
+        this.afterVisitPlace.shutdown();
+    }
 
    private requireLearnplace(): void {
      if (!isDefined(this.learnplaceId)) {

@@ -1,4 +1,4 @@
-<ion-menu side="end" contentId="main">
+<ion-menu side="end" contentId="main" swipe-gesture="false">
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Learnplaces</ion-title>
@@ -6,10 +6,11 @@
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item [routerLink]="['/tabs/content']">Courses</ion-item>
-        <ion-item *ngFor="let lp of learnplaces">
-            <ion-icon name="pin"></ion-icon>
-            {{lp}}
+        <ion-item *ngFor="let item of menuItems | async" (click)="openLearnplace(item.objId)">
+            <div class="lp-icon">
+                <img src="assets/icon/icon_xsrl.svg" alt=""/>
+                {{item.title}}
+            </div>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -19,26 +20,32 @@
 <ion-header>
     <ion-toolbar color="primary">
         <ion-title>
-            <ion-icon name="pin"></ion-icon>
-            {{title}}
+            <div class="lp-icon">
+                <img src="assets/icon/icon_xsrl.svg" alt="" style="height: 1.5em;"/>
+                {{(ilObj | async)?.title}}
+            </div>
         </ion-title>
         <ion-buttons slot="start">
-            <ion-back-button text=""></ion-back-button>
+            <ion-button (click)="navigateBack()">
+                <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
+            <ion-button (click)="overview()">
+                <ion-icon name="map" ></ion-icon>
+            </ion-button>
             <ion-menu-button text=""></ion-menu-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
 <ion-content no-bounce has-bouncing="false" forceOverscroll="false">
-    <ion-header class="map" collapse="condense">
-        <div class="overlay">
+    <div class="map" #mapWrapper>
+        <app-map #map [places]="mapPlaces" [selected]="(ilObj | async)?.objId" (clickedPlace)="openLearnplace($event.objId, $event)"></app-map>
+        <ion-progress-bar *ngIf="loadingBlocks | async" color="primary" type="indeterminate"></ion-progress-bar>
 
-        </div>
-        <app-map [places]="mapPlaces" [selected]="selected"></app-map>
-    </ion-header>
-    <div class="content">
+    </div>
+    <div class="content" #content>
         <div *ngFor="let block of (blockList | async)">
 
             <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
@@ -47,6 +54,10 @@
             <link-block *ngIf="block.isLink()" [value]="block"></link-block>
             <accordion-block *ngIf="block.isAccordion()" [value]="block"></accordion-block>
 
+        </div>
+
+        <div *ngIf="isEmptyBlock | async">
+            <p>asd</p>
         </div>
     </div>
 </ion-content>
