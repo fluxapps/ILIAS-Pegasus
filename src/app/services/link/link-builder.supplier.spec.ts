@@ -8,7 +8,7 @@ import {NoSuchElementError} from "../../error/errors";
 describe("An installation link supplier", () => {
 
   const mockConfigProvider: ConfigProvider = <ConfigProvider>{
-    loadInstallation: (installationId: number): Promise<ILIASInstallation> => undefined
+    loadInstallation: (installationId: number): Promise<Optional<ILIASInstallation>> => Promise.resolve(Optional.empty())
   };
 
   const mockUserRepository: UserRepository = <UserRepository>{
@@ -66,7 +66,7 @@ describe("An installation link supplier", () => {
           .and.returnValue(Promise.resolve(Optional.of(user)));
 
         spyOn(mockConfigProvider, "loadInstallation")
-          .and.returnValue(Promise.resolve(installation));
+          .and.returnValue(Promise.resolve(Optional.of(installation)));
 
         await expectAsync(subject.get())
           .toBeResolvedTo(installation.url);
