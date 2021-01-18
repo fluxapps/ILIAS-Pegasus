@@ -144,6 +144,17 @@
                                 "examples": [
                                     3600
                                 ]
+                            },
+                            "privacyPolicy": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/privacyPolicy",
+                                "type": "string",
+                                "title": "The privacyPolicy Schema",
+                                "description": "Optional custom privacy URL",
+                                "minLength": 1,
+                                "pattern": "^(https:\/\/)(.{3,}\\.[a-zA-Z]{2,})(\/.+)?(?<!\/|\\.php.*)$",
+                                "examples": [
+                                    "https://www.google.com"
+                                ]
                             }
                         },
                         "additionalProperties": false
