@@ -2,11 +2,10 @@
 import {Injectable, InjectionToken} from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { AuthenticationProvider } from "../providers/authentication.provider";
-import { of } from "rxjs";
 /** misc */
-import {ILIASConfig} from "./ilias-config";
 import {HttpClient, HttpResponse} from "../providers/http";
 import {isDefined} from "../util/util.function";
+import { Optional } from "../util/util.optional";
 
 const CONFIG_FILE: string = "./assets/config.json";
 
@@ -51,14 +50,14 @@ export interface ConfigProvider {
    * @returns {Promise<ILIASInstallation>} the resulting ILIAS installation
    * @throw {ReferenceError} if the given id does not exists
    */
-  loadInstallation(installationId: number): Promise<ILIASInstallation>
+  loadInstallation(installationId: number): Promise<Optional<ILIASInstallation>>
 
   /**
    * Returns the last loaded installation
    *
    * @returns {Promise<ILIASInstallation>} the resulting ILIAS installation
    */
-  getInstallation(): Promise<Readonly<ILIASInstallation>>
+  getInstallation(): Promise<Optional<Readonly<ILIASInstallation>>>
 }
 
 /**
@@ -72,7 +71,7 @@ export interface ConfigProvider {
  export class ILIASConfigProvider implements ConfigProvider {
 
     private readonly config: Promise<ILIASConfig>;
-    private installation: Promise<ILIASInstallation>;
+    private installation: Promise<Optional<ILIASInstallation>> = Promise.resolve(Optional.empty());
 
     constructor(
         private readonly http: HttpClient,
@@ -82,45 +81,46 @@ export interface ConfigProvider {
         this.observeTranslation();
     }
 
-    observeTranslation() {
+    observeTranslation(): void {
         this.translate.onLangChange.subscribe(async (lang: string) => {
-            await this.loadInstallation(AuthenticationProvider.getUser().installationId);
+            if (AuthenticationProvider.isLoggedIn())
+                await this.loadInstallation(AuthenticationProvider.getUser().installationId);
         });
     }
 
-    async getInstallation(): Promise<Readonly<ILIASInstallation>> {
+    async getInstallation(): Promise<Optional<Readonly<ILIASInstallation>>> {
         return this.installation;
     }
 
     async loadConfig(): Promise<ILIASConfig> { return this.config }
 
-    async loadInstallation(installationId: number): Promise<Readonly<ILIASInstallation>> {
+    async loadInstallation(installationId: number): Promise<Optional<Readonly<ILIASInstallation>>> {
 
-    const iliasConfig: ILIASConfig = await this.config;
+        const iliasConfig: ILIASConfig = await this.config;
 
-    let installation: ILIASInstallation | undefined = iliasConfig.installations
-      .find(it => it.id == installationId);
+        let installation: ILIASInstallation | undefined = iliasConfig.installations
+        .find(it => it.id == installationId);
 
-    installation = {
-      id: installation.id,
-      title: installation.title,
-      url: installation.url,
-      clientId: installation.clientId,
-      apiKey: installation.apiKey,
-      apiSecret: installation.apiSecret,
-      accessTokenTTL: installation.accessTokenTTL,
-      privacyPolicy: installation.privacyPolicy
-        ? installation.privacyPolicy
-        : `https://www.ilias-pegasus.de/${await this.translate.get("privacy").toPromise()}/`
-    };
+        installation = {
+        id: installation.id,
+        title: installation.title,
+        url: installation.url,
+        clientId: installation.clientId,
+        apiKey: installation.apiKey,
+        apiSecret: installation.apiSecret,
+        accessTokenTTL: installation.accessTokenTTL,
+        privacyPolicy: installation.privacyPolicy
+            ? installation.privacyPolicy
+            : `https://www.ilias-pegasus.de/${await this.translate.get("privacy").toPromise()}/`
+        };
 
-    if (isDefined(installation)) {
-        this.installation = of(installation).toPromise();
-        return installation;
+        if (isDefined(installation)) {
+            this.installation = Promise.resolve(Optional.of(installation));
+            return Optional.of(installation);
+        }
+
+        throw new ReferenceError(`Installation with id '${installationId}' does not exists in file: ${CONFIG_FILE}`);
     }
-
-    throw new ReferenceError(`Installation with id '${installationId}' does not exists in file: ${CONFIG_FILE}`);
-  }
 
   private async loadFile(): Promise<ILIASConfig> {
     const response: HttpResponse = await this.http.get(CONFIG_FILE);
