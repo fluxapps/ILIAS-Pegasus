@@ -1,11 +1,13 @@
 /* angular */
 import {Component, Inject, OnInit} from "@angular/core";
 import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
-import {NavController, ViewWillEnter} from "@ionic/angular";
-import { TranslateService } from "@ngx-translate/core";
-import { ConfigProvider, CONFIG_PROVIDER } from "src/app/config/ilias-config";
+import {NavController} from "@ionic/angular";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
+import { ConfigProvider, CONFIG_PROVIDER, ILIASInstallation } from "src/app/config/ilias-config";
+import { User } from "src/app/models/user";
 /* misc */
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import { Optional } from "../../util/util.optional";
 
 /**
  * Generated class for the MenuPage page.
@@ -35,7 +37,16 @@ export class MenuPage implements ViewWillEnter {
     ) {}
 
     async ionViewWillEnter(): Promise<void> {
-        await this.config.getInstallation().then(installation => this.privacyPolicy = installation.privacyPolicy);
+        const $installation: Optional<Readonly<ILIASInstallation>> | Readonly<ILIASInstallation>= await this.config.getInstallation();
+        const currentUser: User = AuthenticationProvider.getUser();
+
+        const installation: Readonly<ILIASInstallation> = await $installation.orElseGet(async () => {
+            const install: Optional<Readonly<ILIASInstallation>> = await this.config.loadInstallation(currentUser.installationId);
+
+            return install.get();
+        });
+
+        this.privacyPolicy = installation.privacyPolicy;
     }
 
     async navigateTo(url: string): Promise<void> {

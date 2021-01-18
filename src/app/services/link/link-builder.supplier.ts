@@ -79,7 +79,7 @@ export class InstallationLinkSupplierImpl implements InstallationLinkSupplier {
   async get(): Promise<string> {
     const user: Optional<UserEntity> = await this.userRepository.findAuthenticatedUser();
     if(user.isPresent()) {
-      const installation: ILIASInstallation = await this.configProvider.loadInstallation(user.get().installationId);
+      const installation: ILIASInstallation = (await this.configProvider.loadInstallation(user.get().installationId)).get();
       return installation.url;
     }
     else
