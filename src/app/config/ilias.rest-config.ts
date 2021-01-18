@@ -39,7 +39,7 @@ export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
     async getClientCredentials(): Promise<ClientCredentials> {
 
         const currentUser: User = AuthenticationProvider.getUser();
-        const installation: ILIASInstallation = await this.configProvider.loadInstallation(currentUser.installationId);
+        const installation: ILIASInstallation = (await this.configProvider.loadInstallation(currentUser.installationId)).get();
 
         return <ClientCredentials>{
             clientId: installation.apiKey,
