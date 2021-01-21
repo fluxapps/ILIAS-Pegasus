@@ -105,6 +105,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                     return learnplace.pipe(
                         map((it) => {
                             const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+
                             return lpEntity.applies<LearnplaceEntity>(function(): void {
                                 this.id = uuid.create(4).toString();
                                 this.objectId = objectId;
