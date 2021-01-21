@@ -50,6 +50,7 @@ ion-content {
 .title {
     display: flex;
     align-items: center;
+    text-align: center;
     img {
         margin: 0.25em;
     }
@@ -60,6 +61,26 @@ ion-content {
     background-color: var(--ion-color-primary);
     color: var(--ion-color-primary-contrast);
     text-align: center;
+}
+
+.size-up {
+    transition: all 0.4s ease-in;
+    height: 30vh !important;
+}
+
+.size-down {
+    transition: all 0.4s ease-out;
+    height: 70vh !important;
+}
+
+.margin-up {
+    transition: all 0.4s ease-out;
+    margin-top: calc(70vh + 1em) !important;
+}
+
+.margin-down {
+    transition: all 0.4s ease-in;
+    margin-top: calc(30vh + 1em) !important;
 }
 
 .slide-in {

@@ -41,9 +41,14 @@
 
 <ion-content no-bounce has-bouncing="false" forceOverscroll="false">
     <div class="map" #mapWrapper>
-        <app-map #map [places]="mapPlaces" [selected]="(ilObj | async)?.objId" (clickedPlace)="openLearnplace($event.objId, $event)"></app-map>
+        <app-map
+            #map
+            [places]="mapPlaces"
+            [selected]="(ilObj | async)?.objId"
+            [showFullscreen]="true"
+            (clickedPlace)="openLearnplace($event.objId, $event)"
+            (fullscreen)="toggleFullscreen($event)"></app-map>
         <ion-progress-bar *ngIf="loadingBlocks | async" color="primary" type="indeterminate"></ion-progress-bar>
-
     </div>
     <div class="content" #content>
         <ion-card *ngIf="(isEmptyBlock | async) && !(loadingBlocks | async)" class="warning">

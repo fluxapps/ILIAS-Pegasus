@@ -28,18 +28,6 @@ export interface GeoCoordinate {
 }
 
 /**
- * Describes a marker that can be placed on a map.
- *
- * @author nmaerchy <nm@studer-raimann.ch>
- * @version 1.0.0
- */
-export interface Marker {
-    readonly title: string,
-    readonly snippet: string,
-    readonly position: GeoCoordinate
-}
-
-/**
  * Describes options for the camera positon on a map.
  *
  * @author nmaerchy <nm@studer-raimann.ch>
@@ -48,55 +36,6 @@ export interface Marker {
 export interface CameraOptions {
     readonly zoom?: number
     readonly position: GeoCoordinate
-}
-
-/**
- * Describes a standard map that is used in the map service.
- * It exposes allowed method from the current map implementation and hides methods
- * that should not be used directly and only be accessed via
- * the {@link MapService}.
- *
- * @author nmaerchy <nm@studer-raimann.ch> | nschaefli <ns@studer-raimann.ch>
- * @version 2.0.0
- */
-export interface StandardMap {
-
-    readonly container: HTMLElement
-
-    animateCameraZoomIn(): Promise<void>
-
-    animateCameraZoomOut(): Promise<void>
-}
-
-/**
- * {@link MapboxMapBinding} is a abstraction from the {@link mapboxgl}.
- * Its used as a wrapper class, because some methods of the mapbox map
- * should only be accessed via the {@link MapService}.
- *
- * Methods are delegated to the given {@code map} instance.
- *
- * @author nschaefli <ns@studer-raimann.ch>
- * @version 1.0.0
- * @since 3.0.2
- */
-class MapboxMapBinding implements StandardMap {
-    constructor(
-        private readonly map: mapboxgl.Map
-    ) {}
-
-    animateCameraZoomIn(): Promise<void> {
-        this.map.zoomIn();
-        return Promise.resolve();
-    }
-
-    animateCameraZoomOut(): Promise<void> {
-        this.map.zoomOut();
-        return Promise.resolve();
-    }
-
-    get container(): HTMLElement {
-        return this.map.getContainer();
-    }
 }
 
 /**
@@ -128,8 +67,11 @@ enum ERRORS {
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
     @Input("places") places: Array<MapPlaceModel> = [];
     @Input("selected") selected: number = 0;
+    @Input("showFullscreen") showFullscreen: boolean = false;
+
 
     @Output("clickedPlace") clickedPlace = new EventEmitter<MapPlaceModel>();
+    @Output("fullscreen") clickedFullscreen = new EventEmitter<boolean>();
 
     @ViewChild("map") elMap: HTMLElement;
 
@@ -142,6 +84,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private mapboxMap: mapboxgl.Map;
     private buildFlag: boolean = false;
 
+    fullscreen: boolean = false;
     map: MapPlaceModel | undefined = undefined;
     hasError: ERRORS = ERRORS.NONE;
 
@@ -178,6 +121,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         await this.hardware.requireLocation()
             .onFailure(() => this.hasError = ERRORS.GPS)
             .check();
+
+        this.clickedFullscreen.subscribe(async (res) => {
+            await this.delay(420); // must be a littlebit higher than the transition time of expanding parent element
+            this.mapboxMap.resize();
+        });
     }
 
     async ngOnChanges(): Promise<void> {
@@ -232,10 +180,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         // controls
-        this.mapboxMap.addControl(new mapboxgl.FullscreenControl({
-            container: this.elMap
-        }), "top-left");
-
         this.mapboxMap.addControl(new mapboxgl.GeolocateControl({
             positionOptions: {
                 enableHighAccuracy: true
@@ -252,7 +196,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         const markers: Array<mapboxgl.Marker> = this.places
             .filter(place => place.visible)
             .map(place => {
-
                 const el: HTMLElement = this.renderer.createElement("div") as HTMLElement;
                 this.renderer.addClass(el, "marker");
                 this.objIdMarker.set(place.id, el);
@@ -278,7 +221,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     async mapOverview(): Promise<void> {
         if (this.places.filter(lp => lp.visible).length <= 1) {
             const coords = (await this.geolocation.getCurrentPosition()).coords
-            console.error(coords);
 
             this.mapboxMap.flyTo({
                 center: [coords.longitude, coords.latitude],
@@ -288,10 +230,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        const sortedByLong = this.places
+        const sortedByLong: Array<MapPlaceModel> = this.places
             .filter(place => place.visible)
             .sort((a, b) => b.longitude - a.longitude);
-        const sortedByLat = this.places
+        const sortedByLat: Array<MapPlaceModel> = this.places
             .filter(place => place.visible)
             .sort((a, b) => b.latitude - a.latitude);
 
@@ -322,5 +264,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     resize(height: number): void {
         this.renderer.setStyle(this.elMap, "height", height);
         this.mapboxMap.resize();
+    }
+
+    toggleFullscreen(): void {
+        this.fullscreen = !this.fullscreen;
+        this.clickedFullscreen.emit(this.fullscreen);
+    }
+
+    delay(ms: number) {
+        return new Promise( resolve => setTimeout(resolve, ms) );
     }
 }

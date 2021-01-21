@@ -23,7 +23,7 @@ import { MapService, MAP_SERVICE } from "../../services/learnplace/map.service";
 })
 export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDestroy {
     @ViewChild("map") elMap: MapComponent;
-    @ViewChild("mapWrapper") elMapWrapper: Element;
+    @ViewChild("mapWrapper") elMapWrapper: ElementRef;
     @ViewChild("content") elContent: ElementRef;
 
     ilObj: Subject<ILIASObject> = new Subject<ILIASObject>();
@@ -69,15 +69,11 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             this.objId = obj.objId;
 
 
-
             await this.initLearnplaces(obj.parentRefId);
             this.initMenu();
             this.isEmptyBlock.next(true);
             this.initBlocks();
         });
-
-        this.isEmptyBlock.subscribe(res => console.error("emptyblock: ", res));
-        this.loadingBlocks.subscribe(res => console.error("is loading blocks: ", res))
 
         this.ilObj.next(await ILIASObject.findByRefIdAndUserId(lpRefId, AuthenticationProvider.getUser().id));
     }
@@ -201,5 +197,21 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
     navigateBack(): void {
         // TODO: route into parentref, not to the last view
         this.nav.pop();
+    }
+
+    toggleFullscreen(mode: boolean) {
+        if (mode) {
+            this.renderer.removeClass(this.elMapWrapper.nativeElement, "size-down");
+            this.renderer.addClass(this.elMapWrapper.nativeElement, "size-up");
+
+            this.renderer.removeClass(this.elContent.nativeElement, "margin-up");
+            this.renderer.addClass(this.elContent.nativeElement, "margin-down");
+        } else {
+            this.renderer.removeClass(this.elMapWrapper.nativeElement, "size-up");
+            this.renderer.addClass(this.elMapWrapper.nativeElement, "size-down");
+
+            this.renderer.removeClass(this.elContent.nativeElement, "margin-down");
+            this.renderer.addClass(this.elContent.nativeElement, "margin-up");
+        }
     }
 }
