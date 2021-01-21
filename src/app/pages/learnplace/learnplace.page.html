@@ -7,7 +7,7 @@
     <ion-content>
       <ion-list>
         <ion-item *ngFor="let item of menuItems | async" (click)="openLearnplace(item.objId)">
-            <div class="lp-icon">
+            <div class="lp-item-icon">
                 <img src="assets/icon/icon_xsrl.svg" alt=""/>
                 {{item.title}}
             </div>
@@ -19,8 +19,8 @@
 
 <ion-header>
     <ion-toolbar color="primary">
-        <ion-title>
-            <div class="lp-icon">
+        <ion-title class="title-wrapper">
+            <div class="title">
                 <img src="assets/icon/icon_xsrl.svg" alt="" style="height: 1.5em;"/>
                 {{(ilObj | async)?.title}}
             </div>
@@ -46,18 +46,15 @@
 
     </div>
     <div class="content" #content>
-        <div *ngFor="let block of (blockList | async)">
-
+        <ion-card *ngIf="(isEmptyBlock | async) && !(loadingBlocks | async)" class="warning">
+            No Content
+        </ion-card>
+        <div [hidden]="isEmptyBlock | async" *ngFor="let block of (blockList | async)">
             <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
             <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
             <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
             <link-block *ngIf="block.isLink()" [value]="block"></link-block>
             <accordion-block *ngIf="block.isAccordion()" [value]="block"></accordion-block>
-
-        </div>
-
-        <div *ngIf="isEmptyBlock | async">
-            <p>asd</p>
         </div>
     </div>
 </ion-content>

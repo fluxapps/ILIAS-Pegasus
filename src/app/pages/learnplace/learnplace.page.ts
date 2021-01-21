@@ -61,41 +61,23 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             .onFailure(() => this.nav.pop())
             .check();
 
-        const lpRefId = +this.route.snapshot.paramMap.get("refId");
+        const lpRefId: number = +this.route.snapshot.paramMap.get("refId");
 
         this.ilObj.subscribe(async (obj) => {
             this.visitJournalWatch.setLearnplace(obj.objId);
             this.visitJournalWatch.start();
             this.objId = obj.objId;
 
-            this.blockService.getBlockList(obj.objId)
-                .pipe(
-                    takeUntil(this.dispose$)
-                ).subscribe(
-                    (it) => {
-                        console.log("Block List: ", it);
 
-                        if (it !== this.currentBlockList) {
-                            this.zone.run(() => this.blockList.next(it));
-                            this.currentBlockList = it;
-
-                            this.loadingBlocks.next(false);
-                            this.isEmptyBlock.next(false);
-                            this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
-                            this.renderer.addClass(this.elContent.nativeElement, "slide-in");
-                        }
-                    },
-                    (err) => {
-                        console.error(err);
-                    },
-                    () => {
-                        this.loadingBlocks.next(false);
-                    }
-                );
 
             await this.initLearnplaces(obj.parentRefId);
             this.initMenu();
+            this.isEmptyBlock.next(true);
+            this.initBlocks();
         });
+
+        this.isEmptyBlock.subscribe(res => console.error("emptyblock: ", res));
+        this.loadingBlocks.subscribe(res => console.error("is loading blocks: ", res))
 
         this.ilObj.next(await ILIASObject.findByRefIdAndUserId(lpRefId, AuthenticationProvider.getUser().id));
     }
@@ -134,7 +116,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         if (this.mapPlaces)
             return;
 
-
         if (!this.lpManager?.learnplaces) {
             const lps: Array<ILIASObject> = (await ILIASObject.findByParentRefId(parentRefId, AuthenticationProvider.getUser().id))
                 .filter(obj => obj.type === "xsrl")
@@ -145,6 +126,38 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         forkJoin(this.mapService.getMapPlaces(this.lpManager.learnplaces)).subscribe(places => {
             this.mapPlaces = places;
         });
+    }
+
+    async initBlocks(): Promise<void> {
+        await this.lpManager.loadBlocks(this.objId);
+        this.isEmptyBlock.next(true);
+        this.blockService.getBlockList(this.objId)
+            .pipe(
+                takeUntil(this.dispose$)
+            ).subscribe(
+                (it) => {
+                    console.log("Block List: ", it);
+
+                    if (it !== this.currentBlockList) {
+                        this.zone.run(() => this.blockList.next(it));
+                        this.currentBlockList = it;
+
+                        this.isEmptyBlock.next(false);
+                        this.loadingBlocks.next(false);
+                        this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
+                        this.renderer.addClass(this.elContent.nativeElement, "slide-in");
+                    }
+
+                },
+                (err) => {
+                    console.error(err);
+                },
+                () => {
+                    this.loadingBlocks.next(false);
+                    this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
+                    this.renderer.addClass(this.elContent.nativeElement, "slide-in");
+                }
+            );
     }
 
     async openLearnplace(objId: number, map?: MapPlaceModel): Promise<void> {
@@ -163,6 +176,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             return;
 
         this.loadingBlocks.next(true);
+        this.isEmptyBlock.next(true);
         this.renderer.addClass(this.elContent.nativeElement, "slide-out");
 
         this.ilObj.next(await ILIASObject.findByObjIdAndUserId(objId, AuthenticationProvider.getUser().id));
@@ -172,7 +186,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         await this.menu.open();
     }
 
-    overview() {
+    overview(): void {
         this.elMap.mapOverview();
     }
 
@@ -184,7 +198,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         }
     }
 
-    navigateBack() {
+    navigateBack(): void {
         // TODO: route into parentref, not to the last view
         this.nav.pop();
     }

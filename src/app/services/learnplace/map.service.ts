@@ -356,7 +356,6 @@ export class VisibilityManagedMapService implements MapService {
     }
 
     addPlace(id: string, place: MapPlaceModel): void {
-        console.error(`adding place ${id} at ${place.latitude}, ${place.longitude}`);
         this.mapboxMap.addSource(id, {
             "type": "geojson",
             "data": {

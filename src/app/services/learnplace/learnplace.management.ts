@@ -11,6 +11,7 @@ import {StorageUtilization, UserStorageMamager} from "../../services/filesystem/
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
 import {AuthenticationProvider} from "../../providers/authentication.provider";
 import {User} from "../../models/user";
+import { LearnplaceEntity } from "src/app/entity/learnplace/learnplace.entity";
 
 /**
  * Describes a service to manage learnplaces.
@@ -29,6 +30,26 @@ export interface LearnplaceManager {
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
     load(objectId: number): Promise<void>;
+
+    /**
+     * Loads only the learnplace matching
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     *
+     * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
+     */
+    loadLearnplace(objectId: number): Promise<void>
+
+    /**
+     * Loads all relevant data of the learnplace matching
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     *
+     * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
+     */
+    loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void>;
 
     /**
      * Removes the learnplace with the given id.
@@ -84,7 +105,7 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     async setLearnplaces(ids: Array<number>): Promise<void> {
         this._learnplaces = ids;
-        ids.forEach(async id => await this.load(id));
+        ids.forEach(async id => await this.loadLearnplace(id));
         return;
     }
 
@@ -94,6 +115,18 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     async load(objectId: number): Promise<void> {
         await this.loader.load(objectId);
+        const user: User = AuthenticationProvider.getUser();
+        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
+    }
+
+    async loadLearnplace(objectId: number): Promise<void> {
+        await this.loader.loadLearnplace(objectId);
+        const user: User = AuthenticationProvider.getUser();
+        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
+    }
+
+    async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {
+        await this.loader.loadBlocks(objectId);
         const user: User = AuthenticationProvider.getUser();
         await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
     }

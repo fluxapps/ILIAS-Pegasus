@@ -14,7 +14,7 @@ import {
 } from "./mappers";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
-import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest} from "rxjs";
+import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest, merge} from "rxjs";
 import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
 import {PictureBlockEntity} from "../../../entity/learnplace/pictureBlock.entity";
 import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
@@ -42,6 +42,26 @@ export interface LearnplaceLoader {
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
     load(objectId: number): Promise<void>
+
+    /**
+     * Loads only the learnplace matching
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     *
+     * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
+     */
+    loadLearnplace(objectId: number): Promise<LearnplaceEntity>
+
+    /**
+     * Loads only the blocks and the visitjournal of a learnplace matching
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     *
+     * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
+     */
+    loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void>
 }
 
 export const LEARNPLACE_LOADER: InjectionToken<LearnplaceLoader> = new InjectionToken("token four learnplace loader");
@@ -71,6 +91,111 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     ) {
     }
 
+    async loadLearnplace(objectId: number, update: boolean = false): Promise<LearnplaceEntity> {
+        const user: Optional<UserEntity> = await this.userRepository.findAuthenticatedUser()
+
+        // downloads only missing content
+        const learnplaceEntity: Observable<LearnplaceEntity> = of(user).pipe(
+            mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
+            mergeMap(it => {
+                if (!it.isPresent() || update) {
+                    const learnplace = from(this.learnplaceAPI.getLearnPlace(objectId));
+                    update = true;
+
+                    return learnplace.pipe(
+                        map((it) => {
+                            const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+                            return lpEntity.applies<LearnplaceEntity>(function(): void {
+                                this.id = uuid.create(4).toString();
+                                this.objectId = objectId;
+                                this.user = Promise.resolve(user.get());
+
+                                this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
+                                    this.zoom = it.map.zoomLevel;
+                                    this.visibility = (new VisibilityEntity()).applies(function(): void {
+                                        this.value = it.map.visibility;
+                                    })
+                                });
+
+                                this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
+                                    this.latitude = it.location.latitude;
+                                    this.longitude = it.location.longitude;
+                                    this.radius = it.location.radius;
+                                    this.elevation = it.location.elevation;
+                                });
+                            });
+                        })
+                    )
+                }
+
+                if (!update)
+                    this.loadLearnplace(objectId, true);
+
+                return of(it.get());
+            }),
+            mergeMap(it => this.learnplaceRepository.save(it))
+        );
+
+        // todo: update the content anyway async
+        return learnplaceEntity.toPromise();
+    }
+
+    async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {
+        const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
+        const learnplaceEntity: Observable<LearnplaceEntity> = lp ? of(lp) : from(this.loadLearnplace(objectId));
+        const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));
+
+        const visitJournalEntities: Observable<Array<VisitJournalEntity>> = forkJoin(learnplaceEntity, journalEntries,
+            (learnplaceEntity, journalEntries) => from(this.visitJournalMapper.map(learnplaceEntity.visitJournal, journalEntries))
+        ).pipe(mergeAll());
+
+        const textBlockEntities: Observable<Array<TextblockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.textBlockMapper.map(entity.textBlocks, blocks.text))
+        ).pipe(mergeAll());
+
+        const pictureBlockEntities: Observable<Array<PictureBlockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.pictureBlockMapper.map(entity.pictureBlocks, blocks.picture))
+        ).pipe(mergeAll());
+
+        const linkBlockEntities: Observable<Array<LinkblockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.linkBlockMapper.map(entity.linkBlocks, blocks.iliasLink))
+        ).pipe(mergeAll());
+
+        const videoBlockEntities: Observable<Array<VideoBlockEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.videoBlockMapper.map(entity.videoBlocks, blocks.video))
+        ).pipe(mergeAll());
+
+        const accordionBlockEntities: Observable<Array<AccordionEntity>> = forkJoin(learnplaceEntity, blocks,
+            (entity, blocks) => from(this.accordionMapper.map(entity.accordionBlocks, blocks.accordion))
+        ).pipe(mergeAll());
+
+        // tslint:disable-next-line: deprecation
+        return combineLatest(
+            learnplaceEntity,
+            visitJournalEntities,
+            textBlockEntities,
+            pictureBlockEntities,
+            linkBlockEntities,
+            videoBlockEntities,
+            accordionBlockEntities,
+            (entity, visitJournal, textBlocks, pictureBlocks, linkBlocks, videoBlocks, accordionBlocks) =>
+                entity.applies(function(): void {
+
+                    this.visitJournal = visitJournal;
+                    this.textBlocks = textBlocks;
+                    this.pictureBlocks = pictureBlocks;
+                    this.linkBlocks = linkBlocks;
+                    this.videoBlocks = videoBlocks;
+                    this.accordionBlocks = accordionBlocks;
+                })
+        ).pipe(
+            mergeMap(it => from(this.learnplaceRepository.save(it))),
+            mergeMap(it => EMPTY)
+        ).toPromise();
+    }
+
+
+
     /**
      * Loads all relevant data of the learnplace matching
      * the given {@code objectId} and stores them.
@@ -83,7 +208,6 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
     load(objectId: number): Promise<void> {
-
         const learnplace: Observable<LearnPlace> = from(this.learnplaceAPI.getLearnPlace(objectId));
         const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
         const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));

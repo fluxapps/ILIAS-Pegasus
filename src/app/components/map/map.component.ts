@@ -8,12 +8,13 @@ import {
     Output,
     Renderer2,
     ViewChild,
-    EventEmitter } from '@angular/core';
-import { Hardware } from 'src/app/services/device/hardware-features/hardware-feature.service';
-import { MapPlaceModel } from 'src/app/services/learnplace/block.model';
-import { Logger } from 'src/app/services/logging/logging.api';
-import { Logging } from 'src/app/services/logging/logging.service';
+    EventEmitter } from "@angular/core";
+import { Hardware } from "src/app/services/device/hardware-features/hardware-feature.service";
+import { MapPlaceModel } from "src/app/services/learnplace/block.model";
+import { Logger } from "src/app/services/logging/logging.api";
+import { Logging } from "src/app/services/logging/logging.service";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl"
+import { Geolocation } from "src/app/services/device/geolocation/geolocation.service";
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -120,17 +121,17 @@ enum ERRORS {
 }
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss'],
+  selector: "app-map",
+  templateUrl: "./map.component.html",
+  styleUrls: ["./map.component.scss"],
 })
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
-    @Input("places") places: Array<MapPlaceModel>;
-    @Input("selected") selected: number;
+    @Input("places") places: Array<MapPlaceModel> = [];
+    @Input("selected") selected: number = 0;
 
     @Output("clickedPlace") clickedPlace = new EventEmitter<MapPlaceModel>();
 
-    @ViewChild("map") elMap: Element;
+    @ViewChild("map") elMap: HTMLElement;
 
 
     private readonly DEFAULT_ZOOM: number = 13;
@@ -170,6 +171,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         private readonly hardware: Hardware,
         private readonly detectorRef: ChangeDetectorRef,
         private readonly renderer: Renderer2,
+        private readonly geolocation: Geolocation
     ) { }
 
     async ngOnInit(): Promise<void> {
@@ -230,7 +232,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         // controls
-        this.mapboxMap.addControl(new mapboxgl.FullscreenControl(), "top-left");
+        this.mapboxMap.addControl(new mapboxgl.FullscreenControl({
+            container: this.elMap
+        }), "top-left");
 
         this.mapboxMap.addControl(new mapboxgl.GeolocateControl({
             positionOptions: {
@@ -271,7 +275,19 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    mapOverview(): void {
+    async mapOverview(): Promise<void> {
+        if (this.places.filter(lp => lp.visible).length <= 1) {
+            const coords = (await this.geolocation.getCurrentPosition()).coords
+            console.error(coords);
+
+            this.mapboxMap.flyTo({
+                center: [coords.longitude, coords.latitude],
+                zoom: 16
+            });
+
+            return;
+        }
+
         const sortedByLong = this.places
             .filter(place => place.visible)
             .sort((a, b) => b.longitude - a.longitude);
