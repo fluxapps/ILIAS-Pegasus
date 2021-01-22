@@ -2,6 +2,5 @@
     "disabled": [
         "sahs",
         "htlm"
-    ],
-    "customTheme": true
+    ]
 }
