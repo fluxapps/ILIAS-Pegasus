@@ -53,7 +53,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         private readonly renderer: Renderer2,
         @Inject(VISIT_JOURNAL_WATCH) private readonly visitJournalWatch: VisitJournalWatch,
         @Inject(LEARNPLACE_MANAGER) private readonly lpManager: LearnplaceManagerImpl
-
     ) { }
 
     async ionViewWillEnter(): Promise<void> {
@@ -199,7 +198,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.nav.pop();
     }
 
-    toggleFullscreen(mode: boolean) {
+    toggleFullscreen(mode: boolean): void {
         if (mode) {
             this.renderer.removeClass(this.elMapWrapper.nativeElement, "size-down");
             this.renderer.addClass(this.elMapWrapper.nativeElement, "size-up");

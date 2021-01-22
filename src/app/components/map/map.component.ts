@@ -219,11 +219,18 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     async mapOverview(): Promise<void> {
-        if (this.places.filter(lp => lp.visible).length <= 1) {
+        if (this.places.filter(lp => lp.visible).length <= 0) {
             const coords = (await this.geolocation.getCurrentPosition()).coords
 
             this.mapboxMap.flyTo({
                 center: [coords.longitude, coords.latitude],
+                zoom: 16
+            });
+
+            return;
+        } else if (this.places.filter(lp => lp.visible).length <= 1) {
+            this.mapboxMap.flyTo({
+                center: [this.places[0].longitude, this.places[0].latitude],
                 zoom: 16
             });
 
@@ -259,11 +266,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         bound[1] = bound[1].map(val => val - margin) as [number, number];
 
         this.mapboxMap.fitBounds(bound as LngLatBoundsLike);
-    }
-
-    resize(height: number): void {
-        this.renderer.setStyle(this.elMap, "height", height);
-        this.mapboxMap.resize();
     }
 
     toggleFullscreen(): void {

@@ -5,12 +5,11 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-list>
+      <ion-list class="ion-padding-top">
         <ion-item *ngFor="let item of menuItems | async" (click)="openLearnplace(item.objId)">
-            <div class="lp-item-icon">
-                <img src="assets/icon/icon_xsrl.svg" alt=""/>
-                {{item.title}}
-            </div>
+
+            <ion-icon slot="start" src="assets/icon/icon_xsrl.svg"></ion-icon>
+            <ion-label>{{item.title}}</ion-label>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -19,12 +18,7 @@
 
 <ion-header>
     <ion-toolbar color="primary">
-        <ion-title class="title-wrapper">
-            <div class="title">
-                <img src="assets/icon/icon_xsrl.svg" alt="" style="height: 1.5em;"/>
-                {{(ilObj | async)?.title}}
-            </div>
-        </ion-title>
+        <ion-title>{{(ilObj | async)?.title}}</ion-title>
         <ion-buttons slot="start">
             <ion-button (click)="navigateBack()">
                 <ion-icon name="arrow-back"></ion-icon>

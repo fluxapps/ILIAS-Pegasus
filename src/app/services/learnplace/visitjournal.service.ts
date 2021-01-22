@@ -59,7 +59,6 @@ export class VisitJournalSynchronizationImpl implements VisitJournalSynchronizat
      */
     async synchronize(): Promise<void> {
         const unsynchronized: Array<VisitJournalEntity> = await this.visitJournalRepository.findUnsynchronized();
-        console.error(unsynchronized);
         for (const it of unsynchronized) {
             try {
                 await this.learnplaceAPI.addJournalEntry(it.learnplace.objectId, it.time);
@@ -119,7 +118,6 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
 
 
     setLearnplace(objectId: number): void {
-        console.error("starting visitjournal on " + objectId);
         this.learnplaceObjectId = objectId;
     }
 
@@ -177,7 +175,6 @@ export class SynchronizedVisitJournalWatch implements VisitJournalWatch {
                 takeUntil(this.dispose$)
             )
             .subscribe((it: LearnplaceEntity) => {
-                console.error("updating lp")
                 this.learnplaceRepository.save(it);
             });
     }

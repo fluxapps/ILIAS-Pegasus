@@ -408,29 +408,6 @@ export class VisibilityManagedMapService implements MapService {
                     });
             });
         });
-
-        // return from(this.userRepository.findAuthenticatedUser())
-        //     .pipe(
-        //         switchMap(it => {
-        //             return from(this.learnplaceRepository.findByObjectIdAndUserId(lpObjId, it.get().id))
-        //         }),
-        //         switchMap(it => {
-        //             console.log("Map learnplace:", it.get());
-        //             const learnplace: LearnplaceEntity = it.get();
-
-        //             const place: MapPlaceModel = new MapPlaceModel(
-        //                 lpObjId,
-        //                 learnplace.location.latitude,
-        //                 learnplace.location.longitude,
-        //                 learnplace.map.zoom,
-        //                 VisibilityStrategyType[learnplace.map.visibility.value]
-        //             );
-
-        //             console.error("a");
-        //             this.visibilityStrategyApplier.setLearnplace(learnplace.id);
-        //             return this.visibilityStrategyApplier.apply(place, VisibilityStrategyType[learnplace.map.visibility.value]);
-        //         })
-        //     );
     }
 
     getMapPlaces(lpObjIds: Array<number>): Array<Observable<MapPlaceModel>> {

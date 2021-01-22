@@ -25,13 +25,8 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
-        const loadingPage: HTMLIonModalElement = await this.modal.create({
-            component: LoadingPage,
-            cssClass: "modal-fullscreen",
-            backdropDismiss: false,
-        });
-        LoadingPage.type = LoadingPageType.learnplace;
-        await loadingPage.present();
+
+
         try {
             // load the learnplace if not contained in favorites
             // TODO how to handle changes of ILIAS object?
@@ -40,10 +35,8 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
 
             await this.nav.navigateForward(["learnplace", ilObj.refId]);
 
-            await loadingPage.dismiss();
             return new ILIASObjectActionNoMessage();
         } catch (error) {
-            await loadingPage.dismiss();
             throw error;
         }
     }
