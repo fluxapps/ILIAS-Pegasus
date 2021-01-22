@@ -34,6 +34,9 @@ export class UserEntity {
   @Column()
   lastTokenUpdate: number;
 
+  @Column()
+  totalUsedStorage: number;
+
   @ManyToMany(type => NewsEntity, <RelationOptions>{
     cascadeInsert: true,
     cascadeUpdate: true,

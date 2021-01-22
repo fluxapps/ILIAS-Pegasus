@@ -21,6 +21,9 @@
     "no": "No",
     "no_title": "Nessun titolo",
     "close": "Chiudi",
+    "courses": "Corsi",
+    "map": "Carta geografica",
+    "content": "Soddisfare",
     "object-list": {
         "title" : "I miei corsi e i miei gruppi",
         "content" : "Contenuto",
@@ -44,11 +47,15 @@
     "news": {
         "title": "Notizie"
     },
+    "home": {
+        "title": "Pagina iniziale"
+    },
     "new-objects": {
         "title": "Nuovo",
         "no_new_items": "Non ci sono nuovi elementi.",
         "mark_as_seen": "Segna come giā visto"
     },
+    "Version": "Versione",
     "settings": {
         "title": "Impostazioni",
         "language": "Lingua",
@@ -66,13 +73,6 @@
         "users": "Utenti",
         "deleting_files": "Sto eliminando i file...",
         "downloadOnStart": "Download favorites on startup"
-    },
-    "info": {
-        "title": "Informazioni",
-        "guide": "Guida",
-        "instructions1": "If you're on the Home page 'My Courses and Groups' you can mark the courses and groups as 'available Offline'. They are marked with a gray cloud. Once the files are synced, the cloud turns blue.",
-        "instructions2": "The synchronization will start automatically each time the app is started or if a course has been marked as Available Offline. Manual synchronization can also be started by dragging (Pull to Refresh) the 'My Courses and Groups' page."
-
     },
     "logout": {
         "title": "Disconnettersi",
@@ -150,7 +150,7 @@
     },
     "login": {
         "title": "Login",
-        "hello":"Benvenuto/a in ILIAS Pegasus!",
+        "hello":"Benvenuto/a in {{app_name}}!",
         "instructions":"Scegli la tua organizzazione",
         "instructions2":"Scegli la tua organizzazione",
         "login": "Login",
@@ -228,7 +228,7 @@
         }
     },
     "fallback": {
-        "browser": "Stai uscendo dall'app ILIAS Pegasus",
+        "browser": "Stai uscendo dall'app {{app_name}}",
         "browser_ok": "Ok andiamo!",
         "browser_no": "Senza ritorno!",
         "synchronization": "<it>Welcome!</it>",
@@ -247,18 +247,63 @@
         }
     },
     "onboarding": {
-        "title1": "Whith the help of ILIAS Pegasus you can:",
+        "title1": "Whith the help of {{app_name}} you can:",
           "function1": "access your ILIAS courses on your smartphone.",
           "function2": "make your courses & files available offline.",
           "function3": "log in once and stay logged in.",
           "title2": "A decentralized app",
-          "concept1": "The Pegasus app connects you to the ILIAS installation of your institution, university or school.",
+          "concept1": "The {{app_name}} app connects you to the ILIAS installation of your institution, university or school.",
           "concept2": "If your institution did not join yet, contact us",
           "title3":"Your data is safe!",
           "datasecurity1": "Your data will only be stored on your device. The app does not collect any personal information. If you want to check this in detail, you will find here the",
           "datasecurity2": "privacy policy",
-          "datasecurity3": "ILIAS Pegasus is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
+          "datasecurity3": "{{app_name}} is an open source project. If you want to see for yourself what the app does, then you can see the code here:",
           "next":"next",
           "start": "Let's go"
-      }
+    },
+    "info": {
+        "title": "Informazioni",
+        "guide": "Guida",
+        "instructions1": "If you're on the Home page 'My Courses and Groups' you can mark the courses and groups as 'available Offline'. They are marked with a gray cloud. Once the files are synced, the cloud turns blue.",
+        "instructions2": "The synchronization will start automatically each time the app is started or if a course has been marked as Available Offline. Manual synchronization can also be started by dragging (Pull to Refresh) the 'My Courses and Groups' page.",
+        "version-card": {
+            "title": "Basato su ILIAS-Pegasus",
+            "content": "Versione"
+        },
+        "reporting-card": {
+            "title": "Suggerimenti e note sui bug",
+            "content": "Hai trovato un bug? Aiutateci a migliorare l'app. Mettiti in contatto con"
+        },
+        "reporting-card-zwh": {
+            "subtitle": "Provision and design",
+            "content": "Contact"
+        },
+        "content-card": {
+            "title": "Indice",
+            "content": "Nonostante l'attento controllo dei contenuti, non ci assumiamo alcuna responsabilità per i contenuti dei link esterni. I gestori delle pagine collegate sono gli unici responsabili del contenuto delle loro pagine. Per l'ottimizzazione dell'app, i dati di utilizzo vengono registrati e valutati in forma anonima."
+        },
+        "stura-card": {
+            "title": "Consiglio studentesco del",
+            "subtitle": "Finanziamento",
+            "content": "Le specifiche e lo sviluppo della prima versione dell'app sono stati finanziati dal budget delle proposte degli studenti del consiglio degli studenti dell'Università di Friburgo."
+        },
+        "freiburg-card": {
+            "title": "Data Center",
+            "subtitle": "Responsabile del progetto",
+            "content": "The data center of the University of Freiburg led the specification and implementation phase of the app."
+        },
+        "marburg-card": {
+            "title": "University Data Center",
+            "subtitle": "Responsabile del RESTPlugin ILIAS",
+            "content": "Il centro informatico dell'università delle Filippine-Università di Marburg fornisce l'interfaccia a ILIAS con ILIAS RESTPlugin."
+        },
+        "sig-card": {
+            "subtitle": "Comunità e coordinamento dell'ulteriore sviluppo",
+            "content":  "Il Special Interest Group (SIG) ILIAS Mobile è responsabile del coordinamento dell'ulteriore sviluppo dell'app e offre uno spazio di discussione intorno all'app."
+        },
+        "sturai-card": {
+            "subtitle": "Sviluppo e manutenzione delle applicazioni",
+            "content": "L'applicazione è stata implementata e viene mantenuta da studer + raimann ag, IT- e Learning-Solutions."
+        }
+    }
 }

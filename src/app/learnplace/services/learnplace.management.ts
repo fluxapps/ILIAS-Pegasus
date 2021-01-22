@@ -7,6 +7,10 @@ import {VideoBlockEntity} from "../entity/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../providers/repository/learnplace.repository";
 import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
+import {StorageUtilization, UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
+import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
+import {AuthenticationProvider} from "../../providers/authentication.provider";
+import {User} from "../../models/user";
 
 /**
  * Describes a service to manage learnplaces.
@@ -15,6 +19,16 @@ import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource"
  * @version 1.0.0
  */
 export interface LearnplaceManager {
+
+    /**
+     * Loads all relevant data of the learnplace matching
+     * the given {@code objectId} and stores them.
+     *
+     * @param {number} objectId - ILIAS object id of the learnplace
+     *
+     * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
+     */
+    load(objectId: number): Promise<void>;
 
     /**
      * Removes the learnplace with the given id.
@@ -37,7 +51,7 @@ export interface LearnplaceManager {
      *
      * @returns {Promise<number>} The used storage in bytes.
      */
-    storageSpaceUsage(objectId: number, userId: number): Promise<number>;
+    getUsedStorage(objectId: number, userId: number): Promise<number>;
 }
 
 export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new InjectionToken("token for learnplace manager.");
@@ -49,18 +63,26 @@ export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new Injecti
  * @version 1.0.0
  */
 @Injectable()
-export class LearnplaceManagerImpl implements LearnplaceManager{
+export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilization{
 
     private log: Logger = Logging.getLogger(LearnplaceManagerImpl.name);
 
     constructor(
         private readonly file: File,
+        private readonly userStorageManager: UserStorageMamager,
         @Inject(LEARNPLACE_REPOSITORY) private readonly learnplaceRepository: LearnplaceRepository,
-        @Inject(LEARNPLACE_PATH_BUILDER) private readonly pathBuilder: LearnplacePathBuilder
+        @Inject(LEARNPLACE_PATH_BUILDER) private readonly pathBuilder: LearnplacePathBuilder,
+        @Inject(LEARNPLACE_LOADER) private readonly loader: LearnplaceLoader
     ){}
 
+    async load(objectId: number): Promise<void> {
+        await this.loader.load(objectId);
+        const user: User = AuthenticationProvider.getUser();
+        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
+    }
 
     async remove(objectId: number, userId: number): Promise<void> {
+        await this.userStorageManager.removeObjectFromUserStorage(userId, objectId, this);
 
         return (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 
@@ -105,9 +127,9 @@ export class LearnplaceManagerImpl implements LearnplaceManager{
         return [dirPath, filename];
     }
 
-    async storageSpaceUsage(objectId: number, userId: number): Promise<number> {
-         let size: number = 0;
-         await (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
+    async getUsedStorage(objectId: number, userId: number): Promise<number> {
+        let size: number = 0;
+        await (await this.learnplaceRepository.findByObjectIdAndUserId(objectId, userId)).ifPresent(async(it) => {
 
             const paths: Array<string> = [];
             const basePath: string = await this.pathBuilder.getStorageLocation();
@@ -118,6 +140,16 @@ export class LearnplaceManagerImpl implements LearnplaceManager{
                 paths.push(`${basePath}${picture.thumbnail}`);
             });
 
+            it.accordionBlocks.forEach((acc) => {
+                acc.videoBlocks.forEach((video: VideoBlockEntity) => paths.push(`${basePath}${video.url}`));
+                acc.pictureBlocks.forEach((picture: PictureBlockEntity) => {
+                    paths.push(`${basePath}${picture.url}`);
+                    paths.push(`${basePath}${picture.thumbnail}`);
+                });
+            });
+
+            this.log.debug(() => `Learnplace ${objectId} of user ${userId} contains ${paths.length} files`);
+
             for(const fullPath of paths) {
                 const [path, filename]: [string, string] = this.splitIntoPathNamePair(fullPath);
                 const result: FileEntry = await this.file.getFile(await this.file.resolveDirectoryUrl(path), filename, {create: false});
@@ -125,6 +157,8 @@ export class LearnplaceManagerImpl implements LearnplaceManager{
             }
         });
 
-         return size;
+        this.log.debug(() => `Total size of learnplace ${objectId} owned by user ${userId}: ${size}`);
+
+        return size;
     }
 }

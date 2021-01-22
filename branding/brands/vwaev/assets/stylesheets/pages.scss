@@ -112,6 +112,10 @@
     // color: black !important;
     // background-color: map_get($colors, primary) !important;
 
+    .menu-bottom-image{
+        display: none;
+    }
+
     .privacy-iq{
         display: none
     }
@@ -174,7 +178,7 @@ ion-content.page_settings {
 // --------------------------------------------------
 .page_login {
     // @extend .primary-gradient-inverted;
-    background-image: url('../assets/img/vwa_background_alt.svg');
+    background-image: url('./assets/img/vwa_background_alt.svg');
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: center bottom;
@@ -443,9 +447,21 @@ ion-content.page_settings {
 
     #webr-icon {
         height: auto !important;
-        width: 20vh !important;
+        width: 60% !important;
+
+        @media screen and (orientation:landscape) {
+            height: 40% !important;
+            width: auto !important;
+        }
+
         margin: auto !important;
         display: block !important;
+    }
+
+    .return-to-app-row {
+        @media screen and (orientation:landscape) {
+            padding-top: 0;
+        }
     }
 
     h1 {

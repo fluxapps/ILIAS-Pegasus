@@ -1,11 +1,13 @@
 /** services */
-import {ILIASAppUtils} from "../services/ilias-app-utils.service";
-import {FileService} from "../services/file.service";
-/** logging */
-import {Log} from "../services/log.service";
+import { SafeUrl } from "@angular/platform-browser";
 /** misc */
-import {ILIASObject} from "../models/ilias-object";
-import {ThemeProvider} from "../providers/theme/theme.provider";
+import { ILIASObject } from "../models/ilias-object";
+import { ThemeProvider } from "../providers/theme/theme.provider";
+import { FileService } from "../services/file.service";
+import { ILIASAppUtils } from "../services/ilias-app-utils.service";
+/** logging */
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
 
 /**
  * Decorator to present data of ILIASObjects in the view.
@@ -16,7 +18,7 @@ export interface ILIASObjectPresenter {
     /**
      * Returns the ionic icon name for this object
      */
-    icon(): string;
+    readonly icon: Promise<string | SafeUrl>;
 
     /**
      * Returns the title
@@ -55,12 +57,18 @@ export interface ILIASObjectPresenter {
  */
 export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
 
-    constructor(
-        protected iliasObject: ILIASObject
-    ) {}
+    private readonly log: Logger = Logging.getLogger("GenericILIASObjectPresenter");
+    private readonly _icon: Promise<string | SafeUrl>;
 
-    icon(): string {
-        return ThemeProvider.getIconSrc("link");
+    constructor(
+        protected iliasObject: ILIASObject,
+        protected readonly themeProvider: ThemeProvider
+    ) {
+        this._icon = this.themeProvider.getIconSrc(this.iliasObject.type);
+    }
+
+    get icon(): Promise<string | SafeUrl> {
+        return this._icon;
     }
 
     title(): string {
@@ -85,7 +93,7 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
             detailPromises.push(
                 FileService.calculateDiskSpace(this.iliasObject)
                     .then(diskSpace => {
-                        Log.describe(this, "Disk space used: ", ILIASAppUtils.formatSize(diskSpace));
+                        this.log.info(() => `Disk space used: ${ILIASAppUtils.formatSize(diskSpace)}`);
                         const detail = {label: "details.used_disk_space", value: ILIASAppUtils.formatSize(diskSpace)};
                         details.push(detail);
                         return Promise.resolve(detail);
@@ -102,31 +110,8 @@ export class GenericILIASObjectPresenter implements ILIASObjectPresenter {
         }
     }
 
-    metaBadges(): Promise<Array<{value: string; color: string}>> {
-        return new Promise((resolve, reject) => {
-            const badges = [];
-            if (this.iliasObject.isNew) {
-                badges.push({value: "New", color: "primary"});
-            }
-            if (this.iliasObject.isUpdated) {
-                badges.push({value: "Updated", color: "primary"});
-            }
-            // Container display the number of new objects of their children
-            if (this.iliasObject.isContainer()) {
-                ILIASObject.findByParentRefIdRecursive(this.iliasObject.refId, this.iliasObject.userId).then(iliasObjects => {
-                    const newObjects = iliasObjects.filter(iliasObject => {
-                        return iliasObject.isNew;
-                    });
-                    const n = newObjects.length;
-                    if (n) {
-                        badges.push({value: n, color: "primary"});
-                    }
-                    resolve(badges);
-                });
-            } else {
-                resolve(badges);
-            }
-        });
+    async metaBadges(): Promise<Array<{value: string; color: string}>> {
+        return [];
     }
 
     metaIcons(): Promise<Array<{name: string; color: string}>> {

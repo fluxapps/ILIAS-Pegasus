@@ -7,14 +7,16 @@ const routes: Routes = [
     {path: "", redirectTo: "tabs", pathMatch: "full"},
     {path: "tabs", loadChildren: "./tabs/tabs.module#TabsPageModule", canActivate: [AuthenticationProvider]},
     {path: "login", loadChildren: "./pages/login/login.module#LoginPageModule"},
+    {path: "onboarding", loadChildren: "./pages/onboarding/onboarding.module#OnboardingPageModule"},
     {path: "learnplace/:id", loadChildren: "./learnplace/learnplace.module#LearnplaceModule", canActivate: [AuthenticationProvider]},
-    {path: "**", redirectTo: "login"}
+    {path: "learningmodule", loadChildren: "./learningmodule/learning-module.module#LearningModuleModule", canActivate: [AuthenticationProvider]},
+    {path: "**", redirectTo: "login"},
 ];
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, {
-        enableTracing: isDevMode(),
-        relativeLinkResolution: "corrected"
+        relativeLinkResolution: "corrected",
+        enableTracing: isDevMode()
     }),
     ], //, {enableTracing: true}
     exports: [RouterModule],

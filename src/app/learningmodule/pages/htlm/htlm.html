@@ -1,0 +1,16 @@
+<ion-header>
+
+    <ion-toolbar color="primary">
+        <ion-title>
+            {{title}}
+        </ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button text=""></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content fullscreen="true">
+    <iframe width="100%" height="100%" style="border: 0px none" referrerpolicy="no-referrer" [src]="entryPoint | async"></iframe>
+</ion-content>

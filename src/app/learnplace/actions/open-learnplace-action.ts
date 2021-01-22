@@ -1,9 +1,12 @@
+import { UserEntity } from "../../entity/user.entity";
 import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
 import {ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult} from "../../actions/object-action";
-import {LearnplaceLoader} from "../services/loader/learnplace";
 import {ModalController, NavController} from "@ionic/angular";
-import {InjectionToken} from "@angular/core";
+import { Inject, InjectionToken } from "@angular/core";
+import { USER_REPOSITORY, UserRepository } from "../../providers/repository/repository.user";
 import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-params";
+import {LearnplaceManager} from "../services/learnplace.management";
+import {ILIASObject} from "../../models/ilias-object";
 
 /**
  * Opens a learnplace. A learnplace has its own view and content.
@@ -14,11 +17,12 @@ import {LearnplaceNavParams} from "../pages/learnplace-tabs/learnplace.nav-param
 export class OpenLearnplaceAction extends ILIASObjectAction {
 
     constructor(
-        private readonly loader: LearnplaceLoader,
+        private readonly manager: LearnplaceManager,
         private readonly nav: NavController,
         private readonly learnplaceObjectId: number,
         private readonly learnplaceName: string,
-        private readonly modal: ModalController
+        private readonly modal: ModalController,
+        private readonly userRepository: UserRepository
     ) {super()}
 
     async execute(): Promise<ILIASObjectActionResult> {
@@ -30,7 +34,13 @@ export class OpenLearnplaceAction extends ILIASObjectAction {
         LoadingPage.type = LoadingPageType.learnplace;
         await loadingPage.present();
         try {
-            await this.loader.load(this.learnplaceObjectId);
+            // load the learnplace if not contained in favorites
+            // TODO how to handle changes of ILIAS object?
+            const user: UserEntity = (await this.userRepository.findAuthenticatedUser()).get();
+            const ilObj: ILIASObject = await ILIASObject.findByObjIdAndUserId(this.learnplaceObjectId, user.id);
+            if(!ilObj.needsDownload)
+                await this.manager.load(this.learnplaceObjectId);
+            // open page for learnplace
             LearnplaceNavParams.learnplaceObjectId = this.learnplaceObjectId;
             LearnplaceNavParams.learnplaceName = this.learnplaceName;
             await this.nav.navigateForward(["learnplace", this.learnplaceObjectId]);

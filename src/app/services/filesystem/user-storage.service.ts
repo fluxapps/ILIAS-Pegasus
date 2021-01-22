@@ -1,111 +1,119 @@
-import {DirectoryEntry, File, Flags} from "@ionic-native/file/ngx";
+import {File, Entry} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {Injectable} from "@angular/core";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {User} from "../../models/user";
+import {Injectable, Inject} from "@angular/core";
+import {ILIASObject} from "../../models/ilias-object";
+import {Settings} from "../../models/settings";
+import {FileService} from "../file.service";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../../learnplace/services/learnplace.management";
+import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../../learningmodule/services/learning-module-manager";
+import { Logger } from "../logging/logging.api";
+import { Logging } from "../logging/logging.service";
+import {UserStorageMamager} from "./user-storage.mamager";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserStorageService {
+
+    private readonly log: Logger = Logging.getLogger("UserStorageService");
+
     constructor(
-        private readonly file: File,
+        private readonly fileSystem: File,
         private readonly platform: Platform,
+        private readonly fileService: FileService,
+        @Inject(LEARNPLACE_MANAGER) private readonly learnplaceManager: LearnplaceManager,
+        @Inject(LEARNING_MODULE_MANAGER) private readonly learningModuleManager: LearningModuleManager
     ) {}
 
     /**
-     * Constructs a path for a given directory that is unique for each combination of user and ILIAS-installation
-     *
-     * @param name name of the directory
-     * @param createRecursive when set to true, will create the target directory if it does not exist yet
+     * Deletes the local object on the device
      */
-    async dirForUser(name: string, createRecursive: boolean = false): Promise<string> {
-        const storageLocation: string = await this.getStorageLocation();
-        const userRoot: string = await this.rootForUser();
-        if(createRecursive) this.createRecursive(storageLocation, userRoot, name);
-        return `${storageLocation}${userRoot}/${name}/`;
+    async removeObject(iliasObject: ILIASObject): Promise<void> {
+        if(iliasObject.type === "file")
+            return this.fileService.removeFile(iliasObject);
+
+        if(iliasObject.isLearnplace())
+            return this.learnplaceManager.remove(iliasObject.objId, iliasObject.userId);
+
+        if(iliasObject.type === "htlm" || iliasObject.type === "sahs")
+            return this.learningModuleManager.remove(iliasObject.objId, iliasObject.userId);
+
+        await iliasObject.setIsFavorite(0);
+        await iliasObject.save();
     }
 
     /**
-     * Constructs an unique path for each combination of user and ILIAS-installation
+     * Remove all local files recursively under the given container ILIAS object
+     * @param containerObject
      */
-    async rootForUser(): Promise<string> {
-        const user: User = AuthenticationProvider.getUser();
-        return `ilias-app/user${user.id.toString()}`;
-    }
-
-    /**
-     * @returns {Promise<string>} the storage location considering the platform
-     */
-    async getStorageLocation(): Promise<string> {
-        if(this.platform.is("android")) {
-            return this.file.externalApplicationStorageDirectory;
-        } else if (this.platform.is("ios")) {
-            return this.file.dataDirectory;
-        }
-
-        throw new Error("Unsupported platform. Can not return a storage location.");
-    }
-
-    /**
-     * Creates the given directory structure.
-     * If a directory exists already it will not be replaced.
-     *
-     * @param {string} first - initial directory, which must exist already
-     * @param {string} more - sub-directories with format "subdir1/subdir2/..." which will be created if not existing
-     *
-     * @returns {Promise<string>} the created directory path excluding {@code first}
-     */
-    async createRecursive(first: string, ...more: Array<string>): Promise<string> {
-        let previousDir: DirectoryEntry = await this.file.resolveDirectoryUrl(first);
-        for(const currentDirs of more) {
-            for(const currentDir of currentDirs.split("/"))
-                previousDir = await this.file.getDirectory(previousDir, currentDir, <Flags>{create: true});
-        }
-
-        return `${more.join("/")}/`;
-    }
-
-    /**
-     * moves a directory from an old location to a new one, replacing the directory at the new location, if it already exists
-     */
-    async moveAndReplaceDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<boolean> {
+    async removeRecursive(containerObject: ILIASObject): Promise<void> {
         try {
-            try {
-                await this.file.removeRecursively(newPath, newDirName);
-            } finally {
-                await this.file.moveDir(path, dirName, newPath, newDirName);
+            this.log.debug(() => "Start recursive removal of files");
+            const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(containerObject.refId, containerObject.userId);
+            iliasObjects.push(containerObject);
+
+            for(const fileObject of iliasObjects)
+                await this.removeObject(fileObject);
+            this.log.info(() => "Deleting Files complete");
+        }
+        catch (error) {
+            this.log.error(() => `An error occurred while deleting recursive files: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    /**
+     * deletes all locally stored objects that are not offline available
+     * @param userId
+     */
+    async deleteAllCache(userId: number): Promise<void> {
+        const ilObjList: Array<ILIASObject> = await ILIASObject.findByUserId(userId);
+        for(let i: number = 0; i < ilObjList.length; i++) {
+            await this.removeObject(ilObjList[i]);
+        }
+    }
+
+    /**
+     * takes a url with at least one subdirectory and returns an array with the
+     * first entry as the path to the last directory and the second entry as the
+     * name of the last directory
+     * @param dir string
+     */
+    private static decomposeDirUrl(dir: string): Array<string> {
+        let ind: number = dir.lastIndexOf("/");
+        dir = dir.substring(0, ind);
+        ind = dir.lastIndexOf("/");
+        return [dir.substring(0, ind), dir.substring(ind+1, dir.length)];
+    }
+
+    /**
+     * computes the used disk space for the contents of a directory
+     * @param dir string
+     * @param fileSystem
+     */
+    static async getDirSizeRecursive(dir: string, fileSystem: File): Promise<number> {
+        let list: Array<Entry>;
+        try {
+            const dirArr: Array<string> = UserStorageService.decomposeDirUrl(dir);
+            list = await fileSystem.listDir(dirArr[0], dirArr[1]);
+        } catch (e) {
+            console.log(`error: ${e.message} for directory ${dir}`);
+        }
+
+        let diskSpace: number = 0;
+
+        let newList: Array<Entry>;
+        while(list.length) {
+            const entry: Entry = list.pop();
+            if(entry.isFile) {
+                entry.getMetadata(md => diskSpace += md.size);
+            } else {
+                const dirArr: Array<string> = UserStorageService.decomposeDirUrl(entry.nativeURL);
+                newList = await fileSystem.listDir(dirArr[0], dirArr[1]);
+                newList.forEach(e => list.push(e));
             }
-            return true;
-        } catch(e) {
-            return false;
         }
-    }
 
-    /**
-     * removes a directory
-     */
-    async removeDir(path: string, dirName: string): Promise<boolean> {
-        try {
-            await this.file.removeRecursively(path, dirName);
-            return true;
-        } catch(e) {
-            return false;
-        }
-    }
-
-    /**
-     * removes a file
-     *
-     * @param path is the path to the file with format 'dir' or 'dir/'
-     * @param fileName is the name of the file
-     */
-    async removeFileIfExists(path: string, fileName: string): Promise<boolean> {
-        try {
-            await this.file.removeFile(path, fileName);
-            return true;
-        } catch(e) {
-            return false;
-        }
+        return diskSpace;
     }
 }

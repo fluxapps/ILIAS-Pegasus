@@ -7,6 +7,8 @@ import {IonicModule} from "@ionic/angular";
 /** misc */
 import {NewsPage} from "./news";
 import {TranslateModule} from "@ngx-translate/core";
+import { IlObjIconComponent } from "src/app/components/icon/il-obj-icon.component";
+import { IconModule } from "src/app/components/icon/il-obj-icon.module";
 
 const routes: Routes = [
     {path: "", component: NewsPage}
@@ -19,8 +21,10 @@ const routes: Routes = [
         ReactiveFormsModule,
         IonicModule,
         TranslateModule,
+        IconModule,
         RouterModule.forChild(routes)
     ],
+    entryComponents: [IlObjIconComponent],
     declarations: [NewsPage]
 })
 export class NewsPageModule {}

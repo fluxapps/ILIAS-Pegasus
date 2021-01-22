@@ -1,14 +1,14 @@
 {
   "ios": {
     "debug": {
-      "codeSignIdentity": "iPhone Developer",
-      "provisioningProfile": "201809_Pegasus",
+      "codeSignIdentity": "Apple Development",
+      "provisioningProfile": "eca00ada-b573-497b-9cdb-1e1404739d2f",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "development"
     },
     "release": {
-      "codeSignIdentity": "iPhone Distribution",
-      "provisioningProfile": "3a547757-0a57-4b9a-9327-c255bcda2afb",
+      "codeSignIdentity": "Apple Distribution",
+      "provisioningProfile": "d1411757-a572-4681-bf28-d92f43798971",
       "developmentTeam": "ZQ66BZ3DPL",
       "packageType": "app-store"
     }

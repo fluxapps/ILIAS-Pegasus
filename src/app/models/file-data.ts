@@ -5,7 +5,7 @@ import {User} from "./user";
 /**
  * Holds additional meta data for ILIAS file objects
  */
-export class FileData extends ActiveRecord {
+export class FileData extends ActiveRecord<FileData> {
 
     /**
      * Internal ID of the corresponding ILIASObject

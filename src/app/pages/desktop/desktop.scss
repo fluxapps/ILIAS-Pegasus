@@ -1,0 +1,53 @@
+.page_desktop {
+    --background: var(--custom-background, var(--ion-background-color));
+}
+
+.tile {
+    opacity: 0.9;
+    border-radius: var(--page-desktop-border-radius, 2%);
+    border:
+        var(--page-desktop-border-color, transparent)
+        solid
+        var(--page-desktop-border-width, 0px);
+}
+
+.big-card {
+    height: 25vh;
+}
+
+.small-card {
+    height: 15vh;
+}
+
+.tile-image {
+    // min-height: 20px;
+    // min-width: 20px;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    padding: .5em;
+}
+
+.svg-icon {
+    color: var(--ion-color-secondary, transparent);
+    fill: none;
+    stroke: var(--icon-stroke-color, #282828);
+    stroke-miterlimit: 10;
+}
+
+.black-stroke {
+    stroke: var(--icon-stroke-color-strong, black) !important;
+}
+
+.tile4 {
+    display: var(--page-desktop-tile-4-display, block);
+}
+
+.tile5 {
+    display: var(--page-desktop-tile-4-display, block);
+}
+
+.tile-title{
+    color: var(--page-desktop-text-color, rgba(0,0,0,0.8)) !important;
+}

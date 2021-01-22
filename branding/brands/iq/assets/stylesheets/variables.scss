@@ -1,10 +1,50 @@
+:root {
+    --custom-background: var(--ion-background-color-custom);
+
+    // onboarding
+    --page-onboarding-background: var(--ion-background-color-custom);
+
+    // login
+    --page-login-background: var(--ion-background-color-custom);
+    --page-login-bottom-image-display: block;
+
+    // desktop
+    --page-desktop-text-color: var(--ion-color-primary-contrast);
+    --page-desktop-border-radius: 0px;
+    --page-desktop-border-width: 0.25em;
+    --page-desktop-border-color: white;
+    --page-desktop-icon-width: 60%;
+    --page-desktop-tile-4-display: none;
+    --page-desktop-tile-5-display: none;
+
+    // object-list
+    --page-object-list-background: var(--ion-background-color-custom);
+    --page-object-list-image-filter: brightness(3);
+    --page-object-list-icon-color: var(--ion-color-primary-contrast);
+
+    // menu
+    --page-menu-background-color: var(--ion-background-color-custom);
+    --page-menu-icon-color: var(--ion-color-grey);
+    --page-menu-bottom-image-display: none;
+
+    // info
+    --page-version-card-custom: block;
+    --page-info-card-iq: block;
+    --page-info-card-community: none;
+
+    // tabs
+    --tabs-background-color: var(--ion-color-primary);
+    --tabs-icon-color: var(--ion-color-light-grey);
+    --tabs-icon-color-selected: var(--ion-color-primary-contrast);
+}
+
 //MARK: Animation
 
 @keyframes bounce {
 
     from, 10%, 26%, 40%, to {
         animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-        transform: translate3d(0,0,0);
+        transform: translate3d(0, 0, 0);
     }
 
     20%, 21% {
@@ -18,11 +58,11 @@
     }
 
     45% {
-        transform: translate3d(0,-4px,0);
+        transform: translate3d(0, -4px, 0);
     }
     50% {
         animation-timing-function: cubic-bezier(0, 0, 0, 1.000);
-        transform: translate3d(0,0,0);
+        transform: translate3d(0, 0, 0);
     }
 
 }
@@ -40,192 +80,204 @@
     animation-name: fold;
     animation-duration: 3s;
     animation-delay: 13s;
-    animation-iteration-count: infinite; }
-  
-  @keyframes fold {
-    0% {
-      -webkit-animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1); }
-    30% {
-      -webkit-animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-      animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-      -webkit-transform: scale3d(1, 0.4, 1);
-      transform: scale3d(1, 0.4, 1); }
-    60% {
-      opacity: 1;
-      -webkit-animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-      animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-      -webkit-transform: scale3d(0.4, 0.4, 1);
-      transform: scale3d(0.4, 0.4, 1); }
-    100% {
-      opacity: 0;
-      -webkit-animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-      animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-      -webkit-transform: scale3d(0.2, 0.2, 0.2);
-      transform: scale3d(0.2, 0.2, 0.2); } }
-  .unfold {
-    -webkit-animation-name: unfold;
-    animation-name: unfold; }
-
-
-    .enter-left-bounce {
-        opacity: 1 !important;
-        visibility: visible !important;
-        -webkit-animation: enterLeftBounce 1s linear;
-        -moz-animation: enterLeftBounce 1s linear;
-        -ms-animation: enterLeftBounce 1s linear;
-        -o-animation: enterLeftBounce 1s linear;
-        animation: enterLeftBounce 1s linear;
-      }
-      @-webkit-keyframes enterLeftBounce {
-        0% {
-          -webkit-transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          -webkit-transform: translateX(0px);
-        }
-        70% {
-          -webkit-transform: translateX(-8px);
-        }
-        100% {
-          -webkit-transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-moz-keyframes enterLeftBounce {
-        0% {
-          -moz-transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          -moz-transform: translateX(0px);
-        }
-        70% {
-          -moz-transform: translateX(-8px);
-        }
-        100% {
-          -moz-transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-o-keyframes enterLeftBounce {
-        0% {
-          -o-transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          -o-transform: translateX(0px);
-        }
-        70% {
-          -o-transform: translateX(-8px);
-        }
-        100% {
-          -o-transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-ms-keyframes enterLeftBounce {
-        0% {
-          -ms-transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          -ms-transform: translateX(0px);
-        }
-        70% {
-          -ms-transform: translateX(-8px);
-        }
-        100% {
-          -ms-transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-moz-keyframes enterLeftBounce {
-        0% {
-          transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          transform: translateX(0px);
-        }
-        70% {
-          transform: translateX(-8px);
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-webkit-keyframes enterLeftBounce {
-        0% {
-          transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          transform: translateX(0px);
-        }
-        70% {
-          transform: translateX(-8px);
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @-o-keyframes enterLeftBounce {
-        0% {
-          transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          transform: translateX(0px);
-        }
-        70% {
-          transform: translateX(-8px);
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @keyframes enterLeftBounce {
-        0% {
-          transform: translateX(-220px);
-          opacity: 0;
-        }
-        50% {
-          transform: translateX(0px);
-        }
-        70% {
-          transform: translateX(-8px);
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-
-// MARK: Custom Fonts
-
-.news-title {
-    width:100%;
-    white-space: pre-line;
+    animation-iteration-count: infinite;
 }
-.main-header{
-    color: white !important;
+
+@keyframes fold {
+    0% {
+        -webkit-animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+    30% {
+        -webkit-animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        -webkit-transform: scale3d(1, 0.4, 1);
+        transform: scale3d(1, 0.4, 1);
+    }
+    60% {
+        opacity: 1;
+        -webkit-animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        -webkit-transform: scale3d(0.4, 0.4, 1);
+        transform: scale3d(0.4, 0.4, 1);
+    }
+    100% {
+        opacity: 0;
+        -webkit-animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+        animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+        -webkit-transform: scale3d(0.2, 0.2, 0.2);
+        transform: scale3d(0.2, 0.2, 0.2);
+    }
+}
+
+.unfold {
+    -webkit-animation-name: unfold;
+    animation-name: unfold;
+}
+
+
+.enter-left-bounce {
+    opacity: 1 !important;
+    visibility: visible !important;
+    -webkit-animation: enterLeftBounce 1s linear;
+    -moz-animation: enterLeftBounce 1s linear;
+    -ms-animation: enterLeftBounce 1s linear;
+    -o-animation: enterLeftBounce 1s linear;
+    animation: enterLeftBounce 1s linear;
+}
+
+@-webkit-keyframes enterLeftBounce {
+    0% {
+        -webkit-transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        -webkit-transform: translateX(0px);
+    }
+    70% {
+        -webkit-transform: translateX(-8px);
+    }
+    100% {
+        -webkit-transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes enterLeftBounce {
+    0% {
+        -moz-transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        -moz-transform: translateX(0px);
+    }
+    70% {
+        -moz-transform: translateX(-8px);
+    }
+    100% {
+        -moz-transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-o-keyframes enterLeftBounce {
+    0% {
+        -o-transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        -o-transform: translateX(0px);
+    }
+    70% {
+        -o-transform: translateX(-8px);
+    }
+    100% {
+        -o-transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-ms-keyframes enterLeftBounce {
+    0% {
+        -ms-transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        -ms-transform: translateX(0px);
+    }
+    70% {
+        -ms-transform: translateX(-8px);
+    }
+    100% {
+        -ms-transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes enterLeftBounce {
+    0% {
+        transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    70% {
+        transform: translateX(-8px);
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes enterLeftBounce {
+    0% {
+        transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    70% {
+        transform: translateX(-8px);
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-o-keyframes enterLeftBounce {
+    0% {
+        transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    70% {
+        transform: translateX(-8px);
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes enterLeftBounce {
+    0% {
+        transform: translateX(-220px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    70% {
+        transform: translateX(-8px);
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+
+.main-header {
+    color: var(--ion-color-primary-contrast) !important;
     font-weight: bold;
     font-size: 3.75vmax;
     margin: auto;
     position: relative;
     padding-bottom: 1vh;
     padding-top: 3vh;
-    z-index: -9999 !important;  
+    z-index: -9999 !important;
 }
 
-.very-small-font{
+.very-small-font {
     font-size: 0.5em;
     text-align: center;
 }

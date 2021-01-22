@@ -1,0 +1,23 @@
+.page_news {
+    --background: var(--custom-background, var(--ion-background-color));
+}
+
+ion-card {
+    margin: 1em;
+}
+
+ion-card-title {
+    font-size: 1.2rem;
+}
+
+ion-card-header {
+    padding-bottom: 0px !important;
+}
+
+.object-presenter-icon {
+    height: 4rem;
+}
+
+ion-list {
+    background: transparent;
+}

@@ -11,8 +11,6 @@ import {
 import {User} from "../models/user";
 import {CONFIG_PROVIDER, ConfigProvider, ILIASInstallation} from "./ilias-config";
 import {AuthenticationProvider} from "../providers/authentication.provider";
-import {DomSanitizer} from "@angular/platform-browser";
-import {USER_REPOSITORY, UserRepository} from "../providers/repository/repository.user";
 
 const apiURL: string = "/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/REST/api.php";
 
@@ -41,7 +39,7 @@ export class Oauth2DataSupplierImpl implements OAuth2DataSupplier{
     async getClientCredentials(): Promise<ClientCredentials> {
 
         const currentUser: User = AuthenticationProvider.getUser();
-        const installation: ILIASInstallation = await this.configProvider.loadInstallation(currentUser.installationId);
+        const installation: ILIASInstallation = (await this.configProvider.loadInstallation(currentUser.installationId)).get();
 
         return <ClientCredentials>{
             clientId: installation.apiKey,

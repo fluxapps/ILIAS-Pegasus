@@ -1,0 +1,18 @@
+* { margin: 0px; }
+html, body, iframe { height:100%; }
+html, body { overflow-y:hidden; font-family:Helvetica, "Helvetica Neue", Arial; font-size:12px; }
+iframe { display:block; width:100%; }
+
+html, body, iframe , a, img, table, tbody, tr, td, table td, table th {
+    border : 0px none;
+    padding: 0px;
+}
+
+a:link { color: #0000FF; }
+a:visited { color: #0000FF; }
+a:hover { color: #000080; }
+a:active { color: #0000FF; }
+
+#btnExit {margin-left:5px;}
+#btnAbandon {margin-left:5px;}
+#btnSuspendAll {margin-left:5px;}

@@ -2,7 +2,7 @@
   <ion-card-content>
       <ion-icon name="link">
       </ion-icon>
-      {{linkLabel}}
+      {{!!linkLabel ? linkLabel : ("learnplace.block.link.title_unknown" | translate)}}
   </ion-card-content>
 </ion-card>
 

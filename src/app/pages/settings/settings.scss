@@ -1,0 +1,35 @@
+.page_settings {
+    --background: var(--custom-background, var(--ion-background-color));
+}
+
+.list > .item-block:first-child {
+    border: none;
+}
+
+.general {
+    padding-top: .5em;
+    background: transparent;
+}
+
+.item-toggle {
+    color: #999;
+}
+
+.item-md.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
+    border-bottom: 1px solid #dedede;
+    box-shadow: none;
+}
+
+ion-label.activeUser {
+    font-weight: bold;
+}
+
+.trash-button {
+    --background: transparent;
+    --background-activated: transparent;
+}
+
+.trash-icon {
+    color: var(--ion-color-primary, black) !important;
+    --color: var(--ion-color-primary, black) !important;
+}

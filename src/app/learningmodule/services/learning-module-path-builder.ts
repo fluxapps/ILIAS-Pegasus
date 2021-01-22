@@ -1,7 +1,7 @@
 import {Injectable, InjectionToken} from "@angular/core";
 import {File} from "@ionic-native/file/ngx";
 import {Platform} from "@ionic/angular";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
+import {FileStorageService} from "../../services/filesystem/file-storage.service";
 
 /**
  * Builds directory paths for learning module.
@@ -23,12 +23,17 @@ export interface LearningModulePathBuilder {
     /**
      * constructs the absolute path for a location relative to the root directory (with ending /)
      */
-    inLocalLmDir(location: string, createRecursive: boolean): Promise<string>;
+    dirInLocalLmDir(location: string, createRecursive: boolean): Promise<string>;
 
     /**
      * constructs the absolute path to the directory containing the contents of the learning module (with ending /)
      */
     getLmDirByObjId(objId: number): Promise<string>;
+
+    /**
+     * Constructs the absolute base path of the learning modules, without an ending slash.
+     */
+    absoluteBasePath(): Promise<string>;
 }
 
 export const LEARNING_MODULE_PATH_BUILDER: InjectionToken<LearningModulePathBuilder> = new InjectionToken("token for learning module path builder");
@@ -40,20 +45,26 @@ export class LearningModulePathBuilderImpl implements LearningModulePathBuilder 
     constructor(
         private readonly file: File,
         private readonly platform: Platform,
-        private readonly userStorage: UserStorageService,
+        private readonly fileStorage: FileStorageService,
     ) {}
 
     lmDirName(objId: number): string {
         return `lm_${objId}/`;
     }
 
-    async inLocalLmDir(path: string, createRecursive: boolean): Promise<string> {
+    async absoluteBasePath(): Promise<string> {
+        const baseDir: string = this.withoutEndingSlash(this.lmsBaseDirName);
+        return this.fileStorage.dirForUser(baseDir, true);
+    }
+
+    async dirInLocalLmDir(path: string = "", createRecursive: boolean = false): Promise<string> {
         path = this.withoutEndingSlash(path);
-        return this.userStorage.dirForUser(`${this.lmsBaseDirName}${path}`, createRecursive);
+        const baseDir: string = path.length ? this.lmsBaseDirName : this.withoutEndingSlash(this.lmsBaseDirName);
+        return this.fileStorage.dirForUser(`${baseDir}${path}`, createRecursive);
     }
 
     async getLmDirByObjId(objId: number): Promise<string> {
-        return this.inLocalLmDir(this.lmDirName(objId), false);
+        return this.dirInLocalLmDir(this.lmDirName(objId), false);
     }
 
     /**

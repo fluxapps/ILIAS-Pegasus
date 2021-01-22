@@ -1,7 +1,5 @@
 <ion-header>
     <ion-toolbar color="primary">
-        <ion-buttons left>
-        </ion-buttons>
         <ion-title>
             {{ 'news.title' | translate}}
             <!-- News -->
@@ -13,7 +11,9 @@
     <ion-refresher
         (ionRefresh)="startNewsSync($event)"
         [closeDuration]="400"
-        [pullMin]="150">
+        [pullMin]="150"
+        slot="fixed"
+    >
         <ion-refresher-content id="refresher-content"
                                pullingIcon="arrow-down"
                                pullingText="{{ 'sync.pull_to_sync' | translate:[] }}"
@@ -21,27 +21,91 @@
         </ion-refresher-content>
     </ion-refresher>
 
+    <ion-list *ngIf="isLoading | async">
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+        <ion-card class="list-element">
+            <ion-card-header>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+                <ion-card-title>
+                    <ion-thumbnail>
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                    </ion-thumbnail>
+                    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text"><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+                <p class="info-text"><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></p>
+            </ion-card-content>
+        </ion-card>
+    </ion-list>
     <ion-list color="list-element">
-        <ion-card *ngFor="let newsPresenter of newsPresenters" (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element" class="list-element">
-                <ion-card-header>
-                        <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
-                        <ion-card-title> 
-                            <ion-avatar item-start>
-                                <img src="{{newsPresenter[1].icon()}}">
-                            </ion-avatar>
-                            {{newsPresenter[0].title}}
-                        </ion-card-title>
-                      </ion-card-header>
-                      <ion-card-content>
-                            <p class="info-text">{{newsPresenter[0].subtitle}}</p>
-                            <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
-                    </ion-card-content>
+        <ion-card *ngFor="let newsPresenter of newsPresenters | async"
+                  (click)="openNews(newsPresenter[0].newsId, newsPresenter[0].newsContext)" color="list-element"
+                  class="list-element">
+            <ion-card-header>
+                <ion-card-subtitle>{{newsPresenter[0].updateDate | date:"dd. MMM yyyy HH:mm"}}</ion-card-subtitle>
+                <ion-card-title>
+                    <ion-avatar>
+                        <app-icon [presenter]="newsPresenter[1]"></app-icon>
+                    </ion-avatar>
+                    {{newsPresenter[0].title}}
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p class="info-text">{{newsPresenter[0].subtitle}}</p>
+                <p class="info-text" [innerHtml]="newsPresenter[0].content"></p>
+            </ion-card-content>
 
         </ion-card>
-        <ion-card *ngIf="newsPresenters === undefined">
+        <ion-card *ngIf="(newsPresenters | async)?.length === 0">
             <ion-card-content>
                 <p class="info-text">{{ 'new-objects.no_new_items' | translate:[] }}</p>
-        </ion-card-content>
+            </ion-card-content>
         </ion-card>
     </ion-list>
 

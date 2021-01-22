@@ -228,3 +228,177 @@ export const journalEntriesJsonSchema: object = {
     "required": ["userId", "timestamp"]
   }
 };
+
+export const iliasObjectJsonSchema: object = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "objId": "1917",
+            "title": "test obj",
+            "description": "",
+            "hasPageLayout": false,
+            "hasTimeline": false,
+            "permissionType": "read",
+            "refId": "919",
+            "parentRefId": "176",
+            "type": "htlm",
+            "link": "https://test.studer-raimann.ch/pegasus-ilias54-php7/goto.php?target=htlm_919&client_id=default",
+            "repoPath": [
+                "ILIAS",
+                "Demo srag",
+                "test obj"
+            ]
+        }
+    ],
+    "required": [
+        "objId",
+        "title",
+        "description",
+        "hasPageLayout",
+        "hasTimeline",
+        "permissionType",
+        "refId",
+        "parentRefId",
+        "type",
+        "link",
+        "repoPath"
+    ],
+    "properties": {
+        "objId": {
+            "$id": "#/properties/objId",
+            "type": "string",
+            "title": "The objId schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1917"
+            ]
+        },
+        "title": {
+            "$id": "#/properties/title",
+            "type": "string",
+            "title": "The title schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "obj example"
+            ]
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "type": "string",
+            "title": "The description schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                ""
+            ]
+        },
+        "hasPageLayout": {
+            "$id": "#/properties/hasPageLayout",
+            "type": "boolean",
+            "title": "The hasPageLayout schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": false,
+            "examples": [
+                false
+            ]
+        },
+        "hasTimeline": {
+            "$id": "#/properties/hasTimeline",
+            "type": "boolean",
+            "title": "The hasTimeline schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": false,
+            "examples": [
+                false
+            ]
+        },
+        "permissionType": {
+            "$id": "#/properties/permissionType",
+            "type": "string",
+            "title": "The permissionType schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "read"
+            ]
+        },
+        "refId": {
+            "$id": "#/properties/refId",
+            "type": "string",
+            "title": "The refId schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "919"
+            ]
+        },
+        "parentRefId": {
+            "$id": "#/properties/parentRefId",
+            "type": "string",
+            "title": "The parentRefId schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "176"
+            ]
+        },
+        "type": {
+            "$id": "#/properties/type",
+            "type": "string",
+            "title": "The type schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "htlm"
+            ]
+        },
+        "link": {
+            "$id": "#/properties/link",
+            "type": "string",
+            "title": "The link schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "https://test.studer-raimann.ch/pegasus-ilias54-php7/goto.php?target=htlm_919&client_id=default"
+            ]
+        },
+        "repoPath": {
+            "$id": "#/properties/repoPath",
+            "type": "array",
+            "title": "The repoPath schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    "ILIAS",
+                    "Demo srag"
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/repoPath/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/repoPath/items/anyOf/0",
+                        "type": "string",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": "",
+                        "examples": [
+                            "ILIAS",
+                            "Demo srag"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "additionalProperties": true
+}

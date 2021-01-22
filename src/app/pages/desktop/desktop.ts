@@ -1,13 +1,11 @@
 /** angular */
-import {Component, Inject} from "@angular/core";
-import {NavController} from "@ionic/angular";
-/** services */
-import {Builder} from "../../services/builder.base";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import { Component, Inject } from "@angular/core";
 /** misc */
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {ILIASInstallation} from "../../config/ilias-config";
-import {ThemeProvider} from "../../providers/theme/theme.provider";
+import { OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction } from "../../actions/open-object-in-ilias-action";
+import { ThemeProvider } from "../../providers/theme/theme.provider";
+/** services */
+import { Builder } from "../../services/builder.base";
+import { LINK_BUILDER, LinkBuilder } from "../../services/link/link-builder.service";
 
 /**
  * Generated class for the DesktopPage page.
@@ -19,33 +17,28 @@ import {ThemeProvider} from "../../providers/theme/theme.provider";
 @Component({
     selector: "page-desktop",
     templateUrl: "desktop.html",
+    styleUrls: ["desktop.scss"]
 })
 export class DesktopPage {
 
-    readonly installations: Array<ILIASInstallation> = [];
+    private readonly REF_ID_REPOSITORY: number = 1;
 
     constructor(
-        private readonly navCtrl: NavController,
         @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
         private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
         @Inject(LINK_BUILDER)
-        private readonly linkBuilder: LinkBuilder
+        private readonly linkBuilder: LinkBuilder,
+        private themeProvider: ThemeProvider
     ) {}
 
     // count the number of loaded SVGs and set theme once all of them are loaded
-    private svgLoaded(): void {
-        ThemeProvider.setCustomColor();
-    }
-
-    // navigate to a tab
-    async navigateTo(url: string): Promise<void> {
-        await this.navCtrl.navigateForward(`tabs/${url}`);
+    async svgLoaded(): Promise<void> {
+        await this.themeProvider.setCustomColor();
     }
 
     // open repo in Browser inApp for iOS, external for Android
     async openILIASRepository(): Promise<void> {
-        const REFID_REPOSITORY: number = 1;
-        this.openInIliasActionFactory(undefined, this.linkBuilder.default().target(REFID_REPOSITORY)).execute();
+        await this.openInIliasActionFactory(undefined, this.linkBuilder.default().target(this.REF_ID_REPOSITORY)).execute();
     }
 
 }

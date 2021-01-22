@@ -1,37 +1,36 @@
 /** angular */
-import {Component, Inject, NgZone} from "@angular/core";
-import {AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import { Component, Inject, NgZone } from "@angular/core";
 /** ionic-native */
-import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
-/** service */
-import {Builder} from "../../services/builder.base";
-import {FileService} from "../../services/file.service";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {SynchronizationService} from "../../services/synchronization.service";
+import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
+import { AlertController, ModalController, NavController, ToastController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 /** actions */
-import {MarkAsFavoriteAction} from "../../actions/mark-as-favorite-action";
-import {ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess} from "../../actions/object-action";
-import {OpenFileExternalAction} from "../../actions/open-file-external-action";
-import {OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction} from "../../actions/open-object-in-ilias-action";
-import {RemoveLocalFileAction} from "../../actions/remove-local-file-action";
-import {RemoveLocalFilesAction} from "../../actions/remove-local-files-action";
-import {SynchronizeAction} from "../../actions/synchronize-action";
-import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-/** logging */
-import {Log} from "../../services/log.service";
-import {Logger} from "../../services/logging/logging.api";
-import {Logging} from "../../services/logging/logging.service";
+import { MarkAsFavoriteAction } from "../../actions/mark-as-favorite-action";
+import { ILIASObjectAction, ILIASObjectActionResult, ILIASObjectActionSuccess } from "../../actions/object-action";
+import { OpenFileExternalAction } from "../../actions/open-file-external-action";
+import { OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY, OpenObjectInILIASAction } from "../../actions/open-object-in-ilias-action";
+import { SynchronizeAction } from "../../actions/synchronize-action";
+import { UnMarkAsFavoriteAction } from "../../actions/unmark-as-favorite-action";
 /** misc */
-import {ILIASObject} from "../../models/ilias-object";
-import {DataProvider} from "../../providers/data-provider.provider";
-import {TranslateService} from "@ngx-translate/core";
-import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
-import {ObjectListNavParams} from "../object-list/object-list.nav-params";
+import { ILIASObject } from "../../models/ilias-object";
+import { ILIASObjectPresenterFactory } from "../../presenters/presenter-factory";
+import { DataProvider } from "../../providers/data-provider.provider";
+/** service */
+import { Builder } from "../../services/builder.base";
+import { FileService } from "../../services/file.service";
+import { UserStorageService } from "../../services/filesystem/user-storage.service";
+import { FooterToolbarService } from "../../services/footer-toolbar.service";
+import { LINK_BUILDER, LinkBuilder } from "../../services/link/link-builder.service";
+/** logging */
+import { Logger } from "../../services/logging/logging.api";
+import { Logging } from "../../services/logging/logging.service";
+import { SynchronizationService } from "../../services/synchronization.service";
+import { ObjectListNavParams } from "../object-list/object-list.nav-params";
 
 @Component({
     selector: "page-object-details",
     templateUrl: "object-details.html",
+    styleUrls: ["object-details.scss"]
 })
 export class ObjectDetailsPage {
 
@@ -42,13 +41,14 @@ export class ObjectDetailsPage {
      * Holds the details of the current displayed ILIASObject
      */
     details: Array<{label: string, value: string}>;
-    private readonly log: Logger = Logging.getLogger(this.name);
+    private readonly log: Logger = Logging.getLogger("ObjectDetailsPage");
 
     constructor(public nav: NavController,
                 public ngZone: NgZone,
                 public dataProvider: DataProvider,
                 public sync: SynchronizationService,
                 public file: FileService,
+                public userStorage: UserStorageService,
                 public alert: AlertController,
                 public toast: ToastController,
                 public translate: TranslateService,
@@ -57,7 +57,8 @@ export class ObjectDetailsPage {
                 private readonly browser: InAppBrowser,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
-                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder) { }
+                @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
+                private readonly ilObjPresenterFactory: ILIASObjectPresenterFactory) { }
 
     ionViewWillEnter(): void {
         this.object = ObjectListNavParams.details;
@@ -105,14 +106,14 @@ export class ObjectDetailsPage {
     }
 
     private actionHandler(result: ILIASObjectActionResult): void {
-        Log.write(this, "actionHandler");
+        this.log.trace(() => "actionHandler");
         this.handleActionResult(result);
         this.loadAvailableActions();
         this.loadObjectDetails();
     }
 
     private handleActionResult(result: ILIASObjectActionResult): void {
-        Log.write(this, "handleActionResult");
+        this.log.trace(() => "handleActionResult");
         if (!result) return;
         if (result instanceof ILIASObjectActionSuccess) {
             if (result.message) {
@@ -125,8 +126,8 @@ export class ObjectDetailsPage {
     }
 
     private loadObjectDetails(): void {
-        ILIASObjectPresenterFactory.instance(this.object).details().then(details => {
-            Log.describe(this, "Details are displayed: ", details);
+        this.ilObjPresenterFactory.instance(this.object).details().then(details => {
+            this.log.debug(() => `Details are displayed: ${JSON.stringify(details)}`);
             this.details = details;
         });
     }
@@ -146,7 +147,7 @@ export class ObjectDetailsPage {
             this.actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
                 this.object,
-                this.file)
+                this.userStorage)
             );
             this.actions.push(new SynchronizeAction(
                 this.translate.instant("actions.synchronize"),
@@ -161,7 +162,7 @@ export class ObjectDetailsPage {
             this.file.existsFile(this.object).then(() => {
                 this.actions.push(new OpenFileExternalAction(this.translate.instant("actions.open_in_external_app"), this.object, this.file));
             }, () => {
-                Log.write(this, "No file available: Remove and Open are not available.");
+                this.log.info(() => "No file available: Remove and Open are not available.");
             });
         }
     }

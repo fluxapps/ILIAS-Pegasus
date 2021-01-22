@@ -1,5 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild} from "@angular/core";
-import {IonContent} from "@ionic/angular";
+import { ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from "@angular/core";
 import {ViewDidLeave, ViewWillEnter, ViewDidEnter} from "ionic-lifecycle-interface";
 import {Subscription} from "rxjs";
 import {Logger} from "../../../services/logging/logging.api";
@@ -11,9 +10,10 @@ import {LearnplaceNavParams} from "../learnplace-tabs/learnplace.nav-params";
 
 @Component({
     selector: "map",
-    templateUrl: "map.html"
+    templateUrl: "map.html",
+    styleUrls: ["map.scss"]
 })
-export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave {
+export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave, OnDestroy {
 
     @ViewChild("map", {"static": false}) mapElement: Element;
 
@@ -48,11 +48,22 @@ export class MapPage implements ViewWillEnter, ViewDidEnter, ViewDidLeave {
         this.detectorRef.detectChanges();
     }
 
+    // Ionic won't call this callback if the entire learnplace tab nav gets popped.
     ionViewDidLeave(): void {
         this.mapService.shutdown();
         this.mapSubscription.unsubscribe();
-        while (this.mapElement.firstChild) {
-            this.mapElement.removeChild(this.mapElement.firstChild);
+        if (!!this.mapElement) {
+            while (this.mapElement.firstChild) {
+                this.mapElement.removeChild(this.mapElement.firstChild);
+            }
+        }
+        this.mapSubscription = undefined;
+    }
+
+    ngOnDestroy(): void {
+        // workaround
+        if (this.mapSubscription !== undefined) {
+            this.ionViewDidLeave();
         }
     }
 

@@ -7,6 +7,7 @@ import {LearnplaceNavParams} from "./learnplace.nav-params";
 
 @Component({
     templateUrl: "learnplace-tabs.html",
+    styleUrls: ["learnplace-tabs.scss"]
 })
 export class LearnplaceTabsPage implements ViewWillEnter, ViewDidLeave {
 

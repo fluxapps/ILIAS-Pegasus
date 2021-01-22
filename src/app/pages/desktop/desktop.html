@@ -1,43 +1,74 @@
-<ion-header color="primary" no-border no-shadow >
-    <ion-toolbar color="primary" class=top-header no-border no-shadow>
-        <div no-lines class="main-header"  text-center text-wrap>
-            Home
-        </div>
+<ion-header>
+    <ion-toolbar color="primary" style="padding-bottom: 1em;">
+        <ion-title size="large" class="ion-text-center">
+            {{"home.title" | translate}}
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 
-
-<ion-content class="page_desktop" fullscreen="true">
+<ion-content class="page page_desktop">
     <ion-grid class="desktop-grid">
         <ion-row>
-            <ion-col size="12" size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile tile-cours ion-no-margin" (click)="navigateTo('content')">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_course.svg" (load)="svgLoaded()" (click)="navigateTo('content')"></object>
-                    <ion-card-header text-uppercase class=tile-title > {{ 'object-list.title' | translate}} </ion-card-header>
+            <ion-col size="12" size-sm="4" size-md="12" size-lg="12" size-xl="12" class="ion-text-center">
+                <ion-card button="true" class="tile tile-course ion-no-margin" [routerLink]="['/tabs/content']">
+                    <div class="big-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_course.svg#course"/>
+                        </svg>
+                    </div>
+                    <ion-card-header class="tile-title ion-text-uppercase">
+                        <ion-label>{{ 'object-list.title' | translate}}</ion-label>
+                    </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('favorites')">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_favourites.svg" (load)="svgLoaded()" (click)="navigateTo('favorites')"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'favorites.title' | translate}} </ion-card-header>
+        </ion-row>
+
+        <ion-row>
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center">
+                <ion-card button="true" class="tile tile-favourites ion-no-margin" [routerLink]="['/tabs/favorites']">
+                    <div class="small-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_favourites.svg#favourites"/>
+                        </svg>
+                    </div>
+                    <ion-card-header class="tile-title ion-text-uppercase">
+                        <ion-label>{{ 'favorites.title' | translate}}</ion-label>
+                    </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center >
-                <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('news')">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_news.svg" (load)="svgLoaded()" (click)="navigateTo('news')"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'news.title' | translate}} </ion-card-header>
+
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center">
+                <ion-card button="true" class="tile tile-news ion-no-margin" [routerLink]="['/tabs/news']">
+                    <div class="small-card">
+                        <svg class="tile-image">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_news.svg#news"/>
+                        </svg>
+                    </div>
+                    <ion-card-header class="tile-title ion-text-uppercase">
+                        <ion-label>{{ 'news.title' | translate}}</ion-label>
+                    </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_repository.svg" (load)="svgLoaded()" (click)="openILIASRepository()"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'repository' | translate}} </ion-card-header>
+
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center tile4">
+                <ion-card button="true" class="tile ion-no-margin" (click)="openILIASRepository()" [routerLink]="['/tabs/desktop']">
+                    <div class="small-card">
+                        <svg class="tile-image" >
+                            <use class="svg-icon black-stroke" xlink:href="assets/icon/desktop_repository.svg#repository"/>
+                        </svg>
+                    </div>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ 'repository' | translate}} </ion-card-header>
                 </ion-card>
             </ion-col>
-            <ion-col size="6"  size-sm="4" size-md="4" size-lg="3" size-xl="3" text-center>
-                <ion-card button="true" class="tile ion-no-margin" (click)="navigateTo('menu')">
-                    <object class=tile-image type="image/svg+xml" data="assets/icon/desktop_menu.svg" (load)="svgLoaded()"></object>
-                    <ion-card-header text-uppercase class=tile-title> {{ 'menu' | translate}} </ion-card-header>
+
+            <ion-col size="6" size-sm="4" size-md="6" size-lg="6" size-xl="6" class="ion-text-center tile5">
+                <ion-card button="true" class="tile ion-no-margin" [routerLink]="['/tabs/menu']">
+                    <div class="small-card">
+                        <svg class="tile-image black-stroke">
+                            <use class="svg-icon" xlink:href="assets/icon/desktop_menu.svg#menu"/>
+                        </svg>
+                    </div>
+                    <ion-card-header class="tile-title ion-text-uppercase"> {{ ('menu' | translate)}} </ion-card-header>
                 </ion-card>
             </ion-col>
         </ion-row>

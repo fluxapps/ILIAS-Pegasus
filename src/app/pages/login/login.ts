@@ -1,21 +1,23 @@
-import {Component, Inject, NgZone} from "@angular/core";
-import {AppVersion} from "@ionic-native/app-version/ngx";
-import {InAppBrowserObject} from "@ionic-native/in-app-browser/ngx";
-import {AlertController, Events, ModalController, NavController, Platform} from "@ionic/angular";
-import {CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation} from "../../config/ilias-config";
-import {Settings} from "../../models/settings";
-import {User} from "../../models/user";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {SynchronizationService} from "../../services/synchronization.service";
-import {TranslateService} from "@ngx-translate/core";
-import {ThemeProvider} from "../../providers/theme/theme.provider";
-import {LoadingPage} from "../../fallback/loading/loading.component";
+import { Component, Inject, NgZone } from "@angular/core";
+import { AppVersion } from "@ionic-native/app-version/ngx";
+import { AlertController, ModalController, NavController, Platform } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
+import { CONFIG_PROVIDER, ILIASConfigProvider, ILIASInstallation } from "../../config/ilias-config";
+import { LoadingPage } from "../../fallback/loading/loading.component";
+import { Settings } from "../../models/settings";
+import { User } from "../../models/user";
+import { AuthenticationProvider } from "../../providers/authentication.provider";
+import { ThemeProvider } from "../../providers/theme/theme.provider";
+import { SynchronizationService } from "../../services/synchronization.service";
 
 @Component({
-    templateUrl: "login.html"
+    templateUrl: "login.html",
+    styleUrls: ["./login.scss"]
 })
-export class LoginPage {
+export class LoginPage implements ViewWillEnter {
 
+    readonly appName: Promise<string>;
     readonly installations: Array<ILIASInstallation> = [];
 
     /**
@@ -27,48 +29,46 @@ export class LoginPage {
     constructor(private readonly platform: Platform,
                 private readonly sync: SynchronizationService,
                 @Inject(CONFIG_PROVIDER) private readonly configProvider: ILIASConfigProvider,
-                private readonly event: Events,
-                private readonly appVersionPlugin: AppVersion,
+                private readonly appVersion: AppVersion,
                 private readonly auth: AuthenticationProvider,
                 private readonly alertCtr: AlertController,
                 private readonly translate: TranslateService,
                 private readonly themeProvider: ThemeProvider,
                 private readonly modal: ModalController,
                 private readonly navCtrl: NavController,
-                private readonly ngZone: NgZone
+                private readonly ngZone: NgZone,
+                private readonly themeProivder: ThemeProvider
     ) {
       this.configProvider.loadConfig().then(config => {
           this.installations.push(...config.installations);
           this.installationId = this.installations[0].id;
       });
 
-      this.appVersionStr = this.appVersionPlugin.getVersionNumber();
+      this.appName = appVersion.getAppName();
+
+      this.appVersionStr = this.appVersion.getVersionNumber();
     }
 
     ionViewWillEnter(): void {
-        ThemeProvider.setDefaultColor();
+        this.themeProvider.setDefaultColor();
     }
 
-    login(): void {
+    async login(): Promise<void> {
         if(!this.checkOnline()) return;
         const installation: ILIASInstallation = this.getSelectedInstallation();
-        const browser: InAppBrowserObject = this.auth.browserLogin(installation);
-        const loadingPage: Promise<HTMLIonModalElement> = this.modal.create({
+        await this.auth.browserLogin(installation);
+        const loadingPage: HTMLIonModalElement = await this.modal.create({
             component: LoadingPage,
             cssClass: "modal-fullscreen",
             backdropDismiss: false,
         });
 
-        browser.on("exit").subscribe(() => {
-            if(AuthenticationProvider.isLoggedIn()) {
-                loadingPage.then(modal => {
-                    modal.present()
-                        .then(() => this.loginSequence())
-                        .then(() => this.ngZone.run(() => this.navCtrl.navigateRoot("tabs")))
-                        .finally(() => modal.dismiss());
-                })
-            }
-        });
+        if(AuthenticationProvider.isLoggedIn()) {
+            await loadingPage.present()
+            await this.loginSequence();
+            await this.ngZone.run(() => this.navCtrl.navigateRoot("tabs"));
+            await loadingPage.dismiss();
+        }
     }
 
     /**

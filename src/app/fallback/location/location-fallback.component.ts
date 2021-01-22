@@ -3,7 +3,8 @@ import {Diagnostic} from "@ionic-native/diagnostic/ngx";
 import {ModalController} from "@ionic/angular";
 
 @Component({
-  templateUrl: "location-fallbackscreen.html"
+  templateUrl: "location-fallbackscreen.html",
+  styleUrls: ["location-fallbackscreen.scss"]
 })
 export class LocationFallbackScreen {
 

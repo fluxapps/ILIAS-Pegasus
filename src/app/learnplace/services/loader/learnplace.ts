@@ -161,8 +161,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                     this.videoBlocks = videoBlocks;
                     this.accordionBlocks = accordionBlocks;
                 })
-        )
-            .pipe(
+        ).pipe(
                 mergeMap(it => from(this.learnplaceRepository.save(it))),
                 mergeMap(_ => EMPTY), // we want to emit void, so we map the save observable to an empty one
                 catchError((error, _) => {

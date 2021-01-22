@@ -1,16 +1,18 @@
-import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "../../providers/ilias/ilias.rest";
-import {HttpResponse} from "../../providers/http";
-import {AuthenticationProvider} from "../../providers/authentication.provider";
-import {ILIASObject} from "../../models/ilias-object";
-import {User} from "../../models/user";
-import {UserStorageService} from "../../services/filesystem/user-storage.service";
-import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
-import {DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader} from "../../providers/file-transfer/file-download";
-import {Zip} from "@ionic-native/zip/ngx";
-import {LearningModule} from "../../models/learning-module";
-import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "./learning-module-path-builder";
-import {LoadingPage} from "../../fallback/loading/loading.component";
+import { Inject, Injectable, InjectionToken } from "@angular/core";
+import { Zip } from "@ionic-native/zip/ngx";
+import { LoadingService } from "../../fallback/loading/loading.service";
+import { ILIASObject } from "../../models/ilias-object";
+import { User } from "../../models/user";
+import { AuthenticationProvider } from "../../providers/authentication.provider";
+import { DownloadRequestOptions, FILE_DOWNLOADER, FileDownloader } from "../../providers/file-transfer/file-download";
+import { HttpResponse } from "../../providers/http";
+import { ILIAS_REST, ILIASRequestOptions, ILIASRest } from "../../providers/ilias/ilias.rest";
+import { FileStorageService } from "../../services/filesystem/file-storage.service";
+import { UserStorageMamager } from "../../services/filesystem/user-storage.mamager";
+import { LINK_BUILDER, LinkBuilder } from "../../services/link/link-builder.service";
+import { LearningModule } from "../models/learning-module";
+import { LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder } from "./learning-module-path-builder";
+import { LearningModuleStorageUtilisation } from "./learning-module-storage-utilisation";
 
 export interface LearningModuleLoader {
     /**
@@ -28,8 +30,11 @@ export const LEARNING_MODULE_LOADER: InjectionToken<LearningModuleLoader> = new 
 })
 export class RestLearningModuleLoader implements LearningModuleLoader {
     constructor(
-        protected readonly zip: Zip,
-        protected readonly userStorage: UserStorageService,
+        private readonly storageUtilisation: LearningModuleStorageUtilisation,
+        private readonly zip: Zip,
+        private readonly fileStorage: FileStorageService,
+        private readonly userStorageManager: UserStorageMamager,
+        private readonly loadingService: LoadingService,
         @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
         @Inject(FILE_DOWNLOADER) private readonly downloader: FileDownloader,
         @Inject(LINK_BUILDER) private readonly linkBuilder: LinkBuilder,
@@ -37,16 +42,16 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
     ) {}
 
     async load(objId: number): Promise<void> {
-        LoadingPage.progress.next(0);
+        this.loadingService.start();
         // get data for the learning module
         const user: User = AuthenticationProvider.getUser();
         const obj: ILIASObject = await ILIASObject.findByObjIdAndUserId(objId, user.id);
         const request: LearningModuleData = await this.getLearningModuleData(obj.refId);
-        LoadingPage.progress.next(.2);
+        this.loadingService.set(.2);
         const lm: LearningModule = await LearningModule.findByObjIdAndUserId(objId, user.id);
 
         // path to the tmp directory for downloading
-        const localTmpZipDir: string = await this.pathBuilder.inLocalLmDir("tmp", true);
+        const localTmpZipDir: string = await this.pathBuilder.dirInLocalLmDir("tmp", true);
         // name of the zip file containing the learning module
         const tmpZipFile: string = `tmp_${objId}.zip`;
         // url to get the zip file containing the learning module
@@ -55,7 +60,10 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         // return if the module did not change and is already loaded
         const lmLoaded: boolean = await LearningModule.existsByObjIdAndUserId(objId, user.id);
         const lmUpToDate: boolean = lm.timestamp >= request.timestamp;
-        if(lmLoaded && lmUpToDate) return;
+        if(lmLoaded && lmUpToDate) {
+            this.loadingService.finish();
+            return;
+        }
 
         // download the zip file
         const downloadOptions: DownloadRequestOptions = <DownloadRequestOptions> {
@@ -68,15 +76,19 @@ export class RestLearningModuleLoader implements LearningModuleLoader {
         };
 
         // user-dependant path to all learning modules
-        const localAllLmsDir: string = await this.pathBuilder.inLocalLmDir("", true);
+        const localAllLmsDir: string = await this.pathBuilder.dirInLocalLmDir("", true);
         // extract the zip file, place the lm in a specific directory, then delete the zip file
         await this.downloader.download(downloadOptions);
-        LoadingPage.progress.next(.6);
+        this.loadingService.set(.6);
+        console.log(`UNZIPPING in ${localTmpZipDir} file ${tmpZipFile} => dir ${request.zipDirName}`);
         await this.zip.unzip(`${localTmpZipDir}${tmpZipFile}`, localTmpZipDir);
-        LoadingPage.progress.next(.9);
-        await this.userStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
-        await this.userStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
-        LoadingPage.progress.next(1);
+        this.loadingService.set(.9);
+
+        // Remove object because the app would report wrong storage numbers after the update got removed by the user.
+        await this.userStorageManager.removeObjectFromUserStorage(user.id, objId, this.storageUtilisation);
+        await this.fileStorage.moveAndReplaceDir(localTmpZipDir, request.zipDirName, localAllLmsDir, this.pathBuilder.lmDirName(objId));
+        await this.fileStorage.removeFileIfExists(localTmpZipDir, tmpZipFile);
+        this.loadingService.finish();
 
         // save the lm in the local database
         lm.relativeStartFile = request.startFile;

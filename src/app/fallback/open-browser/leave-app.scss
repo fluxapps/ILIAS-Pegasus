@@ -1,0 +1,27 @@
+
+#webr-icon {
+    height: auto !important;
+    width: 60% !important;
+
+    @media screen and (orientation:landscape) {
+        height: 40% !important;
+        width: auto !important;
+    }
+
+    margin: auto !important;
+    display: block !important;
+}
+
+.return-to-app-row {
+    @media screen and (orientation:landscape) {
+        padding-top: 0;
+    }
+}
+
+h1 {
+    color: var(--ion-color-primary-contrast);
+}
+
+a {
+    color: var(--ion-color-primary-contrast);
+}

@@ -1,6 +1,5 @@
-import {Component} from "@angular/core";
-import {FooterToolbarService} from "../../services/footer-toolbar.service";
-import {Subject} from "rxjs";
+import { Component } from "@angular/core";
+import { LoadingService } from "./loading.service";
 
 export enum LoadingPageType {
     generic,
@@ -9,20 +8,16 @@ export enum LoadingPageType {
 }
 
 @Component({
-    templateUrl: "loading.html"
+    templateUrl: "loading.html",
+    styleUrls: ["loading.scss"]
 })
 export class LoadingPage {
-    // subject where processes can post their progress
-    static progress: Subject<number>;
     // the type of object that is being loaded
     static type: LoadingPageType = LoadingPageType.generic;
 
-    progress: number = 0;
     constructor(
-        readonly footerToolbar: FooterToolbarService,
+        readonly loadingService: LoadingService,
     ) {
-        if(!LoadingPage.progress) LoadingPage.progress = new Subject<number>();
-        LoadingPage.progress.subscribe((progress: number) => this.progress = progress);
     }
 
     translateKeyForType(key: string): string {

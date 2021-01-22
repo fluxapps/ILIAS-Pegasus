@@ -1,8 +1,13 @@
 /* angular */
-import {Component} from "@angular/core";
+import {Component, Inject} from "@angular/core";
+import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from "@ionic-native/in-app-browser/ngx";
 import {NavController} from "@ionic/angular";
+import { ViewWillEnter } from "ionic-lifecycle-interface";
+import { ConfigProvider, CONFIG_PROVIDER, ILIASInstallation } from "src/app/config/ilias-config";
+import { User } from "src/app/models/user";
 /* misc */
 import {AuthenticationProvider} from "../../providers/authentication.provider";
+import { Optional } from "../../util/util.optional";
 
 /**
  * Generated class for the MenuPage page.
@@ -13,10 +18,35 @@ import {AuthenticationProvider} from "../../providers/authentication.provider";
 @Component({
     selector: "page-menu",
     templateUrl: "menu.html",
+    styleUrls: ["menu.scss"]
 })
-export class MenuPage {
+export class MenuPage implements ViewWillEnter {
 
-    constructor(public navCtrl: NavController, private readonly auth: AuthenticationProvider) {
+    privacyPolicy: string = "datenschutz";
+    private readonly BROWSER_OPTIONS: InAppBrowserOptions = {
+        location: "no",
+        clearsessioncache: "yes",
+        clearcache: "yes"
+    };
+
+    constructor(
+        private readonly navCtrl: NavController,
+        private readonly auth: AuthenticationProvider,
+        private readonly browser: InAppBrowser,
+        @Inject(CONFIG_PROVIDER) private readonly config: ConfigProvider,
+    ) {}
+
+    async ionViewWillEnter(): Promise<void> {
+        const $installation: Optional<Readonly<ILIASInstallation>> | Readonly<ILIASInstallation>= await this.config.getInstallation();
+        const currentUser: User = AuthenticationProvider.getUser();
+
+        const installation: Readonly<ILIASInstallation> = await $installation.orElseGet(async () => {
+            const install: Optional<Readonly<ILIASInstallation>> = await this.config.loadInstallation(currentUser.installationId);
+
+            return install.get();
+        });
+
+        this.privacyPolicy = installation.privacyPolicy;
     }
 
     async navigateTo(url: string): Promise<void> {
@@ -28,6 +58,7 @@ export class MenuPage {
     }
 
     async openPrivacyPolicy(url: string): Promise<void> {
-        window.open(url , "_system");
+        const browserSession: InAppBrowserObject = this.browser.create(url, "_blank", this.BROWSER_OPTIONS);
+        browserSession.show();
     }
 }

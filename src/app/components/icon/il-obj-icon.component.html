@@ -1,0 +1,4 @@
+<div class="container" #container>
+  <img class="icon" [src]="presenter.icon | async"/>
+  <img *ngIf="showSubIcon" class="sub-icon" [src]="linkIcon | async"/>
+</div>

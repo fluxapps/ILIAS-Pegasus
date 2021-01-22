@@ -1,5 +1,6 @@
 /** angular */
 import {Component} from "@angular/core";
+import { AppVersion } from "@ionic-native/app-version/ngx";
 import {ModalController, NavParams} from "@ionic/angular";
 /** ionic-native */
 import {InAppBrowserOptions} from "@ionic-native/in-app-browser";
@@ -9,47 +10,47 @@ import {Logging} from "../../services/logging/logging.service";
 /** misc */
 import {TranslateService} from "@ngx-translate/core";
 import {CssStyleService} from "../../services/theme/css-style.service";
+import { ViewController } from "@ionic/core";
 
 
 @Component({
-    templateUrl: "leave-app.dialog.html"
+    templateUrl: "leave-app.dialog.html",
+    styleUrls: ["leave-app.scss"]
 })
 export class LeaveAppDialog {
 
-    private readonly log: Logger = Logging.getLogger(LeaveAppDialog.name);
+    private readonly log: Logger = Logging.getLogger("LeaveAppDialog");
     private readonly params: LeaveAppDialogNavParams;
+    readonly appName: Promise<string>;
     themeIonicContrastColor: string;
 
     constructor(
         private readonly nav: NavParams,
         private readonly modalCtrl: ModalController,
-        private readonly translate: TranslateService
+        private readonly appVersion: AppVersion,
+        private readonly cssStyle: CssStyleService,
     ) {
         this.params = <LeaveAppDialogNavParams>nav.data;
+        this.appName = this.appVersion.getAppName();
     }
 
     ionViewWillEnter(): void {
         this.themeIonicContrastColor = "light";
-        if(CssStyleService.customIsSet) {
-            this.themeIonicContrastColor = CssStyleService.customColorContrast ? "light" : "dark";
+        if(this.cssStyle.customIsSet) {
+            this.themeIonicContrastColor = this.cssStyle.customColorContrast ? "light" : "dark";
         }
     }
 
-    dismiss(): void {
+    async dismiss(): Promise<void> {
         this.log.trace(() => "User action -> dismiss");
-        this.modalCtrl.dismiss();
+        await this.modalCtrl.dismiss({}, "cancel");
     }
 
-    leaveApp(): void {
+    async leaveApp(): Promise<void> {
         this.log.trace(() => "User action -> leave app");
-        const options: InAppBrowserOptions = {
-            location: "yes",
-            clearcache: "yes",
-            clearsessioncache: "yes"
-        };
 
+        // The leave app function is responsible for closing the modal, because it somehow does not work in here
         this.params.leaveApp();
-        this.modalCtrl.dismiss();
     }
 }
 

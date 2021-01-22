@@ -1,13 +1,18 @@
-import {ActiveRecord, SQLiteConnector} from "./active-record";
-import {FileData} from "./file-data";
-import {User} from "./user";
-/** services */
-import {SQLiteDatabaseService} from "../services/database.service";
-import {FileService} from "../services/file.service";
-/** logging */
-import {Log} from "../services/log.service";
+import { SQLiteDatabaseService } from "../services/database.service";
+import { UserStorageService } from "../services/filesystem/user-storage.service";
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
+import { ActiveRecord, SQLiteConnector } from "./active-record";
+import { FileData } from "./file-data";
+import { User } from "./user";
 
-export class ILIASObject extends ActiveRecord {
+export const enum FavouriteStatus {
+    NONE = 0,
+    DOWNLOADED = 1,
+    PENDING = 2
+}
+
+export class ILIASObject extends ActiveRecord<ILIASObject> {
 
     // A nice technique to simulate class constants :) ILIASObject.OFFLINE_OWNER_USER => 'user'
     static get OFFLINE_OWNER_USER(): string {
@@ -17,6 +22,8 @@ export class ILIASObject extends ActiveRecord {
     static get OFFLINE_OWNER_SYSTEM(): string {
         return "system";
     }
+
+    private readonly log: Logger = Logging.getLogger("ILIASObject");
 
     /**
      * Internal user-ID
@@ -69,21 +76,6 @@ export class ILIASObject extends ActiveRecord {
     isOfflineAvailable: boolean;
 
     /**
-     * The owner that was setting this object to "offline available", either 'user' or 'system'
-     */
-    offlineAvailableOwner: string;
-
-    /**
-     * Object is marked as new
-     */
-    isNew: boolean;
-
-    /**
-     * Object is marked as updated
-     */
-    isUpdated: boolean;
-
-    /**
      * Object is marked as favorite
      */
     isFavorite: number;
@@ -130,9 +122,6 @@ export class ILIASObject extends ActiveRecord {
             "description",
             "link",
             "isOfflineAvailable",
-            "offlineAvailableOwner",
-            "isNew",
-            "isUpdated",
             "isFavorite",
             "data",
             "repoPath",
@@ -178,7 +167,7 @@ export class ILIASObject extends ActiveRecord {
             try {
                 return JSON.parse(this._repoPath);
             } catch (e) {
-                Log.error(this, "Could not get json from: " + this._repoPath);
+                this.log.error(() => `Could not get json from: ${this._repoPath}`);
                 return [];
             }
         }
@@ -194,7 +183,7 @@ export class ILIASObject extends ActiveRecord {
         } else if ( path === null) {
             this._repoPath = null;
         }else {
-            Log.describe(this, "repo path is: ", path);
+            this.log.error(() => `repo path is: ${JSON.stringify(path)}`);
             throw new Error("Please provide a string or a list of strings for repoPath in ilias-object.ts");
         }
     }
@@ -274,6 +263,16 @@ export class ILIASObject extends ActiveRecord {
     }
 
     /**
+     * Checks whether the object is in cache, meaning that it is offline available
+     * and not a favorite
+     */
+    async isCache(): Promise<boolean> {
+        if(!this.isOfflineAvailable) return false;
+        const underFav: boolean = await this.objectIsUnderFavorite();
+        return underFav && !this.isFavorite;
+    }
+
+    /**
      * Checks whether the object is contained within a favorite-object
      */
     async objectIsUnderFavorite(): Promise<boolean> {
@@ -301,8 +300,8 @@ export class ILIASObject extends ActiveRecord {
     /**
      * removes the offline-data, sets the isOfflineAvailable-flags accordingly and sets isFavorite to false
      */
-    async removeFromFavorites(fileService: FileService, ignoreDeletionErrors: boolean = false): Promise<void> {
-        await this.setIsFavorite(0);
+    async removeFromFavorites(userStorage: UserStorageService, ignoreDeletionErrors: boolean = false): Promise<void> {
+        await this.setIsFavorite(FavouriteStatus.NONE);
         const underFavorite: boolean = await this.objectIsUnderFavorite();
         const objectsStack: Array<ILIASObject> = underFavorite ? [] : [this];
 
@@ -312,9 +311,8 @@ export class ILIASObject extends ActiveRecord {
             const newObjects: Array<ILIASObject> = await ILIASObject.findByParentRefId(ilObj.refId, this.userId);
             for (let i: number = 0; i < newObjects.length; i++)
                 if (!newObjects[i].isFavorite) objectsStack.push(newObjects[i]);
-
             try {
-                await fileService.removeObject(ilObj);
+                await userStorage.removeObject(ilObj);
             } catch (e) {
                 if(!ignoreDeletionErrors) throw e;
             }
@@ -324,7 +322,7 @@ export class ILIASObject extends ActiveRecord {
     /**
      * Set property 'isFavorite' of the 'iliasObject'
      */
-    async setIsFavorite(value: number): Promise<void> {
+    async setIsFavorite(value: FavouriteStatus): Promise<void> {
         this.isFavorite = value;
         await this.save();
     }
@@ -383,13 +381,21 @@ export class ILIASObject extends ActiveRecord {
      * @returns {Promise<ILIASObject>}
      */
     static async findByRefIdAndUserId(refId: number, userId: number): Promise<ILIASObject> {
+        // Workaround sometimes the ids are strings instead of numbers ...
+        if (typeof refId === "string") {
+            refId = Number.parseInt(refId, 10);
+        }
+        if (typeof userId === "string") {
+            userId = Number.parseInt(userId, 10);
+        }
         const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
-        const response: any = await db.query("SELECT * FROM objects WHERE refId = ? AND userId = ?", [refId, userId]);
+        const response: any = await db.query("SELECT * FROM objects WHERE refId = ? AND userId = ?;", [refId, userId]);
         if (response.rows.length == 0) {
           const object: ILIASObject = new ILIASObject();
           object.userId = userId;
+          object.refId = refId;
           return Promise.resolve(object);
-        } else if(response.rows.length == 1) {
+        } else if(response.rows.length === 1) {
           return ILIASObject.find(response.rows.item(0).id);
         } else if(response.rows.length > 1) {
 
@@ -398,7 +404,7 @@ export class ILIASObject extends ActiveRecord {
 
           // We destroy all overdue instances.
           for (let i: number = 1; i < response.rows.length; i++) {
-            (await ILIASObject.find(response.rows.item(i).id)).destroy();
+            await (await ILIASObject.find(response.rows.item(i).id)).destroy();
           }
 
           // After finding and deletion we return the found object.
@@ -416,13 +422,21 @@ export class ILIASObject extends ActiveRecord {
      * @returns {Promise<ILIASObject>}
      */
     static async findByObjIdAndUserId(refId: number, userId: number): Promise<ILIASObject> {
+        // Workaround sometimes the ids are strings instead of numbers ...
+        if (typeof refId === "string") {
+            refId = Number.parseInt(refId, 10);
+        }
+        if (typeof userId === "string") {
+            userId = Number.parseInt(userId, 10);
+        }
+
         const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
         const response: any = await db.query("SELECT * FROM objects WHERE objId = ? AND userId = ?", [refId, userId]);
         if (response.rows.length == 0) {
             const object: ILIASObject = new ILIASObject();
             object.userId = userId;
             return Promise.resolve(object);
-        } else if(response.rows.length == 1) {
+        } else if(response.rows.length === 1) {
             return ILIASObject.find(response.rows.item(0).id);
         } else if(response.rows.length > 1) {
 
@@ -431,7 +445,7 @@ export class ILIASObject extends ActiveRecord {
 
             // We destroy all overdue instances.
             for (let i: number = 1; i < response.rows.length; i++) {
-                (await ILIASObject.find(response.rows.item(i).id)).destroy();
+                await (await ILIASObject.find(response.rows.item(i).id)).destroy();
             }
 
             // After finding and deletion we return the found object.
@@ -469,17 +483,15 @@ export class ILIASObject extends ActiveRecord {
         return ILIASObject.queryDatabase(sql, parameters);
     }
 
-    protected static queryDatabase(sql: string, parameters: Array<{}>): Promise<Array<ILIASObject>> {
-        return SQLiteDatabaseService.instance()
-            .then(db => db.query(sql, parameters))
-            .then((response: any) => {
-                const promises = [];
-                for (let i = 0; i < response.rows.length; i++) {
-                    promises.push(ILIASObject.find(response.rows.item(i).id));
-                }
+    private static async queryDatabase(sql: string, parameters: Array<{}>): Promise<Array<ILIASObject>> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        const response: any = await db.query(sql, parameters);
+        const results: Array<ILIASObject> = [];
+        for (let i: number = 0; i < response.rows.length; i++) {
+            results.push(await ILIASObject.find(response.rows.item(i).id));
+        }
 
-                return Promise.all(promises)
-            });
+        return results;
     }
 
     /**
@@ -488,55 +500,51 @@ export class ILIASObject extends ActiveRecord {
      * @param userId
      * @returns {Promise<ILIASObject[]>}
      */
-    static findByParentRefIdRecursive(parentRefId: number, userId: number): Promise<Array<ILIASObject>> {
+    static async findByParentRefIdRecursive(parentRefId: number, userId: number): Promise<Array<ILIASObject>> {
+        // Workaround sometimes the ids are strings instead of numbers ...
+        if (typeof parentRefId === "string") {
+            parentRefId = Number.parseInt(parentRefId, 10);
+        }
+        if (typeof userId === "string") {
+            userId = Number.parseInt(userId, 10);
+        }
         const iliasObjects: Array<ILIASObject> = [];
 
-        return ILIASObject.findByParentRefId(parentRefId, userId).then(children => {
-            const childrenPromises: Array<Promise<Array<ILIASObject>>> = [];
-            children.forEach(child => {
-                iliasObjects.push(child);
-                childrenPromises.push(ILIASObject.findByParentRefIdRecursive(child.refId, userId));
-            });
-            return Promise.all(childrenPromises);
-        }).then(promiseResults => {
-            promiseResults.forEach((list: Array<ILIASObject>) => {
-                list.forEach(child => {
-                    iliasObjects.push(child);
-                });
-            });
-            return Promise.resolve(iliasObjects);
-        });
+        const children: Array<ILIASObject> = await ILIASObject.findByParentRefId(parentRefId, userId);
+        iliasObjects.push(...children);
+
+        for (const child of children) {
+            iliasObjects.push(...(await ILIASObject.findByParentRefIdRecursive(child.refId, userId)));
+        }
+
+        return iliasObjects;
     }
 
     /**
      * Set property 'isOfflineAvailable' of the 'iliasObject' and its content to 'value'
      */
     static async setOfflineAvailableRecursive(iliasObject: ILIASObject, user: User, value: boolean): Promise<void> {
-        ILIASObject.findByParentRefIdRecursive(iliasObject.refId, user.id).then(objects => {
-            objects.push(iliasObject);
-            objects.forEach(o => {
-                o.isOfflineAvailable = value;
-                if(value) o.offlineAvailableOwner = undefined; // TODO sync how to set this value
-                o.save();
-            });
-        })
+        const iliasObjects: Array<ILIASObject> = await ILIASObject.findByParentRefIdRecursive(iliasObject.refId, user.id);
+        iliasObjects.push(iliasObject);
+        for (const entry of iliasObjects) {
+            entry.isOfflineAvailable = value;
+            await entry.save();
+        }
     }
 
     /**
      * updates the needsDownload state depending on the object type recursivly. This object and every parent recursively.
      * @returns {Promise<T>} returns a list of the changed objects
      */
-    updateNeedsDownload(childNeedsUpdate = null): Promise<Array<ILIASObject>> {
-        Log.write(this, "recursive update needs download. going through: " + this.title);
-        if (this.type == "file") {
+    async updateNeedsDownload(childNeedsUpdate = null): Promise<Array<ILIASObject>> {
+        this.log.debug(() => `Recursive update needs download. going through: ${this.title}`);
+        if (this.type === "file") {
             // A file needs to check its file state and then escalate.
             return FileData.find(this.id).then(fileData => {
-                if (this.id && fileData.isUpdated())
-                    this.isUpdated = true;
                 return this.saveAndEscalateNeedsDownload(fileData.needsDownload());
             });
         } else if (this.isContainer()) {
-            //performance improvmente, if a child needs update we certainly need to update too.
+            //performance improvement, if a child needs update we certainly need to update too.
             if(childNeedsUpdate !== null && childNeedsUpdate)
                 return this.saveAndEscalateNeedsDownload(true);
             // A container needs to check all its children.
@@ -549,35 +557,31 @@ export class ILIASObject extends ActiveRecord {
 
         } else {
             this.needsDownload = false;
-            return Promise.resolve([]);
+            return [];
             //we do not need to escalate. we don't even save :-)
         }
     }
 
     /**
      *
-     * @returns {Promise<T>} return a list of all ILIASObjects touched.
+     * @returns {Promise<Array<ILIASObject>>} return a list of all ILIASObjects touched.
      */
-    protected saveAndEscalateNeedsDownload(newValue): Promise<Array<ILIASObject>> {
+    private async saveAndEscalateNeedsDownload(newValue: boolean): Promise<Array<ILIASObject>> {
         if (newValue == this.needsDownload) {
-            Log.write(this, `Needs download stays the same for ${this.title}. No need for escalation.`);
-            return Promise.resolve([this]);
+            this.log.debug(() => `Needs download stays the same for "${this.title}", with objId: ${this.objId}. No need for escalation.`);
+            return Array.of(this);
         }
         this.needsDownload = newValue;
 
-        return this.save()
-            .then(() => this.parent)
-            .then((parent) => {
-                if (parent) {
-                    return parent.updateNeedsDownload(this.needsDownload)
-                        .then((objects) => {
-                        objects.push(this);
-                        return Promise.resolve(objects);
-                    });
-                } else {
-                    return Promise.resolve([this]);
-                }
-            });
+        await this.save();
+        const parent: ILIASObject = await this.parent;
+        if (parent) {
+            const objects: Array<ILIASObject> = await parent.updateNeedsDownload(this.needsDownload);
+            objects.push(this);
+            return objects;
+        } else {
+            return Array.of(this);
+        }
     }
 
     static findByUserId(userId: number): Promise<Array<ILIASObject>> {
@@ -619,7 +623,7 @@ export class ILIASObject extends ActiveRecord {
      * Note: delete is a reserved word ;)
      * @returns {Promise<object>}
      */
-    destroy(): Promise<object> {
+    destroy(): Promise<void> {
         return super.destroy();
     }
 }

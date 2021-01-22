@@ -1,0 +1,34 @@
+.page_info {
+    --background: var(--custom-background, var(--ion-background-color));
+
+    ion-card {
+        margin: 1em 1em;
+        width: auto;
+        border-radius: 0;
+        --background: var(--ion-color-primary-contrast);
+        --ion-text-color: var(--ion-color-dark);
+        --color: var(--ion-color-step-600, #666);
+        --border-radius: 0;
+    }
+
+    .version-card ion-card-content p:first-child {
+        display: var(--page-version-card-custom, none);
+        margin: 0;
+    }
+
+    .reporting-card {
+        display: var(--page-reporting-card-community, block);
+    }
+
+    .reporting-card-iq {
+        display: var(--page-reporting-card-iq, none);
+    }
+
+    .reporting-card-zwh {
+        display: var(--page-reporting-card-zwh, none);
+    }
+
+    .stura-card, .freiburg-card, .marburg-card {
+        display: var(--page-info-card-community, block);
+    }
+}

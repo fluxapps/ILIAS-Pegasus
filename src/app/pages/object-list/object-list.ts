@@ -1,10 +1,12 @@
 import {Component, Inject, NgZone} from "@angular/core";
+import { SafeUrl } from "@angular/platform-browser";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import {ActionSheetController, AlertController, Events, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
 import {LINK_BUILDER, LinkBuilder} from "../../services/link/link-builder.service";
+import { FeaturePolicyService } from "../../services/policy/feature-policy.service";
 import {SynchronizationService} from "../../services/synchronization.service";
 import {DesktopItem} from "../../models/desktop-item";
 import {ILIASObject} from "../../models/ilias-object";
@@ -32,11 +34,14 @@ import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
 import {ThemeProvider} from "../../providers/theme/theme.provider";
-import {OPEN_LEARNING_MODULE_ACTION_FACTORY, OpenLearningModuleActionFunction} from "../../learningmodule/actions/open-learning-module-action";
+import {OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY, OpenHtmlLearningModuleActionFunction} from "../../learningmodule/actions/open-html-learning-module-action";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
 import {LEARNING_MODULE_PATH_BUILDER, LearningModulePathBuilder} from "../../learningmodule/services/learning-module-path-builder";
-import {LoadingPage, LoadingPageType} from "../../fallback/loading/loading.component";
+import {
+    OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY,
+    OpenScormLearningModuleActionFunction
+} from "../../learningmodule/actions/open-scorm-learning-module-action";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -52,6 +57,7 @@ interface PageState {
 @Component({
     selector: "page-object-list",
     templateUrl: "object-list.html",
+    styleUrls: ["object-list.scss"]
 })
 export class ObjectListPage {
     state: PageState = {
@@ -66,10 +72,11 @@ export class ObjectListPage {
 
     pageTitle: string;
     parent: ILIASObject;
-    private content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
+    content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
 
-    private pageLayout: PageLayout;
-    private timeline: TimeLine;
+    pageLayout: PageLayout;
+    timeline: TimeLine;
+
     private readonly log: Logger = Logging.getLogger(ObjectListPage.name);
 
     constructor(private readonly navCtrl: NavController,
@@ -85,6 +92,7 @@ export class ObjectListPage {
                 private readonly ngZone: NgZone,
                 private readonly browser: InAppBrowser,
                 private readonly userStorage: UserStorageService,
+                private readonly ilObjPresenterFactory: ILIASObjectPresenterFactory,
                 readonly footerToolbar: FooterToolbarService,
                 @Inject(OPEN_OBJECT_IN_ILIAS_ACTION_FACTORY)
                 private readonly openInIliasActionFactory: (title: string, urlBuilder: Builder<Promise<string>>) => OpenObjectInILIASAction,
@@ -94,9 +102,13 @@ export class ObjectListPage {
                 private readonly openLearnplaceActionFactory: OpenLearnplaceActionFunction,
                 @Inject(REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION)
                 private readonly removeLocalLearnplaceActionFactory: RemoveLocalLearnplaceActionFunction,
-                @Inject(OPEN_LEARNING_MODULE_ACTION_FACTORY)
-                private readonly openLearningModuleActionFactory: OpenLearningModuleActionFunction,
+                @Inject(OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openHtmlLearningModuleActionFactory: OpenHtmlLearningModuleActionFunction,
+                @Inject(OPEN_SCORM_LEARNING_MODULE_ACTION_FACTORY)
+                private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
+                private readonly featurePolicy: FeaturePolicyService,
+                private readonly eventCtrl: Events
     ) { }
 
     /* = = = = = = = *
@@ -198,6 +210,23 @@ export class ObjectListPage {
         return true;
     }
 
+    /**
+     * observes the network status and updates on changes
+     */
+    observeNetworkState(): void {
+        this.eventCtrl.subscribe("network:online", () => {
+            const currentState: PageState = this.state;
+            currentState.online = true;
+            this.setPageStateAndRender(currentState);
+        });
+
+        this.eventCtrl.subscribe("network:offline", () => {
+            const currentState: PageState = this.state;
+            currentState.online = false;
+            this.setPageStateAndRender(currentState);
+        });
+    }
+
     /* = = = = = = = = = *
      *  LOADING CONTENT  *
      * = = = = = = = = = */
@@ -215,6 +244,8 @@ export class ObjectListPage {
      * ionic did-enter-event: load content and display result
      */
     async ionViewDidEnter(): Promise<void> {
+        this.observeNetworkState();
+        this.sync.loadAllOfflineContent();
         await this.loadAndRenderContent();
     }
 
@@ -297,15 +328,8 @@ export class ObjectListPage {
     private sortAndSetObjectList(ilObjects: Array<ILIASObject>): void {
         ilObjects.sort(ILIASObject.compare);
         const content: Array<{object: ILIASObject, presenter: ILIASObjectPresenter}> = [];
-        ilObjects.forEach(o => content.push({object: o, presenter: ILIASObjectPresenterFactory.instance(o)}));
+        ilObjects.forEach(o => content.push({object: o, presenter: this.ilObjPresenterFactory.instance(o)}));
         this.content = content;
-    }
-
-    /**
-     * method fot the template to get the source of the badge icon
-     */
-    private getBadgeSrc(): string {
-        return ThemeProvider.getIconSrc("link");
     }
 
     /* = = = = = *
@@ -318,18 +342,18 @@ export class ObjectListPage {
     onClick(iliasObject: ILIASObject): void {
         const primaryAction: ILIASObjectAction = this.getPrimaryAction(iliasObject);
         this.executeAction(primaryAction);
-        // When executing the primary action, we reset the isNew state
-        if(iliasObject.isNew || iliasObject.isUpdated) {
-            iliasObject.isNew = false;
-            iliasObject.isUpdated = false;
-            iliasObject.save();
-        }
     }
 
     /**
      * returns the primary action for the given object
      */
     protected getPrimaryAction(iliasObject: ILIASObject): ILIASObjectAction {
+        if (!this.featurePolicy.isObjectAvailable(iliasObject.type)) {
+            return this.openInIliasActionFactory(
+                this.translate.instant("actions.view_in_ilias"),
+                this.linkBuilder.default().target(iliasObject.refId)
+            );
+        }
 
         if(iliasObject.isLinked()) {
             return this.openInIliasActionFactory(
@@ -346,19 +370,21 @@ export class ObjectListPage {
             return this.openLearnplaceActionFactory(this.navCtrl, iliasObject.objId, iliasObject.title, this.modal);
         }
 
-        //MARK: COMMENTED HTML LEARNING MODULE OUT
+        if(iliasObject.type === "htlm") {
+            return this.openHtmlLearningModuleActionFactory(
+                this.navCtrl,
+                iliasObject.objId,
+                this.pathBuilder,
+                this.translate
+            );
+        }
 
-        // if(iliasObject.type === "htlm") {
-        //     return this.openLearningModuleActionFactory(
-        //         this.navCtrl,
-        //         iliasObject.objId,
-        //         iliasObject.title,
-        //         this.modal,
-        //         this.browser,
-        //         this.pathBuilder,
-        //         this.translate
-        //     );
-        // }
+        if(iliasObject.type === "sahs") {
+            return this.openScormLearningModuleActionFactory(
+                iliasObject.objId,
+                this.navCtrl,
+            );
+        }
 
         if(iliasObject.type == "file") {
             return new DownloadAndOpenFileExternalAction(
@@ -390,7 +416,7 @@ export class ObjectListPage {
     }
 
     executeSetFavoriteValueAction(iliasObject: ILIASObject, value: boolean): void {
-        this.updatePageState();
+        // this.updatePageState();
         if(!this.state.online) return;
 
         const actions: Array<ILIASObjectAction> = [];
@@ -488,7 +514,7 @@ export class ObjectListPage {
             actions.push(new UnMarkAsFavoriteAction(
                 this.translate.instant("actions.unmark_as_favorite"),
                 iliasObject,
-                this.file
+                this.userStorage
             ));
         }
     }

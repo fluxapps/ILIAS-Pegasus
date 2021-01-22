@@ -75,10 +75,9 @@
 
 .page_menu {
     height: 100%;
-   .menu-bottom-image{
-       position: absolute;
-       bottom: 0;
-   }
+    .menu-bottom-image{
+        display: none;
+    }
 
     ion-list{
         padding-top: 0;
@@ -334,9 +333,21 @@ ion-content.page_settings {
 
     #webr-icon {
         height: auto !important;
-        width: 20vh !important;
+        width: 60% !important;
+
+        @media screen and (orientation:landscape) {
+            height: 40% !important;
+            width: auto !important;
+        }
+
         margin: auto !important;
         display: block !important;
+    }
+
+    .return-to-app-row {
+        @media screen and (orientation:landscape) {
+            padding-top: 0;
+        }
     }
 
     h1 {

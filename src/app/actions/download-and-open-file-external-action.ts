@@ -1,25 +1,22 @@
 /** angular */
-import {AlertController, ModalController} from "@ionic/angular";
-/** models */
-import {Settings} from "../models/settings";
-import {ILIASObject} from "../models/ilias-object";
-import {
-    ILIASObjectAction,
-    ILIASObjectActionAlert,
-    ILIASObjectActionResult,
-    ILIASObjectActionNoMessage
-} from "./object-action";
-/** logging */
-import {Log} from "../services/log.service";
+import { AlertController, ModalController } from "@ionic/angular";
 /** misc */
-import {TranslateService} from "@ngx-translate/core";
-import {OfflineException} from "../exceptions/OfflineException";
-import {FileService} from "../services/file.service";
-import {SynchronizationService} from "../services/synchronization.service";
-import {LoadingPage, LoadingPageType} from "../fallback/loading/loading.component";
-import {catchError} from "rxjs/operators";
+import { TranslateService } from "@ngx-translate/core";
+import { OfflineException } from "../exceptions/OfflineException";
+import { LoadingPage, LoadingPageType } from "../fallback/loading/loading.component";
+import { ILIASObject } from "../models/ilias-object";
+/** models */
+import { Settings } from "../models/settings";
+import { FileService } from "../services/file.service";
+/** logging */
+import { Logger } from "../services/logging/logging.api";
+import { Logging } from "../services/logging/logging.service";
+import { SynchronizationService } from "../services/synchronization.service";
+import { ILIASObjectAction, ILIASObjectActionAlert, ILIASObjectActionNoMessage, ILIASObjectActionResult } from "./object-action";
 
 export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
+
+    private readonly log: Logger = Logging.getLogger("DownloadAndOpenFileExternalAction");
 
     constructor(
         public title: string,
@@ -44,7 +41,7 @@ export class DownloadAndOpenFileExternalAction extends ILIASObjectAction {
         await loadingPage.present();
         try {
             // Download is only executed if a newer version is available in ILIAS
-            Log.write(this, "Do we need to download the file first? ", this.fileObject.needsDownload);
+            this.log.info(() => `Do we need to download the file first? ${this.fileObject.needsDownload}`);
             if (this.fileObject.needsDownload && this.file.isOffline()) {
                 await loadingPage.dismiss();
                 return Promise.reject(new OfflineException("File requires download and is offline at the same time."));

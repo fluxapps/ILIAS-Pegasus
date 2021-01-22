@@ -1,12 +1,12 @@
 /** ionic-native */
-import {Network} from "@ionic-native/network/ngx";
+import { Network } from "@ionic-native/network/ngx";
 /** misc */
-import {ActiveRecord, SQLiteConnector} from "./active-record";
-import {SQLiteDatabaseService} from "../services/database.service";
-import {FileData} from "./file-data";
-import {ILIASObject} from "./ilias-object";
+import { ActiveRecord, SQLiteConnector } from "./active-record";
+import { SQLiteDatabaseService } from "../services/database.service";
+import { FileData } from "./file-data";
+import { ILIASObject } from "./ilias-object";
 
-export class Settings extends ActiveRecord {
+export class Settings extends ActiveRecord<Settings> {
 
     static NETWORK: Network;
 
@@ -18,7 +18,7 @@ export class Settings extends ActiveRecord {
     /**
      * Language for app
      */
-    language: string = "de";
+    language: string = "fr";
 
     /**
      * Max. allowed size for automatic downloads (mega bytes)
@@ -28,7 +28,7 @@ export class Settings extends ActiveRecord {
     /**
      * Max. allowed quota for all files the app is storing (mega bytes)
      */
-    quotaSize: number = 100000;
+    quotaSize: number = 10000;
 
     /**
      * If true, execute offline-data-sync when starting the app
@@ -68,9 +68,9 @@ export class Settings extends ActiveRecord {
             "themeTimestamp"
         ]));
 
-        if(id == 0) {
+        if (id == 0) {
             let userLang: string = navigator.language.split("-")[0]; // use navigator lang if available
-            userLang = /(de|en|it)/gi.test(userLang) ? userLang : "en";
+            userLang = /(de|en|it|fr)/gi.test(userLang) ? userLang : "en";
 
             this.language = userLang;
         }
@@ -81,23 +81,17 @@ export class Settings extends ActiveRecord {
      * @param userId
      * @returns {Promise<Settings>}
      */
-    static findByUserId(userId: number): Promise<Settings> {
-        return new Promise((resolve, reject) => {
-            SQLiteDatabaseService.instance().then(db => {
-                db.query("SELECT * FROM settings WHERE userId = ?", [userId]).then((response) => {
-                    const settings: Settings = new Settings();
-                    if (response.rows.length == 0) {
-                        settings.userId = userId;
-                        resolve(settings);
-                    } else {
-                        settings.readFromObject(response.rows.item(0));
-                        resolve(settings);
-                    }
-                }, (error) => {
-                    reject(error);
-                });
-            });
-        });
+    static async findByUserId(userId: number): Promise<Settings> {
+        const db: SQLiteDatabaseService = await SQLiteDatabaseService.instance();
+        const response: any = await db.query("SELECT * FROM settings WHERE userId = ?;", [userId]);
+        const settings: Settings = new Settings();
+        if (response.rows.length === 0) {
+            settings.userId = userId;
+            return settings;
+        } else {
+            settings.readFromObject(response.rows.item(0));
+            return settings;
+        }
     }
 
     /**
@@ -105,24 +99,23 @@ export class Settings extends ActiveRecord {
      * @returns {boolean}
      */
     shouldntDownloadBecauseOfWLAN(): boolean {
-        return window.hasOwnProperty("cordova") && this.downloadWlan && (Settings.NETWORK.type != "wifi" && Settings.NETWORK.type != "ethernet");
+        return window.hasOwnProperty("cordova") && this.downloadWlan && (Settings.NETWORK.type !== "wifi" && Settings.NETWORK.type !== "ethernet");
 
     }
 
     fileTooBig(fileObject: ILIASObject): boolean {
         const fileSize: number = parseInt(fileObject.data.fileSize, 10);
-            return fileSize > this.downloadSize * 1000 * 1000;
+        return fileSize > this.downloadSize * 1000**2;
     }
 
-    quotaExceeds(fileObject: ILIASObject): Promise<boolean> {
-            //only check files...
-            if(fileObject.type != "file") {
-            return Promise.resolve(false);
+    async quotaExceeds(fileObject: ILIASObject): Promise<boolean> {
+        //only check files...
+        if (fileObject.type !== "file") {
+            return false;
         }
 
-        return FileData.getTotalDiskSpace().then( used => {
-            const fileSize: number = parseInt(fileObject.data.fileSize, 10);
-            return Promise.resolve(this.quotaSize * 1000 * 1000 < used + fileSize);
-        });
+        const used: number = await FileData.getTotalDiskSpace();
+        const fileSize: number = parseInt(fileObject.data.fileSize, 10);
+        return (this.quotaSize * 1000**2) < (used + fileSize);
     }
 }

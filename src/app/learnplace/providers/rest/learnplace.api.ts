@@ -1,10 +1,11 @@
-import {BlockObject, JournalEntry, LearnPlace} from "./learnplace.pojo";
-import {ILIAS_REST, ILIASRequestOptions, ILIASRest} from "../../../providers/ilias/ilias.rest";
-import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {HttpResponse} from "../../../providers/http";
-import {blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema} from "./json.schema";
-import {Logger} from "../../../services/logging/logging.api";
-import {Logging} from "../../../services/logging/logging.service";
+import { Inject, Injectable, InjectionToken } from "@angular/core";
+import { IliasObjectService } from "src/app/services/ilias-object.service";
+import { HttpResponse } from "../../../providers/http";
+import { ILIAS_REST, ILIASRequestOptions, ILIASRest } from "../../../providers/ilias/ilias.rest";
+import { Logger } from "../../../services/logging/logging.api";
+import { Logging } from "../../../services/logging/logging.service";
+import { blocksJsonSchema, journalEntriesJsonSchema, learnplaceJsonSchema } from "./json.schema";
+import { BlockObject, ILIASLinkBlock, JournalEntry, LearnPlace } from "./learnplace.pojo";
 
 const DEFAULT_REQUEST_OPTIONS: ILIASRequestOptions = <ILIASRequestOptions>{accept: "application/json"};
 
@@ -70,7 +71,8 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
   private log: Logger = Logging.getLogger(ILIASLearnplaceAPI.name);
 
   constructor(
-    @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest
+    @Inject(ILIAS_REST) private readonly iliasRest: ILIASRest,
+    private readonly ilObjService: IliasObjectService
   ) {}
 
   /**
@@ -143,8 +145,31 @@ export class ILIASLearnplaceAPI implements LearnplaceAPI {
 
     const response: HttpResponse = await this.iliasRest.get(`/v2/ilias-app/learnplace/${learnplaceObjectId}/blocks`, DEFAULT_REQUEST_OPTIONS);
 
-    return response.handle<BlockObject>(it =>
+    const blocks: BlockObject = response.handle<BlockObject>(it =>
       it.json<BlockObject>(blocksJsonSchema)
     );
+
+    await this.downloadLinkBlockRelatedILIASObject(blocks);
+    return blocks;
+  }
+
+    /**
+     * Downloads the link block related ILIAS object.
+     *
+     * @param {BlockObject} blocks - The blocks of the current learnplace, which are used to fetch the related ilias objects
+     * @private
+     */
+  private async downloadLinkBlockRelatedILIASObject(blocks: BlockObject): Promise<void> {
+      const linkBlocks: Array<ILIASLinkBlock> = blocks.iliasLink.concat(
+          blocks.accordion.reduceRight(
+              (prev, curr) => prev.concat(curr.iliasLink),
+              new Array<ILIASLinkBlock>())
+      );
+
+      if (linkBlocks.length === 0) {
+          return;
+      }
+
+      await this.ilObjService.downloadIlObjByRefID(linkBlocks.map(block => block.refId));
   }
 }
