@@ -74,7 +74,7 @@ export class AppInitialisation {
                 // @ts-ignore (TS 3.5 does not have a type dev for this intl function)
                 .getCanonicalLocales([language, ...languages])
                 .map((it) => it.split("-")[0])
-                .reduceRight((col, child) => col.add(child), new Set()); // Sets in js are ordered
+                .reduce((col: Set<string>, child: string) => col.add(child), new Set<string>()); // Sets in js are ordered
 
             let lng: string = this.FALLBACK_LANGUAGE;
             for (const langCode of browserLanguages) {
