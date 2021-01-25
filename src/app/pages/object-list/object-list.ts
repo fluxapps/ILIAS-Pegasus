@@ -272,6 +272,7 @@ export class ObjectListPage {
         this.footerToolbar.removeJob(Job.Synchronize);
         if(event) event.target.disabled = false;
         this.setPageStateAndRender({loading: false});
+        await this.lpManager.setLearnplaces(this.getLearnplaces());
     }
 
     /**
