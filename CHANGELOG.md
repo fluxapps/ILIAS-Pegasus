@@ -4,10 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1]
+### Fixed
+- System language detection
+
 ## [4.2.0]
 ### Added
 - Icons for all known ILIAS objects
 - Overlay icon for ILIAS objects which are not supported by the app.
+
+### Changed
+- Update French translation
+- Use SFSafariViewController instead of WKWebView to display external content on iOS
 
 ## [4.0.4] 
 ### Added
