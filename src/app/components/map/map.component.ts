@@ -104,7 +104,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
         this.renderer.addClass(this.objIdMarker.get(place.id), "selected");
         this.mapboxMap.flyTo({
-            center: [place.longitude, place.latitude]
+            center: [place.longitude, place.latitude],
+            zoom: place.zoom
         });
 
         this._selectedPlace = place;
