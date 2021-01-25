@@ -192,6 +192,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             showZoom: true
         }));
 
+        this.mapboxMap.addControl(new mapboxgl.ScaleControl(), "bottom-right");
+
         // markers
         const markers: Array<mapboxgl.Marker> = this.places
             .filter(place => place.visible)
