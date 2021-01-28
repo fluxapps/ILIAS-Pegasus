@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, Re
 import { ActivatedRoute } from "@angular/router";
 import { MenuController, NavController, ViewDidEnter, ViewDidLeave, ViewWillEnter } from "@ionic/angular";
 import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { first, takeUntil } from "rxjs/operators";
 import { MapComponent } from "src/app/components/map/map.component";
 import { ILIASObject } from "src/app/models/ilias-object";
 import { AuthenticationProvider } from "src/app/providers/authentication.provider";
@@ -111,7 +111,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         if (this.mapPlaces)
             return;
 
-        if (!this.lpManager?.learnplaces) {
+        if (!this.lpManager?.learnplaces) {
             const lps: Array<ILIASObject> = (await ILIASObject.findByParentRefId(parentRefId, AuthenticationProvider.getUser().id))
                 .filter(obj => obj.type === "xsrl")
 
@@ -128,9 +128,9 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.isEmptyBlock.next(true);
         this.blockService.getBlockList(this.objId)
             .pipe(
-                takeUntil(this.dispose$)
+                first()
             ).subscribe(
-                (it) => {
+                (it) => {§
                     console.log("Block List: ", it);
 
                     if (it !== this.currentBlockList) {
