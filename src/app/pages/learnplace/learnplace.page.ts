@@ -67,7 +67,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             this.visitJournalWatch.start();
             this.objId = obj.objId;
 
-
             await this.initLearnplaces(obj.parentRefId);
             this.initMenu();
             this.isEmptyBlock.next(true);
@@ -128,9 +127,10 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.isEmptyBlock.next(true);
         this.blockService.getBlockList(this.objId)
             .pipe(
-                first()
-            ).subscribe(
-                (it) => {§
+                takeUntil(this.ilObj)
+            )
+            .subscribe(
+                (it) => {
                     console.log("Block List: ", it);
 
                     if (it !== this.currentBlockList) {
@@ -142,9 +142,11 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
                         this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
                         this.renderer.addClass(this.elContent.nativeElement, "slide-in");
                     }
-
                 },
                 (err) => {
+                    this.loadingBlocks.next(false);
+                    this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
+                    this.renderer.addClass(this.elContent.nativeElement, "slide-in");
                     console.error(err);
                 },
                 () => {

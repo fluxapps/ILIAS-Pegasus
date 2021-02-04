@@ -14,7 +14,7 @@ import {
 } from "./mappers";
 import {USER_REPOSITORY, UserRepository} from "../../../providers/repository/repository.user";
 import {UserEntity} from "../../../entity/user.entity";
-import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest, merge} from "rxjs";
+import {Observable, throwError, of, EMPTY, from, forkJoin, combineLatest, merge, defer} from "rxjs";
 import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
 import {PictureBlockEntity} from "../../../entity/learnplace/pictureBlock.entity";
 import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
@@ -23,6 +23,8 @@ import {AccordionEntity} from "../../../entity/learnplace/accordion.entity";
 import {isDefined} from "../../../util/util.function";
 import uuid from "uuid-js";
 import {mergeMap, map, mergeAll, catchError} from "rxjs/operators";
+import { AuthenticationProvider } from "src/app/providers/authentication.provider";
+import { RESTAPIException } from "src/app/exceptions/RESTAPIException";
 
 /**
  * Describes a loader for a single learnplace.
@@ -51,7 +53,7 @@ export interface LearnplaceLoader {
      *
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
-    loadLearnplace(objectId: number): Promise<LearnplaceEntity>
+    loadLearnplace(objectId: number): Promise<void>
 
     /**
      * Loads only the blocks and the visitjournal of a learnplace matching
@@ -91,7 +93,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     ) {
     }
 
-    async loadLearnplace(objectId: number, update: boolean = false): Promise<LearnplaceEntity> {
+    async loadLearnplace(objectId: number, update: boolean = false): Promise<void> {
         const user: Optional<UserEntity> = await this.userRepository.findAuthenticatedUser()
 
         // downloads only missing content
@@ -99,7 +101,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
             mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
             mergeMap(it => {
                 if (!it.isPresent() || update) {
-                    const learnplace = from(this.learnplaceAPI.getLearnPlace(objectId));
+                    const learnplace = defer(() => this.learnplaceAPI.getLearnPlace(objectId));
                     update = true;
 
                     return learnplace.pipe(
@@ -129,21 +131,32 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                     )
                 }
 
-                if (!update)
-                    this.loadLearnplace(objectId, true);
-
                 return of(it.get());
-            }),
-            mergeMap(it => this.learnplaceRepository.save(it))
+            })
         );
 
-        // todo: update the content anyway async
-        return learnplaceEntity.toPromise();
+        if (!update)
+            this.loadLearnplace(objectId, true);
+
+        try {
+            await this.learnplaceRepository.save(await learnplaceEntity.toPromise())
+        } catch (error) {
+            if (
+                error instanceof RESTAPIException ||
+                error instanceof UnfinishedHttpRequestError) {
+                    return;
+                }
+            console.error("Error by loading Learnplace: ", error);
+            throw error;
+        }
     }
 
     async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {
         const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
-        const learnplaceEntity: Observable<LearnplaceEntity> = lp ? of(lp) : from(this.loadLearnplace(objectId));
+        const learnplaceEntity: Observable<LearnplaceEntity> = lp
+            ? of(lp)
+            : from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, AuthenticationProvider.getUser().id)).pipe(map(val => val.get()));
+
         const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));
 
         const visitJournalEntities: Observable<Array<VisitJournalEntity>> = forkJoin(learnplaceEntity, journalEntries,
@@ -191,7 +204,33 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                 })
         ).pipe(
             mergeMap(it => from(this.learnplaceRepository.save(it))),
-            mergeMap(it => EMPTY)
+            mergeMap(it => EMPTY),
+            catchError((error, _) => {
+
+                if (error instanceof HttpRequestError || error instanceof UnfinishedHttpRequestError) {
+                    return learnplaceEntity;
+                }
+
+                return throwError(error);
+            }),
+            mergeMap(it => {
+
+                if (isDefined(it.id)) {
+                    return from(this.learnplaceRepository.exists(it.id));
+                }
+
+                return of(false);
+            }),
+            mergeMap(exists => {
+
+                if (exists) {
+                    this.log.warn(() => `Blocks of Learnplace with object id "${objectId}" could not be loaded, but is available from local storage`);
+                    return EMPTY;
+                }
+
+                return throwError(new LearnplaceLoadingError(`Could not load blocks of learnplace with id "${objectId}" over http connection`));
+
+            })
         ).toPromise();
     }
 
