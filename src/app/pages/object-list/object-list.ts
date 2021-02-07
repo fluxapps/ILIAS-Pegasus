@@ -1,6 +1,6 @@
 import {Component, Inject, NgZone} from "@angular/core";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import {ActionSheetController, AlertController, LoadingController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -42,6 +42,10 @@ import {
 } from "../../learningmodule/actions/open-scorm-learning-module-action";
 import { NetworkProvider, NetworkStatus } from "src/app/providers/network.provider";
 import { LearnplaceManagerImpl, LEARNPLACE_MANAGER } from "src/app/services/learnplace/learnplace.management";
+import { MapComponent } from "src/app/components/map/map.component";
+import { MapService, MAP_SERVICE } from "src/app/services/learnplace/map.service";
+import { first } from "rxjs/operators";
+import { forkJoin } from "rxjs";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -52,6 +56,7 @@ interface PageState {
     loadingOffline: boolean,
     refreshing: boolean,
     desktop: boolean,
+    learnplaces: boolean
 }
 
 @Component({
@@ -60,6 +65,8 @@ interface PageState {
     styleUrls: ["object-list.scss"]
 })
 export class ObjectListPage {
+    private previewLoading: HTMLIonLoadingElement;
+
     state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -68,6 +75,7 @@ export class ObjectListPage {
         loadingOffline: false,
         refreshing: false,
         desktop: undefined,
+        learnplaces: false
     };
 
     pageTitle: string;
@@ -86,6 +94,7 @@ export class ObjectListPage {
                 private readonly file: FileService,
                 readonly sync: SynchronizationService,
                 private readonly modal: ModalController,
+                private readonly loadingController: LoadingController,
                 private readonly alert: AlertController,
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
@@ -110,6 +119,7 @@ export class ObjectListPage {
                 private readonly featurePolicy: FeaturePolicyService,
                 private readonly networkProvider: NetworkProvider,
                 @Inject(LEARNPLACE_MANAGER) private readonly lpManager: LearnplaceManagerImpl,
+                @Inject(MAP_SERVICE) private readonly mapService: MapService
     ) { }
 
     /* = = = = = = = *
@@ -196,6 +206,7 @@ export class ObjectListPage {
             page.state.loadingLive = SynchronizationService.state.liveLoading;
             page.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
             page.state.desktop = page.parent === undefined;
+            page.state.learnplaces = page.content.filter(val => val.object.type === "xsrl").length > 1;
         }
 
         renderView ? this.ngZone.run(() => updateFn(this)) : updateFn(this);
@@ -434,10 +445,49 @@ export class ObjectListPage {
         }
     }
 
+    async openLearnplacePreview(): Promise<void> {
+        await this.presentLoading();
+        forkJoin(this.mapService.getMapPlaces(this.lpManager.learnplaces))
+            .pipe(
+                first(),
+            ).subscribe(places => {
+                if (places.filter(lp => lp.visible).length > 0) {
+                    // tslint:disable-next-line: no-floating-promises
+                    this.modal.create({
+                        component: MapComponent,
+                        componentProps: {
+                            places: places,
+                            selectedPlace: places[0].id,
+                            showFullscreen: false
+                        },
+                        cssClass: "learnplace-preview",
+                        showBackdrop: true,
+                        backdropDismiss: true
+                    }).then(async preview => {
+                        await this.dismissLoading();
+                        await preview.present();
+                    });
+                }
+            });
+    }
+
+    async presentLoading(): Promise<void> {
+        this.previewLoading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Please wait...'
+          });
+          await this.previewLoading.present();
+
+    }
+
+    async dismissLoading(): Promise<void> {
+        await this.previewLoading.dismiss();
+    }
+
     /**
      * show the action sheet for the given object
      */
-    showActions(iliasObject: ILIASObject): void {
+    async showActions(iliasObject: ILIASObject): Promise<void> {
         this.updatePageState();
         const actions: Array<ILIASObjectAction> = [];
 
@@ -482,6 +532,13 @@ export class ObjectListPage {
             handler: (): void => {
             }
         });
+
+        if (this.state.learnplaces) {
+            buttons.push({
+                text: "Learnplace preview",
+                handler: (): Promise<void> => this.openLearnplacePreview()
+            });
+        }
 
         this.actionSheet.create({
             header: iliasObject.title,

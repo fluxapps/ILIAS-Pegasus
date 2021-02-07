@@ -39,6 +39,18 @@ ion-tab-bar{
   --color-selected: #000 !important;
 }
 
+.learnplace-preview {
+    .modal-wrapper {
+        --height: 80vh !important;
+        margin: 1em;
+        border-radius: 4px;
+    }
+
+    .modal-shadow {
+        --height: 0 !important;
+    }
+}
+
 // Animations
 
 

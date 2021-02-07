@@ -123,8 +123,6 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     async loadLearnplace(objectId: number): Promise<void> {
         await this.loader.loadLearnplace(objectId);
-        const user: User = AuthenticationProvider.getUser();
-        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {
