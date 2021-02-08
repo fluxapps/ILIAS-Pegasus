@@ -141,15 +141,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         if (this.places?.length) {
-            await this.initMap(this.selected);
+            this.selected = this.selected;
+            await this.initMap();
+            this.buildFlag = true;
         }
     }
 
     async ngOnChanges(): Promise<void> {
         if (this.buildFlag)
-            return;
-
-        if (!this.selected)
             return;
 
         else if (!this.places)
@@ -159,7 +158,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             this.clickedFullscreen.unsubscribe();
         }
 
-        await this.initMap(this.selected);
+        this.selected = this.selected;
+        await this.initMap();
         this.buildFlag = true;
     }
 
@@ -173,21 +173,16 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.buildFlag = false;
     }
 
-    private async initMap(placeId: number): Promise<void> {
+    private async initMap(): Promise<void> {
         this.detectorRef.detectChanges();
-        /*
-         * Only build map if its visible.
-         * Otherwise the builder will fail, because there
-         * is no html element to bind.
-         */
+
         let selectedPlace: MapPlaceModel = this.places.find(place => {
-            return place.id == placeId
+            return place.id == this.selected
         });
 
         let camera: CameraOptions;
         // settings
         if (selectedPlace) {
-            console.error("got a selected place");
             camera = <CameraOptions>{
                 zoom: selectedPlace.zoom,
                 position: <GeoCoordinate>{
@@ -195,8 +190,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
                     longitude: selectedPlace.longitude
                 }
             };
-        } if (this.places.length === 1) {
-            console.error("only 1 possible place");
+        } else if (this.places.length === 1) {
             camera = <CameraOptions>{
                 zoom: 16,
                 position: <GeoCoordinate>{
@@ -205,9 +199,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
                 }
             };
         } else {
-            console.error("inital overview")
-            const bounds: Array<[number, number]> = this.getOverviewBound();
-
             camera = <CameraOptions>{
                 zoom: 16,
                 position: <GeoCoordinate>{
@@ -290,8 +281,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getOverviewBound(): Array<[number, number]> {
-        console.error(this.places);
-
         if (this.places.filter(lp => lp.visible).length <= 1)
             return;
 

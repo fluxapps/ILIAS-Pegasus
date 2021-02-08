@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MenuController, NavController, ViewDidEnter, ViewDidLeave, ViewWillEnter } from "@ionic/angular";
-import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject, Observable } from "rxjs";
-import { defaultIfEmpty, first, map, mergeMap, takeUntil } from "rxjs/operators";
+import { forkJoin, ReplaySubject, Subject, BehaviorSubject } from "rxjs";
+import { defaultIfEmpty, takeUntil } from "rxjs/operators";
 import { MapComponent } from "src/app/components/map/map.component";
 import { ILIASObject } from "src/app/models/ilias-object";
 import { AuthenticationProvider } from "src/app/providers/authentication.provider";
@@ -14,7 +14,7 @@ import { VisitJournalWatch, VISIT_JOURNAL_WATCH } from "src/app/services/learnpl
 import { Logger } from "src/app/services/logging/logging.api";
 import { Logging } from "src/app/services/logging/logging.service";
 import { MapService, MAP_SERVICE } from "../../services/learnplace/map.service";
-import { Optional } from "../../util/util.optional";
+
 
 @Component({
   selector: "app-learnplace",
