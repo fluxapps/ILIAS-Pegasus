@@ -9,6 +9,7 @@
     "build:release:ios": "NODE_OPTIONS=--max_old_space_size=4096 ionic cordova build ios --release --prod --device",
     "build:release:android": "NODE_OPTIONS=--max_old_space_size=4096 ionic cordova build android --release --prod",
     "lint": "ng lint app",
+    "pretest:ci": "node ./tools/hooks/preTest.js",
     "test": "npm run ionic:build:before && ng test",
     "test:ci": "npm run ionic:build:before && ng test --no-watch --no-progress --browsers=ChromeHeadlessCI",
     "test:safari": "npm run ionic:build:before && ng test --browsers Safari",
