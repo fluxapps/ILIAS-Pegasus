@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MenuController, NavController, ViewDidEnter, ViewDidLeave, ViewWillEnter } from "@ionic/angular";
-import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { forkJoin, ReplaySubject, Subject, BehaviorSubject } from "rxjs";
+import { defaultIfEmpty, takeUntil } from "rxjs/operators";
 import { MapComponent } from "src/app/components/map/map.component";
 import { ILIASObject } from "src/app/models/ilias-object";
 import { AuthenticationProvider } from "src/app/providers/authentication.provider";
@@ -67,7 +67,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             this.visitJournalWatch.start();
             this.objId = obj.objId;
 
-
             await this.initLearnplaces(obj.parentRefId);
             this.initMenu();
             this.isEmptyBlock.next(true);
@@ -86,7 +85,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.visitJournalWatch.stop();
         this.dispose$.next();
         this.blockService.shutdown();
-        this.mapService.shutdown();
 
         this.destroyMap();
         this.mapPlaces = undefined;
@@ -111,7 +109,7 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         if (this.mapPlaces)
             return;
 
-        if (!this.lpManager?.learnplaces) {
+        if (!this.lpManager?.learnplaces) {
             const lps: Array<ILIASObject> = (await ILIASObject.findByParentRefId(parentRefId, AuthenticationProvider.getUser().id))
                 .filter(obj => obj.type === "xsrl")
 
@@ -128,29 +126,30 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.isEmptyBlock.next(true);
         this.blockService.getBlockList(this.objId)
             .pipe(
-                takeUntil(this.dispose$)
-            ).subscribe(
-                (it) => {
+                takeUntil(this.ilObj),
+                defaultIfEmpty([])
+            ).subscribe((it: Array<BlockModel>) => {
                     console.log("Block List: ", it);
 
                     if (it !== this.currentBlockList) {
-                        this.zone.run(() => this.blockList.next(it));
-                        this.currentBlockList = it;
 
-                        this.isEmptyBlock.next(false);
+                        if (it.length > 0) {
+                            this.zone.run(() => this.blockList.next(it));
+                            this.currentBlockList = it;
+
+                            this.isEmptyBlock.next(false);
+                        }
+
                         this.loadingBlocks.next(false);
                         this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
                         this.renderer.addClass(this.elContent.nativeElement, "slide-in");
                     }
-
                 },
                 (err) => {
-                    console.error(err);
-                },
-                () => {
                     this.loadingBlocks.next(false);
                     this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
                     this.renderer.addClass(this.elContent.nativeElement, "slide-in");
+                    console.error(err);
                 }
             );
     }

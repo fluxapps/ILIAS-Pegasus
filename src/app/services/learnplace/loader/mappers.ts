@@ -1,3 +1,4 @@
+import { VisitJournalEntity } from "../../../entity/learnplace/learnplace.entity";
 import {TextblockEntity} from "../../../entity/learnplace/textblock.entity";
 import {
   AccordionBlock, ILIASLinkBlock, JournalEntry, PictureBlock, TextBlock,
@@ -9,7 +10,6 @@ import {Optional} from "../../../util/util.optional";
 import {Inject, Injectable} from "@angular/core";
 import {LinkblockEntity} from "../../../entity/learnplace/linkblock.entity";
 import {VideoBlockEntity} from "../../../entity/learnplace/videoblock.entity";
-import {VisitJournalEntity} from "../../../entity/learnplace/visit-journal.entity";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder, RESOURCE_TRANSFER, ResourceTransfer} from "./resource";
 import {Logger} from "../../../services/logging/logging.api";
 import {Logging} from "../../../services/logging/logging.service";

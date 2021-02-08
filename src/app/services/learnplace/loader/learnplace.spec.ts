@@ -3,10 +3,8 @@ import {LearnplaceLoadingError, RestLearnplaceLoader} from "./learnplace";
 import {LearnplaceAPI} from "../../../providers/learnplace/rest/learnplace.api";
 import {BlockObject, JournalEntry, LearnPlace} from "../../../providers/learnplace/rest/learnplace.pojo";
 import {LearnplaceRepository} from "../../../providers/learnplace/repository/learnplace.repository";
-import {LearnplaceEntity} from "../../../entity/learnplace/learnplace.entity";
+import {LearnplaceEntity, MapEntity, LocationEntity} from "../../../entity/learnplace/learnplace.entity";
 import {Optional} from "../../../util/util.optional";
-import {MapEntity} from "../../../entity/learnplace/map.entity";
-import {LocationEntity} from "../../../entity/learnplace/location.entity";
 import {VisibilityEntity} from "../../../entity/learnplace/visibility.entity";
 import {HttpRequestError} from "../../../providers/http";
 import {
