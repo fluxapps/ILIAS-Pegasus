@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MenuController, NavController, ViewDidEnter, ViewDidLeave, ViewWillEnter } from "@ionic/angular";
-import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject } from "rxjs";
-import { first, takeUntil } from "rxjs/operators";
+import { forkJoin, ReplaySubject, Subject, of, BehaviorSubject, Observable } from "rxjs";
+import { defaultIfEmpty, first, map, mergeMap, takeUntil } from "rxjs/operators";
 import { MapComponent } from "src/app/components/map/map.component";
 import { ILIASObject } from "src/app/models/ilias-object";
 import { AuthenticationProvider } from "src/app/providers/authentication.provider";
@@ -14,7 +14,7 @@ import { VisitJournalWatch, VISIT_JOURNAL_WATCH } from "src/app/services/learnpl
 import { Logger } from "src/app/services/logging/logging.api";
 import { Logging } from "src/app/services/logging/logging.service";
 import { MapService, MAP_SERVICE } from "../../services/learnplace/map.service";
-
+import { Optional } from "../../util/util.optional";
 
 @Component({
   selector: "app-learnplace",
@@ -85,7 +85,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.visitJournalWatch.stop();
         this.dispose$.next();
         this.blockService.shutdown();
-        this.mapService.shutdown();
 
         this.destroyMap();
         this.mapPlaces = undefined;
@@ -127,17 +126,20 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         this.isEmptyBlock.next(true);
         this.blockService.getBlockList(this.objId)
             .pipe(
-                takeUntil(this.ilObj)
-            )
-            .subscribe(
-                (it) => {
+                takeUntil(this.ilObj),
+                defaultIfEmpty([])
+            ).subscribe((it: Array<BlockModel>) => {
                     console.log("Block List: ", it);
 
                     if (it !== this.currentBlockList) {
-                        this.zone.run(() => this.blockList.next(it));
-                        this.currentBlockList = it;
 
-                        this.isEmptyBlock.next(false);
+                        if (it.length > 0) {
+                            this.zone.run(() => this.blockList.next(it));
+                            this.currentBlockList = it;
+
+                            this.isEmptyBlock.next(false);
+                        }
+
                         this.loadingBlocks.next(false);
                         this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
                         this.renderer.addClass(this.elContent.nativeElement, "slide-in");
@@ -148,11 +150,6 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
                     this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
                     this.renderer.addClass(this.elContent.nativeElement, "slide-in");
                     console.error(err);
-                },
-                () => {
-                    this.loadingBlocks.next(false);
-                    this.renderer.removeClass(this.elContent.nativeElement, "slide-out");
-                    this.renderer.addClass(this.elContent.nativeElement, "slide-in");
                 }
             );
     }
