@@ -31,6 +31,10 @@
     color: var(--ion-text-color);
 }
 
+.asd {
+    background-color: var(--ion-color-primary) !important;
+}
+
 ion-card {
     margin: 1em;
     content-visibility: auto;
@@ -42,4 +46,9 @@ ion-icon {
 
 ion-list {
     background: transparent !important;
+
+    ion-icon {
+        color: var(--ion-color-primary-contrast);
+        margin-right: .5em;
+    }
 }

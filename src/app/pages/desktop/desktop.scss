@@ -9,6 +9,10 @@
         var(--page-desktop-border-color, transparent)
         solid
         var(--page-desktop-border-width, 0px);
+    border-bottom:
+        var(--page-desktop-borderbottom-color, transparent)
+        solid
+        var(--page-desktop-borderbottom-width, 0px);
 }
 
 .big-card {

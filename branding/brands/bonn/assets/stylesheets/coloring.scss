@@ -5,10 +5,9 @@
 
 
 :root {
-    --ion-background-color: #f7f7f7;
+    --ion-background-color: var(--ion-color-primary);
     --ion-background-color-custom: linear-gradient(to top, #C1D4E6, #07529a);
 
-    --ion-background-color: var(--ion-color-light);
     // font
     --ion-font-family:  "Raleway", sans-serif;
 

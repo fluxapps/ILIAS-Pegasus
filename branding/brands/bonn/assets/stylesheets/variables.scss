@@ -1,5 +1,5 @@
 :root {
-    --custom-background: var(--ion-background-color-custom);
+    --custom-background: var(--ion-background-color-custom, var(--ion-background-color));
 
     // login
     --page-login-bottom-row-dispay: none;
@@ -9,6 +9,8 @@
     --page-desktop-border-radius: 0px;
     --page-desktop-border-color: white;
     --icon-stroke-color: transparent;
+    --page-desktop-borderbottom-color: var(--ion-color-primary);
+    --page-desktop-borderbottom-width: 0.5em;
 
     // object-list
     --page-object-list-image-filter: brightness(3);
@@ -20,11 +22,13 @@
 
     // info
 
-
     // tabs
     --tabs-background-color: var(--ion-color-light);
     --tabs-icon-color: var(--ion-color-grey);
     --tabs-icon-color-selected: var(--ion-color-primary);
+
+    // settings
+    --page-setting-text-color: white;
 }
 
 //MARK: Animation
