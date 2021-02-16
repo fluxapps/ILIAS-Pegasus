@@ -5,7 +5,7 @@
 
 
 :root {
-    --ion-background-color: var(--ion-color-primary);
+    --ion-background-color: #f7f7f7;
     --ion-background-color-custom: linear-gradient(to top, #C1D4E6, #07529a);
 
     // font
@@ -120,6 +120,21 @@
         --ion-tabbar-color: rgba(var(--ion-text-color-rgb), 0.4);    // suggested
         --ion-tabbar-color-selected: var(--ion-text-color);          // suggested
     }
+}
+
+// gradients
+.primary-gradient {
+    background-image: linear-gradient(to top left, var(--gradient-color-first), var(--gradient-color-second));
+    color: var(--ion-color-primary-contrast) !important;
+}
+
+.primary-gradient-inverted {
+    background-image: linear-gradient(to top left, var(--gradient-color-second), var(--gradient-color-first));
+    color: var(--ion-color-primary-contrast);
+}
+
+.page-gradient {
+    background-image: linear-gradient(to top, var(--gradient-color-second), var(--gradient-color-first));
 }
 
   // MARK: Darkmode

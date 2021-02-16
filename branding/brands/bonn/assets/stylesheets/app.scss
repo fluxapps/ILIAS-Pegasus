@@ -35,6 +35,10 @@ h1{
   font-weight: 800;
 }
 
+.header-md::after {
+    display: none;
+}
+
 ion-tab-bar{
   --color-selected: #000 !important;
 }

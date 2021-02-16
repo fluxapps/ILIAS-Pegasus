@@ -1,5 +1,6 @@
 .page_news {
     --background: var(--custom-background, var(--ion-background-color));
+    background: var(--ion-color-primary, var(--ion-background-color));
 }
 
 ion-card {
