@@ -1,6 +1,10 @@
 .page_object_list {
     --background: var(--custom-background, var(--ion-background-color));
-    background: var(--ion-color-primary, var(--ion-background-color));
+    background: var(--custom-background-behind, var(--ion-background-color));
+}
+
+ion-refresher {
+    z-index: 1;
 }
 
 .object-presenter-icon{

@@ -1,5 +1,9 @@
 :root {
+    // this var changes the background of the page content
     --custom-background: var(--ion-background-color-custom, var(--ion-background-color));
+    // the background of the components behind the page
+    // gets visible on ion refresh
+    --custom-background-behind: var(--ion-color-primary);
 
     // login
     --page-login-bottom-row-dispay: none;
