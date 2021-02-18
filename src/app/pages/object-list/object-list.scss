@@ -38,6 +38,10 @@ ion-refresher {
 
 .asd {
     background-color: var(--ion-color-primary) !important;
+    ion-icon {
+        color: var(--ion-color-primary-contrast);
+        margin-right: .5em;
+    }
 }
 
 ion-card {
@@ -51,9 +55,4 @@ ion-icon {
 
 ion-list {
     background: transparent !important;
-
-    ion-icon {
-        color: var(--ion-color-primary-contrast);
-        margin-right: .5em;
-    }
 }
