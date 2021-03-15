@@ -4,8 +4,6 @@
 //
 // NOTE: @import "coloring"; is called before this file is imported
 
-@import "../fonts/Raleway/Raleway.scss";
-
 ion-icon {
     &[class*="custom-"] {
       mask-size: contain;
@@ -16,10 +14,6 @@ ion-icon {
       height: 1em;
     }
   }
-
-.content, .ion-header, ion-toolbar {
-    font-family: 'Raleway', sans-serif !important;
-}
 
 .top-header{
   border-width: 0px !important;
