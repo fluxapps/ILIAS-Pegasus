@@ -7,7 +7,7 @@
             "packageType": "development"
         },
         "release": {
-            "codeSignIdentity": "iPhone Distribution",
+            "codeSignIdentity": "Apple Distribution",
             "provisioningProfile": "b2578119-c9e8-4128-8f54-1b707fa7cf72",
             "developmentTeam": "ZQ66BZ3DPL",
             "packageType": "app-store"
