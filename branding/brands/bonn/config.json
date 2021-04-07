@@ -2,7 +2,7 @@
   "ilias_installation_ids": [38, 36],
   "projectConfig": {
     "id": "ch.fluxlabs.ilias.bonn",
-    "name": "ECampus",
+    "name": "eCampus",
     "description": "Download, sync and store ILIAS-files on your device"
   }
 }
