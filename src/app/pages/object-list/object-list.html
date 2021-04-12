@@ -41,14 +41,14 @@
     <ng-container >
         <ion-list *ngIf="checkPageState({favorites: false, online: true, loading: false}) || checkPageState({favorites: true, loading: false})">
             <div class="" *ngIf="parent !== undefined">
-                <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element">
+                <ion-card mode="ios" no-lines *ngIf="parent.hasPageLayout" text-wrap="" (click)="openInIlias()" color="primary" class="list-element asd">
                     <ion-card-content>
                         <ion-icon name="information-circle-outline" item-start></ion-icon>
                         <span>{{pageLayout.text | translate}}</span>
                     </ion-card-content>
                 </ion-card>
 
-                <ion-card no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="primary" class="bottom-line list-element">
+                <ion-card no-lines  *ngIf="parent.hasTimeline" text-wrap="" (click)="openInIlias(true)" color="primary" class="bottom-line list-element asd">
                     <ion-card-content>
                         <ion-icon [name]=timeline.icon item-start></ion-icon>
                         <span>{{timeline.text | translate}}</span>
