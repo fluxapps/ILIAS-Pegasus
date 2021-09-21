@@ -247,7 +247,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
      *
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
-    load(objectId: number): Promise<void> {
+    async load(objectId: number): Promise<void> {
         const learnplace: Observable<LearnPlace> = from(this.learnplaceAPI.getLearnPlace(objectId));
         const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
         const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));

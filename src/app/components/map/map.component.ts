@@ -127,7 +127,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             this.selected = navParams.get("selected");
 
         if (navParams.get("showFullscreen"))
-            this.showFullscreen = navParams.get("showFulscreen");
+            this.showFullscreen = navParams.get("showFullscreen");
     }
 
     async ngOnInit(): Promise<void> {
@@ -254,7 +254,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             this.selectedPlace = selectedPlace;
 
         if (!selectedPlace?.visible)
-            this.mapOverview();
+            await this.mapOverview();
 
     }
 
@@ -320,7 +320,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.clickedFullscreen.emit(this.fullscreen);
     }
 
-    delay(ms: number) {
+    async delay(ms: number): Promise<void> {
         return new Promise( resolve => setTimeout(resolve, ms) );
     }
 }
