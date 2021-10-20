@@ -28,6 +28,7 @@
     "map": "Map",
     "content": "Content",
     "Version": "Version",
+    "privacy": "privacy",
     "datasecurity": {"title": "Privacy policy"},
     "object-list": {
         "title" : "My Courses & Groups",

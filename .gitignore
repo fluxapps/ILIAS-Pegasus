@@ -62,7 +62,6 @@ simulation
 .ionic/
 ./test/
 ./coverage/
-build.json
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm+iml
