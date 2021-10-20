@@ -2,7 +2,6 @@ import { ErrorHandler, Injectable } from "@angular/core";
 import { AlertController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 // errors and exceptions
-import { Error } from "tslint/lib/error";
 import { CantOpenFileTypeException } from "./exceptions/CantOpenFileTypeException";
 import { FileErrorException } from "./exceptions/FileErrorException";
 import { NoWLANException } from "./exceptions/noWLANException";
@@ -116,6 +115,8 @@ export class PegasusErrorHandler implements ErrorHandler {
 
             this.log.error(() => `Unhandled error occurred of type: ${unwrappedError}`);
             this.log.error(() => `JSON of error: ${this.stringifyWithoutCyclicObjects(unwrappedError)}`);
+            console.error(unwrappedError);
+            console.error(error);
 
             this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("something_went_wrong"));
         } catch (err) {

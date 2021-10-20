@@ -1,0 +1,59 @@
+<ion-menu side="end" contentId="main" swipe-gesture="false">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Learnplaces</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list class="ion-padding-top">
+        <ion-item *ngFor="let item of menuItems | async" (click)="openLearnplace(item.objId)">
+
+            <ion-icon slot="start" src="assets/icon/icon_xsrl.svg"></ion-icon>
+            <ion-label>{{item.title}}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+</ion-menu>
+<ion-router-outlet id="main"></ion-router-outlet>
+
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-title>{{(ilObj | async)?.title}}</ion-title>
+        <ion-buttons slot="start">
+            <ion-button (click)="navigateBack()">
+                <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="overview()">
+                <ion-icon name="map" ></ion-icon>
+            </ion-button>
+            <ion-menu-button text=""></ion-menu-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content no-bounce has-bouncing="false" forceOverscroll="false">
+    <div class="map" #mapWrapper>
+        <app-map
+            #map
+            [places]="mapPlaces"
+            [selected]="(ilObj | async)?.objId"
+            [showFullscreen]="true"
+            (clickedPlace)="openLearnplace($event.objId, $event)"
+            (fullscreen)="toggleFullscreen($event)"></app-map>
+        <ion-progress-bar *ngIf="loadingBlocks | async" color="primary" type="indeterminate"></ion-progress-bar>
+    </div>
+    <div class="content" #content>
+        <ion-card *ngIf="(isEmptyBlock | async) && !(loadingBlocks | async)" class="warning">
+            No Content
+        </ion-card>
+        <div [hidden]="isEmptyBlock | async" *ngFor="let block of (blockList | async)">
+            <text-block *ngIf="block.isRichtext()" [value]="block"></text-block>
+            <picture-block *ngIf="block.isPicture()" [value]="block"></picture-block>
+            <video-block *ngIf="block.isVideo()" [value]="block"></video-block>
+            <link-block *ngIf="block.isLink()" [value]="block"></link-block>
+            <accordion-block *ngIf="block.isAccordion()" [value]="block"></accordion-block>
+        </div>
+    </div>
+</ion-content>

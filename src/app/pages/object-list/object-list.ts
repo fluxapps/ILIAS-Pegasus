@@ -1,7 +1,6 @@
 import {Component, Inject, NgZone} from "@angular/core";
-import { SafeUrl } from "@angular/platform-browser";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ActionSheetController, AlertController, ModalController, NavController, ToastController} from "@ionic/angular";
+import {ActionSheetController, AlertController, LoadingController, ModalController, NavController, ToastController} from "@ionic/angular";
 import {Builder} from "../../services/builder.base";
 import {FileService} from "../../services/file.service";
 import {FooterToolbarService, Job} from "../../services/footer-toolbar.service";
@@ -21,8 +20,8 @@ import {ShowDetailsPageAction} from "../../actions/show-details-page-action";
 import {ShowObjectListPageAction} from "../../actions/show-object-list-page-action";
 import {SynchronizeAction} from "../../actions/synchronize-action";
 import {UnMarkAsFavoriteAction} from "../../actions/unmark-as-favorite-action";
-import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../learnplace/actions/open-learnplace-action";
-import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../learnplace/actions/remove-local-learnplace-action";
+import {OPEN_LEARNPLACE_ACTION_FACTORY, OpenLearnplaceActionFunction} from "../../actions/open-learnplace-action";
+import {REMOVE_LOCAL_LEARNPLACE_ACTION_FUNCTION, RemoveLocalLearnplaceActionFunction} from "../../actions/remove-local-learnplace-action";
 import {Logger} from "../../services/logging/logging.api";
 import {Logging} from "../../services/logging/logging.service";
 import {TranslateService} from "@ngx-translate/core";
@@ -33,7 +32,6 @@ import {DefaultLinkBuilder} from "../../services/link/default.builder";
 import {ObjectListNavParams} from "./object-list.nav-params";
 import {ILIASObjectPresenter} from "../../presenters/object-presenter";
 import {ILIASObjectPresenterFactory} from "../../presenters/presenter-factory";
-import {ThemeProvider} from "../../providers/theme/theme.provider";
 import {OPEN_HTML_LEARNING_MODULE_ACTION_FACTORY, OpenHtmlLearningModuleActionFunction} from "../../learningmodule/actions/open-html-learning-module-action";
 import {InAppBrowser} from "@ionic-native/in-app-browser/ngx";
 import {UserStorageService} from "../../services/filesystem/user-storage.service";
@@ -43,6 +41,11 @@ import {
     OpenScormLearningModuleActionFunction
 } from "../../learningmodule/actions/open-scorm-learning-module-action";
 import { NetworkProvider, NetworkStatus } from "src/app/providers/network.provider";
+import { LearnplaceManagerImpl, LEARNPLACE_MANAGER } from "src/app/services/learnplace/learnplace.management";
+import { MapComponent } from "src/app/components/map/map.component";
+import { MapService, MAP_SERVICE } from "src/app/services/learnplace/map.service";
+import { first } from "rxjs/operators";
+import { forkJoin } from "rxjs";
 
 // summarizes the state of the currently displayed object-list-page
 interface PageState {
@@ -53,6 +56,7 @@ interface PageState {
     loadingOffline: boolean,
     refreshing: boolean,
     desktop: boolean,
+    learnplaces: boolean
 }
 
 @Component({
@@ -61,6 +65,8 @@ interface PageState {
     styleUrls: ["object-list.scss"]
 })
 export class ObjectListPage {
+    private previewLoading: HTMLIonLoadingElement;
+
     state: PageState = {
         favorites: undefined,
         online: undefined,
@@ -69,6 +75,7 @@ export class ObjectListPage {
         loadingOffline: false,
         refreshing: false,
         desktop: undefined,
+        learnplaces: false
     };
 
     pageTitle: string;
@@ -87,6 +94,7 @@ export class ObjectListPage {
                 private readonly file: FileService,
                 readonly sync: SynchronizationService,
                 private readonly modal: ModalController,
+                private readonly loadingController: LoadingController,
                 private readonly alert: AlertController,
                 private readonly toast: ToastController,
                 private readonly translate: TranslateService,
@@ -109,7 +117,9 @@ export class ObjectListPage {
                 private readonly openScormLearningModuleActionFactory: OpenScormLearningModuleActionFunction,
                 @Inject(LEARNING_MODULE_PATH_BUILDER) private readonly pathBuilder: LearningModulePathBuilder,
                 private readonly featurePolicy: FeaturePolicyService,
-                private readonly networkProvider: NetworkProvider
+                private readonly networkProvider: NetworkProvider,
+                @Inject(LEARNPLACE_MANAGER) private readonly lpManager: LearnplaceManagerImpl,
+                @Inject(MAP_SERVICE) private readonly mapService: MapService
     ) { }
 
     /* = = = = = = = *
@@ -196,6 +206,7 @@ export class ObjectListPage {
             page.state.loadingLive = SynchronizationService.state.liveLoading;
             page.state.loadingOffline = SynchronizationService.state.loadingOfflineContent;
             page.state.desktop = page.parent === undefined;
+            page.state.learnplaces = page.content.filter(val => val.object.type === "xsrl").length > 1;
         }
 
         renderView ? this.ngZone.run(() => updateFn(this)) : updateFn(this);
@@ -242,6 +253,7 @@ export class ObjectListPage {
         this.observeNetworkState();
         this.sync.loadAllOfflineContent();
         await this.loadAndRenderContent();
+        await this.lpManager.setLearnplaces(this.getLearnplaces());
     }
 
     /**
@@ -271,6 +283,7 @@ export class ObjectListPage {
         this.footerToolbar.removeJob(Job.Synchronize);
         if(event) event.target.disabled = false;
         this.setPageStateAndRender({loading: false});
+        await this.lpManager.setLearnplaces(this.getLearnplaces());
     }
 
     /**
@@ -432,10 +445,49 @@ export class ObjectListPage {
         }
     }
 
+    async openLearnplacePreview(): Promise<void> {
+        await this.presentLoading();
+        forkJoin(this.mapService.getMapPlaces(this.lpManager.learnplaces))
+            .pipe(
+                first(),
+            ).subscribe(places => {
+                if (places.filter(lp => lp.visible).length > 0) {
+                    // tslint:disable-next-line: no-floating-promises
+                    this.modal.create({
+                        component: MapComponent,
+                        componentProps: {
+                            places: places,
+                            selectedPlace: places[0].id,
+                            showFullscreen: false
+                        },
+                        cssClass: "learnplace-preview",
+                        showBackdrop: true,
+                        backdropDismiss: true
+                    }).then(async preview => {
+                        await this.dismissLoading();
+                        await preview.present();
+                    });
+                }
+            });
+    }
+
+    async presentLoading(): Promise<void> {
+        this.previewLoading = await this.loadingController.create({
+            cssClass: 'my-custom-class',
+            message: 'Please wait...'
+          });
+          await this.previewLoading.present();
+
+    }
+
+    async dismissLoading(): Promise<void> {
+        await this.previewLoading.dismiss();
+    }
+
     /**
      * show the action sheet for the given object
      */
-    showActions(iliasObject: ILIASObject): void {
+    async showActions(iliasObject: ILIASObject): Promise<void> {
         this.updatePageState();
         const actions: Array<ILIASObjectAction> = [];
 
@@ -480,6 +532,13 @@ export class ObjectListPage {
             handler: (): void => {
             }
         });
+
+        if (this.state.learnplaces) {
+            buttons.push({
+                text: "Learnplace preview",
+                handler: (): Promise<void> => this.openLearnplacePreview()
+            });
+        }
 
         this.actionSheet.create({
             header: iliasObject.title,
@@ -534,5 +593,12 @@ export class ObjectListPage {
             linkBuilder.target(this.parent.refId)
         );
         this.executeAction(action);
+    }
+
+    private getLearnplaces(): Array<number> {
+        return this.content.map(item => {
+            if (item.object.type === "xsrl" && !!item.object)
+                return item.object.objId;
+        }).filter(id => id);
     }
 }

@@ -4,7 +4,7 @@ import { User } from "../models/user";
 import { ILIAS_REST, ILIASRequestOptions, ILIASRest } from "../providers/ilias/ilias.rest";
 import { ILIASObject } from "../models/ilias-object";
 import { DesktopData } from "../providers/ilias-rest.provider";
-import { iliasObjectJsonSchema } from "../learnplace/providers/rest/json.schema";
+import { iliasObjectJsonSchema } from "../providers/learnplace/rest/json.schema";
 import { Logger } from "./logging/logging.api";
 import { Logging } from "./logging/logging.service";
 
@@ -48,7 +48,7 @@ export class IliasObjectService {
       for (const remoteObject of iliasObjects) {
           const localObject: ILIASObject = objNotFoundLocally.get(parseInt(remoteObject.refId, 10));
           localObject.readFromObject(remoteObject);
-          
+
           await localObject.save();
           localObjects.push(localObject);
       }

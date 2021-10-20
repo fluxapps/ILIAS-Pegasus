@@ -1,0 +1,7 @@
+accordion-block {
+
+  // remove the margin of ion-card inside the accordion
+  ion-card.accordion ion-card {
+    width: 100% !important;
+  }
+}

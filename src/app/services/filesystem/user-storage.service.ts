@@ -4,7 +4,7 @@ import {Injectable, Inject} from "@angular/core";
 import {ILIASObject} from "../../models/ilias-object";
 import {Settings} from "../../models/settings";
 import {FileService} from "../file.service";
-import {LEARNPLACE_MANAGER, LearnplaceManager} from "../../learnplace/services/learnplace.management";
+import {LEARNPLACE_MANAGER, LearnplaceManager} from "../../services/learnplace/learnplace.management";
 import {LEARNING_MODULE_MANAGER, LearningModuleManager} from "../../learningmodule/services/learning-module-manager";
 import { Logger } from "../logging/logging.api";
 import { Logging } from "../logging/logging.service";

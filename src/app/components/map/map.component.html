@@ -1,0 +1,7 @@
+<div *ngIf="!hasError" #map id="map"></div>
+<ion-fab *ngIf="showFullscreen" vertical="top" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="toggleFullscreen()" class="fullscreen-button">
+        <ion-icon *ngIf="!fullscreen" name="expand-outline" class="icon"></ion-icon>
+        <ion-icon *ngIf="fullscreen" name="contract-outline" class="icon"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
