@@ -99,7 +99,7 @@
                                 "type": "string",
                                 "title": "ILIAS URL",
                                 "description": "ILIAS installation url.",
-                                "pattern": "^(https:\/\/)(.{3,}\\.[a-zA-Z]{2,})(\/.+)?(?<!\/|\\.php.*)$",
+                                "pattern": "",
                                 "examples": [
                                     "https://ilias.of-your-university.com"
                                 ]
