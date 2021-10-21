@@ -75,7 +75,7 @@ export interface LearnplaceManager {
      */
     getUsedStorage(objectId: number, userId: number): Promise<number>;
 
-    getLearnplace(objId: number)
+    getLearnplace(objId: number): Promise<Optional<LearnplaceEntity>>;
 }
 
 export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new InjectionToken("token for learnplace manager.");
