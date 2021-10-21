@@ -138,63 +138,17 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                 })
             ).toPromise();
 
-        // try {
-        //     await this.learnplaceRepository.save(await (await lpEntity).orElse
-        //         ).toPromise();
-        //     }))
-        // } catch (error) {
-        //     if (
-        //         error instanceof RESTAPIException ||
-        //         error instanceof UnfinishedHttpRequestError) {
-        //             return;
-        //         }
-        //     console.error("Error by loading Learnplace: ", error);
-        //     throw error;
-        // }
-
-        // // downloads only missing content
-        // const learnplaceEntity: Observable<LearnplaceEntity> = of(user).pipe(
-        //     mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
-        //     mergeMap(it => {
-        //         console.error('gettin lp');
-        //         console.error(it);
-        //         if (!it.isPresent() || update) {
-        //             const learnplace = defer(() => this.learnplaceAPI.getLearnPlace(objectId));
-        //             update = true;
-
-        //             return learnplace.pipe(
-        //                 map((it) => {
-        //                     const lpEntity: LearnplaceEntity = new LearnplaceEntity();
-        //                     console.error('mopin')
-
-        //                     return lpEntity.applies<LearnplaceEntity>(function(): void {
-        //                         this.id = uuid.create(4).toString();
-        //                         this.objectId = objectId;
-        //                         this.user = Promise.resolve(user.get());
-
-        //                         this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
-        //                             this.zoom = it.map.zoomLevel;
-        //                             this.visibility = (new VisibilityEntity()).applies(function(): void {
-        //                                 this.value = it.map.visibility;
-        //                             })
-        //                         });
-
-        //                         this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
-        //                             this.latitude = it.location.latitude;
-        //                             this.longitude = it.location.longitude;
-        //                             this.radius = it.location.radius;
-        //                             this.elevation = it.location.elevation;
-        //                         });
-        //                     });
-        //                 })
-        //             );
-        //         }
-
-        //         return of(it.get());
-        //     })
-        // );
-
-
+        try {
+            await this.learnplaceRepository.save(await (await lpEntity));
+        } catch (error) {
+            if (
+                error instanceof RESTAPIException ||
+                error instanceof UnfinishedHttpRequestError) {
+                    return;
+                }
+            console.error("Error by loading Learnplace: ", error);
+            throw error;
+        }
     }
 
     async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {
