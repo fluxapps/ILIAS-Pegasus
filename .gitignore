@@ -62,7 +62,6 @@ simulation
 .ionic/
 ./test/
 ./coverage/
-build.json
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm+iml
@@ -150,7 +149,7 @@ modules.xml
 *.ipr
 
 # End of https://www.toptal.com/developers/gitignore/api/webstorm+iml
-./build.json
+build.json
 
 src/environments/environment.generated.ts
 src/environments/features.json

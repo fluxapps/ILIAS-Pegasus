@@ -94,52 +94,52 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
     }
 
     async loadLearnplace(objectId: number, update: boolean = false): Promise<void> {
-        const user: Optional<UserEntity> = await this.userRepository.findAuthenticatedUser()
+        const user: Optional<UserEntity> = await this.userRepository.findAuthenticatedUser();
 
-        // downloads only missing content
-        const learnplaceEntity: Observable<LearnplaceEntity> = of(user).pipe(
-            mergeMap(it => from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, it.get().id))),
-            mergeMap(it => {
-                if (!it.isPresent() || update) {
-                    const learnplace = defer(() => this.learnplaceAPI.getLearnPlace(objectId));
-                    update = true;
 
-                    return learnplace.pipe(
-                        map((it) => {
-                            const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+        // const lpEntity: Observable<LearnplaceEntity>;
+        if(!user.isPresent()) {
+            return;
+        };
 
-                            return lpEntity.applies<LearnplaceEntity>(function(): void {
-                                this.id = uuid.create(4).toString();
-                                this.objectId = objectId;
-                                this.user = Promise.resolve(user.get());
+        const lpEntity: Promise<LearnplaceEntity> = from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, user.get().id))
+            .pipe(
+                mergeMap((lp: Optional<LearnplaceEntity>) => {
+                    if (lp.isPresent()) {
+                        return of(lp.get());
+                    } else {
+                        return defer(() => this.learnplaceAPI.getLearnPlace(objectId)).pipe(
+                            map((it) => {
+                                const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+                                console.error("load 1")
 
-                                this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
-                                    this.zoom = it.map.zoomLevel;
-                                    this.visibility = (new VisibilityEntity()).applies(function(): void {
-                                        this.value = it.map.visibility;
-                                    })
+                                return lpEntity.applies<LearnplaceEntity>(function(): void {
+                                    this.id = uuid.create(4).toString();
+                                    this.objectId = objectId;
+                                    this.user = Promise.resolve(user.get());
+
+                                    this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
+                                        this.zoom = it.map.zoomLevel;
+                                        this.visibility = (new VisibilityEntity()).applies(function(): void {
+                                            this.value = it.map.visibility;
+                                        })
+                                    });
+
+                                    this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
+                                        this.latitude = it.location.latitude;
+                                        this.longitude = it.location.longitude;
+                                        this.radius = it.location.radius;
+                                        this.elevation = it.location.elevation;
+                                    });
                                 });
-
-                                this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
-                                    this.latitude = it.location.latitude;
-                                    this.longitude = it.location.longitude;
-                                    this.radius = it.location.radius;
-                                    this.elevation = it.location.elevation;
-                                });
-                            });
-                        })
-                    )
-                }
-
-                return of(it.get());
-            })
-        );
-
-        if (!update)
-            this.loadLearnplace(objectId, true);
+                            })
+                        )
+                    }
+                })
+            ).toPromise();
 
         try {
-            await this.learnplaceRepository.save(await learnplaceEntity.toPromise())
+            await this.learnplaceRepository.save(await (await lpEntity));
         } catch (error) {
             if (
                 error instanceof RESTAPIException ||
@@ -247,7 +247,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
      *
      * @throws {LearnplaceLoadingError} if the learnplace could not be loaded
      */
-    load(objectId: number): Promise<void> {
+    async load(objectId: number): Promise<void> {
         const learnplace: Observable<LearnPlace> = from(this.learnplaceAPI.getLearnPlace(objectId));
         const blocks: Observable<BlockObject> = from(this.learnplaceAPI.getBlocks(objectId));
         const journalEntries: Observable<Array<JournalEntry>> = from(this.learnplaceAPI.getJournalEntries(objectId));

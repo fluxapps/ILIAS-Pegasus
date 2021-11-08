@@ -80,7 +80,7 @@ export class LinkBlock implements OnInit, OnDestroy {
         }
     }
 
-    open(): void {
+    async open(): Promise<void> {
 
         if (!this.disableLink) {
             const action: ILIASObjectAction = this.openInIliasActionFactory(
@@ -88,7 +88,7 @@ export class LinkBlock implements OnInit, OnDestroy {
                 this.linkBuilder.default().target(this.link.refId)
             );
 
-            action.execute();
+            await action.execute();
         }
     }
 }

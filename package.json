@@ -62,7 +62,6 @@
     "cordova-plugin-zip": "^3.1.0",
     "cordova-sqlite-storage": "^5.1.0",
     "cordova-unique-device-id": "^1.3.2",
-    "cordova.plugins.diagnostic": "^6.0.2",
     "core-js": "^3.6.5",
     "http-status-codes": "^1.4.0",
     "ionic-lifecycle-interface": "^1.0.7",
@@ -103,6 +102,7 @@
     "cordova-plugin-safariviewcontroller": "^1.6.0",
     "cordova-plugin-splashscreen": "^6.0.0",
     "cordova-res": "^0.15.1",
+    "cordova.plugins.diagnostic": "^6.1.0",
     "deepmerge": "^4.2.2",
     "dotenv": "^8.2.0",
     "ios-sim": "^9.0.0",
@@ -154,16 +154,17 @@
       "cordova-plugin-geolocation": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-network-information": {},
-      "cordova.plugins.diagnostic": {
-        "ANDROIDX_VERSION": "1.+"
-      },
       "cordova-plugin-advanced-http": {
         "OKHTTP_VERSION": "3.14.9"
       },
       "cordova-sqlite-storage": {},
       "cordova-plugin-zip": {},
       "cordova-plugin-androidx-adapter": {},
-      "cordova-plugin-safariviewcontroller": {}
+      "cordova-plugin-safariviewcontroller": {},
+      "cordova.plugins.diagnostic": {
+        "ANDROIDX_VERSION": "1.0.0",
+        "ANDROIDX_APPCOMPAT_VERSION": "1.3.1"
+      }
     },
     "platforms": [
       "android",

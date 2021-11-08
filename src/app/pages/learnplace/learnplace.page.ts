@@ -68,9 +68,9 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
             this.objId = obj.objId;
 
             await this.initLearnplaces(obj.parentRefId);
-            this.initMenu();
+            await this.initMenu();
             this.isEmptyBlock.next(true);
-            this.initBlocks();
+            await this.initBlocks();
         });
 
         this.ilObj.next(await ILIASObject.findByRefIdAndUserId(lpRefId, AuthenticationProvider.getUser().id));
@@ -180,8 +180,8 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         await this.menu.open();
     }
 
-    overview(): void {
-        this.elMap.mapOverview();
+    async overview(): Promise<void> {
+        await this.elMap.mapOverview();
     }
 
     destroyMap(): void {
@@ -192,9 +192,9 @@ export class LearnplacePage implements ViewWillEnter, ViewDidEnter, ViewDidLeave
         }
     }
 
-    navigateBack(): void {
+    async navigateBack(): Promise<void> {
         // TODO: route into parentref, not to the last view
-        this.nav.pop();
+        await this.nav.pop();
     }
 
     toggleFullscreen(mode: boolean): void {

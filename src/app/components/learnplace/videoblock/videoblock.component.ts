@@ -37,7 +37,7 @@ export class VideoBlock implements OnInit, OnDestroy {
       this.videoBlockSubscription.unsubscribe();
   }
 
-  play(): void {
-      this.filesystem.open(this.videoBlock.url);
-  }
+    async play(): Promise<void> {
+        await this.filesystem.open(this.videoBlock.url);
+    }
 }

@@ -1,9 +1,15 @@
 .page_settings {
     --background: var(--custom-background, var(--ion-background-color));
+    --color: var(--page-setting-text-color, var(--ion-text-color)) !important;
 }
 
 .list > .item-block:first-child {
     border: none;
+
+}
+
+.item {
+    --color: var(--page-setting-text-color, var(--ion-text-color)) !important;
 }
 
 .general {
