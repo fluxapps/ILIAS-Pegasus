@@ -14,7 +14,6 @@
     "test:ci": "npm run ionic:build:before && ng test --no-watch --no-progress --browsers=ChromeHeadlessCI",
     "test:safari": "npm run ionic:build:before && ng test --browsers Safari",
     "setbrand": "node ./branding/set_brand.js",
-    "postinstall": "node ./tools/patch-platform-android9.js",
     "ionic:build:before": "node ./tools/hooks/ionicBuildBefore.js",
     "ionic:serve:before": "node ./tools/hooks/ionicServeBefore.js"
   },
