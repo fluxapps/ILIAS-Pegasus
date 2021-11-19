@@ -94,6 +94,7 @@
     "ci-info": "^3.2.0",
     "codelyzer": "^6.0.2",
     "colors": "^1.4.0",
+    "commander": "^8.3.0",
     "cordova": "^10.0.0",
     "cordova-common": "^4.0.2",
     "cordova-custom-config": "^5.1.0",
