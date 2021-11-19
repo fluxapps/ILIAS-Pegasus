@@ -61,7 +61,8 @@
                                 "clientId": "<ilias-client-id>",
                                 "apiKey": "<api-client>",
                                 "apiSecret": "<api-secret>",
-                                "accessTokenTTL": 36000
+                                "accessTokenTTL": 36000,
+                                "production": true
                             }
                         ],
                         "required": [
@@ -71,7 +72,8 @@
                             "clientId",
                             "apiKey",
                             "apiSecret",
-                            "accessTokenTTL"
+                            "accessTokenTTL",
+                            "production"
                         ],
                         "properties": {
                             "id": {
@@ -143,6 +145,15 @@
                                 "minimum": 1,
                                 "examples": [
                                     3600
+                                ]
+                            },
+                            "production": {
+                                "$id": "#/properties/installations/items/anyOf/0/properties/production",
+                                "type": "boolean",
+                                "title": "The production schema",
+                                "description": "Flags an installation as prod or test instance",
+                                "examples": [
+                                    true
                                 ]
                             },
                             "privacyPolicy": {
