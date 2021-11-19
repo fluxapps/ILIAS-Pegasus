@@ -40,9 +40,7 @@ function execute(options, command) {
         refreshPlatforms(platforms);
     } catch(e) {
         console_log += e.stack;
-        if (globalThis.process.exitCode === 0) {
-            globalThis.process.exitCode = 1;
-        }
+        throw e;
     } finally {
         writeLog(brand);
     }
