@@ -3,13 +3,13 @@
     "debug": {
       "codeSignIdentity": "Apple Development",
       "provisioningProfile": "91220f30-c5c9-4a4d-a6ee-4280a9a674d8",
-      "developmentTeam": "ZQ66BZ3DPL",
+      "developmentTeam": "AZLZKY798U",
       "packageType": "development"
     },
     "release": {
       "codeSignIdentity": "Apple Distribution",
-      "provisioningProfile": "38fea459-fecb-4fe4-86bc-f4a9e19d9ae2",
-      "developmentTeam": "ZQ66BZ3DPL",
+      "provisioningProfile": "197fd52e-525f-405e-b56c-4b67cfee25b6",
+      "developmentTeam": "AZLZKY798U",
       "packageType": "app-store"
     }
   },
