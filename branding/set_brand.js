@@ -20,6 +20,7 @@ const { Validator } = require("jsonschema");
 const { ConfigParser } = require("cordova-common");
 const {xml2js, js2xml} = require("xml-js");
 const {Command, Option} = require("commander");
+const {execSync} = require("child_process");
 
 let console_log = "";
 
@@ -179,16 +180,15 @@ function refreshPlatforms(platforms) {
 
 // run cmd as a shell-script
 function runShell(cmd) {
-    const exec = require("child_process").exec;
-    exec(cmd, (err, stdout, stderr) => {
+    try {
         consoleOut(`running command "${cmd}"`);
-        consoleOut(`stdout ${stdout}`);
-        if(err !== null) {
-            consoleOut(`err ${err}`);
-            consoleOut(`stderr ${stderr}`);
-            throw new Error(`failed when running command "${cmd}", see the output above for details`);
-        }
-    });
+        const buffer = execSync(cmd);
+        consoleOut(`stdout ${buffer}`);
+    } catch (err) {
+        consoleOut(`err ${err}`);
+        consoleOut(`stderr ${err}`);
+        throw new Error(`failed when running command "${cmd}", see the output above for details`);
+    }
 }
 
 // set file at target to the one at source
