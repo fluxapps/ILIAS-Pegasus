@@ -31,7 +31,7 @@ lint:
     script:
         - npm run lint
     allow_failure: true
-    image: node:14-alpine
+    image: node:14
 
 test:chrome_89:
     <<: *test_browser
