@@ -1,10 +1,10 @@
 .test_browser: &test_browser
     stage: test
     before_script:
-        - npm ci
+        - npm ci --prefer-offline
     timeout: "15m"
     variables:
-        npm_config_cache: &npm_cache_path "$CI_PROJECT_DIR/.node_cache_pegasus"
+        npm_config_cache: &npm_cache_path ".npm"
         CHROME_BIN: "chromium-browser"
         MAPBOX_API_KEY: "key-is-not-required"
         PRODUCTION: "false"
@@ -13,9 +13,11 @@
     coverage: '/All files \|\s*(\d+(\.\d+)?)/'
 
 cache:
-  key: "ilias_pegasus_node_cache"
-  paths:
-    - *npm_cache_path
+  - key:
+        files:
+            - package-lock.json
+    paths:
+        - *npm_cache_path
 
 stages:
   - lint
@@ -24,7 +26,7 @@ stages:
 lint:
     stage: lint
     before_script:
-        - npm ci
+        - npm ci --prefer-offline
     timeout: "5m"
     variables:
         npm_config_cache: *npm_cache_path
