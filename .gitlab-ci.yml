@@ -33,11 +33,11 @@ lint:
     allow_failure: true
     image: node:lts-alpine
 
-test:chrome_77:
+test:chrome_89:
     <<: *test_browser
-    image: zenika/alpine-chrome:77-with-node
+    image: eu.gcr.io/zenika-hub/alpine-chrome:89-with-node-14
 
-test:chrome_76:
+test:chrome_88:
     <<: *test_browser
-    image: zenika/alpine-chrome:76-with-node
+    image: eu.gcr.io/zenika-hub/alpine-chrome:88-with-node
 
