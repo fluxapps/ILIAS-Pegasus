@@ -35,9 +35,9 @@ lint:
 
 test:chrome_89:
     <<: *test_browser
-    image: eu.gcr.io/zenika-hub/alpine-chrome:89-with-node-14
+    image: zenika/alpine-chrome:89-with-node-14
 
-test:chrome_88:
+test:chrome_86:
     <<: *test_browser
-    image: eu.gcr.io/zenika-hub/alpine-chrome:88-with-node
+    image: zenika/alpine-chrome:86-with-node-14
 
