@@ -1,0 +1,15 @@
+// CSS theme
+// --------------------------------------------------
+//
+// this stylesheet will be loaded into the otherwise empty
+// files 'app/app.scss' and 'theme/variables.scss'
+//
+// NOTE: in order to change the contents of 'app/app.scss', edit
+// 'app.scss' in this folder
+//
+// NOTE: in order to change the contents of 'theme/variables.scss',
+// edit 'variables.scss' in this folder
+
+@import "coloring";
+@import "variables";
+@import "app";
