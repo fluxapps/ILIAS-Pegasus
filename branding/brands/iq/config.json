@@ -1,8 +1,0 @@
-{
-  "ilias_installation_ids": [10],
-  "projectConfig": {
-    "id": "ch.studerraimann.ilias.iq",
-    "name": "Lernwelt",
-    "description": "Download, sync and store ILIAS-files on your device"
-  }
-}

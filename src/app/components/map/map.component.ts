@@ -15,6 +15,7 @@ import { Logger } from "src/app/services/logging/logging.api";
 import { Logging } from "src/app/services/logging/logging.service";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl"
 import { Geolocation } from "src/app/services/device/geolocation/geolocation.service";
+import { NavParams } from "@ionic/angular";
 
 /**
  * Describes coordinates by longitude and latitude.
@@ -115,8 +116,19 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         private readonly hardware: Hardware,
         private readonly detectorRef: ChangeDetectorRef,
         private readonly renderer: Renderer2,
-        private readonly geolocation: Geolocation
-    ) { }
+        private readonly geolocation: Geolocation,
+        navParams: NavParams
+    ) {
+        // ion modal support
+        if (navParams.get("places"))
+            this.places = navParams.get("places");
+
+        if (navParams.get("selected"))
+            this.selected = navParams.get("selected");
+
+        if (navParams.get("showFullscreen"))
+            this.showFullscreen = navParams.get("showFullscreen");
+    }
 
     async ngOnInit(): Promise<void> {
         await this.hardware.requireLocation()
@@ -127,18 +139,27 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             await this.delay(420); // must be a littlebit higher than the transition time of expanding parent element
             this.mapboxMap.resize();
         });
+
+        if (this.places?.length) {
+            this.selected = this.selected;
+            await this.initMap();
+            this.buildFlag = true;
+        }
     }
 
     async ngOnChanges(): Promise<void> {
         if (this.buildFlag)
             return;
 
-        if (!this.selected)
-            return;
         else if (!this.places)
             return;
 
-        await this.initMap(this.selected);
+        if (!this.showFullscreen) {
+            this.clickedFullscreen.unsubscribe();
+        }
+
+        this.selected = this.selected;
+        await this.initMap();
         this.buildFlag = true;
     }
 
@@ -152,25 +173,40 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.buildFlag = false;
     }
 
-    private async initMap(placeId: number): Promise<void> {
+    private async initMap(): Promise<void> {
         this.detectorRef.detectChanges();
-        /*
-         * Only build map if its visible.
-         * Otherwise the builder will fail, because there
-         * is no html element to bind.
-         */
-        const selectedPlace: MapPlaceModel = this.places.find(place => {
-            return place.id == placeId
+
+        let selectedPlace: MapPlaceModel = this.places.find(place => {
+            return place.id == this.selected
         });
 
+        let camera: CameraOptions;
         // settings
-        const camera: CameraOptions = <CameraOptions>{
-            zoom: selectedPlace.zoom,
-            position: <GeoCoordinate>{
-                latitude: selectedPlace.latitude,
-                longitude: selectedPlace.longitude
-            }
-        };
+        if (selectedPlace) {
+            camera = <CameraOptions>{
+                zoom: selectedPlace.zoom,
+                position: <GeoCoordinate>{
+                    latitude: selectedPlace.latitude,
+                    longitude: selectedPlace.longitude
+                }
+            };
+        } else if (this.places.length === 1) {
+            camera = <CameraOptions>{
+                zoom: 16,
+                position: <GeoCoordinate>{
+                    latitude: this.places[0].latitude,
+                    longitude: this.places[0].longitude
+                }
+            };
+        } else {
+            camera = <CameraOptions>{
+                zoom: 16,
+                position: <GeoCoordinate>{
+                    latitude: 0,
+                    longitude: 0
+                }
+            };
+        }
 
         this.mapboxMap = new mapboxgl.Map({
             container: "map",
@@ -214,11 +250,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
 
         // select a marker
-        this.selectedPlace = selectedPlace;
+        if (selectedPlace)
+            this.selectedPlace = selectedPlace;
 
-        if (!selectedPlace.visible) {
-            this.mapOverview();
-        }
+        if (!selectedPlace?.visible)
+            await this.mapOverview();
+
     }
 
     async mapOverview(): Promise<void> {
@@ -239,6 +276,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
             return;
         }
+
+        this.mapboxMap.fitBounds(this.getOverviewBound() as LngLatBoundsLike);
+    }
+
+    getOverviewBound(): Array<[number, number]> {
+        if (this.places.filter(lp => lp.visible).length <= 1)
+            return;
 
         const sortedByLong: Array<MapPlaceModel> = this.places
             .filter(place => place.visible)
@@ -268,7 +312,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         bound[0] = bound[0].map(val => val + margin) as [number, number];
         bound[1] = bound[1].map(val => val - margin) as [number, number];
 
-        this.mapboxMap.fitBounds(bound as LngLatBoundsLike);
+        return bound;
     }
 
     toggleFullscreen(): void {
@@ -276,7 +320,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.clickedFullscreen.emit(this.fullscreen);
     }
 
-    delay(ms: number) {
+    async delay(ms: number): Promise<void> {
         return new Promise( resolve => setTimeout(resolve, ms) );
     }
 }

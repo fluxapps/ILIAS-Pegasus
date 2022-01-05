@@ -9,24 +9,27 @@
  * -> generates language files in "src/assets/i18n" by inserting brand-specific changes to the files in "branding/common/i18n"
  *
  * USAGE: the brand can be set via the "--brand"-tag, the "--platforms"-tag is optional
- * npm run setbrand -- --brand=[BRAND_NAME] --platforms==[PLATFORMS]
+ * npm run setbrand -- --brand [BRAND_NAME] --platforms [PLATFORMS]
  */
 
 const FS = require("fs");
 const OS = require("os");
+const path = require("path");
 const deepmerge = require("deepmerge");
 const { Validator } = require("jsonschema");
 const { ConfigParser } = require("cordova-common");
+const {xml2js, js2xml} = require("xml-js");
+const {Command, Option} = require("commander");
+const {execSync} = require("child_process");
 
 let console_log = "";
-execute();
 
-function execute() {
-    let brand = "";
-    let platforms = "";
+function execute(options, command) {
+    const {brand, platforms} = options;
+
     try {
-        [brand, platforms] = getFlagValues();
         const config = loadJSON(`branding/brands/${brand}/config.json`);
+        cleanUpOldConfigXmlStaticResourceEntries();
         setDirectoryContent("resources", `branding/brands/${brand}/resources`);
         setDirectoryContent("src/assets", `branding/brands/${brand}/assets`);
         setDirectoryContent("src/assets/scormplayer", "branding/common/scormplayer");
@@ -38,59 +41,38 @@ function execute() {
         refreshPlatforms(platforms);
     } catch(e) {
         console_log += e.stack;
-        if (globalThis.process.exitCode === 0) {
-            globalThis.process.exitCode = 1;
-        }
+        throw e;
     } finally {
         writeLog(brand);
     }
 }
 
-// get arguments from the command-line
-function getFlagValues() {
-    let brand = getFlagValueFromArgv("brand");
-    if (brand === undefined) throw new Error("(set_brand.js) flag for setting the brand not found. use as 'npm run setbrand -- --brand=[BRAND_NAME]'");
-    if (!FS.existsSync(`branding/brands/${brand}`))
-        throw new Error(`(set_brand.js) the directory 'branding/brands/${brand}' for the brand '${brand}' does not exist`);
-    consoleOut(`setting brand to '${brand}'. additional info in 'branding/set_brand.log' and 'branding/README.md'`);
-
-    let platforms = getFlagValueFromArgv("platforms");
-    switch (platforms) {
-        case undefined:
-            platforms = "ia";
-            consoleOut(`flag 'platforms' not found, adding ios and android platforms by default`);
-            break;
-        case "ia":
-        case "ai":
-            platforms = "ia";
-            consoleOut(`adding the platforms ios and android`);
-            break;
-        case "i":
-            consoleOut(`adding the platform ios`);
-            break;
-        case "a":
-            consoleOut(`adding the platform android`);
-            break;
-        case "none":
-            platforms = undefined;
-            consoleOut(`not adding any platforms`);
-            break;
-        default:
-            throw new Error(`(set_brand.js) unable to interpret the flag 'platforms', set to '${platforms}'. possible values are 'ia', 'ai', 'i', 'a'`);
-    }
-
-    return [brand, platforms]
+function run() {
+    const command = new Command();
+    return command
+        .name("setbrand")
+        .version(getPackageVersion(), "-v, --version", "Prints the set brand cli version")
+        .usage("-- [options]")
+        .addOption(new Option("-b, --brand [brand]", "The brand which should get installed.")
+            .choices(getAvailableBrands())
+            .makeOptionMandatory(true)
+        )
+        .addOption(new Option("-p, --platforms [platforms]", "The platforms which should get added, valid options are 'a' (Android) and 'i' (iOS).")
+            .default("ai")
+            .choices(["a", "i", "ai", "ia", "none"])
+        )
+        .showHelpAfterError(true)
+        .showSuggestionAfterError(true)
+        .allowExcessArguments(false)
+        .allowUnknownOption(false)
+        .action(execute)
+        .parse(process.argv);
 }
 
-// get value of the argument with flag 'name' from the command-line
-function getFlagValueFromArgv(name) {
-    for (let i = 0; i < process.argv.length; i++) {
-        let list = process.argv[i].split("=");
-        if (list[0] === `--${name}`)
-            return list[1];
-    }
-
-    return undefined;
+function getAvailableBrands() {
+    const brandBasePath = path.join(process.cwd(), "branding", "brands");
+    return FS.readdirSync(brandBasePath, {encoding: "utf8", withFileTypes: false})
+        .filter((it) => !it.startsWith('.'));
 }
 
 // generate "src/assets/config.json"
@@ -138,6 +120,11 @@ function generateServerConfigFile(brand, config) {
     writeJSON("src/assets/config.json", config_out);
 }
 
+function getPackageVersion() {
+    const project = loadJSON("package.json");
+    return project.version;
+}
+
 // set values in "config.xml"
 function setValuesInProjectConfig(config) {
 
@@ -146,7 +133,6 @@ function setValuesInProjectConfig(config) {
 
     // for each entry, the 'setValueInTag'-method is called until the tag was found once
     const androidId = config.projectConfig.androidId || config.projectConfig.id;
-    const package = loadJSON("package.json");
 
     /**
      * @type string
@@ -156,7 +142,7 @@ function setValuesInProjectConfig(config) {
 
     cordovaConf.setPackageName(config.projectConfig.id);
     cordovaConf.doc.getroot().attrib["android-packageName"] = androidId;
-    cordovaConf.setGlobalPreference("AppendUserAgent", `${name}/${package.version}`);
+    cordovaConf.setGlobalPreference("AppendUserAgent", `${name}/${getPackageVersion()}`);
     cordovaConf.setName(config.projectConfig.name);
     cordovaConf.setDescription(config.projectConfig.description);
     cordovaConf.write();
@@ -194,27 +180,15 @@ function refreshPlatforms(platforms) {
 
 // run cmd as a shell-script
 function runShell(cmd) {
-    const exec = require("child_process").exec;
-    exec(cmd, (err, stdout, stderr) => {
+    try {
         consoleOut(`running command "${cmd}"`);
-        consoleOut(`stdout ${stdout}`);
-        if(err !== null) {
-            consoleOut(`err ${err}`);
-            consoleOut(`stderr ${stderr}`);
-            throw new Error(`failed when running command "${cmd}", see the output above for details`);
-        }
-    });
-}
-
-// if the @line contains @tag, the content between @pre and @post is replaced with @value
-function setValueInTag(line, tag, pre, value, post) {
-    if (line.indexOf(tag) !== -1) {
-        let ind0 = line.indexOf(pre) + pre.length;
-        let ind1 = line.indexOf(post, ind0);
-        line = `${line.substring(0, ind0)}${value}${line.substring(ind1)}`;
-        return [line, true];
+        const buffer = execSync(cmd);
+        consoleOut(`stdout ${buffer}`);
+    } catch (err) {
+        consoleOut(`err ${err}`);
+        consoleOut(`stderr ${err}`);
+        throw new Error(`failed when running command "${cmd}", see the output above for details`);
     }
-    return [line, false];
 }
 
 // set file at target to the one at source
@@ -279,6 +253,19 @@ function writeJSON(file, data) {
     FS.writeFileSync(file, JSON.stringify(data));
 }
 
+function cleanUpOldConfigXmlStaticResourceEntries() {
+    const xml = FS.readFileSync("config.xml", "utf8");
+    const tree = xml2js(xml, {compact: true, spaces: 4});
+    const platforms = tree.widget.platform;
+    delete tree.widget.icon;
+    delete tree.widget.splash;
+    for(const platform of platforms) {
+        delete platform.splash;
+        delete platform.icon;
+    }
+    FS.writeFileSync("config.xml", js2xml(tree, {compact: true, spaces: 4}), "utf8");
+}
+
 // write msg to console and add it to console_log
 function consoleOut(msg) {
     const message = `(set_brand.js) ${msg}`;
@@ -314,3 +301,5 @@ CONSOLE OUTPUT
 ${console_log}`;
     FS.writeFileSync("branding/set_brand.log", log);
 }
+
+run();

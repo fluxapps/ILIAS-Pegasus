@@ -6,6 +6,7 @@ import {PictureBlockEntity} from "../../entity/learnplace/pictureBlock.entity";
 import {VideoBlockEntity} from "../../entity/learnplace/videoblock.entity";
 import {LEARNPLACE_REPOSITORY, LearnplaceRepository} from "../../providers/learnplace/repository/learnplace.repository";
 import {File, FileEntry, RemoveResult} from "@ionic-native/file/ngx";
+import { Optional } from "../../util/util.optional";
 import {LEARNPLACE_PATH_BUILDER, LearnplacePathBuilder} from "./loader/resource";
 import {StorageUtilization, UserStorageMamager} from "../../services/filesystem/user-storage.mamager";
 import {LEARNPLACE_LOADER, LearnplaceLoader} from "./loader/learnplace";
@@ -74,7 +75,7 @@ export interface LearnplaceManager {
      */
     getUsedStorage(objectId: number, userId: number): Promise<number>;
 
-    getLearnplace(objId: number)
+    getLearnplace(objId: number): Promise<Optional<LearnplaceEntity>>;
 }
 
 export const LEARNPLACE_MANAGER: InjectionToken<LearnplaceManager> = new InjectionToken("token for learnplace manager.");
@@ -105,11 +106,12 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     async setLearnplaces(ids: Array<number>): Promise<void> {
         this._learnplaces = ids;
-        ids.forEach(async id => await this.loadLearnplace(id));
-        return;
+        for (const id of ids) {
+            await this.loadLearnplace(id);
+        }
     }
 
-    async getLearnplace(objId: number) {
+    async getLearnplace(objId: number): Promise<Optional<LearnplaceEntity>> {
         return this.learnplaceRepository.findByObjectIdAndUserId(objId, AuthenticationProvider.getUser().id);
     }
 
@@ -121,8 +123,6 @@ export class LearnplaceManagerImpl implements LearnplaceManager, StorageUtilizat
 
     async loadLearnplace(objectId: number): Promise<void> {
         await this.loader.loadLearnplace(objectId);
-        const user: User = AuthenticationProvider.getUser();
-        await this.userStorageManager.addObjectToUserStorage(user.id, objectId, this);
     }
 
     async loadBlocks(objectId: number, lp?: LearnplaceEntity): Promise<void> {

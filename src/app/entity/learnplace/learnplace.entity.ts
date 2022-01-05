@@ -19,7 +19,7 @@ import {LinkblockEntity} from "./linkblock.entity";
 import {VideoBlockEntity} from "./videoblock.entity";
 import { VisibilityEntity } from "./visibility.entity";
 import {AccordionEntity} from "./accordion.entity";
-import {UserEntity} from "../../entity/user.entity";
+import {UserEntity} from "../user.entity";
 
 @Entity("Location")
 export class LocationEntity {
@@ -53,7 +53,7 @@ export class MapEntity {
     @Column()
     zoom: number;
 
-    @OneToOne(type => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
+    @OneToOne(() => VisibilityEntity, <RelationOptions>{eager: true, onDelete: "RESTRICT"})
     @JoinColumn(<JoinColumnOptions>{name: "FK_visibility", referencedColumnName: "value"})
     visibility: VisibilityEntity;
 
@@ -71,7 +71,7 @@ export class LearnplaceEntity {
     @Column()
     objectId: number;
 
-    @OneToOne(type => UserEntity, <RelationOptions>{cascade: false, lazy: true})
+    @OneToOne(() => UserEntity, <RelationOptions>{cascade: false, lazy: true})
     @JoinColumn(<JoinColumnOptions>{name: "FK_user", referencedColumnName: "id"})
     user: Promise<UserEntity>;
 
