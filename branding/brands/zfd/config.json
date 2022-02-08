@@ -1,10 +1,9 @@
 {
-  "ilias_installation_ids": [1,2,3,4,5,6,12,22,7,23,32,33,34,35,36],
+  "ilias_installation_ids": [43, 36],
   "projectConfig": {
-    "id": "ch.studerraimann.ilias.offline",
+    "id": "ch.fluxlabs.ilias.zfd",
 
-    "name": "ILIAS Pegasus",
-    "description": "Download, sync and store ILIAS-files on your device",
-    "privacyPolicy": "yahoo.com"
+    "name": "forumZFD Academy",
+    "description": "Download, sync and store ILIAS-files on your device"
   }
 }
