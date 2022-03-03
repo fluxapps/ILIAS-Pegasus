@@ -109,7 +109,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                         .pipe(
                         map((it) => {
                             const lpEntity: LearnplaceEntity = new LearnplaceEntity();
-                            console.error("load 1")
+                            console.error("getting lp from api")
 
                             return lpEntity.applies<LearnplaceEntity>(function(): void {
                                 this.id = uuid.create(4).toString();
@@ -133,10 +133,11 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                         }),
                         catchError(err => {
                             if (lp.isPresent()) {
+                                console.warn('getting lp from db');
                                 return of(lp.get());
                             } else {
                                 // some err occured and we dont have a downloaded version
-                                console.error(err);
+                                console.error('We dont have anything here', err);
                                 return of(err);
                             }
                         })
