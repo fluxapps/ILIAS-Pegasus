@@ -105,36 +105,42 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         const lpEntity: Promise<LearnplaceEntity> = from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, user.get().id))
             .pipe(
                 mergeMap((lp: Optional<LearnplaceEntity>) => {
-                    if (lp.isPresent()) {
-                        return of(lp.get());
-                    } else {
-                        return defer(() => this.learnplaceAPI.getLearnPlace(objectId)).pipe(
-                            map((it) => {
-                                const lpEntity: LearnplaceEntity = new LearnplaceEntity();
-                                console.error("load 1")
+                    return defer(() => this.learnplaceAPI.getLearnPlace(objectId))
+                        .pipe(
+                        map((it) => {
+                            const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+                            console.error("load 1")
 
-                                return lpEntity.applies<LearnplaceEntity>(function(): void {
-                                    this.id = uuid.create(4).toString();
-                                    this.objectId = objectId;
-                                    this.user = Promise.resolve(user.get());
+                            return lpEntity.applies<LearnplaceEntity>(function(): void {
+                                this.id = uuid.create(4).toString();
+                                this.objectId = objectId;
+                                this.user = Promise.resolve(user.get());
 
-                                    this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
-                                        this.zoom = it.map.zoomLevel;
-                                        this.visibility = (new VisibilityEntity()).applies(function(): void {
-                                            this.value = it.map.visibility;
-                                        })
-                                    });
-
-                                    this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
-                                        this.latitude = it.location.latitude;
-                                        this.longitude = it.location.longitude;
-                                        this.radius = it.location.radius;
-                                        this.elevation = it.location.elevation;
-                                    });
+                                this.map = Optional.ofNullable(this.map).orElse(new MapEntity()).applies(function(): void {
+                                    this.zoom = it.map.zoomLevel;
+                                    this.visibility = (new VisibilityEntity()).applies(function(): void {
+                                        this.value = it.map.visibility;
+                                    })
                                 });
-                            })
-                        )
-                    }
+
+                                this.location = Optional.ofNullable(this.location).orElse(new LocationEntity()).applies(function(): void {
+                                    this.latitude = it.location.latitude;
+                                    this.longitude = it.location.longitude;
+                                    this.radius = it.location.radius;
+                                    this.elevation = it.location.elevation;
+                                });
+                            });
+                        }),
+                        catchError(err => {
+                            if (lp.isPresent()) {
+                                return of(lp.get());
+                            } else {
+                                // some err occured and we dont have a downloaded version
+                                console.error(err);
+                                return of(err);
+                            }
+                        })
+                    )
                 })
             ).toPromise();
 
