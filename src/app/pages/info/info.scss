@@ -31,4 +31,9 @@
     .stura-card, .freiburg-card, .marburg-card {
         display: var(--page-info-card-community, block);
     }
+
+    .sturai-card > img {
+        width: 100%;
+        height: auto;
+    }
 }

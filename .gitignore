@@ -153,3 +153,8 @@ build.json
 
 src/environments/environment.generated.ts
 src/environments/features.json
+branding/brands/*/resources/ios/icon
+branding/brands/*/resources/ios/splash
+branding/brands/*/resources/android/icon
+branding/brands/*/resources/android/splash
+branding/brands/*/resources/android/xml

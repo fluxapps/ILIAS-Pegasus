@@ -32,6 +32,10 @@ ion-refresher {
     filter: var(--page-object-list-image-filter, brightness(1));
 }
 
+.ion-text-lg-center {
+    text-align: center;
+}
+
 .offline-message {
     color: var(--ion-text-color);
 }
