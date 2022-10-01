@@ -146,7 +146,7 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
             ).toPromise();
 
         try {
-            await this.learnplaceRepository.save(await (await lpEntity));
+            await this.learnplaceRepository.save(await lpEntity);
         } catch (error) {
             if (
                 error instanceof RESTAPIException ||

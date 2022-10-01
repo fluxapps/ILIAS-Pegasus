@@ -3,7 +3,7 @@
   "projectConfig": {
     "id": "ch.fluxlabs.ilias.zfd",
 
-    "name": "forumZFD Academy",
-    "description": "Download, sync and store ILIAS-files on your device"
+    "name": "Academy Learning App",
+    "description": "Your mobile connection to the Academy for Conflict Transformation"
   }
 }

@@ -4,15 +4,13 @@ ILIAS Pegasus is an app which is running on Android or iOS and integrate functio
 of the ILIAS learn management system. For example viewing courses or personal news.
 It's main focus is to make files offline available to read them while offline. Check https://ilias-pegasus.de for more information.
 
-[![Build status](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_apis/build/status/ILIAS-Pegasus-CI)](https://dev.azure.com/studer-raimann/ILIAS-Pegasus/_build/latest?definitionId=1)
-
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 In order to use the App your ILIAS needs to be configured first. You need 2 Plugins (also Open Source) to make your ILIAS ready for the Pegasus App:
 
-Follow the instructions here: https://github.com/studer-raimann/PegasusHelper
+Follow the instructions here: https://github.com/fluxapps/PegasusHelper
 
 The following tools are needed to build and deploy the app. 
 
@@ -199,12 +197,7 @@ Create a key, sign your application and upload it following the ionic guide: htt
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [releases on this repository](https://github.com/studer-raimann/ILIAS-Pegasus/releases). 
 
 ## Authors
-This is an OpenSource project by studer + raimann ag, (https://studer-raimann.ch)
-See the list of [contributors](https://github.com/studer-raimann/ILIAS-Pegasus/graphs/contributors) who participated in this project.
-
-### Contact
-[info@studer-raimann.ch](mailto://info@studer-raimann.ch)  
-<https://studer-raimann.ch> 
+This is an OpenSource project by studer + raimann ag, (https://fluxlabs.ch)
 
 [support@ilias-pegasus.de](mailto://support@ilias-pegasus.de)  
 <https://ilias-pegasus.de> 
@@ -234,12 +227,3 @@ Please check the [package.json](package.json) or run the command bellow to see a
 ```bash
 npm la --depth 0
 ```
-
-
-## ILIAS Plugin SLA 
-
-We love and live the philosophy of Open Source Software! Most of our developments, which we develop on behalf of customers or on our own account, are publicly available free of charge to all interested parties at https://github.com/studer-raimann.
-
-Do you use one of our plugins professionally? Secure the timely availability of this plugin for the upcoming ILIAS versions via SLA. Please inform yourself under https://studer-raimann.ch/produkte/ilias-plugins/plugin-sla.
-
-Please note that we only guarantee support and release maintenance for institutions that sign a SLA.

@@ -38,8 +38,10 @@ lint:
 test:chrome_89:
     <<: *test_browser
     image: zenika/alpine-chrome:89-with-node-14
+    allow_failure: true
 
 test:chrome_86:
     <<: *test_browser
     image: zenika/alpine-chrome:86-with-node-14
+    allow_failure: true
 

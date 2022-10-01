@@ -176,13 +176,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private async initMap(): Promise<void> {
         this.detectorRef.detectChanges();
 
-        let selectedPlace: MapPlaceModel = this.places.find(place => {
+        const selectedPlace: MapPlaceModel = this.places?.find(place => {
             return place.id == this.selected
         });
 
         let camera: CameraOptions;
         // settings
-        if (selectedPlace) {
+        if (selectedPlace !== undefined) {
             camera = <CameraOptions>{
                 zoom: selectedPlace.zoom,
                 position: <GeoCoordinate>{
@@ -190,7 +190,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
                     longitude: selectedPlace.longitude
                 }
             };
-        } else if (this.places.length === 1) {
+        } else if (this.places?.length === 1) {
             camera = <CameraOptions>{
                 zoom: 16,
                 position: <GeoCoordinate>{
@@ -259,7 +259,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     async mapOverview(): Promise<void> {
-        if (this.places.filter(lp => lp.visible).length <= 0) {
+        if (this.places?.filter(lp => lp.visible).length <= 0) {
             const coords = (await this.geolocation.getCurrentPosition()).coords
 
             this.mapboxMap.flyTo({
@@ -268,7 +268,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
             });
 
             return;
-        } else if (this.places.filter(lp => lp.visible).length <= 1) {
+        } else if (this.places?.filter(lp => lp.visible).length <= 1) {
             this.mapboxMap.flyTo({
                 center: [this.places[0].longitude, this.places[0].latitude],
                 zoom: 16
@@ -281,7 +281,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getOverviewBound(): Array<[number, number]> {
-        if (this.places.filter(lp => lp.visible).length <= 1)
+        if (this.places?.filter(lp => lp.visible).length <= 1)
             return;
 
         const sortedByLong: Array<MapPlaceModel> = this.places
