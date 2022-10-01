@@ -105,15 +105,14 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
         const lpEntity: Promise<LearnplaceEntity> = from(this.learnplaceRepository.findByObjectIdAndUserId(objectId, user.get().id))
             .pipe(
                 mergeMap((lp: Optional<LearnplaceEntity>) => {
-                    return defer(() => this.learnplaceAPI.getLearnPlace(objectId)).pipe(
+                    return defer(() => this.learnplaceAPI.getLearnPlace(objectId))
+                        .pipe(
                         map((it) => {
-                            const lpEntity: LearnplaceEntity = lp.orElse(new LearnplaceEntity());
+                            const lpEntity: LearnplaceEntity = new LearnplaceEntity();
+                            console.error("getting lp from api")
 
                             return lpEntity.applies<LearnplaceEntity>(function(): void {
-                                if (!lp.isPresent()) {
-                                    this.id = uuid.create(4).toString();
-                                }
-                                
+                                this.id = uuid.create(4).toString();
                                 this.objectId = objectId;
                                 this.user = Promise.resolve(user.get());
 
@@ -131,6 +130,16 @@ export class RestLearnplaceLoader implements LearnplaceLoader {
                                     this.elevation = it.location.elevation;
                                 });
                             });
+                        }),
+                        catchError(err => {
+                            if (lp.isPresent()) {
+                                console.warn('getting lp from db');
+                                return of(lp.get());
+                            } else {
+                                // some err occured and we dont have a downloaded version
+                                console.error('We dont have anything here', err);
+                                return of(err);
+                            }
                         })
                     )
                 })
