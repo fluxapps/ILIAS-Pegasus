@@ -61,4 +61,6 @@ export class RemoveLegacyObjectsFields implements Migration {
             "ADD totalUsedStorage TEXT"
         );
     }
+
+
 }

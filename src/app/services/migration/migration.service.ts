@@ -7,6 +7,7 @@ import { InitDatabase } from "../../migrations/V__1-init-database";
 import { CreateLearningModulesSchema } from "../../migrations/V__10-create-learning-modules-schema";
 import { TotalUserStorage } from "../../migrations/V__11-total-user-storage";
 import { RemoveLegacyObjectsFields } from "../../migrations/V__12-remove-legacy-objects-fields";
+import { IntroduceViewLearnplaces } from "../../migrations/V__13-introduce-view-learnplaces";
 import { AddObjectAttributes } from "../../migrations/V__2-add-object-attributes";
 import { CreateLearnplace } from "../../migrations/V__3-create-learnplace-shema";
 import { CreateNews } from "../../migrations/V__4-create-news-shema";
@@ -143,7 +144,8 @@ export class SimpleMigrationSupplier implements MigrationSupplier {
             new AddThemeTimestamp(),
             new CreateLearningModulesSchema(),
             new TotalUserStorage(),
-            new RemoveLegacyObjectsFields()
+            new RemoveLegacyObjectsFields(),
+            new IntroduceViewLearnplaces()
         ];
     }
 }
