@@ -1,0 +1,57 @@
+// Global CSS
+// --------------------------------------------------
+// Put CSS rules here that you want to apply globally
+//
+// NOTE: @import "coloring"; is called before this file is imported
+
+@import "../fonts/Raleway/Raleway.scss";
+
+ion-icon {
+    &[class*="custom-"] {
+      mask-size: contain;
+      mask-position: 50% 50%;
+      mask-repeat: no-repeat;
+      background: currentColor;
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+.content, .ion-header, ion-toolbar {
+    font-family: 'Raleway', sans-serif !important;
+}
+
+.top-header{
+  border-width: 0px !important;
+  --padding-top: 0px !important;
+    --padding-start: 0px !important;
+    --padding-right: 0px !important;
+    --padding-end: 0px !important;
+}
+
+// Typogrtaphie
+
+h1{
+  font-weight: 800;
+}
+
+ion-tab-bar{
+  --color-selected: #000 !important;
+}
+
+.learnplace-preview {
+    .modal-wrapper {
+        --height: 80vh !important;
+        margin: 1em;
+        border-radius: 4px;
+    }
+
+    .modal-shadow {
+        --height: 0 !important;
+    }
+}
+
+// Animations
+
+
+
