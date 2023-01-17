@@ -40,7 +40,6 @@
     "@ionic-native/sqlite": "^5.36.0",
     "@ionic-native/status-bar": "^5.36.0",
     "@ionic-native/unique-device-id": "^5.36.0",
-    "@ionic-native/zip": "^5.36.0",
     "@ionic/angular": "^5.8.5",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
@@ -58,7 +57,6 @@
     "cordova-plugin-statusbar": "^2.4.3",
     "cordova-plugin-video-player": "^1.0.1",
     "cordova-plugin-whitelist": "^1.3.5",
-    "cordova-zip-plugin": "^2.0.0",
     "cordova-sqlite-storage": "^6.0.0",
     "cordova-unique-device-id": "^1.3.2",
     "core-js": "^3.19.1",
@@ -164,7 +162,6 @@
         "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
       },
       "cordova-sqlite-storage": {},
-      "cordova-plugin-zip": {},
       "cordova-plugin-androidx-adapter": {},
       "cordova-plugin-safariviewcontroller": {},
       "cordova.plugins.diagnostic": {
