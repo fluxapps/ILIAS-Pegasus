@@ -24,6 +24,9 @@
         <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application/activity" mode="merge">
             <activity android:exported="true"/>
         </edit-config>
+        <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/uses-permission[@android:name='android.permission.REQUEST_INSTALL_PACKAGES']" mode="overwrite">
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove"/>
+        </edit-config>
     </platform>
     <platform name="ios">
         <preference name="BackupWebStorage" value="none"/>
