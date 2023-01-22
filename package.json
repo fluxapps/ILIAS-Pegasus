@@ -1,7 +1,7 @@
 {
     "name": "ilias-pegasus",
     "private": true,
-    "version": "4.4.3",
+    "version": "4.4.4",
     "scripts": {
         "start": "ionic cordova emulate",
         "build:release:ios": "NODE_OPTIONS=--max_old_space_size=4096 ionic cordova build ios --release --prod --device",

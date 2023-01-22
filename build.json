@@ -1,0 +1,24 @@
+{
+  "ios": {
+    "debug": {
+      "codeSignIdentity": "Apple Development",
+      "provisioningProfile": "e3252dca-1ab7-4f3b-a743-3d73070c3dc3",
+      "developmentTeam": "AZLZKY798U",
+      "packageType": "development"
+    },
+    "release": {
+      "codeSignIdentity": "Apple Distribution",
+      "provisioningProfile": "30a30ac8-dd11-4318-8da2-2dbce279c23f",
+      "developmentTeam": "AZLZKY798U",
+      "packageType": "app-store"
+    }
+  },
+    "android": {
+        "debug": {
+            "packageType": "apk"
+        },
+        "release": {
+            "packageType": "bundle"
+        }
+    }
+}
