@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget android-packageName="ch.studerraimann.ilias.offline" android-versionCode="2023011201" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20230112.1" version="4.3.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="ch.studerraimann.ilias.offline" android-versionCode="2023011201" id="ch.studerraimann.ilias.offline" ios-CFBundleVersion="20230112.1" version="4.3.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0"  xmlns:tools="http://schemas.android.com/tools">
     <name>ILIAS Pegasus</name>
     <description>Download, sync and store ILIAS-files on your device</description>
     <author email="support@fluxlabs.ch" href="https://fluxlabs.ch/">fluxlabs AG</author>
