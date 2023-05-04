@@ -2,13 +2,13 @@
   "ios": {
     "debug": {
       "codeSignIdentity": "Apple Development",
-      "provisioningProfile": "2edfbb14-2ea3-4cb6-9850-5e7b0e4aeab9",
+      "provisioningProfile": "0383fc88-644d-473d-8772-3166ac63c0b6",
       "developmentTeam": "AZLZKY798U",
       "packageType": "development"
     },
     "release": {
       "codeSignIdentity": "Apple Distribution",
-      "provisioningProfile": "d4573835-91aa-450c-8b53-3d73d98313ca",
+      "provisioningProfile": "0383fc88-644d-473d-8772-3166ac63c0b6",
       "developmentTeam": "AZLZKY798U",
       "packageType": "app-store"
     }
