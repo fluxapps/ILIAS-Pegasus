@@ -189,7 +189,7 @@
         "open_in_external_app": "Ouvrir avec une application externe",
         "show_details": "Afficher les d\u00e9tails",
         "sync_incomplete": "Une erreur s'est produite : la synchronisation est incompl\u00e8te.",
-        "offline_and_no_local_file": "Vous \u00eates hors ligne et aucun fichier local n'est disponible.",
+        "offline_and_no_local_file": "Les dates sont collectées",
         "download_without_wlan": "T\u00e9l\u00e9charger sans r\u00e9seau local sans fil",
         "download_without_wlan_continue": "Vous n'\u00eates pas actuellement connect\u00e9 \u00e0 un r\u00e9seau local sans fil. Voulez-vous t\u00e9l\u00e9charger quand m\u00eame ?",
         "download_without_disk_quota": "Pas d'espace disque",
