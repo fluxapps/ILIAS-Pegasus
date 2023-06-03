@@ -110,7 +110,7 @@
         "open_in_external_app": "In externer App öffnen",
         "show_details": "Zeige Details",
         "sync_incomplete": "Es ist etwas schiefgelaufen. Die Synchronisation ist unter Umständen unvollständig.",
-        "offline_and_no_local_file": "Sie sind offline und keine lokale Datei ist verfügbar.",
+        "offline_and_no_local_file": "...daten werden heruntergeladen",
         "download_without_wlan": "Download ohne WLAN",
         "download_without_wlan_continue": "Sie sind im Moment nicht im WLAN, wollen Sie die Datei trotzdem herunterladen?",
         "download_without_disk_quota": "Kein Speicherplatz",
