@@ -97,7 +97,7 @@ export class PegasusErrorHandler implements ErrorHandler {
 
             if (unwrappedError instanceof OfflineException) {
                 this.log.warn(() => `OfflineException occurred with message: "${unwrappedError.message}".`);
-                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.offline_and_no_local_file"));
+                this.displayAlert(PegasusErrorHandler.ERROR_TITLE, this.translate.instant("actions.unhandled_add_to_favorite_exception_workaround"));
                 return;
             }
 
