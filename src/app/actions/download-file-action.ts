@@ -77,7 +77,7 @@ export class DownloadFileAction extends ILIASObjectAction {
             resolve(new ILIASObjectActionNoMessage());
         }, (error) => {
             this.log.error(() => `Could not download file: ${JSON.stringify(error)}`);
-            reject(new Error(this.translate.instant("actions.offline_and_no_local_file")));
+            resolve(new ILIASObjectActionNoMessage());
         });
     };
 
