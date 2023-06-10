@@ -1,1 +1,0 @@
-![gardening](gardening.jpg)
